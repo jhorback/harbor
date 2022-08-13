@@ -1,0 +1,29 @@
+
+
+:root {
+ 
+  color-scheme: light dark;
+  background-color: var(--md-sys-color-background, red);
+  color: var(--md-sys-color-on-background, green);
+
+
+  /* type-styles.body-large */
+  font-family: var(--md-sys-typescale-body1-font);
+  font-weight: var(--md-sys-typescale-body1-weight);
+  font-size: var(--md-sys-typescale-body1-size);
+  line-height: var(--md-sys-typescale-body1-line-height);
+  letter-spacing: var(--md-sys-typescale-body1-tracking);
+
+}
+
+
+
+body {
+  margin: 0;
+  display: flex;
+  place-items: center;
+  min-width: 320px;
+  min-height: 100vh;
+}
+
+

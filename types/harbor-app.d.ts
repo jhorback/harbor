@@ -1,11 +1,11 @@
-import { LitElement } from 'lit';
+import { LitElement } from "lit";
 /**
  * An example element.
  *
  * @slot - This element has a slot
  * @csspart button - The button
  */
-export declare class MyElement extends LitElement {
+export declare class HarborApp extends LitElement {
     /**
      * Copy for the read the docs hint.
      */
@@ -20,6 +20,6 @@ export declare class MyElement extends LitElement {
 }
 declare global {
     interface HTMLElementTagNameMap {
-        'my-element': MyElement;
+        'harbor-app': HarborApp;
     }
 }
