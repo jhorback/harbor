@@ -20,6 +20,6 @@ export declare class HarborApp extends LitElement {
 }
 declare global {
     interface HTMLElementTagNameMap {
-        'harbor-app': HarborApp;
+        'hb-app': HarborApp;
     }
 }
