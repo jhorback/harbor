@@ -2,6 +2,7 @@ import { html, css, LitElement } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import { typeStyles, typeStylesDisplayLarge } from "./styles/typeStyles";
 import "./hb-style-guide";
+import { AvatarType } from "./hb-avatar";
 // import litLogo from "./assets/lit.svg"
 
 
@@ -28,6 +29,7 @@ export class HarborApp extends LitElement {
   render() {
     return html`      
       <slot></slot>
+      <hb-avatar type="${AvatarType.USER_PROFILE}" href="test/user1.png"></hb-avatar>
       <hb-style-guide></hb-style-guide>
     `
   }
