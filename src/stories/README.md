@@ -5,7 +5,9 @@ Try the Figma plugin and yearly personal license?
 
 
 ## 01 Foundation
-* Colors
+* Color
+* Icons - include link to: https://fonts.google.com/icons
+* Shape
 * Typography
 
 
@@ -25,4 +27,6 @@ Try the Figma plugin and yearly personal license?
 
 
 ## 05 Content Types
+
+
 

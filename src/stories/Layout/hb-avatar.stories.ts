@@ -28,7 +28,7 @@ export default {
          */
         href: {
             control: { type: 'select' },
-            options: ["avatars/user1.png", "avatars/user2.jpg"],
+            options: ["content/avatars/user1.png", "content/avatars/user2.jpg"],
             description: "The url",
             defaultValue: "hell there"
         }
@@ -65,5 +65,5 @@ export const AvatarButton = Template.bind({});
 // More on args: https://storybook.js.org/docs/web-components/writing-stories/args
 AvatarButton.args = {
    type: AvatarType.ICON_BUTTON,
-   href: "avatars/user1.png"
+   href: "content/avatars/user1.png"
 };
