@@ -3,17 +3,19 @@
 :root {
  
   color-scheme: light dark;
-  background-color: var(--md-sys-color-background, red);
-  color: var(--md-sys-color-on-background, green);
+  background-color: var(--md-sys-color-background);
+  color: var(--md-sys-color-on-background);
 
 
   /* type-styles.body-large */
-  font-family: var(--md-sys-typescale-body1-font);
-  font-weight: var(--md-sys-typescale-body1-weight);
-  font-size: var(--md-sys-typescale-body1-size);
-  line-height: var(--md-sys-typescale-body1-line-height);
-  letter-spacing: var(--md-sys-typescale-body1-tracking);
-
+  font-family: var(--md-sys-typescale-body-large-font-family-name);
+  font-style: var(--md-sys-typescale-body-large-font-family-style);
+  font-weight: var(--md-sys-typescale-body-large-font-weight);
+  font-size: var(--md-sys-typescale-body-large-font-size);
+  letter-spacing: var(--md-sys-typescale-body-large-tracking);
+  line-height: var(--md-sys-typescale-body-large-height);
+  text-transform: var(--md-sys-typescale-body-large-text-transform);
+  text-decoration: var(--md-sys-typescale-body-large-text-decoration);
 }
 
 body {

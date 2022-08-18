@@ -14,6 +14,13 @@ export const typeStylesDisplayLarge = css`
 `;
 
 export const typeStyles = css`
+a, a:visited {
+	color: var(--md-sys-color-primary);
+}
+a:hover {
+	color: var(--md-sys-color-on-background);
+}
+
 .label-small{
     font-family: var(--md-sys-typescale-label-small-font-family-name);
     font-style: var(--md-sys-typescale-label-small-font-family-style);
