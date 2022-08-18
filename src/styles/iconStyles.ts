@@ -12,6 +12,7 @@ import { css } from 'lit-element';
  * ```
  */
 export const iconStyles = css`
+/* iconStyles */
 .material-symbols-outlined, .icon-button {
   font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 48;
   font-family: 'Material Symbols Outlined';
@@ -34,6 +35,7 @@ export const iconStyles = css`
   border-radius: var(--md-sys-shape-corner-full);
   cursor: default;
   user-select: none;
+  border:1px solid transparent;
 }
 .icon-button:hover::before {
   content: "";
@@ -49,17 +51,17 @@ export const iconStyles = css`
 .icon-button:active::before {
   opacity: 0.5;
 }
-
+.icon-button:active, .icon-button:focus {
+  border: 1px solid var(--md-sys-color-on-background);
+}
 .icon-small {
   font-size:20px;
   padding: 10px;
 }
-
 .icon-medium {
   font-size:24px;
   padding: 12px;
 }
-
 .icon-large {
   font-size:40px;
   padding: 4px;

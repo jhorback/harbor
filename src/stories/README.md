@@ -5,8 +5,6 @@ Try the Figma plugin and yearly personal license?
 
 
 ## 01 Foundation
-* Color
-* Icons - include link to: https://fonts.google.com/icons
 * Shape
 * Typography
 

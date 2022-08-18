@@ -14,13 +14,13 @@ export const typeStylesDisplayLarge = css`
 `;
 
 export const typeStyles = css`
+/* typeStyles */
 a, a:visited {
 	color: var(--md-sys-color-primary);
 }
 a:hover {
 	color: var(--md-sys-color-on-background);
 }
-
 .label-small{
     font-family: var(--md-sys-typescale-label-small-font-family-name);
     font-style: var(--md-sys-typescale-label-small-font-family-style);
@@ -169,5 +169,4 @@ a:hover {
     text-transform: var(--md-sys-typescale-title-large-text-transform);
     text-decoration: var(--md-sys-typescale-title-large-text-decoration);
   }
-  
 `;

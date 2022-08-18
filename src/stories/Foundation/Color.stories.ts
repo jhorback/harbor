@@ -11,32 +11,6 @@ export default {
 
 
 const ColorTemplate = () => html`
-    <style>
-        ${typeStyles}
-        ${colorStyles}
-        h3 {
-            margin-top: 3rem;
-        }
-        .doc-container {
-            display: block;
-            padding: 2rem;
-        }
-        .swatch-container {
-            max-width: 600px;
-            margin: 2rem auto;
-            display: flex;
-            flex-flow: row wrap;
-            align-items: flex-end;
-            align-content: flex-start;
-            gap: 10px;
-        }
-        .swatch {
-            height: 100px;
-            width: 100px;
-            border-radius: var(--md-sys-shape-corner-medium);
-            padding: 1rem;
-        }
-    </style>
     <div class="doc-container">
         <h2>Color</h2>
         <p>
@@ -86,6 +60,32 @@ const ColorTemplate = () => html`
             <div class="swatch"></div>
         </div>
     </div>
+    <style>       
+        h3 {
+            margin-top: 3rem;
+        }
+        .doc-container {
+            display: block;
+            padding: 2rem;
+        }
+        .swatch-container {
+            max-width: 600px;
+            margin: 2rem auto;
+            display: flex;
+            flex-flow: row wrap;
+            align-items: flex-end;
+            align-content: flex-start;
+            gap: 10px;
+        }
+        .swatch {
+            height: 100px;
+            width: 100px;
+            border-radius: var(--md-sys-shape-corner-medium);
+            padding: 1rem;
+        }
+        ${typeStyles}
+        ${colorStyles}
+    </style>
 `;
 
 // const Template: Story = ColorTemplate;

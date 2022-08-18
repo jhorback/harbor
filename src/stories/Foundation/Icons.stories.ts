@@ -12,38 +12,20 @@ export default {
 
 
 const IconTemplate = () => html`
-    <style>
-        ${typeStyles}
-        ${colorStyles}
-        ${iconStyles}
-        h3 {
-            margin-top: 3rem;
-        }
-        .doc-container {
-            display: block;
-            padding: 2rem;
-        }
-        .examples {
-            padding: 2rem;
-        }
-        .examples span {
-            margin: 1rem;
-        }
-    </style>
     <div class="doc-container">
         <h2>Icons</h2>
         <p>
         See:<br>
         <a href="https://fonts.google.com/icons" target="mdf">Material Symbols (Google Fonts)</a><br>
-        <a href="https://m3.material.io/styles/icons/overview" target="md">Material Design Icon</a>
+        <a href="https://m3.material.io/styles/icons/overview" target="md">Material Design Icons</a>
         </p>
         <h3>Examples</h3>
         <div class="examples">
             <span class="title-large">Settings</span>
-            <span class="icon-button icon-small">settings</span>
-            <span class="icon-button icon-medium">settings</span>
-            <span class="icon-button icon-large">settings</span>
-            <span class="icon-button icon-extra-large">settings</span>
+            <span class="icon-button icon-small" tabindex="0">settings</span>
+            <span class="icon-button icon-medium" tabindex="0">settings</span>
+            <span class="icon-button icon-large" tabindex="0">settings</span>
+            <span class="icon-button icon-extra-large" tabindex="0">settings</span>
         </div>
         <div class="examples">
             <span class="title-large">Menu</span>
@@ -67,6 +49,24 @@ const IconTemplate = () => html`
             <span class="icon-button icon-extra-large">close</span>
         </div>
     </div>
+    <style>
+        h3 {
+            margin-top: 3rem;
+        }
+        .doc-container {
+            display: block;
+            padding: 2rem;
+        }
+        .examples {
+            padding: 2rem;
+        }
+        .examples span {
+            margin: 1rem;
+        }
+        ${typeStyles}
+        ${colorStyles}
+        ${iconStyles}
+    </style>
 `;
 
 
