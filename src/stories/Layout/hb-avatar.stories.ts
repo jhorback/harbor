@@ -33,11 +33,7 @@ export default {
             defaultValue: "hell there"
         }
     },
-    parameters: {
-        docs: {
-          page: null,
-        },
-      },
+    parameters: { options: { showPanel: true } },
 } as Meta;
 
 export interface AvatarProps {

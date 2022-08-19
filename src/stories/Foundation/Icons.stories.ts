@@ -6,7 +6,8 @@ import { iconStyles } from "../../styles/iconStyles";
 
 
 export default {
-    title: 'Foundation/Icons'
+    title: 'Foundation/Icons',
+    parameters: { options: { showPanel: false } }
 } as Meta;
 
 

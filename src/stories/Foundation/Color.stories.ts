@@ -5,7 +5,8 @@ import { colorStyles } from "../../styles/colorStyles";
 
 
 export default {
-    title: 'Foundation/Color'
+    title: 'Foundation/Color',
+    parameters: { options: { showPanel: false } }
 } as Meta;
 
 
@@ -92,5 +93,3 @@ const ColorTemplate = () => html`
 
 
 export const Color = ColorTemplate;
-
-

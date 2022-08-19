@@ -3,7 +3,8 @@ import { html } from 'lit-html';
 import { typeStyles } from "../../styles/typeStyles";
 
 export default {
-    title: 'Foundation/Typography'
+    title: 'Foundation/Typography',
+    parameters: { options: { showPanel: false } }
 } as Meta;
 
 
