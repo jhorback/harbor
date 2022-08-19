@@ -1,13 +1,6 @@
 
 # Harbor Components
 
-Try the Figma plugin and yearly personal license?
-
-
-## 01 Foundation
-* Shape
-* Typography
-
 
 ## 02 Layout
 * User Menu
@@ -17,8 +10,8 @@ Try the Figma plugin and yearly personal license?
 ## 03 Common
 * Button
   * Primary
-* User Avatar
-* Avatar Button
+* Avatar (hb-avatar) - supports different sizes
+* Avatar Button (hb-avatar-button)
 
 
 ## 04 Document Types

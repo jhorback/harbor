@@ -1,40 +1,43 @@
 import { Meta } from '@storybook/web-components';
 import { html } from 'lit-html';
 import { typeStyles } from "../../styles/typeStyles";
-import { colorStyles } from "../../styles/colorStyles";
-import { iconStyles } from "../../styles/iconStyles";
-
 
 export default {
-    title: 'Foundation/Shape'
+    title: 'Foundation/Typography'
 } as Meta;
 
 
 
-const ShapeTemplate = () => html`
+const TypographyTemplate = () => html`
     <div class="doc-container">
-        <h2>Shape</h2>
+        <h2>Typography</h2>
         <p>
         See:<br>
-        <a href="https://m3.material.io/styles/shape/overview" target="md">Material Design Shape</a>
+        <a href="https://m3.material.io/styles/typography" target="md">Material Design Typography</a>
         </p>
         <h3>Examples</h3>
-        <div class="shape-container">
-            <div class="shape corner-none">corner-none</div>
-            <div class="shape corner-extra-small">corner-extra-small</div>
-            <div class="shape corner-extra-small-top">corner-extra-small-top</div>
-            <div class="shape corner-small">corner-small</div>
-
-            <div class="shape corner-medium">corner-medium</div>
-            <div class="shape corner-large">corner-large</div>
-            <div class="shape corner-large-end">corner-large-end</div>
-            <div class="shape corner-large-top">corner-large-top</div>
-
-            <div class="shape corner-extra-large">corner-extra-large</div>
-            <div class="shape corner-extra-large-top">corner-extra-large-top</div>
-            <div class="shape corner-full">corner-full</div>
-
-        </div>
+        <hr/>
+        <h1>Heading 1</h1>
+        <h2>Heading 2</h2>
+        <h3>Heading 3</h3>
+        <h4>Heading 4</h4>
+        <h5>Heading 5</h5>
+        <h6>Heading 6</h6>
+        <div class="display-large">Display Large</div>
+        <div class="display-medium">Display Medium</div>
+        <div class="display-small">Display Small</div>
+        <div class="headline-large">Headline Large</div>
+        <div class="headline-medium">Headline Medium</div>
+        <div class="headline-small">Headline Small</div>
+        <div class="title-large">Title Large</div>
+        <div class="title-medium">Title Medium</div>
+        <div class="title-small">Title Small</div>
+        <div class="label-large">Label Large</div>
+        <div class="label-medium">Label Medium</div>
+        <div class="label-small">Label Small</div>
+        <div class="body-large">Body Large</div>
+        <div class="body-medium">Body Medium</div>
+        <div class="body-small">Body Small</div>
     </div>
     <style>
         h3 {
@@ -74,12 +77,10 @@ const ShapeTemplate = () => html`
         .corner-extra-large-top { border-radius: var(--md-sys-shape-corner-extra-large-top); }
         .corner-full { border-radius: var(--md-sys-shape-corner-full); width: 100px;}
         ${typeStyles}
-        ${colorStyles}
-        ${iconStyles}
     </style>
 `;
 
 
-export const Shape = ShapeTemplate;
+export const Typography = TypographyTemplate;
 
 

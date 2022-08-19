@@ -1,7 +1,7 @@
 export const parameters = {
   options: {
     storySort: {
-      order: ["Foundation", "Layout", ["Avatar Doc", "Avatar Button"], "Common"],
+      order: ["Harbor Design", "Foundation", "Layout", ["Avatar Doc", "Avatar Button"], "Common"],
       // order: ['Foundation', 'Layout', ['Home', 'Login', 'Admin'], 'Components'],
     },
   },
