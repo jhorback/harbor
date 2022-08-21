@@ -2,7 +2,7 @@ import { html, css, LitElement } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import { typeStyles, typeStylesDisplayLarge } from "./styles/typeStyles";
 import { iconStyles } from "./styles/iconStyles";
-import { AvatarType } from "./hb-avatar";
+import { AvatarType } from "./layout/hb-avatar-button";
 import "./hb-style-guide";
 // import litLogo from "./assets/lit.svg"
 
