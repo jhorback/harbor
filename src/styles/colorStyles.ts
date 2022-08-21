@@ -4,37 +4,182 @@ import { css } from 'lit-element';
 
 
 /*
- * Not sure if I'll need this
+ * From material-theme builder colors.module.css
  */
 export const colorStyles = css`
-
-
+/* colorStyles */
+.primary {
+background-color: var(--md-sys-color-primary);
+}
+.primary-text {
+color: var(--md-sys-color-primary);
+}
+.on-primary {
+background-color: var(--md-sys-color-on-primary);
+}
+.on-primary-text {
+color: var(--md-sys-color-on-primary);
+}
+.primary-container {
+background-color: var(--md-sys-color-primary-container);
+}
+.primary-container-text {
+color: var(--md-sys-color-primary-container);
+}
+.on-primary-container {
+background-color: var(--md-sys-color-on-primary-container);
+}
+.on-primary-container-text {
+color: var(--md-sys-color-on-primary-container);
+}
+.secondary {
+background-color: var(--md-sys-color-secondary);
+}
+.secondary-text {
+color: var(--md-sys-color-secondary);
+}
+.on-secondary {
+background-color: var(--md-sys-color-on-secondary);
+}
+.on-secondary-text {
+color: var(--md-sys-color-on-secondary);
+}
+.secondary-container {
+background-color: var(--md-sys-color-secondary-container);
+}
+.secondary-container-text {
+color: var(--md-sys-color-secondary-container);
+}
+.on-secondary-container {
+background-color: var(--md-sys-color-on-secondary-container);
+}
+.on-secondary-container-text {
+color: var(--md-sys-color-on-secondary-container);
+}
+.tertiary {
+background-color: var(--md-sys-color-tertiary);
+}
+.tertiary-text {
+color: var(--md-sys-color-tertiary);
+}
+.on-tertiary {
+background-color: var(--md-sys-color-on-tertiary);
+}
+.on-tertiary-text {
+color: var(--md-sys-color-on-tertiary);
+}
+.tertiary-container {
+background-color: var(--md-sys-color-tertiary-container);
+}
+.tertiary-container-text {
+color: var(--md-sys-color-tertiary-container);
+}
+.on-tertiary-container {
+background-color: var(--md-sys-color-on-tertiary-container);
+}
+.on-tertiary-container-text {
+color: var(--md-sys-color-on-tertiary-container);
+}
+.error {
+background-color: var(--md-sys-color-error);
+}
+.error-text {
+color: var(--md-sys-color-error);
+}
+.error-container {
+background-color: var(--md-sys-color-error-container);
+}
+.error-container-text {
+color: var(--md-sys-color-error-container);
+}
+.on-error {
+background-color: var(--md-sys-color-on-error);
+}
+.on-error-text {
+color: var(--md-sys-color-on-error);
+}
+.on-error-container {
+background-color: var(--md-sys-color-on-error-container);
+}
+.on-error-container-text {
+color: var(--md-sys-color-on-error-container);
+}
+.background {
+background-color: var(--md-sys-color-background);
+}
+.background-text {
+color: var(--md-sys-color-background);
+}
+.on-background {
+background-color: var(--md-sys-color-on-background);
+}
+.on-background-text {
+color: var(--md-sys-color-on-background);
+}
+.surface {
+background-color: var(--md-sys-color-surface);
+}
+.surface-text {
+color: var(--md-sys-color-surface);
+}
+.on-surface {
+background-color: var(--md-sys-color-on-surface);
+}
+.on-surface-text {
+color: var(--md-sys-color-on-surface);
+}
+.surface-variant {
+background-color: var(--md-sys-color-surface-variant);
+}
+.surface-variant-text {
+color: var(--md-sys-color-surface-variant);
+}
+.on-surface-variant {
+background-color: var(--md-sys-color-on-surface-variant);
+}
+.on-surface-variant-text {
+color: var(--md-sys-color-on-surface-variant);
+}
+.outline {
+background-color: var(--md-sys-color-outline);
+}
+.outline-text {
+color: var(--md-sys-color-outline);
+}
+.inverse-on-surface {
+background-color: var(--md-sys-color-inverse-on-surface);
+}
+.inverse-on-surface-text {
+color: var(--md-sys-color-inverse-on-surface);
+}
+.inverse-surface {
+background-color: var(--md-sys-color-inverse-surface);
+}
+.inverse-surface-text {
+color: var(--md-sys-color-inverse-surface);
+}
+.inverse-primary {
+background-color: var(--md-sys-color-inverse-primary);
+}
+.inverse-primary-text {
+color: var(--md-sys-color-inverse-primary);
+}
+.shadow {
+background-color: var(--md-sys-color-shadow);
+}
+.shadow-text {
+color: var(--md-sys-color-shadow);
+}
+.surface-tint {
+background-color: var(--md-sys-color-surface-tint);
+}
+.surface-tint-text {
+color: var(--md-sys-color-surface-tint);
+}
+.surface-tint-color {
+background-color: var(--md-sys-color-surface-tint-color);
+}
+.surface-tint-color-text {
+color: var(--md-sys-color-surface-tint-color);
+}
 `;
-
-/*
-    : var(--md-sys-color-primary-light);
-	--md-sys-color-on-primary: var(--md-sys-color-on-primary-light);
-	--md-sys-color-primary-container: var(--md-sys-color-primary-container-light);
-	--md-sys-color-on-primary-container: var(--md-sys-color-on-primary-container-light);
-	--md-sys-color-secondary: var(--md-sys-color-secondary-light);
-	--md-sys-color-on-secondary: var(--md-sys-color-on-secondary-light);
-	--md-sys-color-secondary-container: var(--md-sys-color-secondary-container-light);
-	--md-sys-color-on-secondary-container: var(--md-sys-color-on-secondary-container-light);
-	--md-sys-color-tertiary: var(--md-sys-color-tertiary-light);
-	--md-sys-color-on-tertiary: var(--md-sys-color-on-tertiary-light);
-	--md-sys-color-tertiary-container: var(--md-sys-color-tertiary-container-light);
-	--md-sys-color-on-tertiary-container: var(--md-sys-color-on-tertiary-container-light);
-	--md-sys-color-error: var(--md-sys-color-error-light);
-	--md-sys-color-on-error: var(--md-sys-color-on-error-light);
-	--md-sys-color-error-container: var(--md-sys-color-error-container-light);
-	--md-sys-color-on-error-container: var(--md-sys-color-on-error-container-light);
-	--md-sys-color-outline: var(--md-sys-color-outline-light);
-	--md-sys-color-background: var(--md-sys-color-background-light);
-	--md-sys-color-on-background: var(--md-sys-color-on-background-light);
-	--md-sys-color-surface: var(--md-sys-color-surface-light);
-	--md-sys-color-on-surface: var(--md-sys-color-on-surface-light);
-	--md-sys-color-surface-variant: var(--md-sys-color-surface-variant-light);
-	--md-sys-color-on-surface-variant: var(--md-sys-color-on-surface-variant-light);
-	--md-sys-color-inverse-surface: var(--md-sys-color-inverse-surface-light);
-	--md-sys-color-inverse-on-surface: var(--md-sys-color-inverse-on-surface-light);
-    */

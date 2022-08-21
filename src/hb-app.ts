@@ -1,6 +1,8 @@
 import { html, css, LitElement } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import { typeStyles, typeStylesDisplayLarge } from "./styles/typeStyles";
+import { iconStyles } from "./styles/iconStyles";
+import { AvatarType } from "./layout/hb-avatar-button";
 import "./hb-style-guide";
 // import litLogo from "./assets/lit.svg"
 
@@ -28,11 +30,13 @@ export class HarborApp extends LitElement {
   render() {
     return html`      
       <slot></slot>
+      <span class="material-symbols-outlined">settings</span>
+      <hb-avatar type="${AvatarType.USER_PROFILE}" href="content/avatars/user1.png"></hb-avatar>
       <hb-style-guide></hb-style-guide>
     `
   }
 
-  static styles = [typeStyles, css`
+  static styles = [typeStyles, iconStyles, css`
     :host {
       max-width: 1280px;
       margin: 0 auto;
@@ -42,6 +46,8 @@ export class HarborApp extends LitElement {
     ::slotted(h1) {
       ${typeStylesDisplayLarge}
     }
+
+
   `]
 }
 
