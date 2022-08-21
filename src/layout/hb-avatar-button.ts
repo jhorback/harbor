@@ -63,8 +63,7 @@ export class AvatarButton extends LitElement {
       padding: 4px;
     }
     .avatar:hover {
-      /** todo - have these transparent colors in colorstyles/tokens? */
-      background-color: #2E343D; /*rgba(255,255,255, 0.12);*/
+      background-color: var(--hb-sys-color-surface-tint5);
     }
     .avatar:focus {
       outline: 1px solid var(--md-sys-color-outline);

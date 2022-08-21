@@ -19,6 +19,7 @@ const ColorTemplate = () => html`
             <a href="https://m3.material.io/theme-builder" target="mtb">Material Theme Builder</a><br>
             <a href="https://m3.material.io/styles/color/overview" target="md">Material Design Color</a>
         </p>
+        <h3 class="title-large">Primary pallette</h3>
         <div class="swatch-container">
             <div class="swatch body-large primary on-primary-text">.primary</div>
             <div class="swatch body-large on-primary primary-text">.on-primary</div>
@@ -44,7 +45,9 @@ const ColorTemplate = () => html`
             <div class="swatch body-large on-background background-text">.on-background</div>
             <div class="swatch body-large surface on-surface-text">.surface</div>
             <div class="swatch body-large on-surface surface-text">.on-surface</div>
-
+        </div>
+        <h3 class="title-large">Secondary pallette</h3>
+        <div class="swatch-container">
             <div class="swatch body-large outline on-background-text">.outline</div>
             <div class="swatch body-large shadow outline-text">.shadow</div>
             <div class="swatch body-large surface-variant on-surface-variant-text">.surface-variant</div>
@@ -60,9 +63,17 @@ const ColorTemplate = () => html`
             <div class="swatch"></div>
             <div class="swatch"></div>
         </div>
+        <h3 class="title-large">Surface tints for elevation</h3>
+        <div class="swatch-container">
+            <div class="swatch body-large surface-tint1 outline-text">surface +1</div>
+            <div class="swatch body-large surface-tint2 outline-text">surface +2</div>
+            <div class="swatch body-large surface-tint3 outline-text">surface +3</div>
+            <div class="swatch body-large surface-tint4 outline-text">surface +4</div>
+            <div class="swatch body-large surface-tint5 outline-text">surface +5</div>
+        </div>
     </div>
     <style>       
-        h3 {
+        h3.title-large {
             margin-top: 3rem;
         }
         .doc-container {
@@ -83,6 +94,21 @@ const ColorTemplate = () => html`
             width: 100px;
             border-radius: var(--md-sys-shape-corner-medium);
             padding: 1rem;
+        }
+        .surface-tint1 {
+            background-color: var(--hb-sys-color-surface-tint1);
+        }
+        .surface-tint2 {
+            background-color: var(--hb-sys-color-surface-tint2);
+        }
+        .surface-tint3 {
+            background-color: var(--hb-sys-color-surface-tint3);
+        }
+        .surface-tint4 {
+            background-color: var(--hb-sys-color-surface-tint4);
+        }
+        .surface-tint5 {
+            background-color: var(--hb-sys-color-surface-tint5);
         }
         ${typeStyles}
         ${colorStyles}

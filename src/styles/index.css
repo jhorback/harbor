@@ -26,6 +26,25 @@ body {
   min-height: 100vh;
 }
 
+/** 
+ * surface tints - need to update this manually
+ * converting the light/dark primary to rgb
+ * see: https://m3.material.io/styles/color/the-color-system/color-roles
+ */
+:root{
+	--hb-sys-color-surface-tint1: rgba(var(--hb-sys-color-primary-rgb), 0.05);
+	--hb-sys-color-surface-tint2: rgba(var(--hb-sys-color-primary-rgb), 0.08);
+	--hb-sys-color-surface-tint3: rgba(var(--hb-sys-color-primary-rgb), 0.11);
+	--hb-sys-color-surface-tint4: rgba(var(--hb-sys-color-primary-rgb), 0.12);
+	--hb-sys-color-surface-tint5: rgba(var(--hb-sys-color-primary-rgb), 0.14);
+}
+.material-theme, .dark-theme {
+	--hb-sys-color-primary-rgb: 167, 200, 255;
+}
+.light-theme {
+	--hb-sys-color-primary-rgb: 35, 95, 166;
+}
+
 
 /* default dark-theme */
 :root {
