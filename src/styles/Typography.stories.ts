@@ -1,6 +1,6 @@
 import { Meta } from '@storybook/web-components';
 import { html } from 'lit-html';
-import { typeStyles } from "../../styles/typeStyles";
+import { typeStyles } from "./typeStyles";
 
 export default {
     title: 'Foundation/Typography',

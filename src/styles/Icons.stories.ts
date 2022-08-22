@@ -1,8 +1,8 @@
 import { Meta } from '@storybook/web-components';
 import { html } from 'lit-html';
-import { typeStyles } from "../../styles/typeStyles";
-import { colorStyles } from "../../styles/colorStyles";
-import { iconStyles } from "../../styles/iconStyles";
+import { typeStyles } from "./typeStyles";
+import { colorStyles } from "./colorStyles";
+import { iconStyles } from "./iconStyles";
 
 
 export default {

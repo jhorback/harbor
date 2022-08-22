@@ -61,6 +61,7 @@ export class AvatarButton extends LitElement {
       border-radius: var(--md-sys-shape-corner-full);
       display: inline-block;
       padding: 4px;
+      transition: 0.4s;
     }
     .avatar:hover {
       background-color: var(--hb-sys-color-surface-tint5);

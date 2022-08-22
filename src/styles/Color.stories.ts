@@ -1,7 +1,7 @@
 import { Story, Meta } from '@storybook/web-components';
 import { html } from 'lit-html';
-import { typeStyles } from "../../styles/typeStyles";
-import { colorStyles } from "../../styles/colorStyles";
+import { typeStyles } from "./typeStyles";
+import { colorStyles } from "./colorStyles";
 
 
 export default {

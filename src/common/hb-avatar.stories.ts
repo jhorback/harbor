@@ -1,6 +1,6 @@
 import { Story, Meta } from '@storybook/web-components';
 import { html } from 'lit-html';
-import { AvatarSize} from "../../common/hb-avatar";
+import { AvatarSize} from "./hb-avatar";
 
 
 

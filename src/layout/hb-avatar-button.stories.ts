@@ -1,6 +1,6 @@
 import { Story, Meta } from '@storybook/web-components';
 import { html } from 'lit-html';
-import "../../layout/hb-avatar-button";
+import "./hb-avatar-button";
 
 
 export default {

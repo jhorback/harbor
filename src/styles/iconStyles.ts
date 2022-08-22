@@ -33,23 +33,31 @@ export const iconStyles = css`
 .icon-button {
   position: relative;
   border-radius: var(--md-sys-shape-corner-full);
+  color: var(--md-sys-color-on-surface-variant);
   cursor: default;
   user-select: none;
   border:1px solid transparent;
+  transition: 0.4s;
 }
-.icon-button:hover::before {
+.icon-button:hover {
+  color: var(--md-sys-color-on-background);
+}
+.icon-button::before {
   content: "";
   position: absolute;
   width: 100%;
   height: 100%;
   top: 0;
   left: 0;
-  background-color: var(--md-sys-color-on-background);
+  transition: 0.4s;
+  background-color: transparent;
   border-radius: var(--md-sys-shape-corner-full);
-  opacity: 0.1;
+}
+.icon-button:hover::before {
+  background-color: var(--hb-sys-color-surface-tint4);
 }
 .icon-button:active::before {
-  opacity: 0.5;
+  background-color: var(--hb-sys-color-surface-tint5);
 }
 .icon-button:active, .icon-button:focus {
   border: 1px solid var(--md-sys-color-on-background);
