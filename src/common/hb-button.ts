@@ -4,8 +4,7 @@ import { typeStyles } from "../styles/typeStyles";
 
 
 /**
- * @class Avatar
- * 
+ * @class Button
  * @fires hb-button-click
  */
 @customElement('hb-button')
