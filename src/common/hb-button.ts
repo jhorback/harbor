@@ -5,6 +5,8 @@ import { typeStyles } from "../styles/typeStyles";
 
 /**
  * @class Avatar
+ * 
+ * @fires hb-button-click
  */
 @customElement('hb-button')
 export class Button extends LitElement {
@@ -27,9 +29,7 @@ export class Button extends LitElement {
     }
     
     handleClick(event:Event) {
-        event.stopImmediatePropagation();
-        event.preventDefault();
-        this.dispatchEvent(new Event("click", {bubbles: true, composed: false}));
+        this.dispatchEvent(new Event("hb-button-click", {bubbles: true, composed: false}));
     }
 
     static styles = [typeStyles, css`
