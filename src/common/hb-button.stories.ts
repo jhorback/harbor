@@ -24,7 +24,7 @@ export default {
     parameters: {
         options: { showPanel: true },
         actions: {
-            handles: ["click"],
+            handles: ["hb-button-click"],
         }
     }
 } as Meta;
