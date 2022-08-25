@@ -6,14 +6,6 @@ import { UserMenu } from "./hb-user-menu";
 
 /**
  * @class PageLayout
- * 
- * // todo:
- *      need to add icons to storybook to show that off
- *      create ticket for hb-current-user-data element to
- *          work with firebase and update the hb-app-bar
- *          and hb-user-menu elements
- *      routing to handle /about, /profile
- * 
  */
 @customElement('hb-page-layout')
 export class PageLayout extends LitElement {
