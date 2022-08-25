@@ -1,6 +1,6 @@
 import { html, css, LitElement } from "lit";
 import { customElement, property } from "lit/decorators.js";
-import { typeStyles } from "../../styles/typeStyles";
+import { styles } from "../../styles";
 
 
 /**
@@ -27,7 +27,7 @@ export class LinkTab extends LitElement {
         `;
     }
 
-    static styles = [typeStyles, css`
+    static styles = [styles.type, css`
         :host {
             display: inline-block;
         }
