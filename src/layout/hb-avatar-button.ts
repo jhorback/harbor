@@ -34,7 +34,7 @@ export class AvatarButton extends LitElement {
   }
 
   private onClick() {
-    this.dispatchEvent(new CustomEvent("hb-avatar-button-click", {bubbles:true}));
+    this.dispatchEvent(new CustomEvent("hb-avatar-button-click", {bubbles:true, composed: true}));
   }
 
   static styles = [iconStyles, css`

@@ -1,7 +1,6 @@
 import { html, css, LitElement } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import "./hb-avatar-button";
-// import { iconStyles } from "../styles/iconStyles";
 
 
 /**
@@ -41,7 +40,6 @@ export class AppBar extends LitElement {
     .app-bar hb-avatar-button {
       margin: 0 1rem;
     }
-
   `]
 }
 
