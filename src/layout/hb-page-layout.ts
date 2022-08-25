@@ -1,7 +1,8 @@
 import { html, css, LitElement } from "lit";
 import { customElement, property, query } from "lit/decorators.js";
-import "./hb-app-bar";
 import { UserMenu } from "./hb-user-menu";
+import "./hb-user-menu";
+import "./hb-app-bar";
 
 
 /**

@@ -88,13 +88,14 @@ export class UserMenu extends LitElement {
 
     static styles = [typeStyles, css`
         :host {
-        }
-        .menu-container {
             display: block;
             position: absolute;
             top: 60px;
             right: 12px;
             width: 350px;
+            background-color: var(--md-sys-color-background);
+        }
+        .menu-container {  
             border-radius: var(--md-sys-shape-corner-extra-large);
             background-color: var(--hb-sys-color-surface-tint3);
         }

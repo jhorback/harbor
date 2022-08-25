@@ -31,7 +31,7 @@ export class TabBar extends LitElement {
             border-bottom: 1px solid var(--md-sys-color-outline);
             display: flex;
             gap: 40px;
-            justify-content: center;
+            justify-content: left; /* could expose this as stylable for "center" */
             padding: 1rem 0;
         }
     `]

@@ -27,7 +27,7 @@ export class LinkTab extends LitElement {
         `;
     }
 
-    static styles = [styles.type, css`
+    static styles = [styles.types, css`
         :host {
             display: inline-block;
         }
