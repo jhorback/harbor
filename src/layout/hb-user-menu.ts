@@ -2,6 +2,7 @@ import { html, css, LitElement } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import { typeStyles } from "../styles/typeStyles";
 import "../common/hb-button";
+import "../common/hb-link-button";
 import { AvatarSize } from "../common/hb-avatar";
 
 
@@ -67,7 +68,7 @@ export class UserMenu extends LitElement {
                 <div class="title-large on-surface-text">${this.state.displayName}</div>
                 <div class="body-large on-surface-text dampen">${this.state.email}</div>
                 <div class="manage-account-button-container">
-                    <hb-button label="Manage Account"></hb-button>
+                    <hb-link-button label="Manage Account" href="/profile"></hb-link-button>
                 </div>
                 <hr>
                 <div>
@@ -75,7 +76,7 @@ export class UserMenu extends LitElement {
                 </div>
                 <hr>
                 <div class="body-large on-surface-text dampen about-container">
-                    <a href="javascript:;">About Harbor ${this.state.appVersion}</a>
+                    <a href="/about">About Harbor ${this.state.appVersion}</a>
                 </div>
             </div>
         `;
@@ -91,8 +92,8 @@ export class UserMenu extends LitElement {
         .menu-container {
             display: block;
             position: absolute;
-            top: 80px;
-            right: 32px;
+            top: 60px;
+            right: 12px;
             width: 350px;
             border-radius: var(--md-sys-shape-corner-extra-large);
             background-color: var(--hb-sys-color-surface-tint3);
@@ -146,7 +147,7 @@ declare global {
 
 const getDocumentListener = (element:UserMenu) => (event:Event) => {
     const path = event.composedPath();
-    if (!pathIsInside(path, "HB-USER-MENU")) {
+    if (!pathIsInside(path, "HB-USER-MENU") && !pathIsInside(path, "HB-AVATAR-BUTTON")) {
         element.open = false;
     } else if (pathIsInside(path, "HB-BUTTON") || pathIsInside(path, "A")) {
         element.open = false;
