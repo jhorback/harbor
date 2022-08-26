@@ -17,18 +17,13 @@ export class LinkButton extends LitElement {
 
     render() {
         return html`
-            <span
-                class="button"
+            <a
+                href=${this.href}
+                class="link label-large"
                 ?disabled=${this.disabled}
             >
-                <a
-                    href=${this.href}
-                    class="link label-large"
-                    ?disabled=${this.disabled}
-                >
-                    ${this.label}
-                </a>
-            </span>
+                ${this.label}
+            </a>
         `;
     }
 
@@ -36,40 +31,34 @@ export class LinkButton extends LitElement {
         :host {
             display: inline-block;
         }
-
-        .button {
+        .link, .link:hover {
             display: inline-block;
             height: 38px;
             padding: 0 1rem;
             border: 1px solid var(--md-sys-color-outline);
             border-radius: var(--md-sys-shape-corner-extra-large);
             background-color: transparent;
-        }
-        .link, .link:hover {
             text-decoration: none;
             color: var(--md-sys-color-primary);
             line-height: 38px;
         }
-
-        .button:hover {
+        .link:hover {
             background-color: var(--hb-sys-color-surface-tint2);
         }
-        .button:focus, .button:active {
+        .link:focus, .link:active {
             outline: none;
             background-color: var(--hb-sys-color-surface-tint4);
         }
-        .button:active {
+        .link:active {
             background-color: var(--hb-sys-color-surface-tint5);
         }
-        .button[disabled],
-        .button[disabled]:hover,
-        .button[disabled]:active,
-        .button[disabled]:focus {
+        .link[disabled],
+        .link[disabled]:hover,
+        .link[disabled]:active,
+        .link[disabled]:focus {
             color: var(--md-sys-color-on-surface);
             background-color: transparent;
             opacity: 0.38;
-        }
-        .button[disabled] .link {
             cursor: default;
         }
     `]

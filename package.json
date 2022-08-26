@@ -15,6 +15,7 @@
     "build-storybook": "build-storybook"
   },
   "dependencies": {
+    "@domx/router": "^0.3.0",
     "@storybook/web-components": "^6.5.10",
     "lit": "2.2.8"
   },
