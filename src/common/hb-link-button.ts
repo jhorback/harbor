@@ -1,6 +1,7 @@
 import { html, css, LitElement } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import { typeStyles } from "../styles/typeStyles";
+import { ifDefined } from 'lit/directives/if-defined.js';
 
 
 /**
@@ -15,12 +16,15 @@ export class LinkButton extends LitElement {
 
     @property({type: Boolean}) disabled = false;
 
+    @property({type: String}) target = "";
+
     render() {
         return html`
             <a
                 href=${this.href}
                 class="link label-large"
                 ?disabled=${this.disabled}
+                target=${ifDefined(this.target)}
             >
                 ${this.label}
             </a>

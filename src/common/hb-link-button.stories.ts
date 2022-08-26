@@ -36,14 +36,16 @@ export interface LinkButtonProps {
     href: string;
     label: string;
     disabled: boolean;
+    target?: string;
 }
 
 
-const LinkButtonTemplate = ({label, disabled, href}: LinkButtonProps) => html`
+const LinkButtonTemplate = ({label, disabled, href, target}: LinkButtonProps) => html`
     <hb-link-button
         ?disabled=${disabled}
         label=${label}
         href=${href}
+        target=${target}
     ></hb-link-button>
 `;
 
@@ -54,5 +56,6 @@ export const LinkButton = Template.bind({});
 LinkButton.args = {
    label: "Button Text",
    href: "https://www.google.com",
-   disabled: false
+   disabled: false,
+   target: ""
 };

@@ -29,8 +29,6 @@ const ProfilePageTemplate = ({}: ProfilePageProps) => html`
 <hb-profile-page></hb-profile-page>
 `;
 
-const onClick = (btnName:string) => () => alert("Clicked " + btnName);
-
 
 const Template: Story<Partial<ProfilePageProps>> = (args:ProfilePageProps) => ProfilePageTemplate(args);
 

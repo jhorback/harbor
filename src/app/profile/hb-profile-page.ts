@@ -14,7 +14,6 @@ import "./hb-profile-admin-tab";
 
 /**
  * @class ProfilePage
- * // todo select tab on link click (or do this in the tab bar!)
  */
 @customElement('hb-profile-page')
 export class ProfilePage extends LitElement {
