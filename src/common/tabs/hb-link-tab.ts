@@ -15,10 +15,15 @@ export class LinkTab extends LitElement {
 
     @property({type: Boolean}) selected = false;
 
+    /**
+     * The replace-state attribute on the link is for routing.
+     * This is used by the domx router.
+     */
     render() {
         return html`
             <a
                 href=${this.href}
+                replace-state
                 class="link title-medium"
                 ?selected=${this.selected}
             >

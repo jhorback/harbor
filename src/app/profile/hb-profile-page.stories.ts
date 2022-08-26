@@ -1,6 +1,12 @@
+import { start } from '@storybook/core-client';
 import { Story, Meta } from '@storybook/web-components';
 import { html } from 'lit-html';
 import "./hb-profile-page";
+import { sbRouteHelper } from "../../testUtils/sbRouteHelper";
+
+
+
+sbRouteHelper({startPath: "/profile"});
 
 
 export default {
@@ -32,3 +38,7 @@ const Template: Story<Partial<ProfilePageProps>> = (args:ProfilePageProps) => Pr
 export const ProfilePage = Template.bind({});
 ProfilePage.args = {
 };
+
+
+
+

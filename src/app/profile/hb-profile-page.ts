@@ -1,17 +1,26 @@
 import { html, css, LitElement } from "lit";
-import { customElement, property } from "lit/decorators.js";
-import { AvatarSize } from "../common/hb-avatar";
-import "../layout/hb-page-layout";
-import "../common/tabs/hb-link-tab";
-import "../common/tabs/hb-tab-bar";
-import { styles } from "../styles";
+import { customElement, property, state } from "lit/decorators.js";
+import { AvatarSize } from "../../common/hb-avatar";
+import { styles } from "../../styles";
+import "../../layout/hb-page-layout";
+import "../../common/tabs/hb-link-tab";
+import "../../common/tabs/hb-tab-bar";
+import "@domx/router/domx-route";
+import "./hb-profile-docs-tab";
+import "./hb-profile-content-tab";
+import "./hb-profile-users-tab";
+import "./hb-profile-admin-tab";
 
 
 /**
  * @class ProfilePage
+ * // todo select tab on link click (or do this in the tab bar!)
  */
 @customElement('hb-profile-page')
 export class ProfilePage extends LitElement {
+
+    @state()
+    selectedTab = "documents-tab";
 
     render() {
         return html`
@@ -24,7 +33,7 @@ export class ProfilePage extends LitElement {
                 <div class="body-large">jhorback@gmail.com</div>
             </div>
         </div>
-        <hb-tab-bar selected-tab="documents-tab">
+        <hb-tab-bar selected-tab=${this.selectedTab}>
             <hb-link-tab
                 id="documents-tab"
                 label="Documents"
@@ -46,28 +55,39 @@ export class ProfilePage extends LitElement {
                 href="/profile/admin">
             </hb-link-tab>
         </hb-tab-bar>
-        <div class="tab-content-container">
-            <p>Content Here</p>
-            <p>Content Here</p>
-            <p>Content Here</p>
-            <p>Content Here</p>
-            <p>Content Here</p>
-            <p>Content Here</p>
-            <p>Content Here</p>
-            <p>Content Here</p>
-            <p>Content Here</p>
-            <p>Content Here</p>
-            <p>Content Here</p>
-            <p>Content Here</p>
-            <p>Content Here</p>
-            <p>Content Here</p>
-            <p>Content Here</p>
-            <p>Content Here</p>
-            <p>Content Here</p>
+        <domx-route
+            pattern="/profile(/docs)"
+            element="hb-profile-docs-tab"
+            append-to="#tab-content-container"
+            @route-active=${() => this.selectTab("documents-tab")}
+        ></domx-route>
+        <domx-route
+            pattern="/profile/content"
+            element="hb-profile-content-tab"
+            append-to="#tab-content-container"
+            @route-active=${() => this.selectTab("content-tab")}
+        ></domx-route>
+        <domx-route
+            pattern="/profile/users"
+            element="hb-profile-users-tab"
+            append-to="#tab-content-container"
+            @route-active=${() => this.selectTab("users-tab")}
+        ></domx-route>
+        <domx-route
+            pattern="/profile/admin"
+            element="hb-profile-admin-tab"
+            append-to="#tab-content-container"
+            @route-active=${() => this.selectTab("admin-tab")}
+        ></domx-route>
+        <div id="tab-content-container">
         </div>
     </div>
 </hb-page-layout>
         `;
+    }
+
+    private selectTab(tab:string) {
+        this.selectedTab = tab;
     }
 
     static styles = [styles.types, css`
@@ -84,7 +104,7 @@ export class ProfilePage extends LitElement {
             gap: 20px;
             margin-bottom: 1rem;
         }
-        .tab-content-container {
+        #tab-content-container {
             padding: 1rem;
         }
     `]
