@@ -17,21 +17,21 @@
     "test": "tsc"
   },
   "dependencies": {
-    "@domx/router": "^0.3.0",
-    "@storybook/web-components": "^6.5.10",
+    "@domx/router": "0.3.0",
+    "@storybook/web-components": "6.5.10",
     "lit": "2.3.1"
   },
   "devDependencies": {
     "@babel/core": "7.18.13",
-    "@storybook/addon-actions": "^6.5.10",
-    "@storybook/addon-essentials": "^6.5.10",
-    "@storybook/addon-links": "^6.5.10",
-    "@storybook/addons": "^6.5.10",
-    "@storybook/builder-vite": "^0.2.2",
-    "@storybook/theming": "^6.5.10",
-    "babel-loader": "^8.2.5",
+    "@storybook/addon-actions": "6.5.10",
+    "@storybook/addon-essentials": "6.5.10",
+    "@storybook/addon-links": "6.5.10",
+    "@storybook/addons": "6.5.10",
+    "@storybook/builder-vite": "0.2.2",
+    "@storybook/theming": "6.5.10",
+    "babel-loader": "8.2.5",
     "lit-html": "2.3.1",
-    "storybook-addon-themes": "^6.1.0",
+    "storybook-addon-themes": "6.1.0",
     "typescript": "4.8.2",
     "vite": "3.0.9"
   }
