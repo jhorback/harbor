@@ -1,14 +1,10 @@
-import { Story, Meta } from '@storybook/web-components';
 import { html } from 'lit-html';
-import { TabBar as HbTabBar } from "./hb-tab-bar";
 import "./hb-tab-bar";
 import "./hb-link-tab";
-
-
 export default {
     title: 'Common/Tab Bar',
     component: "hb-tab-bar",
-    argTypes: {     
+    argTypes: {
         selected: {
             control: { type: 'select' },
             options: [
@@ -22,15 +18,8 @@ export default {
     parameters: {
         options: { showPanel: true }
     }
-} as Meta;
-
-
-export interface LinkTabProps {
-    selected: String;
-}
-
-
-const LinkTabTemplate = ({selected}: LinkTabProps) => html`
+};
+const LinkTabTemplate = ({ selected }) => html `
     <hb-tab-bar
         selected-tab=${selected}
     >
@@ -39,18 +28,14 @@ const LinkTabTemplate = ({selected}: LinkTabProps) => html`
         <hb-link-tab id="tab-3" label="Tab 3" href="javascript:;" @click=${updateTab("tab-3")}></hb-link-tab>
     </hb-tab-bar>
 `;
-
-const updateTab = (id:string) => (e:Event) => {
-    const tab = e.target as HTMLElement;
-    const tabBar = tab.parentElement as HbTabBar;
+const updateTab = (id) => (e) => {
+    const tab = e.target;
+    const tabBar = tab.parentElement;
     tabBar.selectedTab = tab.id;
 };
-
 // @ts-ignore 
-const Template: Story<Partial<LinkTabProps>> = (args:LinkTabProps) => LinkTabTemplate(args);
-
-
+const Template = (args) => LinkTabTemplate(args);
 export const TabBar = Template.bind({});
 TabBar.args = {
-   selected: "tab-1"
+    selected: "tab-1"
 };

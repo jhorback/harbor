@@ -24,6 +24,7 @@ const AboutPageTemplate = ({}: AboutPageProps) => html`
 <hb-about-page></hb-about-page>
 `;
 
+// @ts-ignore 
 const Template: Story<Partial<AboutPageProps>> = (args:AboutPageProps) => AboutPageTemplate(args);
 
 

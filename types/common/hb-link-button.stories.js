@@ -1,13 +1,9 @@
-import { Story, Meta } from '@storybook/web-components';
 import { html } from 'lit-html';
 import "./hb-link-button";
-
-
-
 export default {
     title: 'Common/Link Button',
     component: "hb-link-button",
-    argTypes: {     
+    argTypes: {
         label: {
             control: { type: 'text' },
             description: "The button label"
@@ -17,7 +13,7 @@ export default {
             description: "The url for the link"
         },
         disabled: {
-            control: { type: "boolean"},
+            control: { type: "boolean" },
             description: "Disables the button if true",
             defaultValue: false,
             table: {
@@ -29,18 +25,8 @@ export default {
     parameters: {
         options: { showPanel: true }
     }
-} as Meta;
-
-
-export interface LinkButtonProps {
-    href: string;
-    label: string;
-    disabled: boolean;
-    target?: string;
-}
-
-
-const LinkButtonTemplate = ({label, disabled, href, target}: LinkButtonProps) => html`
+};
+const LinkButtonTemplate = ({ label, disabled, href, target }) => html `
     <hb-link-button
         ?disabled=${disabled}
         label=${label}
@@ -48,15 +34,12 @@ const LinkButtonTemplate = ({label, disabled, href, target}: LinkButtonProps) =>
         target=${target}
     ></hb-link-button>
 `;
-
 // @ts-ignore 
-const Template: Story<Partial<LinkButtonProps>> = (args:LinkButtonProps) => LinkButtonTemplate(args);
-
-
+const Template = (args) => LinkButtonTemplate(args);
 export const LinkButton = Template.bind({});
 LinkButton.args = {
-   label: "Button Text",
-   href: "https://www.google.com",
-   disabled: false,
-   target: ""
+    label: "Button Text",
+    href: "https://www.google.com",
+    disabled: false,
+    target: ""
 };

@@ -9,8 +9,8 @@
     "paths": {
       "*": [ "./src/@types/*"]
     },
-    "declaration": true,
-    "emitDeclarationOnly": true,
+    "declaration": false,
+    "emitDeclarationOnly": false,
     "noUnusedLocals": false,
     "noUnusedParameters": false,
     "noImplicitReturns": true,
