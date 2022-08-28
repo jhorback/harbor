@@ -53,6 +53,7 @@ const AvatarTemplate = ({href, onClick}: AvatarProps) => html`
     ></hb-avatar-button>
 `;
 
+// @ts-ignore 
 const Template: Story<Partial<AvatarProps>> = (args:AvatarProps) => AvatarTemplate(args);
 
 

@@ -39,6 +39,7 @@ ${iconStyles}
 </style>
 `;
 
+// @ts-ignore 
 const Template: Story<Partial<AppBarProps>> = (args:AppBarProps) => AppBarTemplate(args);
 
 

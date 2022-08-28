@@ -42,7 +42,7 @@ const AvatarTemplate = ({href, size}: AvatarProps) => html`
         size=${size}
     ></hb-avatar>
 `;
-
+// @ts-ignore 
 const Template: Story<Partial<AvatarProps>> = (args:AvatarProps) => AvatarTemplate(args);
 
 

@@ -8,11 +8,13 @@
     "types"
   ],
   "scripts": {
-    "dev": "vite",
+    "dev": "vite serve",
     "build": "tsc && vite build",
+    "build:force": "vite build",
     "preview": "vite preview",
     "storybook": "start-storybook -p 6007",
-    "build-storybook": "build-storybook"
+    "build-storybook": "build-storybook",
+    "test": "tsc"
   },
   "dependencies": {
     "@domx/router": "^0.3.0",

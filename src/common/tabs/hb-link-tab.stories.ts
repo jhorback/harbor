@@ -46,6 +46,7 @@ const LinkTabTemplate = ({label, selected, href}: LinkTabProps) => html`
     ></hb-link-tab>
 `;
 
+// @ts-ignore 
 const Template: Story<Partial<LinkTabProps>> = (args:LinkTabProps) => LinkTabTemplate(args);
 
 

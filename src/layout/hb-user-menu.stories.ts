@@ -38,6 +38,7 @@ const UserMenuTemplate = ({state, open}: UserMenuProps) => html`
 <hb-user-menu .state=${state} ?open=${open}></hb-user-menu>
 `;
 
+// @ts-ignore 
 const Template: Story<Partial<UserMenuProps>> = (args:UserMenuProps) => UserMenuTemplate(args);
 
 

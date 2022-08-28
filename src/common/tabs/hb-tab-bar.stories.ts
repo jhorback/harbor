@@ -46,6 +46,7 @@ const updateTab = (id:string) => (e:Event) => {
     tabBar.selectedTab = tab.id;
 };
 
+// @ts-ignore 
 const Template: Story<Partial<LinkTabProps>> = (args:LinkTabProps) => LinkTabTemplate(args);
 
 

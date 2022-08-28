@@ -49,6 +49,7 @@ const LinkButtonTemplate = ({label, disabled, href, target}: LinkButtonProps) =>
     ></hb-link-button>
 `;
 
+// @ts-ignore 
 const Template: Story<Partial<LinkButtonProps>> = (args:LinkButtonProps) => LinkButtonTemplate(args);
 
 

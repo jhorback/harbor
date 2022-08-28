@@ -43,6 +43,7 @@ const ButtonTemplate = ({label, disabled}: ButtonProps) => html`
     ></hb-avatar>
 `;
 
+// @ts-ignore 
 const Template: Story<Partial<ButtonProps>> = (args:ButtonProps) => ButtonTemplate(args);
 
 
