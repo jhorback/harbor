@@ -4,14 +4,12 @@
 name: Build & Test CI
 
 on:
-  push:
-    branches: [ "develop" ]
   pull_request:
-    branches: [ "develop" ]
+    branches:
+      - 'develop'
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     strategy:
