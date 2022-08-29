@@ -10,7 +10,6 @@ on:
 
 jobs:
   build:
-    if: '${{ !contains( github.event.pull_request.labels.*.name, 'preview') }}'
     runs-on: ubuntu-latest
 
     strategy:
