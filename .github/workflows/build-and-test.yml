@@ -4,14 +4,13 @@
 name: Build & Test CI
 
 on:
-  push:
-    branches: [ "develop" ]
   pull_request:
-    branches: [ "develop" ]
+    branches:
+      - 'develop'
 
 jobs:
   build:
-
+    if: '${{ !contains( github.event.pull_request.labels.*.name, 'preview') }}'
     runs-on: ubuntu-latest
 
     strategy:
