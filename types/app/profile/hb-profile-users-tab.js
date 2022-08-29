@@ -32,12 +32,12 @@ let ProfileUsersTab = class ProfileUsersTab extends LitElement {
             <p>Users Tab</p>
         `;
     }
-};
-ProfileUsersTab.styles = [styles.types, css `
+    static { this.styles = [styles.types, css `
         :host {
             display: block;
         }
-    `];
+    `]; }
+};
 ProfileUsersTab = __decorate([
     customElement('hb-profile-users-tab')
 ], ProfileUsersTab);

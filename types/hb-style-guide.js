@@ -53,10 +53,9 @@ let StyleGuide = class StyleGuide extends LitElement {
       <div class="body-small">Body Small</div>
     `;
     }
-};
-StyleGuide.styles = [
-    typeStyles,
-    css `
+    static { this.styles = [
+        typeStyles,
+        css `
     .swatch-container {
         max-width: 750px;
         margin: auto;
@@ -130,7 +129,8 @@ StyleGuide.styles = [
     }
 
   `
-];
+    ]; }
+};
 StyleGuide = __decorate([
     customElement('hb-style-guide')
 ], StyleGuide);

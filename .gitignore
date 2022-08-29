@@ -6,6 +6,8 @@ npm-debug.log*
 node_modules
 dist
 *.local
+.firebase
+
 
 # Editor directories and files
 .vscode/*
@@ -17,3 +19,4 @@ dist
 *.njsproj
 *.sln
 *.sw?
+

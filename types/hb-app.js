@@ -37,8 +37,7 @@ let HarborApp = class HarborApp extends LitElement {
       <hb-style-guide></hb-style-guide>
     `;
     }
-};
-HarborApp.styles = [typeStyles, iconStyles, css `
+    static { this.styles = [typeStyles, iconStyles, css `
     :host {
       max-width: 1280px;
       margin: 0 auto;
@@ -50,7 +49,8 @@ HarborApp.styles = [typeStyles, iconStyles, css `
     }
 
 
-  `];
+  `]; }
+};
 __decorate([
     property()
 ], HarborApp.prototype, "docsHint", void 0);

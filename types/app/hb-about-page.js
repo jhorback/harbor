@@ -58,8 +58,7 @@ let AboutPage = class AboutPage extends LitElement {
 </hb-page-layout>
         `;
     }
-};
-AboutPage.styles = [styles.types, styles.colors, css `
+    static { this.styles = [styles.types, styles.colors, css `
         :host {
             display: block;
         }
@@ -84,7 +83,8 @@ AboutPage.styles = [styles.types, styles.colors, css `
             justify-content: left;
             padding: 1rem 0;
         }
-    `];
+    `]; }
+};
 AboutPage = __decorate([
     customElement('hb-about-page')
 ], AboutPage);
