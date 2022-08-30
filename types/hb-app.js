@@ -5,12 +5,18 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 import { html, css, LitElement } from "lit";
-import { customElement, property } from "lit/decorators.js";
-import { typeStyles, typeStylesDisplayLarge } from "./styles/typeStyles";
-import { iconStyles } from "./styles/iconStyles";
-import "./common/hb-avatar";
-import "./hb-style-guide";
-// import litLogo from "./assets/lit.svg"
+import { customElement } from "lit/decorators.js";
+import { styles } from "./styles";
+import "./layout/hb-page-layout";
+// testing
+import { FbApp } from "./domain/FbApp";
+import { GoogleAnalytics } from "./domain/GoogleAnalytics";
+import { signin } from "./domain/GoogleAuth";
+// init
+FbApp.current;
+GoogleAnalytics.current;
+console.log(FbApp.current, GoogleAnalytics.current);
+signin();
 /**
  * An example element.
  *
@@ -18,45 +24,26 @@ import "./hb-style-guide";
  * @csspart button - The button
  */
 let HarborApp = class HarborApp extends LitElement {
-    constructor() {
-        super(...arguments);
-        /**
-         * Copy for the read the docs hint.
-         */
-        this.docsHint = 'Click on the Vite and Lit logos to learn more';
-        /**
-         * The number of times the button has been clicked.
-         */
-        this.count = 0;
-    }
     render() {
         return html `      
-      <slot></slot>
-      <span class="material-symbols-outlined">settings</span>
-      <hb-avatar href="content/avatars/user1.png"></hb-avatar>
-      <hb-style-guide></hb-style-guide>
+      <hb-page-layout>
+        <div class="content">
+          <h1>HB-APP</h1>
+        </div>
+      </hb-page-layout>
     `;
     }
-    static { this.styles = [typeStyles, iconStyles, css `
+    static { this.styles = [styles.types, styles.icons, css `
     :host {
-      max-width: 1280px;
-      margin: 0 auto;
-      padding: 2rem;
-      text-align: center;
+      display: block;
     }
-    ::slotted(h1) {
-      ${typeStylesDisplayLarge}
+    .content {
+      max-width: 750px;
+      margin: auto;
+      padding: 1rem;
     }
-
-
   `]; }
 };
-__decorate([
-    property()
-], HarborApp.prototype, "docsHint", void 0);
-__decorate([
-    property({ type: Number })
-], HarborApp.prototype, "count", void 0);
 HarborApp = __decorate([
     customElement('hb-app')
 ], HarborApp);
