@@ -16,8 +16,7 @@
     "storybook": "start-storybook -p 6007",
     "build-storybook": "build-storybook",
     "test": "tsc",
-    "deploy": "tsc && vite build && firebase deploy",
-    "deploy:push": "firebase deploy"
+    "deploy": "tsc && vite build && firebase deploy"
   },
   "dependencies": {
     "@domx/router": "0.3.0",

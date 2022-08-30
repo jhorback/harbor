@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
+- Integrated firebase
 - Profile page, About page
 - Built common components: tabs, buttons, app bar, user menu, page layout
 - Initialized Project, storybook renovate.

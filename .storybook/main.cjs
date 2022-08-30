@@ -15,5 +15,5 @@ module.exports = {
   "features": {
     "storyStoreV7": true
   },
-  "staticDirs": ['../src/stories/public']
+  "staticDirs": ['../public']
 }
