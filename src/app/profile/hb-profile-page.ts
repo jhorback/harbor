@@ -24,7 +24,7 @@ export class ProfilePage extends LitElement {
     render() {
         return html`
 <hb-page-layout>
-    <div class="page-container">
+    <div class="page-container-large">
         <div class="header">
             <hb-avatar size=${AvatarSize.large} href="content/avatars/user1.png"></hb-avatar>
             <div>
@@ -89,14 +89,9 @@ export class ProfilePage extends LitElement {
         this.selectedTab = tab;
     }
 
-    static styles = [styles.types, css`
+    static styles = [styles.types, styles.page, css`
         :host {
             display: block;
-        }
-        .page-container {            
-            max-width: 840px;
-            margin: auto;
-            padding: 1rem;
         }
         .header {
             display: flex;
