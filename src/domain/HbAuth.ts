@@ -1,5 +1,5 @@
 import { IUserAuth, IUserAuthKey, IUserData } from "./interfaces/UserInterfaces";
-import dc from "./DependencyContainer";
+import { provides } from "./DependencyContainer/decorators";
 import {FbApp} from "./FbApp";
 import {
     getAuth,
@@ -9,11 +9,7 @@ import {
 
 
 
-
-
-
-// todo: create a decorator
-// @dependency<T>(symbol)
+@provides<IUserAuth>(IUserAuthKey)
 class HbAuth implements IUserAuth {
 
     private provider:GoogleAuthProvider;
@@ -27,10 +23,6 @@ class HbAuth implements IUserAuth {
 
     connect(): void {
         console.log("CONNECTING FROM HbAuth")
-;        // set up listener then dispatch event
+;        // todo: set up listener then dispatch event
     }
 }
-dc.register<IUserAuth>(IUserAuthKey, HbAuth);
-
-
-

@@ -5,10 +5,6 @@ import "./hb-user-menu";
 import "../domain/mock";
 
 
-// todo: here get this to work in storybook - then consider cleaning up, checking in, and determine next steps
-// Can remove the unauthenticated stories or interface with the mock data for showing the options there? 
-
-
 export default {
     title: 'Layout/User Menu',
     component: "hb-user-menu",
@@ -46,19 +42,13 @@ const UserMenuTemplate = ({state, open}: UserMenuProps) => html`
 const Template: Story<Partial<UserMenuProps>> = (args:UserMenuProps) => UserMenuTemplate(args);
 
 
-export const Authenticated = Template.bind({});
-Authenticated.args = {
+export const UserMenu = Template.bind({});
+UserMenu.args = {
     state: {
         displayName: "John Horback",
         email: "jhorback@gmail.com",
         photoURL: "content/avatars/user1.png",
         appVersion: "v0.1.0"
     },
-    open: true
-};
-
-export const Unauthenticated = Template.bind({});
-Unauthenticated.args = {
-    state: {},
     open: true
 };

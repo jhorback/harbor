@@ -1,6 +1,6 @@
 
 
-interface Type<T> extends Function { new (...args: any[]): T; }
+export interface Type<T> extends Function { new (...args: any[]): T; }
 
 
 interface DependencyContainerItem<T> {
@@ -34,7 +34,7 @@ class DependencyContainer {
      */
     get<T>(key: symbol):T {
         const item = this.container[key];
-        if (item === null) {
+        if (item === undefined) {
             throw new Error(`[DependencyContainer] Item not registered: ${key.description}`);
         }
 
@@ -51,9 +51,5 @@ class DependencyContainer {
 }
 
 
-const dc = new DependencyContainer();
-export default dc;
-
-
-
-
+export const dependencyContainer = new DependencyContainer();
+export default dependencyContainer;

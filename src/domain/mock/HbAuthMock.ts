@@ -1,10 +1,10 @@
 import { IUserAuth, IUserAuthKey, IUserData } from "../interfaces/UserInterfaces";
-import dc from "../DependencyContainer";
+import {provides} from "../DependencyContainer/decorators";
 
 
 
 
-// todo: use the decorator
+@provides<IUserAuth>(IUserAuthKey)
 class HbAutMock implements IUserAuth {
 
     constructor() {
@@ -12,11 +12,11 @@ class HbAutMock implements IUserAuth {
     }
 
     connect(): void {
-        console.log("CONNECTING FROM HbAuth Mock")
-;        // set up listener then dispatch event
-    }
+        console.log("CONNECTING FROM HbAuth Mock");
+        // set up listener then dispatch event
+        // todo: fill out hbauthmock
+  }
 }
-dc.register<IUserAuth>(IUserAuthKey, HbAutMock);
 
 
 

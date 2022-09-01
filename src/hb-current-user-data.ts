@@ -3,7 +3,7 @@ import { customDataElement, dataProperty, event } from "@domx/dataelement/decora
 import "./domain/HbAuth";
 import { IUserData, IHbAppInfo, IUserAuth, IUserAuthKey } from "./domain/interfaces/UserInterfaces";
 import { HbApp } from "./domain/HbApp";
-import dc from "./domain/DependencyContainer";
+import { inject } from "./domain/DependencyContainer/decorators";
 
 
 
@@ -30,11 +30,11 @@ export class CurrentUserData extends DataElement {
     @dataProperty({changeEvent: "hb-app-info-changed"})
     hbAppInfo:IHbAppInfo = CurrentUserData.defaultHbAppInfo;
 
-    private userAuth:IUserAuth;
+    @inject<IUserAuth>(IUserAuthKey)
+    private userAuth!:IUserAuth;
 
     constructor() {
         super();
-        this.userAuth = dc.get<IUserAuth>(IUserAuthKey);
         this.userAuth.connect();
     }
 
