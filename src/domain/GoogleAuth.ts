@@ -6,8 +6,11 @@ import {
     signOut,
     onAuthStateChanged
 } from "firebase/auth";
+import {FbApp} from "./FbApp";
+
 
 /**
+ * // todo: remove GoogleAuth after HbAuth is finished
  * Reference:
  * https://firebase.google.com/docs/auth/web/google-signin?authuser=0&hl=en
  */
@@ -19,7 +22,7 @@ import {
 export const signin = () => {
     
     const provider = new GoogleAuthProvider();
-    const auth = getAuth();
+    const auth = getAuth(FbApp.current);
     console.log("AUTH BEFORE SIGNUP", auth);
     if (auth.currentUser !== null) {
         console.log(auth.currentUser.email);

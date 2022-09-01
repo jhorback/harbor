@@ -1,10 +1,13 @@
 import { html, css, LitElement } from "lit";
 import { customElement } from "lit/decorators.js";
+import { HbApp } from "./domain/HbApp";
 import "@domx/router/domx-route";
 import "./app/hb-home";
 import "./app/profile/hb-profile-page";
 import "./app/hb-about-page";
 
+
+HbApp.init();
 
 /**
  * 

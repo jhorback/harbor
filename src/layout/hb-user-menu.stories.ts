@@ -2,7 +2,11 @@ import { Story, Meta } from '@storybook/web-components';
 import { html } from "lit";
 import { UserMenuData } from "./hb-user-menu";
 import "./hb-user-menu";
+import "../domain/mock";
 
+
+// todo: here get this to work in storybook - then consider cleaning up, checking in, and determine next steps
+// Can remove the unauthenticated stories or interface with the mock data for showing the options there? 
 
 
 export default {
