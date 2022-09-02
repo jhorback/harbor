@@ -104,7 +104,7 @@ export class UserMenu extends LitElement {
     }
 
     handleSignOutClick() {
-        this.dispatchEvent(new CustomEvent("sign-out", { bubbles: true}));
+        this.dispatchEvent(CurrentUserData.signOutEvent());
     }
 
     static styles = [typeStyles, css`

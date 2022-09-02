@@ -11,6 +11,7 @@ import "./domain/HbAuth";
 })
 export class CurrentUserData extends DataElement {
     static defaultCurrentUser:IUserData = {
+        isAuthenticated: false,
         uid: "",
         displayName: "",        
         permissions: {
@@ -22,6 +23,9 @@ export class CurrentUserData extends DataElement {
     static defaultHbAppInfo:IHbAppInfo = {
         version: "v0.0.0"
     };
+
+    static signOutEvent = () =>
+        new Event("sign-out", { bubbles: true, composed: true});
 
     @dataProperty({changeEvent: "current-user-changed"})
     currentUser:IUserData = CurrentUserData.defaultCurrentUser;
@@ -50,10 +54,22 @@ export class CurrentUserData extends DataElement {
             .next(setCurrentUserData(event.detail))
             .dispatch();
     }
+
+    @event("sign-out")
+    private async signOut(event:Event) {
+        alert("signOut called");
+        try{
+            await this.userAuth.signOut();
+        } catch (e:any) {
+            // feedback
+            alert(e.message);
+        }
+    }
 }
 
 
 const setCurrentUserData = (userData:IUserData) => (state:IUserData) => {
+    state.isAuthenticated = userData.isAuthenticated;
     state.email = userData.email;
     state.permissions = userData.permissions;
     state.photoURL = userData.photoURL;

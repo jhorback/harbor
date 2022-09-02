@@ -1,39 +1,27 @@
-import { IUserAuth, IUserAuthKey, IUserData } from "./interfaces/UserInterfaces";
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+import { IUserAuthKey } from "./interfaces/UserInterfaces";
 import { provides } from "./DependencyContainer/decorators";
-import {FbApp} from "./FbApp";
-import {
-    getAuth,
-    GoogleAuthProvider,
-    Auth,
-    onAuthStateChanged,
-    signOut
-} from "firebase/auth";
-
-
-@provides<IUserAuth>(IUserAuthKey)
-class HbAuth implements IUserAuth {
-
-    provider:GoogleAuthProvider;
-
-    auth:Auth;
-
-    connected:Boolean = false;
-
+import { FbApp } from "./FbApp";
+import { getAuth, GoogleAuthProvider, onAuthStateChanged, signOut } from "firebase/auth";
+let HbAuth = class HbAuth {
     constructor() {
+        this.connected = false;
         this.provider = new GoogleAuthProvider();
         this.auth = getAuth(FbApp.current);
     }
-
-    connect(): void {
+    connect() {
         if (this.connected) {
             return;
         }
-
         setupAuthListener(this);
-        this.connected = true; 
+        this.connected = true;
     }
-
-    async signOut():Promise<void> {
+    async signOut() {
         return new Promise((resolve, reject) => {
             signOut(this.auth).then(() => {
                 resolve();
@@ -42,21 +30,18 @@ class HbAuth implements IUserAuth {
             });
         });
     }
-}
-
-
-
-const setupAuthListener = (hbAuth:HbAuth) => {
-
+};
+HbAuth = __decorate([
+    provides(IUserAuthKey)
+], HbAuth);
+const setupAuthListener = (hbAuth) => {
     onAuthStateChanged(hbAuth.auth, (user) => {
-        
         // harbor #10
         // dispatch event first then
         // need to load user from the database and
         // insert if not there
         // need to set firstLogin, lastLogin, and permissions
-
-        const userData:IUserData = user ? {
+        const userData = user ? {
             isAuthenticated: true,
             uid: user.uid,
             displayName: user.displayName,
@@ -76,20 +61,11 @@ const setupAuthListener = (hbAuth:HbAuth) => {
                 isSysAdmin: false
             }
         };
-
-        dispatchCurrentUserChangedEvent(userData);    
+        dispatchCurrentUserChangedEvent(userData);
     });
 };
-
-
-const dispatchCurrentUserChangedEvent = (detail:IUserData) =>
-    window.dispatchEvent(new CustomEvent("hb-current-user-changed", { detail }));
-
-
-
+const dispatchCurrentUserChangedEvent = (detail) => window.dispatchEvent(new CustomEvent("hb-current-user-changed", { detail }));
 /// TEST CODE
-
-
 // import {
 //     getAuth,
 //     signInWithPopup,
@@ -99,20 +75,15 @@ const dispatchCurrentUserChangedEvent = (detail:IUserData) =>
 //     onAuthStateChanged
 // } from "firebase/auth";
 // import {FbApp} from "./FbApp";
-
-
 /**
  * // todo: remove GoogleAuth after HbAuth is finished
  * Reference:
  * https://firebase.google.com/docs/auth/web/google-signin?authuser=0&hl=en
  */
-
-
 /**
- * 
+ *
  */
 export const signin = () => {
-    
     const provider = new GoogleAuthProvider();
     const auth = getAuth(FbApp.current);
     console.log("AUTH BEFORE SIGNUP", auth);
@@ -121,10 +92,6 @@ export const signin = () => {
         console.log("RETURNING");
         return;
     }
-
-   
-
-   
     // signInWithRedirect(auth, provider);
     /*
     getRedirectResult(auth)
@@ -146,7 +113,6 @@ export const signin = () => {
             // ...
         });
         */
-
     // signInWithPopup(auth, provider)
     //     .then((result) => {
     //         // This gives you a Google Access Token. You can use it to access the Google API.

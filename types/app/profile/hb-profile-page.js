@@ -27,7 +27,7 @@ let ProfilePage = class ProfilePage extends LitElement {
     render() {
         return html `
 <hb-page-layout>
-    <div class="page-container">
+    <div class="page-container-large">
         <div class="header">
             <hb-avatar size=${AvatarSize.large} href="content/avatars/user1.png"></hb-avatar>
             <div>
@@ -90,14 +90,10 @@ let ProfilePage = class ProfilePage extends LitElement {
     selectTab(tab) {
         this.selectedTab = tab;
     }
-    static { this.styles = [styles.types, css `
+};
+ProfilePage.styles = [styles.types, styles.page, css `
         :host {
             display: block;
-        }
-        .page-container {            
-            max-width: 840px;
-            margin: auto;
-            padding: 1rem;
         }
         .header {
             display: flex;
@@ -107,8 +103,7 @@ let ProfilePage = class ProfilePage extends LitElement {
         #tab-content-container {
             padding: 1rem;
         }
-    `]; }
-};
+    `];
 __decorate([
     state()
 ], ProfilePage.prototype, "selectedTab", void 0);

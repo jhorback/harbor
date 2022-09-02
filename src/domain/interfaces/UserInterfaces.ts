@@ -16,10 +16,12 @@ export const IUserAuthKey:symbol = Symbol("USER_AUTH");
 
 export interface IUserAuth {
     connect(): void;
+    signOut(): Promise<void>;
 }
 
 
 export interface IUserData {
+    isAuthenticated: boolean;
     uid: string;
     displayName: string|null;
     email?: string|null;

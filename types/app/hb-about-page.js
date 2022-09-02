@@ -16,7 +16,7 @@ let AboutPage = class AboutPage extends LitElement {
     render() {
         return html `
 <hb-page-layout>
-    <div class="page-container">        
+    <div class="page-container-small">        
         <div class="headline-large">About Harbor v0.1.0</div>
         <!-- <hr> -->
         <div class="body-large text-content">
@@ -58,14 +58,13 @@ let AboutPage = class AboutPage extends LitElement {
 </hb-page-layout>
         `;
     }
-    static { this.styles = [styles.types, styles.colors, css `
+};
+AboutPage.styles = [styles.types, styles.colors, styles.page, css `
         :host {
             display: block;
         }
-        .page-container {            
-            max-width: 80ch;
-            margin: auto;
-            padding: 2rem 1rem 1rem 1rem;
+        .page-container-small {            
+            padding-top: 2rem;
         }
         hr {
             border-color: var(--md-sys-color-outline);
@@ -83,8 +82,7 @@ let AboutPage = class AboutPage extends LitElement {
             justify-content: left;
             padding: 1rem 0;
         }
-    `]; }
-};
+    `];
 AboutPage = __decorate([
     customElement('hb-about-page')
 ], AboutPage);

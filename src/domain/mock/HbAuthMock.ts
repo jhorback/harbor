@@ -16,22 +16,43 @@ class HbAutMock implements IUserAuth {
         setupAuthListener();
         this.connected = true; 
     }
+
+    signOut(): Promise<void> {
+        return new Promise((resolve) => {
+            signOut();
+            resolve();
+        });
+    }
 }
 
+
+const signOut = () => {
+    dispatchCurrentUserChangedEvent({
+        isAuthenticated: false,
+        uid: "",
+        displayName: "",
+        permissions: {
+            isAuthor: false,
+            isSysAdmin: false
+        }
+    });
+};
 
 const setupAuthListener = () => {
-    window.dispatchEvent(new CustomEvent("hb-current-user-changed", {
-        detail: {
-            displayName: "John Horback",
-            email: "jhorback@gmail.com",
-            photoURL: "content/avatars/user1.png",
-            appVersion: "v0.1.0",
-            uid: "mock-user-id",
-            providerDisplayName: "John Horback",
-            permissions: {
-                isAuthor: false,
-                isSysAdmin: false
-            }
+    dispatchCurrentUserChangedEvent({
+        isAuthenticated: true,
+        displayName: "John Horback",
+        email: "jhorback@gmail.com",
+        photoURL: "content/avatars/user1.png",
+        uid: "mock-user-id",
+        providerDisplayName: "John Horback",
+        permissions: {
+            isAuthor: false,
+            isSysAdmin: false
         }
-    }));
+    });
 }
+
+
+const dispatchCurrentUserChangedEvent = (detail:IUserData) =>
+    window.dispatchEvent(new CustomEvent("hb-current-user-changed", { detail }));

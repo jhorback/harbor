@@ -15,14 +15,17 @@ let AppBar = class AppBar extends LitElement {
         return html `
       <div class="app-bar">
         <div class="logo">
-          <img src="theme/harbor/harbor-moon.svg">
+          <a href="/">
+            <img src="theme/harbor/harbor-moon.svg">
+          </a>
         </div>
         <slot name="buttons"></slot>
         <hb-avatar-button href="content/avatars/user1.png"></hb-avatar-button>
       </div>
     `;
     }
-    static { this.styles = [css `
+};
+AppBar.styles = [css `
     :host {
       display: block;
       height: 64px;
@@ -41,8 +44,7 @@ let AppBar = class AppBar extends LitElement {
     .app-bar hb-avatar-button {
       margin: 0 1rem;
     }
-  `]; }
-};
+  `];
 AppBar = __decorate([
     customElement('hb-app-bar')
 ], AppBar);
