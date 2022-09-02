@@ -22,7 +22,8 @@ export function provides<T>(key:symbol) {
  */
 export function inject<T>(key: symbol) {
     return (target: Object, propertyKey: string) => {
-        // @ts-ignore 7035 cannot index with string
-        target[propertyKey] = dependencyContainer.get<T>(key);
+        Object.defineProperty(target, propertyKey, {
+            get: () => dependencyContainer.get<T>(key)
+        });
     };
 }

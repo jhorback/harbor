@@ -35,7 +35,7 @@ export interface UserMenuProps {
 
 const UserMenuTemplate = ({state, open}: UserMenuProps) => html`
 <div style="height: 500px;opacity:0;">SPACER</div>
-<hb-user-menu .state=${state} ?open=${open}></hb-user-menu>
+<hb-user-menu ?open=${open}></hb-user-menu>
 `;
 
 // @ts-ignore 
@@ -44,11 +44,5 @@ const Template: Story<Partial<UserMenuProps>> = (args:UserMenuProps) => UserMenu
 
 export const UserMenu = Template.bind({});
 UserMenu.args = {
-    state: {
-        displayName: "John Horback",
-        email: "jhorback@gmail.com",
-        photoURL: "content/avatars/user1.png",
-        appVersion: "v0.1.0"
-    },
     open: true
 };

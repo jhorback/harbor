@@ -21,10 +21,10 @@ export interface IUserAuth {
 
 export interface IUserData {
     uid: string;
-    displayName: string;
-    email?: string;
-    photoURL?: string;
-    providerDisplayName?: string;
+    displayName: string|null;
+    email?: string|null;
+    photoURL?: string|null;
+    providerDisplayName?: string|null;
     firstLogin?: Date,
     lastLogin?: Date,
     permissions: IUserDataPermissions

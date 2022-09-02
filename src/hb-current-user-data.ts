@@ -1,10 +1,9 @@
 import { DataElement, StateChange } from "@domx/dataelement";
 import { customDataElement, dataProperty, event } from "@domx/dataelement/decorators";
-import "./domain/HbAuth";
 import { IUserData, IHbAppInfo, IUserAuth, IUserAuthKey } from "./domain/interfaces/UserInterfaces";
 import { HbApp } from "./domain/HbApp";
 import { inject } from "./domain/DependencyContainer/decorators";
-
+import "./domain/HbAuth";
 
 
 @customDataElement("hb-current-user-data", {
@@ -33,13 +32,9 @@ export class CurrentUserData extends DataElement {
     @inject<IUserAuth>(IUserAuthKey)
     private userAuth!:IUserAuth;
 
-    constructor() {
-        super();
-        this.userAuth.connect();
-    }
-
     connectedCallback() {
         super.connectedCallback();
+        this.userAuth.connect();
         this.setHbAppInfo();        
     }
 
@@ -48,8 +43,26 @@ export class CurrentUserData extends DataElement {
             .next(setAppVersion)
             .dispatch();
     }
+
+    @event("hb-current-user-changed")
+    private hbCurrentUserChanged(event:CustomEvent) {
+        StateChange.of(this, "currentUser")
+            .next(setCurrentUserData(event.detail))
+            .dispatch();
+    }
 }
 
+
+const setCurrentUserData = (userData:IUserData) => (state:IUserData) => {
+    state.email = userData.email;
+    state.permissions = userData.permissions;
+    state.photoURL = userData.photoURL;
+    state.displayName = userData.displayName;
+    state.uid = userData.uid;
+    state.firstLogin = userData.firstLogin;
+    state.lastLogin = userData.lastLogin;
+    state.providerDisplayName = userData.providerDisplayName;
+};
 
 const setAppVersion = (state:IHbAppInfo) => {
     state.version = `v${HbApp.version}`;
