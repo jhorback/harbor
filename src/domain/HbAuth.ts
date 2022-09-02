@@ -6,7 +6,10 @@ import {
     GoogleAuthProvider,
     Auth,
     onAuthStateChanged,
-    signOut
+    signOut,
+    getRedirectResult,
+    User,
+    signInWithRedirect
 } from "firebase/auth";
 
 
@@ -49,25 +52,13 @@ class HbAuth implements IUserAuth {
 const setupAuthListener = (hbAuth:HbAuth) => {
 
     onAuthStateChanged(hbAuth.auth, (user) => {
-        
         // harbor #10
         // dispatch event first then
         // need to load user from the database and
         // insert if not there
         // need to set firstLogin, lastLogin, and permissions
 
-        const userData:IUserData = user ? {
-            isAuthenticated: true,
-            uid: user.uid,
-            displayName: user.displayName,
-            email: user.email,
-            photoURL: user.photoURL,
-            providerDisplayName: user.displayName,
-            permissions: {
-                isAuthor: false,
-                isSysAdmin: false
-            }
-        } : {
+        const userData:IUserData = user ? getUserDataFromUser(user) : {
             isAuthenticated: false,
             uid: "",
             displayName: "",
@@ -77,93 +68,59 @@ const setupAuthListener = (hbAuth:HbAuth) => {
             }
         };
 
-        dispatchCurrentUserChangedEvent(userData);    
+        currentUserChanged(userData);    
     });
+
+    getRedirectResult(hbAuth.auth)
+        .then((result) => {
+            if (!result) {
+                return;
+            }
+
+            // This gives you a Google Access Token. You can use it to access Google APIs.
+            const credential = GoogleAuthProvider.credentialFromResult(result);
+            const token = credential?.accessToken;
+
+            // The signed-in user info.
+            const userData = getUserDataFromUser(result.user);
+            currentUserChanged(userData);
+
+        }).catch((error) => {
+            // todo: feedback
+            alert(`Sign in error: ${error.message}`);
+        });
 };
 
+
+const getUserDataFromUser = (user:User):IUserData => {
+    return {
+        isAuthenticated: true,
+        uid: user.uid,
+        displayName: user.displayName,
+        email: user.email,
+        photoURL: user.photoURL,
+        providerDisplayName: user.displayName,
+        permissions: {
+            isAuthor: false,
+            isSysAdmin: false
+        }
+    };
+};
+
+
+const currentUserChanged = (userData:IUserData) => {
+    userData.isAuthenticated ?
+        document.removeEventListener("keydown", listenForSignInEvent) :
+        document.addEventListener("keydown", listenForSignInEvent);
+    dispatchCurrentUserChangedEvent(userData);
+};
+
+
+const listenForSignInEvent = (event:KeyboardEvent) => {
+    if (event.ctrlKey && event.shiftKey && event.key === 'S') {
+        signInWithRedirect(getAuth(FbApp.current), new GoogleAuthProvider());
+    }
+};
 
 const dispatchCurrentUserChangedEvent = (detail:IUserData) =>
     window.dispatchEvent(new CustomEvent("hb-current-user-changed", { detail }));
-
-
-
-/// TEST CODE
-
-
-// import {
-//     getAuth,
-//     signInWithPopup,
-//     GoogleAuthProvider,
-//     signInWithRedirect,
-//     signOut,
-//     onAuthStateChanged
-// } from "firebase/auth";
-// import {FbApp} from "./FbApp";
-
-
-/**
- * // todo: remove GoogleAuth after HbAuth is finished
- * Reference:
- * https://firebase.google.com/docs/auth/web/google-signin?authuser=0&hl=en
- */
-
-
-/**
- * 
- */
-export const signin = () => {
-    
-    const provider = new GoogleAuthProvider();
-    const auth = getAuth(FbApp.current);
-    console.log("AUTH BEFORE SIGNUP", auth);
-    if (auth.currentUser !== null) {
-        console.log(auth.currentUser.email);
-        console.log("RETURNING");
-        return;
-    }
-
-   
-
-   
-    // signInWithRedirect(auth, provider);
-    /*
-    getRedirectResult(auth)
-        .then((result) => {
-            // This gives you a Google Access Token. You can use it to access Google APIs.
-            const credential = GoogleAuthProvider.credentialFromResult(result);
-            const token = credential.accessToken;
-
-            // The signed-in user info.
-            const user = result.user;
-        }).catch((error) => {
-            // Handle Errors here.
-            const errorCode = error.code;
-            const errorMessage = error.message;
-            // The email of the user's account used.
-            const email = error.customData.email;
-            // The AuthCredential type that was used.
-            const credential = GoogleAuthProvider.credentialFromError(error);
-            // ...
-        });
-        */
-
-    // signInWithPopup(auth, provider)
-    //     .then((result) => {
-    //         // This gives you a Google Access Token. You can use it to access the Google API.
-    //         const credential = GoogleAuthProvider.credentialFromResult(result);
-    //         const token = credential?.accessToken;
-    //         // The signed-in user info.
-    //         const user = result.user;
-    //         console.log(user);
-    //         // ...
-    //     }).catch((error) => {
-    //         // Handle Errors here.
-    //         const errorCode = error.code;
-    //         const errorMessage = error.message;
-    //         // The email of the user's account used.
-    //         const email = error.customData.email;
-    //         // The AuthCredential type that was used.
-    //         const credential = GoogleAuthProvider.credentialFromError(error);
-    //         // ...
-    //     });
-};

@@ -38,7 +38,7 @@ let CurrentUserData = CurrentUserData_1 = class CurrentUserData extends DataElem
             await this.userAuth.signOut();
         }
         catch (e) {
-            // feedback
+            // todo: feedback
             alert(e.message);
         }
     }

@@ -27,19 +27,16 @@ class HbAutMock implements IUserAuth {
 
 
 const signOut = () => {
-    dispatchCurrentUserChangedEvent({
-        isAuthenticated: false,
-        uid: "",
-        displayName: "",
-        permissions: {
-            isAuthor: false,
-            isSysAdmin: false
-        }
-    });
+    setCurrentUserAsUnAuthenticated();
 };
 
 const setupAuthListener = () => {
-    dispatchCurrentUserChangedEvent({
+    setCurrentUserAsAuthenticated();
+}
+
+
+const setCurrentUserAsAuthenticated = () => {
+    currentUserChanged({
         isAuthenticated: true,
         displayName: "John Horback",
         email: "jhorback@gmail.com",
@@ -51,8 +48,37 @@ const setupAuthListener = () => {
             isSysAdmin: false
         }
     });
-}
+};
+
+const setCurrentUserAsUnAuthenticated = () => {
+    currentUserChanged({
+        isAuthenticated: false,
+        uid: "",
+        displayName: "",
+        permissions: {
+            isAuthor: false,
+            isSysAdmin: false
+        }
+    });
+};
+
+
+
+const currentUserChanged = (userData:IUserData) => {
+    userData.isAuthenticated ?
+        document.removeEventListener("keydown", listenForSignInEvent) :
+        document.addEventListener("keydown", listenForSignInEvent);
+    dispatchCurrentUserChangedEvent(userData);
+};
+
+
+const listenForSignInEvent = (event:KeyboardEvent) => {
+    if (event.ctrlKey && event.shiftKey && event.key === 'S') {
+        setCurrentUserAsAuthenticated();
+    }
+};
 
 
 const dispatchCurrentUserChangedEvent = (detail:IUserData) =>
     window.dispatchEvent(new CustomEvent("hb-current-user-changed", { detail }));
+

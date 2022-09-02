@@ -39,7 +39,7 @@ export class CurrentUserData extends DataElement {
     connectedCallback() {
         super.connectedCallback();
         this.userAuth.connect();
-        this.setHbAppInfo();        
+        this.setHbAppInfo();
     }
 
     private setHbAppInfo() {
@@ -57,11 +57,10 @@ export class CurrentUserData extends DataElement {
 
     @event("sign-out")
     private async signOut(event:Event) {
-        alert("signOut called");
         try{
             await this.userAuth.signOut();
         } catch (e:any) {
-            // feedback
+            // todo: feedback
             alert(e.message);
         }
     }
