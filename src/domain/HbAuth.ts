@@ -1,6 +1,7 @@
 import { IUserAuth, IUserAuthKey, IUserData } from "./interfaces/UserInterfaces";
 import { provides } from "./DependencyContainer/decorators";
 import {FbApp} from "./FbApp";
+import { HbApp } from "./HbApp";
 import {
     getAuth,
     GoogleAuthProvider,
@@ -13,7 +14,7 @@ import {
 } from "firebase/auth";
 
 
-@provides<IUserAuth>(IUserAuthKey)
+@provides<IUserAuth>(IUserAuthKey, !HbApp.isStorybook)
 class HbAuth implements IUserAuth {
 
     provider:GoogleAuthProvider;

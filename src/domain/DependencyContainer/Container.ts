@@ -23,10 +23,13 @@ class DependencyContainer {
      * The key should be a constant located in the same file as the interface type.
      * @param key Use a symbol with a description, i.e. Symbol("my-dependency")
      * @param type The class to register
+     * @param predicate if false, the dependency does not get registered.
      */
-    register<T>(key:symbol, type:Type<T>) {
+    register<T>(key:symbol, type:Type<T>, predicate?:boolean) {
         // @ts-ignore TS7053 dynamic index type
-        this.container[key] = {type};
+        if (predicate !== false) {
+            this.container[key] = {type};
+        }
     }
 
     /**
