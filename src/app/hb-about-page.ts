@@ -1,8 +1,12 @@
 import { html, css, LitElement } from "lit";
-import { customElement } from "lit/decorators.js";
+import { customElement, property } from "lit/decorators.js";
+import { IHbAppInfo } from "../domain/interfaces/UserInterfaces";
+import { CurrentUserData } from "../hb-current-user-data";
+import { linkProp } from "@domx/linkprop";
 import { styles } from "../styles";
 import "../layout/hb-page-layout";
 import "../common/hb-link-button";
+
 
 /**
  * @class ProfilePage
@@ -10,11 +14,19 @@ import "../common/hb-link-button";
 @customElement('hb-about-page')
 export class AboutPage extends LitElement {
 
+    @property({type: Object})
+    hbAppInfo:IHbAppInfo = CurrentUserData.defaultHbAppInfo;
+
     render() {
         return html`
+<hb-current-user-data
+    @hb-app-info-changed=${linkProp(this, "hbAppInfo")}
+></hb-current-user-data>
 <hb-page-layout>
     <div class="page-container-small">        
-        <div class="headline-large">About Harbor v0.1.0</div>
+        <div class="headline-large">About Harbor
+            <span class="primary-text">${this.hbAppInfo.version}</span>
+        </div>
         <!-- <hr> -->
         <div class="body-large text-content">
             <p>
@@ -22,7 +34,7 @@ export class AboutPage extends LitElement {
                 simple content based websites.
             </p>
             <p>
-                The version of this application is <span class="primary-text">v0.1.0</span>. The Changelog
+                The version of this application is <span class="primary-text">${this.hbAppInfo.version}</span>. The Changelog
                 shows changes over previous versions including unreleased
                 changes.
             </p>

@@ -16,16 +16,6 @@ export interface UserMenuData {
     appVersion?: string,
 }
 
-/*
-uid: string;
-    displayName: string;
-    email?: string;
-    photoURL?: string;
-    providerDisplayName?: string;
-    firstLogin?: Date,
-    lastLogin?: Date,
-    permissions: IUserDataPermissions
-    */
 
 /**
  * @class UserMenu

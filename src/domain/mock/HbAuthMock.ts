@@ -6,15 +6,8 @@ import {provides} from "../DependencyContainer/decorators";
 @provides<IUserAuth>(IUserAuthKey)
 class HbAutMock implements IUserAuth {
 
-    connected:Boolean = false;
-
     connect(): void {
-        if (this.connected) {
-            return;
-        }
-
         setupAuthListener();
-        this.connected = true; 
     }
 
     signOut(): Promise<void> {
