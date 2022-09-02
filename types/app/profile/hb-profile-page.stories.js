@@ -1,6 +1,7 @@
 import { html } from 'lit-html';
 import "./hb-profile-page";
 import { sbRouteHelper } from "../../testUtils/sbRouteHelper";
+import "../../domain/mock";
 sbRouteHelper({ startPath: "/profile" });
 export default {
     title: 'App/Profile Page',

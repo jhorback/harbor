@@ -7,15 +7,8 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 import { IUserAuthKey } from "../interfaces/UserInterfaces";
 import { provides } from "../DependencyContainer/decorators";
 let HbAutMock = class HbAutMock {
-    constructor() {
-        this.connected = false;
-    }
     connect() {
-        if (this.connected) {
-            return;
-        }
         setupAuthListener();
-        this.connected = true;
     }
     signOut() {
         return new Promise((resolve) => {
@@ -28,18 +21,13 @@ HbAutMock = __decorate([
     provides(IUserAuthKey)
 ], HbAutMock);
 const signOut = () => {
-    dispatchCurrentUserChangedEvent({
-        isAuthenticated: false,
-        uid: "",
-        displayName: "",
-        permissions: {
-            isAuthor: false,
-            isSysAdmin: false
-        }
-    });
+    setCurrentUserAsUnAuthenticated();
 };
 const setupAuthListener = () => {
-    dispatchCurrentUserChangedEvent({
+    setCurrentUserAsAuthenticated();
+};
+const setCurrentUserAsAuthenticated = () => {
+    currentUserChanged({
         isAuthenticated: true,
         displayName: "John Horback",
         email: "jhorback@gmail.com",
@@ -51,5 +39,27 @@ const setupAuthListener = () => {
             isSysAdmin: false
         }
     });
+};
+const setCurrentUserAsUnAuthenticated = () => {
+    currentUserChanged({
+        isAuthenticated: false,
+        uid: "",
+        displayName: "",
+        permissions: {
+            isAuthor: false,
+            isSysAdmin: false
+        }
+    });
+};
+const currentUserChanged = (userData) => {
+    userData.isAuthenticated ?
+        document.removeEventListener("keydown", listenForSignInEvent) :
+        document.addEventListener("keydown", listenForSignInEvent);
+    dispatchCurrentUserChangedEvent(userData);
+};
+const listenForSignInEvent = (event) => {
+    if (event.ctrlKey && event.shiftKey && event.key === 'S') {
+        setCurrentUserAsAuthenticated();
+    }
 };
 const dispatchCurrentUserChangedEvent = (detail) => window.dispatchEvent(new CustomEvent("hb-current-user-changed", { detail }));

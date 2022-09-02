@@ -5,7 +5,9 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 import { html, css, LitElement } from "lit";
-import { customElement } from "lit/decorators.js";
+import { customElement, property } from "lit/decorators.js";
+import { CurrentUserData } from "../hb-current-user-data";
+import { linkProp } from "@domx/linkprop";
 import { styles } from "../styles";
 import "../layout/hb-page-layout";
 import "../common/hb-link-button";
@@ -13,11 +15,20 @@ import "../common/hb-link-button";
  * @class ProfilePage
  */
 let AboutPage = class AboutPage extends LitElement {
+    constructor() {
+        super(...arguments);
+        this.hbAppInfo = CurrentUserData.defaultHbAppInfo;
+    }
     render() {
         return html `
+<hb-current-user-data
+    @hb-app-info-changed=${linkProp(this, "hbAppInfo")}
+></hb-current-user-data>
 <hb-page-layout>
     <div class="page-container-small">        
-        <div class="headline-large">About Harbor v0.1.0</div>
+        <div class="headline-large">About Harbor
+            <span class="primary-text">${this.hbAppInfo.version}</span>
+        </div>
         <!-- <hr> -->
         <div class="body-large text-content">
             <p>
@@ -25,7 +36,7 @@ let AboutPage = class AboutPage extends LitElement {
                 simple content based websites.
             </p>
             <p>
-                The version of this application is <span class="primary-text">v0.1.0</span>. The Changelog
+                The version of this application is <span class="primary-text">${this.hbAppInfo.version}</span>. The Changelog
                 shows changes over previous versions including unreleased
                 changes.
             </p>
@@ -83,6 +94,9 @@ AboutPage.styles = [styles.types, styles.colors, styles.page, css `
             padding: 1rem 0;
         }
     `];
+__decorate([
+    property({ type: Object })
+], AboutPage.prototype, "hbAppInfo", void 0);
 AboutPage = __decorate([
     customElement('hb-about-page')
 ], AboutPage);

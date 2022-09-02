@@ -33,7 +33,6 @@ let CurrentUserData = CurrentUserData_1 = class CurrentUserData extends DataElem
             .dispatch();
     }
     async signOut(event) {
-        alert("signOut called");
         try {
             await this.userAuth.signOut();
         }

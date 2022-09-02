@@ -12,16 +12,6 @@ import { linkProp } from "@domx/linkprop";
 import { AvatarSize } from "../common/hb-avatar";
 import "../common/hb-button";
 import "../common/hb-link-button";
-/*
-uid: string;
-    displayName: string;
-    email?: string;
-    photoURL?: string;
-    providerDisplayName?: string;
-    firstLogin?: Date,
-    lastLogin?: Date,
-    permissions: IUserDataPermissions
-    */
 /**
  * @class UserMenu
  * @fires sign-out

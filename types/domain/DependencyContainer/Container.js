@@ -1,4 +1,4 @@
-// @ts-ignore symbol index should work; come back to this when testing.
+// todo: ts issues with symbol index
 /**
  * The `DependencyContainer` is a static class that can be used to
  * register dependencies so that implementations can be overridden
@@ -16,7 +16,7 @@ class DependencyContainer {
      * @param type The class to register
      */
     register(key, type) {
-        // @ts-ignore
+        // @ts-ignore TS7053 dynamic index type
         this.container[key] = { type };
     }
     /**
@@ -25,7 +25,7 @@ class DependencyContainer {
      * @returns The instantiated class.
      */
     get(key) {
-        // @ts-ignore
+        // @ts-ignore TS7053 dynamic index type
         const item = this.container[key];
         if (item === undefined) {
             throw new Error(`[DependencyContainer] Item not registered: ${key.description}`);
@@ -36,7 +36,7 @@ class DependencyContainer {
                 item.instance = new item.type();
             }
             catch (e) {
-                // @ts-ignore
+                // @ts-ignore TS2554 Error constructor has 0-1 arguments
                 throw new Error(`[DependencyContainer] Item failed to create: ${key.description}`, { cause: e });
             }
         }

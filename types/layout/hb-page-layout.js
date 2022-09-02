@@ -12,28 +12,32 @@ import "./hb-app-bar";
  * @class PageLayout
  */
 let PageLayout = class PageLayout extends LitElement {
+    connectedCallback() {
+        super.connectedCallback();
+        window.scrollTo({ top: 0, left: 0 });
+    }
     render() {
         return html `
-      <hb-app-bar
-        @hb-avatar-button-click=${this.avatarButtonClicked}
-      >
-        <div slot="buttons">
-            <slot name="app-bar-buttons"></slot>
-        </div>
-      </hb-app-bar>
-      <hb-user-menu></hb-user-menu>
-      <slot></slot>
-    `;
+        <hb-app-bar
+          @hb-avatar-button-click=${this.avatarButtonClicked}
+        >
+          <div slot="buttons">
+              <slot name="app-bar-buttons"></slot>
+          </div>
+        </hb-app-bar>
+        <hb-user-menu></hb-user-menu>
+        <slot></slot>
+      `;
     }
     avatarButtonClicked() {
         this.$userMenu.open = !this.$userMenu.open;
     }
 };
 PageLayout.styles = [css `
-    :host {
-      display: block;
-    }
-  `];
+      :host {
+        display: block;
+      }
+    `];
 __decorate([
     query("hb-user-menu")
 ], PageLayout.prototype, "$userMenu", void 0);

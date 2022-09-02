@@ -1,6 +1,7 @@
 import { html } from "lit";
 import { iconStyles } from "../styles/iconStyles";
 import "./hb-app-bar";
+import "../domain/mock";
 export default {
     title: 'Layout/App Bar',
     component: "hb-app-bar",

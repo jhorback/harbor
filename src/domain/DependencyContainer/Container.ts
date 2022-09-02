@@ -1,5 +1,4 @@
 // todo: ts issues with symbol index
-// @ts-ignore symbol index should work; come back to this when testing.
 
 export interface Type<T> extends Function { new (...args: any[]): T; }
 
@@ -26,7 +25,7 @@ class DependencyContainer {
      * @param type The class to register
      */
     register<T>(key:symbol, type:Type<T>) {
-        // @ts-ignore
+        // @ts-ignore TS7053 dynamic index type
         this.container[key] = {type};
     }
 
@@ -36,7 +35,7 @@ class DependencyContainer {
      * @returns The instantiated class.
      */
     get<T>(key: symbol):T {
-        // @ts-ignore
+        // @ts-ignore TS7053 dynamic index type
         const item = this.container[key];
         if (item === undefined) {
             throw new Error(`[DependencyContainer] Item not registered: ${key.description}`);
@@ -47,7 +46,7 @@ class DependencyContainer {
             try {
                 item.instance = new item.type();
             } catch (e:any) {
-                // @ts-ignore
+                // @ts-ignore TS2554 Error constructor has 0-1 arguments
                 throw new Error(`[DependencyContainer] Item failed to create: ${key.description}`, {cause:e})
             }
         }

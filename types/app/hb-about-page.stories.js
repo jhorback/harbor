@@ -1,5 +1,6 @@
 import { html } from 'lit-html';
 import "./hb-about-page";
+import "../domain/mock";
 export default {
     title: 'App/About Page',
     component: "hb-about-page",
