@@ -5,6 +5,7 @@ import "./hb-user-menu";
 import "./hb-app-bar";
 
 
+
 /**
  * @class PageLayout
  */
@@ -14,29 +15,34 @@ export class PageLayout extends LitElement {
     @query("hb-user-menu")
     $userMenu!: UserMenu;
 
-  render() {
-    return html`
-      <hb-app-bar
-        @hb-avatar-button-click=${this.avatarButtonClicked}
-      >
-        <div slot="buttons">
-            <slot name="app-bar-buttons"></slot>
-        </div>
-      </hb-app-bar>
-      <hb-user-menu></hb-user-menu>
-      <slot></slot>
-    `
-  }
-
-  avatarButtonClicked() {
-    this.$userMenu.open = !this.$userMenu.open;
-  }
-
-  static styles = [css`
-    :host {
-      display: block;
+    connectedCallback() {
+      super.connectedCallback();
+      window.scrollTo({ top: 0, left: 0 });
     }
-  `]
+
+    render() {
+      return html`
+        <hb-app-bar
+          @hb-avatar-button-click=${this.avatarButtonClicked}
+        >
+          <div slot="buttons">
+              <slot name="app-bar-buttons"></slot>
+          </div>
+        </hb-app-bar>
+        <hb-user-menu></hb-user-menu>
+        <slot></slot>
+      `
+    }
+
+    avatarButtonClicked() {
+      this.$userMenu.open = !this.$userMenu.open;
+    }
+
+    static styles = [css`
+      :host {
+        display: block;
+      }
+    `]
 }
 
 declare global {

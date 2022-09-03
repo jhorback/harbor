@@ -1,10 +1,14 @@
 import { html, css, LitElement } from "lit";
 import { customElement } from "lit/decorators.js";
+import { HbApp } from "./domain/HbApp";
 import "@domx/router/domx-route";
 import "./app/hb-home";
 import "./app/profile/hb-profile-page";
 import "./app/hb-about-page";
+import "./hb-current-user-data";
 
+
+HbApp.init();
 
 /**
  * 
@@ -14,6 +18,9 @@ export class HarborApp extends LitElement {
 
   render() {
     return html`
+      <!-- Keeping this at the app level retains the
+      user data in the dataelement store -->
+      <hb-current-user-data></hb-current-user-data>
       <div id="hb-app"></div>
       <domx-route
           pattern="/"

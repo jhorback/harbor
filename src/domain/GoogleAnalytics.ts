@@ -7,10 +7,14 @@ export class GoogleAnalytics {
     private static _current?:Analytics = undefined;
 
     static get current() {
+        GoogleAnalytics.init();
+        return GoogleAnalytics._current;
+    }
+
+    static init() {
         if (!GoogleAnalytics._current) {
             GoogleAnalytics._current = getAnalytics(FbApp.current);
         }
-        return GoogleAnalytics._current;
     }
 }
 

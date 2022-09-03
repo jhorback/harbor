@@ -5,7 +5,9 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 import { html, css, LitElement } from "lit";
-import { customElement, state } from "lit/decorators.js";
+import { customElement, property, state } from "lit/decorators.js";
+import { CurrentUserData } from "../../hb-current-user-data";
+import { linkProp } from "@domx/linkprop";
 import { AvatarSize } from "../../common/hb-avatar";
 import { styles } from "../../styles";
 import "../../layout/hb-page-layout";
@@ -23,16 +25,20 @@ let ProfilePage = class ProfilePage extends LitElement {
     constructor() {
         super(...arguments);
         this.selectedTab = "documents-tab";
+        this.currentUser = CurrentUserData.defaultCurrentUser;
     }
     render() {
         return html `
+<hb-current-user-data
+    @current-user-changed=${linkProp(this, "currentUser")}
+></hb-current-user-data>
 <hb-page-layout>
-    <div class="page-container">
+    <div class="page-container-large">
         <div class="header">
-            <hb-avatar size=${AvatarSize.large} href="content/avatars/user1.png"></hb-avatar>
+            <hb-avatar size=${AvatarSize.large} href=${this.currentUser.photoURL}></hb-avatar>
             <div>
-                <div class="headline-large">John Horback</div>
-                <div class="body-large">jhorback@gmail.com</div>
+                <div class="headline-large">${this.currentUser.displayName}</div>
+                <div class="body-large">${this.currentUser.email}</div>
             </div>
         </div>
         <hb-tab-bar selected-tab=${this.selectedTab}>
@@ -90,14 +96,10 @@ let ProfilePage = class ProfilePage extends LitElement {
     selectTab(tab) {
         this.selectedTab = tab;
     }
-    static { this.styles = [styles.types, css `
+};
+ProfilePage.styles = [styles.types, styles.page, css `
         :host {
             display: block;
-        }
-        .page-container {            
-            max-width: 840px;
-            margin: auto;
-            padding: 1rem;
         }
         .header {
             display: flex;
@@ -107,11 +109,13 @@ let ProfilePage = class ProfilePage extends LitElement {
         #tab-content-container {
             padding: 1rem;
         }
-    `]; }
-};
+    `];
 __decorate([
     state()
 ], ProfilePage.prototype, "selectedTab", void 0);
+__decorate([
+    property({ type: Object })
+], ProfilePage.prototype, "currentUser", void 0);
 ProfilePage = __decorate([
     customElement('hb-profile-page')
 ], ProfilePage);

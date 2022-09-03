@@ -4,29 +4,25 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-var UserMenu_1;
 import { html, css, LitElement } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import { typeStyles } from "../styles/typeStyles";
+import { CurrentUserData } from "../hb-current-user-data";
+import { linkProp } from "@domx/linkprop";
+import { AvatarSize } from "../common/hb-avatar";
 import "../common/hb-button";
 import "../common/hb-link-button";
-import { AvatarSize } from "../common/hb-avatar";
 /**
  * @class UserMenu
  * @fires sign-out
  */
-let UserMenu = UserMenu_1 = class UserMenu extends LitElement {
+let UserMenu = class UserMenu extends LitElement {
     constructor() {
         super(...arguments);
         this._open = false;
-        this.state = UserMenu_1.defaultState;
+        this.currentUser = CurrentUserData.defaultCurrentUser;
+        this.hbAppInfo = CurrentUserData.defaultHbAppInfo;
     }
-    static { this.defaultState = {
-        displayName: "John Horback",
-        email: "jhorback@gmail.com",
-        photoURL: "content/avatars/user1.png",
-        appVersion: "v0.1.0"
-    }; }
     get open() {
         return this._open;
     }
@@ -48,15 +44,19 @@ let UserMenu = UserMenu_1 = class UserMenu extends LitElement {
     }
     render() {
         return html `
+            <hb-current-user-data
+                @current-user-changed=${linkProp(this, "currentUser")}
+                @hb-app-info-changed=${linkProp(this, "hbAppInfo")}
+            ></hb-current-user-data>
             <div class="menu-container" ?hidden=${this.open ? false : true}>
                 <div class="avatar-container">
                     <hb-avatar
-                        href=${this.state.photoURL}
+                        href=${this.currentUser.photoURL}
                         size=${AvatarSize.large}
                     ></hb-avatar>
                 </div>
-                <div class="title-large on-surface-text">${this.state.displayName}</div>
-                <div class="body-large on-surface-text dampen">${this.state.email}</div>
+                <div class="title-large on-surface-text">${this.currentUser.displayName}</div>
+                <div class="body-large on-surface-text dampen">${this.currentUser.email}</div>
                 <div class="manage-account-button-container">
                     <hb-link-button label="Manage Account" href="/profile"></hb-link-button>
                 </div>
@@ -66,15 +66,22 @@ let UserMenu = UserMenu_1 = class UserMenu extends LitElement {
                 </div>
                 <hr>
                 <div class="body-large on-surface-text dampen about-container">
-                    <a href="/about">About Harbor ${this.state.appVersion}</a>
+                    <a href="/about">About Harbor ${this.hbAppInfo.version}</a>
                 </div>
             </div>
         `;
     }
     handleSignOutClick() {
-        this.dispatchEvent(new CustomEvent("sign-out", { bubbles: true }));
+        this.dispatchEvent(CurrentUserData.signOutEvent());
     }
-    static { this.styles = [typeStyles, css `
+};
+UserMenu.defaultState = {
+    displayName: "John Horback",
+    email: "jhorback@gmail.com",
+    photoURL: "content/avatars/user1.png",
+    appVersion: "v0.1.0"
+};
+UserMenu.styles = [typeStyles, css `
         :host {
             display: block;
             position: absolute;
@@ -124,15 +131,17 @@ let UserMenu = UserMenu_1 = class UserMenu extends LitElement {
             outline: none;
             background-color: var(--hb-sys-color-surface-tint4);
         }
-    `]; }
-};
+    `];
 __decorate([
     property({ type: Boolean, reflect: true })
 ], UserMenu.prototype, "open", null);
 __decorate([
     property({ type: Object })
-], UserMenu.prototype, "state", void 0);
-UserMenu = UserMenu_1 = __decorate([
+], UserMenu.prototype, "currentUser", void 0);
+__decorate([
+    property({ type: Object })
+], UserMenu.prototype, "hbAppInfo", void 0);
+UserMenu = __decorate([
     customElement('hb-user-menu')
 ], UserMenu);
 export { UserMenu };

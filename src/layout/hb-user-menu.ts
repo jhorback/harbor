@@ -1,9 +1,12 @@
 import { html, css, LitElement } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import { typeStyles } from "../styles/typeStyles";
+import { IUserData, IHbAppInfo } from "../domain/interfaces/UserInterfaces";
+import { CurrentUserData } from "../hb-current-user-data";
+import { linkProp } from "@domx/linkprop";
+import { AvatarSize } from "../common/hb-avatar";
 import "../common/hb-button";
 import "../common/hb-link-button";
-import { AvatarSize } from "../common/hb-avatar";
 
 
 export interface UserMenuData {
@@ -54,19 +57,27 @@ export class UserMenu extends LitElement {
     }
 
     @property({type: Object})
-    state:UserMenuData = UserMenu.defaultState;
+    currentUser:IUserData = CurrentUserData.defaultCurrentUser;
+
+    @property({type: Object})
+    hbAppInfo:IHbAppInfo = CurrentUserData.defaultHbAppInfo;
 
     render() {
+
         return html`
+            <hb-current-user-data
+                @current-user-changed=${linkProp(this, "currentUser")}
+                @hb-app-info-changed=${linkProp(this, "hbAppInfo")}
+            ></hb-current-user-data>
             <div class="menu-container" ?hidden=${this.open ? false : true}>
                 <div class="avatar-container">
                     <hb-avatar
-                        href=${this.state.photoURL}
+                        href=${this.currentUser.photoURL}
                         size=${AvatarSize.large}
                     ></hb-avatar>
                 </div>
-                <div class="title-large on-surface-text">${this.state.displayName}</div>
-                <div class="body-large on-surface-text dampen">${this.state.email}</div>
+                <div class="title-large on-surface-text">${this.currentUser.displayName}</div>
+                <div class="body-large on-surface-text dampen">${this.currentUser.email}</div>
                 <div class="manage-account-button-container">
                     <hb-link-button label="Manage Account" href="/profile"></hb-link-button>
                 </div>
@@ -76,14 +87,14 @@ export class UserMenu extends LitElement {
                 </div>
                 <hr>
                 <div class="body-large on-surface-text dampen about-container">
-                    <a href="/about">About Harbor ${this.state.appVersion}</a>
+                    <a href="/about">About Harbor ${this.hbAppInfo.version}</a>
                 </div>
             </div>
         `;
     }
 
     handleSignOutClick() {
-        this.dispatchEvent(new CustomEvent("sign-out", { bubbles: true}));
+        this.dispatchEvent(CurrentUserData.signOutEvent());
     }
 
     static styles = [typeStyles, css`

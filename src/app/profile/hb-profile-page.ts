@@ -1,5 +1,8 @@
 import { html, css, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
+import { IUserData } from "../../domain/interfaces/UserInterfaces";
+import { CurrentUserData } from "../../hb-current-user-data";
+import { linkProp } from "@domx/linkprop";
 import { AvatarSize } from "../../common/hb-avatar";
 import { styles } from "../../styles";
 import "../../layout/hb-page-layout";
@@ -12,6 +15,7 @@ import "./hb-profile-users-tab";
 import "./hb-profile-admin-tab";
 
 
+
 /**
  * @class ProfilePage
  */
@@ -21,15 +25,21 @@ export class ProfilePage extends LitElement {
     @state()
     selectedTab = "documents-tab";
 
+    @property({type: Object})
+    currentUser:IUserData = CurrentUserData.defaultCurrentUser;
+
     render() {
         return html`
+<hb-current-user-data
+    @current-user-changed=${linkProp(this, "currentUser")}
+></hb-current-user-data>
 <hb-page-layout>
     <div class="page-container-large">
         <div class="header">
-            <hb-avatar size=${AvatarSize.large} href="content/avatars/user1.png"></hb-avatar>
+            <hb-avatar size=${AvatarSize.large} href=${this.currentUser.photoURL}></hb-avatar>
             <div>
-                <div class="headline-large">John Horback</div>
-                <div class="body-large">jhorback@gmail.com</div>
+                <div class="headline-large">${this.currentUser.displayName}</div>
+                <div class="body-large">${this.currentUser.email}</div>
             </div>
         </div>
         <hb-tab-bar selected-tab=${this.selectedTab}>

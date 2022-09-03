@@ -2,6 +2,7 @@ import { start } from '@storybook/core-client';
 import { Story, Meta } from '@storybook/web-components';
 import { html } from 'lit-html';
 import "./hb-about-page";
+import "../domain/mock";
 
 
 export default {
