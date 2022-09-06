@@ -1,4 +1,4 @@
-
+import { UserRole } from "../User/UserRoles";
 
 
 /*
@@ -29,7 +29,7 @@ export interface IUserData {
     providerDisplayName?: string|null;
     firstLogin?: Date,
     lastLogin?: Date,
-    permissions: IUserDataPermissions
+    role?: UserRole|null
 }
 
 export interface IUserDataPermissions {

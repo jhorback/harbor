@@ -10,6 +10,7 @@ import { CurrentUserData } from "../../hb-current-user-data";
 import { linkProp } from "@domx/linkprop";
 import { AvatarSize } from "../../common/hb-avatar";
 import { styles } from "../../styles";
+import { userCan, UserAction } from "../../domain/User/UserRoles";
 import "../../layout/hb-page-layout";
 import "../../common/tabs/hb-link-tab";
 import "../../common/tabs/hb-tab-bar";
@@ -26,6 +27,9 @@ let ProfilePage = class ProfilePage extends LitElement {
         super(...arguments);
         this.selectedTab = "documents-tab";
         this.currentUser = CurrentUserData.defaultCurrentUser;
+    }
+    userCan(action) {
+        return userCan(this.currentUser, action);
     }
     render() {
         return html `
@@ -45,8 +49,9 @@ let ProfilePage = class ProfilePage extends LitElement {
             <hb-link-tab
                 id="documents-tab"
                 label="Documents"
-                href="/profile/docs">
-            </hb-link-tab>
+                href="/profile/docs"
+                ?hidden=${!this.userCan(UserAction.authorDocuments)}
+            ></hb-link-tab>
             <hb-link-tab
                 id="content-tab"
                 label="Content"

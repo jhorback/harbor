@@ -38,6 +38,9 @@ LinkTab.styles = [styles.types, css `
         :host {
             display: inline-block;
         }
+        :host([hidden]) {
+            display: none;
+        }
         .link, .link:hover {
             display: inline-block;
             height: 38px;

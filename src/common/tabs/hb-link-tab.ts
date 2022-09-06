@@ -36,6 +36,9 @@ export class LinkTab extends LitElement {
         :host {
             display: inline-block;
         }
+        :host([hidden]) {
+            display: none;
+        }
         .link, .link:hover {
             display: inline-block;
             height: 38px;

@@ -7,6 +7,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 import { IUserAuthKey } from "./interfaces/UserInterfaces";
 import { provides } from "./DependencyContainer/decorators";
 import { FbApp } from "./FbApp";
+import { HbApp } from "./HbApp";
 import { getAuth, GoogleAuthProvider, onAuthStateChanged, signOut, getRedirectResult, signInWithRedirect } from "firebase/auth";
 let HbAuth = class HbAuth {
     constructor() {
@@ -32,7 +33,7 @@ let HbAuth = class HbAuth {
     }
 };
 HbAuth = __decorate([
-    provides(IUserAuthKey)
+    provides(IUserAuthKey, !HbApp.isStorybook)
 ], HbAuth);
 const setupAuthListener = (hbAuth) => {
     onAuthStateChanged(hbAuth.auth, (user) => {
@@ -40,15 +41,11 @@ const setupAuthListener = (hbAuth) => {
         // dispatch event first then
         // need to load user from the database and
         // insert if not there
-        // need to set firstLogin, lastLogin, and permissions
+        // need to set firstLogin, lastLogin, and role
         const userData = user ? getUserDataFromUser(user) : {
             isAuthenticated: false,
             uid: "",
-            displayName: "",
-            permissions: {
-                isAuthor: false,
-                isSysAdmin: false
-            }
+            displayName: ""
         };
         currentUserChanged(userData);
     });
@@ -75,11 +72,7 @@ const getUserDataFromUser = (user) => {
         displayName: user.displayName,
         email: user.email,
         photoURL: user.photoURL,
-        providerDisplayName: user.displayName,
-        permissions: {
-            isAuthor: false,
-            isSysAdmin: false
-        }
+        providerDisplayName: user.displayName
     };
 };
 const currentUserChanged = (userData) => {

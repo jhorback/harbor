@@ -45,11 +45,7 @@ let CurrentUserData = CurrentUserData_1 = class CurrentUserData extends DataElem
 CurrentUserData.defaultCurrentUser = {
     isAuthenticated: false,
     uid: "",
-    displayName: "",
-    permissions: {
-        isAuthor: false,
-        isSysAdmin: false
-    }
+    displayName: ""
 };
 CurrentUserData.defaultHbAppInfo = {
     version: "v0.0.0"
@@ -79,13 +75,13 @@ export { CurrentUserData };
 const setCurrentUserData = (userData) => (state) => {
     state.isAuthenticated = userData.isAuthenticated;
     state.email = userData.email;
-    state.permissions = userData.permissions;
     state.photoURL = userData.photoURL;
     state.displayName = userData.displayName;
     state.uid = userData.uid;
     state.firstLogin = userData.firstLogin;
     state.lastLogin = userData.lastLogin;
     state.providerDisplayName = userData.providerDisplayName;
+    state.role = userData.role;
 };
 const setAppVersion = (state) => {
     state.version = `v${HbApp.version}`;

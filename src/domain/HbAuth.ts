@@ -57,16 +57,12 @@ const setupAuthListener = (hbAuth:HbAuth) => {
         // dispatch event first then
         // need to load user from the database and
         // insert if not there
-        // need to set firstLogin, lastLogin, and permissions
+        // need to set firstLogin, lastLogin, and role
 
         const userData:IUserData = user ? getUserDataFromUser(user) : {
             isAuthenticated: false,
             uid: "",
-            displayName: "",
-            permissions: {
-                isAuthor: false,
-                isSysAdmin: false
-            }
+            displayName: ""
         };
 
         currentUserChanged(userData);    
@@ -100,11 +96,7 @@ const getUserDataFromUser = (user:User):IUserData => {
         displayName: user.displayName,
         email: user.email,
         photoURL: user.photoURL,
-        providerDisplayName: user.displayName,
-        permissions: {
-            isAuthor: false,
-            isSysAdmin: false
-        }
+        providerDisplayName: user.displayName
     };
 };
 
