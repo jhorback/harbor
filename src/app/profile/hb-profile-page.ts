@@ -5,6 +5,7 @@ import { CurrentUserData } from "../../hb-current-user-data";
 import { linkProp } from "@domx/linkprop";
 import { AvatarSize } from "../../common/hb-avatar";
 import { styles } from "../../styles";
+import { userCan, UserAction } from "../../domain/User/UserRoles";
 import "../../layout/hb-page-layout";
 import "../../common/tabs/hb-link-tab";
 import "../../common/tabs/hb-tab-bar";
@@ -28,6 +29,10 @@ export class ProfilePage extends LitElement {
     @property({type: Object})
     currentUser:IUserData = CurrentUserData.defaultCurrentUser;
 
+    userCan(action:UserAction) {
+        return userCan(this.currentUser, action);
+    }
+
     render() {
         return html`
 <hb-current-user-data
@@ -46,48 +51,60 @@ export class ProfilePage extends LitElement {
             <hb-link-tab
                 id="documents-tab"
                 label="Documents"
-                href="/profile/docs">
-            </hb-link-tab>
+                href="/profile/docs"
+                ?hidden=${!this.userCan(UserAction.authorDocuments)}
+            ></hb-link-tab>
             <hb-link-tab
                 id="content-tab"
                 label="Content"
-                href="/profile/content">
-            </hb-link-tab>
+                href="/profile/content"
+                ?hidden=${!this.userCan(UserAction.uploadContent)}
+            ></hb-link-tab>
             <hb-link-tab
                 id="users-tab"
                 label="Users"
-                href="/profile/users">
-            </hb-link-tab>
+                href="/profile/users"
+                ?hidden=${!this.userCan(UserAction.viewUsers)}
+            ></hb-link-tab>
             <hb-link-tab
                 id="admin-tab"
                 label="Admin"
-                href="/profile/admin">
-            </hb-link-tab>
+                href="/profile/admin"
+                ?hidden=${!this.userCan(UserAction.editSiteSettings)}
+            ></hb-link-tab>
         </hb-tab-bar>
-        <domx-route
-            pattern="/profile(/docs)"
-            element="hb-profile-docs-tab"
-            append-to="#tab-content-container"
-            @route-active=${() => this.selectTab("documents-tab")}
-        ></domx-route>
-        <domx-route
-            pattern="/profile/content"
-            element="hb-profile-content-tab"
-            append-to="#tab-content-container"
-            @route-active=${() => this.selectTab("content-tab")}
-        ></domx-route>
-        <domx-route
-            pattern="/profile/users"
-            element="hb-profile-users-tab"
-            append-to="#tab-content-container"
-            @route-active=${() => this.selectTab("users-tab")}
-        ></domx-route>
-        <domx-route
-            pattern="/profile/admin"
-            element="hb-profile-admin-tab"
-            append-to="#tab-content-container"
-            @route-active=${() => this.selectTab("admin-tab")}
-        ></domx-route>
+        ${this.userCan(UserAction.authorDocuments) ? html`
+            <domx-route
+                pattern="/profile(/docs)"
+                element="hb-profile-docs-tab"
+                append-to="#tab-content-container"
+                @route-active=${() => this.selectTab("documents-tab")}
+            ></domx-route>
+        ` : html``}
+        ${this.userCan(UserAction.uploadContent) ? html`
+            <domx-route
+                pattern="/profile/content"
+                element="hb-profile-content-tab"
+                append-to="#tab-content-container"
+                @route-active=${() => this.selectTab("content-tab")}
+            ></domx-route>
+        ` : html``}
+        ${this.userCan(UserAction.viewUsers) ? html`
+            <domx-route
+                pattern="/profile/users"
+                element="hb-profile-users-tab"
+                append-to="#tab-content-container"
+                @route-active=${() => this.selectTab("users-tab")}
+            ></domx-route>
+        ` : html``}
+        ${this.userCan(UserAction.editSiteSettings) ? html`
+            <domx-route
+                pattern="/profile/admin"
+                element="hb-profile-admin-tab"
+                append-to="#tab-content-container"
+                @route-active=${() => this.selectTab("admin-tab")}
+            ></domx-route>
+        ` : html``}        
         <div id="tab-content-container">
         </div>
     </div>

@@ -13,11 +13,7 @@ export class CurrentUserData extends DataElement {
     static defaultCurrentUser:IUserData = {
         isAuthenticated: false,
         uid: "",
-        displayName: "",        
-        permissions: {
-            isAuthor: false,
-            isSysAdmin: false
-        }
+        displayName: ""
     };
 
     static defaultHbAppInfo:IHbAppInfo = {
@@ -70,13 +66,12 @@ export class CurrentUserData extends DataElement {
 const setCurrentUserData = (userData:IUserData) => (state:IUserData) => {
     state.isAuthenticated = userData.isAuthenticated;
     state.email = userData.email;
-    state.permissions = userData.permissions;
     state.photoURL = userData.photoURL;
     state.displayName = userData.displayName;
     state.uid = userData.uid;
     state.firstLogin = userData.firstLogin;
     state.lastLogin = userData.lastLogin;
-    state.providerDisplayName = userData.providerDisplayName;
+    state.role = userData.role;
 };
 
 const setAppVersion = (state:IHbAppInfo) => {

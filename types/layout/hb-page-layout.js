@@ -32,12 +32,12 @@ let PageLayout = class PageLayout extends LitElement {
     avatarButtonClicked() {
         this.$userMenu.open = !this.$userMenu.open;
     }
-};
-PageLayout.styles = [css `
+    static { this.styles = [css `
       :host {
         display: block;
       }
-    `];
+    `]; }
+};
 __decorate([
     query("hb-user-menu")
 ], PageLayout.prototype, "$userMenu", void 0);

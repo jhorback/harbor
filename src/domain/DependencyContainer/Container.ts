@@ -26,8 +26,8 @@ class DependencyContainer {
      * @param predicate if false, the dependency does not get registered.
      */
     register<T>(key:symbol, type:Type<T>, predicate?:boolean) {
-        // @ts-ignore TS7053 dynamic index type
         if (predicate !== false) {
+            // @ts-ignore TS7053 dynamic index type
             this.container[key] = {type};
         }
     }

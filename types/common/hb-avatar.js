@@ -36,8 +36,7 @@ let Avatar = class Avatar extends LitElement {
         console.log(`hb-avatar image failed to load, falling back to use an icon`);
         this.href = "";
     }
-};
-Avatar.styles = [iconStyles, css `
+    static { this.styles = [iconStyles, css `
     :host {
       display: inline-block;
       cursor: default;
@@ -76,7 +75,8 @@ Avatar.styles = [iconStyles, css `
       font-size: 72px;
       line-height: 96px;
     }
-  `];
+  `]; }
+};
 __decorate([
     property({ type: String })
 ], Avatar.prototype, "size", void 0);

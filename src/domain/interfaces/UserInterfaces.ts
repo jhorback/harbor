@@ -1,4 +1,4 @@
-
+import { UserRole } from "../User/UserRoles";
 
 
 /*
@@ -22,14 +22,13 @@ export interface IUserAuth {
 
 export interface IUserData {
     isAuthenticated: boolean;
-    uid: string;
+    uid?: string;
     displayName: string|null;
     email?: string|null;
     photoURL?: string|null;
-    providerDisplayName?: string|null;
     firstLogin?: Date,
     lastLogin?: Date,
-    permissions: IUserDataPermissions
+    role?: UserRole|null
 }
 
 export interface IUserDataPermissions {

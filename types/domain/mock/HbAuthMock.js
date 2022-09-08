@@ -6,6 +6,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 import { IUserAuthKey } from "../interfaces/UserInterfaces";
 import { provides } from "../DependencyContainer/decorators";
+import { UserRole } from "../User/UserRoles";
 let HbAutMock = class HbAutMock {
     connect() {
         setupAuthListener();
@@ -33,22 +34,14 @@ const setCurrentUserAsAuthenticated = () => {
         email: "jhorback@gmail.com",
         photoURL: "content/avatars/user1.png",
         uid: "mock-user-id",
-        providerDisplayName: "John Horback",
-        permissions: {
-            isAuthor: false,
-            isSysAdmin: false
-        }
+        role: UserRole.siteAdmin
     });
 };
 const setCurrentUserAsUnAuthenticated = () => {
     currentUserChanged({
         isAuthenticated: false,
         uid: "",
-        displayName: "",
-        permissions: {
-            isAuthor: false,
-            isSysAdmin: false
-        }
+        displayName: ""
     });
 };
 const currentUserChanged = (userData) => {

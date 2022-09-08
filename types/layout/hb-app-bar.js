@@ -38,8 +38,7 @@ let AppBar = class AppBar extends LitElement {
       </div>
     `;
     }
-};
-AppBar.styles = [css `
+    static { this.styles = [css `
     :host {
       display: block;
       height: 64px;
@@ -58,7 +57,8 @@ AppBar.styles = [css `
     .app-bar hb-avatar-button {
       margin: 0 1rem;
     }
-  `];
+  `]; }
+};
 __decorate([
     property({ type: Object })
 ], AppBar.prototype, "currentUser", void 0);

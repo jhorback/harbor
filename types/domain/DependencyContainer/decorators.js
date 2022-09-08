@@ -4,10 +4,11 @@ import { dependencyContainer } from "./Container";
 /**
  * A class decorator that registers the class as a dependency.
  * @param key The key/symbol of the dependency to register
+ * @param predicate if false, the dependency does not get registered.
  */
-export function provides(key) {
+export function provides(key, predicate) {
     return (ctor) => {
-        dependencyContainer.register(key, ctor);
+        dependencyContainer.register(key, ctor, predicate);
     };
 }
 ;

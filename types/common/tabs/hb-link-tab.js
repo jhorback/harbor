@@ -33,10 +33,12 @@ let LinkTab = class LinkTab extends LitElement {
             </a>
         `;
     }
-};
-LinkTab.styles = [styles.types, css `
+    static { this.styles = [styles.types, css `
         :host {
             display: inline-block;
+        }
+        :host([hidden]) {
+            display: none;
         }
         .link, .link:hover {
             display: inline-block;
@@ -63,7 +65,8 @@ LinkTab.styles = [styles.types, css `
             color: var(--md-sys-color-on-primary);
             background-color:  var(--md-sys-color-primary);
         }
-    `];
+    `]; }
+};
 __decorate([
     property({ type: String })
 ], LinkTab.prototype, "label", void 0);
