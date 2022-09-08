@@ -17,6 +17,15 @@ let CurrentUserData = CurrentUserData_1 = class CurrentUserData extends DataElem
         this.currentUser = CurrentUserData_1.defaultCurrentUser;
         this.hbAppInfo = CurrentUserData_1.defaultHbAppInfo;
     }
+    static { this.defaultCurrentUser = {
+        isAuthenticated: false,
+        uid: "",
+        displayName: ""
+    }; }
+    static { this.defaultHbAppInfo = {
+        version: "v0.0.0"
+    }; }
+    static { this.signOutEvent = () => new Event("sign-out", { bubbles: true, composed: true }); }
     connectedCallback() {
         super.connectedCallback();
         this.userAuth.connect();
@@ -42,15 +51,6 @@ let CurrentUserData = CurrentUserData_1 = class CurrentUserData extends DataElem
         }
     }
 };
-CurrentUserData.defaultCurrentUser = {
-    isAuthenticated: false,
-    uid: "",
-    displayName: ""
-};
-CurrentUserData.defaultHbAppInfo = {
-    version: "v0.0.0"
-};
-CurrentUserData.signOutEvent = () => new Event("sign-out", { bubbles: true, composed: true });
 __decorate([
     dataProperty({ changeEvent: "current-user-changed" })
 ], CurrentUserData.prototype, "currentUser", void 0);
@@ -80,7 +80,6 @@ const setCurrentUserData = (userData) => (state) => {
     state.uid = userData.uid;
     state.firstLogin = userData.firstLogin;
     state.lastLogin = userData.lastLogin;
-    state.providerDisplayName = userData.providerDisplayName;
     state.role = userData.role;
 };
 const setAppVersion = (state) => {

@@ -22,11 +22,10 @@ export interface IUserAuth {
 
 export interface IUserData {
     isAuthenticated: boolean;
-    uid: string;
+    uid?: string;
     displayName: string|null;
     email?: string|null;
     photoURL?: string|null;
-    providerDisplayName?: string|null;
     firstLogin?: Date,
     lastLogin?: Date,
     role?: UserRole|null

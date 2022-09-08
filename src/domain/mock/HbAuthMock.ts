@@ -36,7 +36,6 @@ const setCurrentUserAsAuthenticated = () => {
         email: "jhorback@gmail.com",
         photoURL: "content/avatars/user1.png",
         uid: "mock-user-id",
-        providerDisplayName: "John Horback",
         role: UserRole.siteAdmin
     });
 };

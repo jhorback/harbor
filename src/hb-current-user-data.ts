@@ -71,7 +71,6 @@ const setCurrentUserData = (userData:IUserData) => (state:IUserData) => {
     state.uid = userData.uid;
     state.firstLogin = userData.firstLogin;
     state.lastLogin = userData.lastLogin;
-    state.providerDisplayName = userData.providerDisplayName;
     state.role = userData.role;
 };
 

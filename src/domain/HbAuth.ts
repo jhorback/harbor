@@ -1,6 +1,6 @@
 import { IUserAuth, IUserAuthKey, IUserData } from "./interfaces/UserInterfaces";
 import { provides } from "./DependencyContainer/decorators";
-import {FbApp} from "./FbApp";
+import { FbApp } from "./FbApp";
 import { HbApp } from "./HbApp";
 import {
     getAuth,
@@ -12,6 +12,10 @@ import {
     User,
     signInWithRedirect
 } from "firebase/auth";
+import { HbDb } from "./HbDb";
+import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
+import { UserModel } from "./User/UserModel";
+import { UserRole } from "./User/UserRoles";
 
 
 @provides<IUserAuth>(IUserAuthKey, !HbApp.isStorybook)
@@ -28,6 +32,9 @@ class HbAuth implements IUserAuth {
         this.auth = getAuth(FbApp.current);
     }
 
+    /**
+     * Sets up the Google auth listener / handles sign in.
+     */
     connect(): void {
         if (this.connected) {
             return;
@@ -37,6 +44,9 @@ class HbAuth implements IUserAuth {
         this.connected = true; 
     }
 
+    /**
+     * Signs the user out
+     */
     async signOut():Promise<void> {
         return new Promise((resolve, reject) => {
             signOut(this.auth).then(() => {
@@ -52,20 +62,26 @@ class HbAuth implements IUserAuth {
 
 const setupAuthListener = (hbAuth:HbAuth) => {
 
-    onAuthStateChanged(hbAuth.auth, (user) => {
-        // harbor #10
-        // dispatch event first then
-        // need to load user from the database and
-        // insert if not there
-        // need to set firstLogin, lastLogin, and role
-
-        const userData:IUserData = user ? getUserDataFromUser(user) : {
+    onAuthStateChanged(hbAuth.auth, async (user) => {
+        
+        const userData:IUserData = user ? getUserDataFromAuthUser(user) : {
             isAuthenticated: false,
             uid: "",
             displayName: ""
         };
 
-        currentUserChanged(userData);    
+        currentUserChanged(userData);
+
+        if (user) {
+            try {
+                const dbUser = await getSignedInUser(user);
+                currentUserChanged(dbUser);
+            }
+            catch(error:any) {
+                // todo: feedback
+                alert(`Get signed in user error: ${error.message}`);
+            }
+        }
     });
 
     getRedirectResult(hbAuth.auth)
@@ -74,12 +90,8 @@ const setupAuthListener = (hbAuth:HbAuth) => {
                 return;
             }
 
-            // This gives you a Google Access Token. You can use it to access Google APIs.
-            const credential = GoogleAuthProvider.credentialFromResult(result);
-            const token = credential?.accessToken;
-
             // The signed-in user info.
-            const userData = getUserDataFromUser(result.user);
+            const userData = getUserDataFromAuthUser(result.user);
             currentUserChanged(userData);
 
         }).catch((error) => {
@@ -89,16 +101,15 @@ const setupAuthListener = (hbAuth:HbAuth) => {
 };
 
 
-const getUserDataFromUser = (user:User):IUserData => {
-    return {
-        isAuthenticated: true,
-        uid: user.uid,
-        displayName: user.displayName,
-        email: user.email,
-        photoURL: user.photoURL,
-        providerDisplayName: user.displayName
-    };
-};
+
+const getUserDataFromAuthUser = (user:User):IUserData => ({
+    isAuthenticated: true,
+    uid: user.uid,
+    displayName: user.displayName,
+    email: user.email,
+    photoURL: user.photoURL,
+});
+
 
 
 const currentUserChanged = (userData:IUserData) => {
@@ -117,3 +128,40 @@ const listenForSignInEvent = (event:KeyboardEvent) => {
 
 const dispatchCurrentUserChangedEvent = (detail:IUserData) =>
     window.dispatchEvent(new CustomEvent("hb-current-user-changed", { detail }));
+
+
+const getSignedInUser = async (authUser:User):Promise<IUserData> => {
+    const docRef = doc(HbDb.current, "users", authUser.uid).withConverter<IUserData>(UserModel);
+    const docSnap = await getDoc(docRef);
+    let user:IUserData;
+
+    if (!docSnap.exists()) {
+        user = {
+            isAuthenticated: true,
+            email: authUser.email,
+            photoURL: authUser.photoURL,
+            displayName: authUser.displayName,
+            uid: authUser.uid,
+            firstLogin: new Date(),
+            lastLogin: new Date(),
+            role: UserRole.none
+        };
+
+        // trigger now before adding user
+        currentUserChanged(user);
+        await setDoc(doc(HbDb.current, "users", authUser.uid), user);
+
+    } else {
+        user = docSnap.data() as IUserData;
+        
+        // trigger now before update
+        currentUserChanged(user);
+
+        user.lastLogin = new Date();
+        await updateDoc(docRef, {
+            lastLogin: user.lastLogin
+        });
+    }
+
+    return user;
+}
