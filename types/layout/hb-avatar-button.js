@@ -35,7 +35,8 @@ let AvatarButton = class AvatarButton extends LitElement {
     onClick() {
         this.dispatchEvent(new CustomEvent("hb-avatar-button-click", { bubbles: true, composed: true }));
     }
-    static { this.styles = [iconStyles, css `
+};
+AvatarButton.styles = [iconStyles, css `
     :host {
       display: inline-block;
       color: var(--md-sys-color-on-background);
@@ -86,8 +87,7 @@ let AvatarButton = class AvatarButton extends LitElement {
     [hidden] {
       display: none;
     }
-  `]; }
-};
+  `];
 __decorate([
     property({ type: String })
 ], AvatarButton.prototype, "href", void 0);

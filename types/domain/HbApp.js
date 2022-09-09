@@ -11,10 +11,6 @@ import { GoogleAnalytics } from "../domain/GoogleAnalytics";
  * https://storybook.js.org/docs/react/configure/environment-variables
  */
 export class HbApp {
-    static { this.version = __APP_VERSION__; }
-    static { this.isDev = import.meta.env.DEV; }
-    static { this.isProd = import.meta.env.PROD; }
-    static { this.isStorybook = import.meta.env.STORYBOOK ? true : false; }
     // want a predicate for live mode vs use mocks
     // what is a good name for this?
     // useFirebase: true?
@@ -27,3 +23,7 @@ export class HbApp {
         }
     }
 }
+HbApp.version = __APP_VERSION__;
+HbApp.isDev = import.meta.env.DEV;
+HbApp.isProd = import.meta.env.PROD;
+HbApp.isStorybook = import.meta.env.STORYBOOK ? true : false;

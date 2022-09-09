@@ -18,12 +18,12 @@ let HbHome = class HbHome extends LitElement {
             <hb-doc-page uid="doc:home"></hb-doc-page>
         `;
     }
-    static { this.styles = [css `
+};
+HbHome.styles = [css `
         :host {
             display: block;
         }
-    `]; }
-};
+    `];
 HbHome = __decorate([
     customElement('hb-home')
 ], HbHome);
