@@ -32,12 +32,12 @@ let ProfileAdminTab = class ProfileAdminTab extends LitElement {
             <p>Admin Tab</p>
         `;
     }
-    static { this.styles = [styles.types, css `
+};
+ProfileAdminTab.styles = [styles.types, css `
         :host {
             display: block;
         }
-    `]; }
-};
+    `];
 ProfileAdminTab = __decorate([
     customElement('hb-profile-admin-tab')
 ], ProfileAdminTab);

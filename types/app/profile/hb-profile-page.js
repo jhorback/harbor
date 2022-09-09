@@ -112,7 +112,8 @@ let ProfilePage = class ProfilePage extends LitElement {
     selectTab(tab) {
         this.selectedTab = tab;
     }
-    static { this.styles = [styles.types, styles.page, css `
+};
+ProfilePage.styles = [styles.types, styles.page, css `
         :host {
             display: block;
         }
@@ -124,8 +125,7 @@ let ProfilePage = class ProfilePage extends LitElement {
         #tab-content-container {
             padding: 1rem;
         }
-    `]; }
-};
+    `];
 __decorate([
     state()
 ], ProfilePage.prototype, "selectedTab", void 0);

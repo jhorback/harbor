@@ -69,7 +69,8 @@ let AboutPage = class AboutPage extends LitElement {
 </hb-page-layout>
         `;
     }
-    static { this.styles = [styles.types, styles.colors, styles.page, css `
+};
+AboutPage.styles = [styles.types, styles.colors, styles.page, css `
         :host {
             display: block;
         }
@@ -92,8 +93,7 @@ let AboutPage = class AboutPage extends LitElement {
             justify-content: left;
             padding: 1rem 0;
         }
-    `]; }
-};
+    `];
 __decorate([
     property({ type: Object })
 ], AboutPage.prototype, "hbAppInfo", void 0);
