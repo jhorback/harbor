@@ -2,6 +2,7 @@ import { IUserAuth, IUserAuthKey, IUserData } from "./interfaces/UserInterfaces"
 import { provides } from "./DependencyContainer/decorators";
 import { FbApp } from "./FbApp";
 import { HbApp } from "./HbApp";
+import { sendFeedback } from "../common/feedback";
 import {
     getAuth,
     GoogleAuthProvider,
@@ -78,8 +79,7 @@ const setupAuthListener = (hbAuth:HbAuth) => {
                 currentUserChanged(dbUser);
             }
             catch(error:any) {
-                // todo: feedback
-                alert(`Get signed in user error: ${error.message}`);
+                sendFeedback({ message: `Get signed in user error: ${error.message}` });
             }
         }
     });
@@ -95,8 +95,7 @@ const setupAuthListener = (hbAuth:HbAuth) => {
             currentUserChanged(userData);
 
         }).catch((error) => {
-            // todo: feedback
-            alert(`Sign in error: ${error.message}`);
+            sendFeedback({ message: `Sign in error: ${error.message}` });
         });
 };
 
