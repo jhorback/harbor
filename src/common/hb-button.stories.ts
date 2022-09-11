@@ -33,12 +33,14 @@ export default {
 export interface ButtonProps {
     label: string;
     disabled: boolean;
+    selected: boolean;
 }
 
 
-const ButtonTemplate = ({label, disabled}: ButtonProps) => html`
+const ButtonTemplate = ({label, disabled, selected}: ButtonProps) => html`
     <hb-button
         ?disabled=${disabled}
+        ?selected=${selected}
         label=${label}
     ></hb-avatar>
 `;
@@ -50,5 +52,6 @@ const Template: Story<Partial<ButtonProps>> = (args:ButtonProps) => ButtonTempla
 export const Button = Template.bind({});
 Button.args = {
    label: "Button Text",
-   disabled: false
+   disabled: false,
+   selected: false
 };

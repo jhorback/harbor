@@ -8,6 +8,7 @@ import { IUserAuthKey } from "./interfaces/UserInterfaces";
 import { provides } from "./DependencyContainer/decorators";
 import { FbApp } from "./FbApp";
 import { HbApp } from "./HbApp";
+import { sendFeedback } from "../common/feedback";
 import { getAuth, GoogleAuthProvider, onAuthStateChanged, signOut, getRedirectResult, signInWithRedirect } from "firebase/auth";
 import { HbDb } from "./HbDb";
 import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
@@ -59,8 +60,7 @@ const setupAuthListener = (hbAuth) => {
                 currentUserChanged(dbUser);
             }
             catch (error) {
-                // todo: feedback
-                alert(`Get signed in user error: ${error.message}`);
+                sendFeedback({ message: `Get signed in user error: ${error.message}` });
             }
         }
     });
@@ -73,8 +73,7 @@ const setupAuthListener = (hbAuth) => {
         const userData = getUserDataFromAuthUser(result.user);
         currentUserChanged(userData);
     }).catch((error) => {
-        // todo: feedback
-        alert(`Sign in error: ${error.message}`);
+        sendFeedback({ message: `Sign in error: ${error.message}` });
     });
 };
 const getUserDataFromAuthUser = (user) => ({

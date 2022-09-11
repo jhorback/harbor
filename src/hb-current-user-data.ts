@@ -3,6 +3,7 @@ import { customDataElement, dataProperty, event } from "@domx/dataelement/decora
 import { IUserData, IHbAppInfo, IUserAuth, IUserAuthKey } from "./domain/interfaces/UserInterfaces";
 import { HbApp } from "./domain/HbApp";
 import { inject } from "./domain/DependencyContainer/decorators";
+import { sendFeedback } from "./common/feedback";
 import "./domain/HbAuth";
 
 
@@ -56,8 +57,7 @@ export class CurrentUserData extends DataElement {
         try{
             await this.userAuth.signOut();
         } catch (e:any) {
-            // todo: feedback
-            alert(e.message);
+            sendFeedback({ message: e.message });
         }
     }
 }
