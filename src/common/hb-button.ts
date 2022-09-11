@@ -16,10 +16,14 @@ export class Button extends LitElement {
     @property({type: Boolean})
     disabled = false;
 
+    @property({type: Boolean})
+    selected = false;
+
     render() {
         return html`
             <button
                 ?disabled=${this.disabled}
+                ?selected=${this.selected}
                 class="label-large"
                 @click=${this.handleClick}>
                 ${this.label}
@@ -44,7 +48,6 @@ export class Button extends LitElement {
             border-radius: var(--md-sys-shape-corner-extra-large);
             background-color: transparent;
         }
-
         button:hover {
             background-color: var(--hb-sys-color-surface-tint2);
         }
@@ -54,6 +57,10 @@ export class Button extends LitElement {
         }
         button:active {
             background-color: var(--hb-sys-color-surface-tint5);
+        }
+        button[selected] {
+            color: var(--md-sys-color-on-primary);
+            background-color:  var(--md-sys-color-primary);
         }
         button[disabled], button[disabled]:hover, button[disabled]:active, button[disabled]:focus {
             color: var(--md-sys-color-on-surface);
