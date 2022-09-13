@@ -6,6 +6,7 @@ import "./app/hb-home";
 import "./app/profile/hb-profile-page";
 import "./app/hb-about-page";
 import "./hb-current-user-data";
+import "./common/feedback/hb-feedback";
 
 
 HbApp.init();
@@ -21,6 +22,7 @@ export class HarborApp extends LitElement {
       <!-- Keeping this at the app level retains the
       user data in the dataelement store -->
       <hb-current-user-data></hb-current-user-data>
+      <hb-feedback></hb-feedback>
       <div id="hb-app"></div>
       <domx-route
           pattern="/"
