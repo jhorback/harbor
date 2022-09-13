@@ -19,6 +19,13 @@ export interface IUserAuth {
     signOut(): Promise<void>;
 }
 
+export const IUserListKey:symbol = Symbol("USER_LIST");
+
+export interface IUserList {
+    getUsers(): Promise<Array<IUserData>>;
+    updateUserRole(uid:string, role:UserRole): Promise<void>
+}
+
 
 export interface IUserData {
     isAuthenticated: boolean;
