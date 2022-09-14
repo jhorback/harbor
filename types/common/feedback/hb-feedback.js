@@ -68,7 +68,7 @@ let Feedback = class Feedback extends LitElement {
                 <div class="text body-large">${this.state.message}</div>
                 <div class="action">
                     ${this.state.showLinkButton ? html `
-                        <a href=${this.state.href}>${this.state.actionText}</a>
+                        <a @click=${this.linkClicked} href=${this.state.href}>${this.state.actionText}</a>
                     ` : html ``}
                     ${this.state.showButton ? html `
                         <button @click=${this.buttonClicked} class="body-large">${this.state.actionText}</button>
@@ -82,6 +82,10 @@ let Feedback = class Feedback extends LitElement {
             return;
         }
         window.dispatchEvent(new CustomEvent(this.state.event, { detail: this.state.eventDetail }));
+        this.open = false;
+    }
+    linkClicked() {
+        this.open = false;
     }
 };
 Feedback.feedbackEvent = (detail) => new CustomEvent("system-feedback", { detail });

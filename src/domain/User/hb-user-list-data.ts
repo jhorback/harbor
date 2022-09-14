@@ -1,9 +1,9 @@
 import { DataElement, StateChange } from "@domx/dataelement";
 import { customDataElement, dataProperty, event } from "@domx/dataelement/decorators";
-import { IUserData, IUserList, IUserListKey } from "../../domain/interfaces/UserInterfaces";
+import { IUserData, IUserListRepo, IUserListRepoKey } from "../../domain/interfaces/UserInterfaces";
 import { inject } from "../../domain/DependencyContainer/decorators";
 import { sendFeedback } from "../../common/feedback";
-import "./UserList";
+import "./HbUserListRepo";
 import { UserRole } from "./UserRoles";
 import { stringify } from "@firebase/util";
 
@@ -32,8 +32,8 @@ export class UserListData extends DataElement {
     @dataProperty({changeEvent: "users-changed"})
     users:IUserListData = UserListData.defaultUsers;
 
-    @inject<IUserList>(IUserListKey)
-    private userList!:IUserList;
+    @inject<IUserListRepo>(IUserListRepoKey)
+    private userList!:IUserListRepo;
 
     @event("request-user-list")
     async getUserList() {
@@ -52,13 +52,13 @@ export class UserListData extends DataElement {
 
 
 
-const updateUserRole = (userList:IUserList, uid:string, role:UserRole) => async (stateChange:StateChange) => {
+const updateUserRole = (userList:IUserListRepo, uid:string, role:UserRole) => async (stateChange:StateChange) => {
     await userList.updateUserRole(uid, role);
     sendFeedback({message: "The user role has been updated"});
     stateChange.tap(requestUsers(userList));
 };
 
-const requestUsers = (userList:IUserList) => async (stateChange:StateChange) => {
+const requestUsers = (userList:IUserListRepo) => async (stateChange:StateChange) => {
     const users = await userList.getUsers();
     stateChange
         .next(updateUserList(users))
