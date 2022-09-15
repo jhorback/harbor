@@ -24,10 +24,11 @@ export default {
         }
     }
 };
-const ButtonTemplate = ({ label, disabled, selected }) => html `
+const ButtonTemplate = ({ label, disabled, selected, tonal }) => html `
     <hb-button
         ?disabled=${disabled}
         ?selected=${selected}
+        ?tonal=${tonal}
         label=${label}
     ></hb-avatar>
 `;
@@ -37,5 +38,6 @@ export const Button = Template.bind({});
 Button.args = {
     label: "Button Text",
     disabled: false,
-    selected: false
+    selected: false,
+    tonal: false
 };
