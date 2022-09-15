@@ -3,6 +3,7 @@ export const docTypes = {
     doc: {
         type: "doc",
         name: "Document",
+        route: "docs",
         description: "A flexible free-form page that can contain any content",
         element: "hb-doc-page",
         validContentTypes: [contentTypes.text.type, contentTypes.image.type]

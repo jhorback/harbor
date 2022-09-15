@@ -35,7 +35,7 @@ export enum UserAction {
 //     UserActionRoles[action].includes(user.role ? user.role : UserRole.none);
 
 
-// todo: fill out action roles (rename?), review implementation
+// jch: fill out action roles (rename?), review implementation
 const UserActionRoles:{[key:string]: Array<UserRole>} = {
     [UserAction.authorDocuments]: [
         UserRole.userAdmin,

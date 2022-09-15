@@ -5,6 +5,7 @@ import { contentTypes } from "../content/contentTypes";
 interface IDocTypeDescriptor {
     type: string;
     name: string;
+    route: string;
     description: string;
     element: string;
     validContentTypes: Array<string>;
@@ -15,6 +16,7 @@ export const docTypes:{[key:string]: IDocTypeDescriptor}  = {
     doc: {
         type: "doc",
         name: "Document",
+        route: "docs",
         description: "A flexible free-form page that can contain any content",
         element: "hb-doc-page",
         validContentTypes: [contentTypes.text.type, contentTypes.image.type]

@@ -1,7 +1,7 @@
 import { html, css, LitElement } from "lit";
 import { customElement, query } from "lit/decorators.js";
 import "../document/hb-doc-page";
-import "../domain/HomePage/HbHomePageRepo";
+import "../domain/SystemAdmin/HbHomePageRepo";
 import { inject } from "../domain/DependencyContainer/decorators";
 import { IDocumentReference, IHomePageRepo, IHomePageRepoKey } from "../domain/interfaces/DocumentInterfaces";
 import { sendFeedback } from "../common/feedback";
@@ -11,6 +11,8 @@ import { docTypes } from "../document/docTypes";
 /**
  * The job of this element is to look the home page
  * document up in the database and append the correct element to the dom
+ * 
+ * // todo: use the hb-system-admin-data to load the homePageRef
  */
 @customElement('hb-home')
 export class HbHome extends LitElement {
