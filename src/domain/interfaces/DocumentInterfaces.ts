@@ -3,7 +3,7 @@
 
 export interface IDocumentReference {
     uid: string;
-    doctype: string;
+    docType: string;
     pid: string;
     documentRef: string;
 }

@@ -19,10 +19,34 @@ import { docTypes } from "../document/docTypes";
 let HbHome = class HbHome extends LitElement {
     async connectedCallback() {
         super.connectedCallback();
-        const homePageRef = await this.homePageRepo.getHomePageRef();
-        // alert if no home page set
+        // need to wait since the element needs to render
+        // the home-container
+        await this.updateComplete;
+        const homePageRef = this.getHomePageFromLocalStorage();
+        if (homePageRef) {
+            this.showHomePage(homePageRef);
+        }
+        const dbHomePageRef = await this.homePageRepo.getHomePageRef();
+        if (!homePageRef || homePageRef.uid !== dbHomePageRef?.uid) {
+            this.showHomePage(dbHomePageRef);
+            localStorage.setItem("homePageRef", JSON.stringify(dbHomePageRef));
+        }
+    }
+    getHomePageFromLocalStorage() {
+        const homePageRefStr = localStorage.getItem("homePageRef");
+        if (!homePageRefStr) {
+            return null;
+        }
+        try {
+            return JSON.parse(homePageRefStr);
+        }
+        catch {
+            return null;
+        }
+    }
+    showHomePage(homePageRef) {
         if (homePageRef === null) {
-            this.showNotFound();
+            this.showNotFound("The home page is not configured");
             sendFeedback({
                 message: "The home page is not configured",
                 actionText: "Settings",
@@ -30,11 +54,16 @@ let HbHome = class HbHome extends LitElement {
             });
             return;
         }
+        // verify the docType exists
+        const docType = docTypes[homePageRef.docType];
+        if (!docType) {
+            this.showNotFound(`The docType was not found: ${homePageRef.docType}`);
+            return;
+        }
         // verify the custom element has been defined
-        const el = docTypes[homePageRef.doctype].element;
+        const el = docType.element;
         if (customElements.get(el) === undefined) {
-            console.log(`The docType element was not defined: ${el}`);
-            this.showNotFound();
+            this.showNotFound(`The docType element was not defined: ${el}`);
             return;
         }
         this.showDocElement(el, homePageRef.uid);
@@ -45,7 +74,8 @@ let HbHome = class HbHome extends LitElement {
         this.$homeContainer.innerHTML = "";
         this.$homeContainer.append(docEl);
     }
-    showNotFound() {
+    showNotFound(warn) {
+        console.warn(warn);
         const notFoundEl = document.createElement("hb-route-not-found-page");
         this.$homeContainer.innerHTML = "";
         this.$homeContainer.append(notFoundEl);
@@ -53,7 +83,7 @@ let HbHome = class HbHome extends LitElement {
     render() {
         return html `
             <div id="home-container">
-                <hb-doc-page uid="doc:home"></hb-doc-page>
+                Loading... can store in local storage and then check db to see if home is different.
             </div>            
         `;
     }
