@@ -3,7 +3,7 @@ import { docTypes } from "../../document/docTypes";
 import { provides } from "../DependencyContainer/decorators";
 import { HbApp } from "../HbApp";
 import { HbDb } from "../HbDb";
-import { IDocument, IDocumentReference, IDocumentThumbnail, IHomePageRepo, IHomePageRepoKey } from "../interfaces/DocumentInterfaces";
+import { IDocData, IDocumentReference, IDocumentThumbnail, IHomePageRepo, IHomePageRepoKey } from "../interfaces/DocumentInterfaces";
 
 
 interface ISystemApp {
@@ -24,7 +24,7 @@ class HbHomePageRepo implements IHomePageRepo {
         if (docSnap.exists() === false) {
             return null;
         }
-        const document = docSnap.data() as IDocument;
+        const document = docSnap.data() as IDocData;
 
         return {
             uid: document.uid,

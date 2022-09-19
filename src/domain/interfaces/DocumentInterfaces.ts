@@ -1,6 +1,33 @@
+import { TextContent } from "../../content/contentTypes";
 
 
 
+
+
+
+export interface IContentType {
+    contentType: string;
+}
+
+/**
+ * Describes a document for code.
+ * The route, element, valid content types,
+ * and content template.
+ */
+export interface IDocTypeDescriptor {
+    type: string;
+    name: string;
+    description: string;
+    route: string;
+    element: string;
+    validContentTypes: Array<string>;
+    defaultContent: Array<IContentType>;
+}
+
+/**
+ * Describes a document reference for 
+ * lookup purposes.
+ */
 export interface IDocumentReference {
     uid: string;
     docType: string;
@@ -17,24 +44,21 @@ export interface IThumbnail {
 
 export interface IDocumentThumbnail extends IThumbnail, IDocumentReference { }
 
-export interface IDocument {
+export interface IDocData {
     uid: string;
     docType: string;
     pid: string;
     title: string,
     showTitle: boolean,
-    subtitle: string,
+    subtitle: string|null,
     showSubtitle: boolean,
-    thumbUrl: string,
-    thumbDescription: string,
-    useSubtitleAsThumbDescription: string,
+    thumbUrl: string|null,
+    thumbDescription: string|null,
+    useSubtitleAsThumbDescription: boolean,
     dateCreated: Date,
     dateUpdated: Date,
-    author: {
-        userRef: string,
-        displayName: string,
-        photoURL?: string
-    }
+    authorUid: string,
+    content: Array<IContentType>
 }
 
 

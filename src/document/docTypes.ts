@@ -1,15 +1,9 @@
 import { contentTypes } from "../content/contentTypes";
+import { IDocTypeDescriptor } from "../domain/interfaces/DocumentInterfaces";
 
 
 
-interface IDocTypeDescriptor {
-    type: string;
-    name: string;
-    route: string;
-    description: string;
-    element: string;
-    validContentTypes: Array<string>;
-}
+
 
 
 export const docTypes:{[key:string]: IDocTypeDescriptor}  = {

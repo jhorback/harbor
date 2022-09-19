@@ -1,3 +1,11 @@
+import { IContentType } from "../domain/interfaces/DocumentInterfaces";
+
+
+
+export class TextContent implements IContentType {
+    contentType = "text";
+    text = "";
+}
 
 
 interface IContentTypeDescriptor {

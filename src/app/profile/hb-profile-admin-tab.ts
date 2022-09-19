@@ -1,9 +1,11 @@
 import { html, css, LitElement } from "lit";
-import { customElement, property, state } from "lit/decorators.js";
+import { customElement, property, query, state } from "lit/decorators.js";
 import { styles } from "../../styles";
 import { ISystemAdminData } from "../../domain/SystemAdmin/hb-system-admin-data";
 import { linkProp } from "@domx/linkprop";
 import "../../common/hb-button";
+import "../../document/hb-add-document-dialog";
+import { AddDocumentDialog } from "../../document/hb-add-document-dialog";
 
 
 /**
@@ -42,11 +44,15 @@ export class ProfileAdminTab extends LitElement {
     @state()
     changeHomePage = false;
 
+    @query("hb-add-document-dialog")
+    $addDocumentDialog!:AddDocumentDialog;
+
     render() {
         return html`
             <hb-system-admin-data
                 @settings-changed=${linkProp(this, "settings")}
             ></hb-system-admin-data>
+            <hb-add-document-dialog open></hb-add-document-dialog>
             <div class="home-page-container">
                 <div class="title-large">Home page</div>
                 ${this.settings?.homePageThumbnail ? html`
@@ -85,7 +91,7 @@ export class ProfileAdminTab extends LitElement {
 
     private addNewHomePageClicked() {
         this.changeHomePage = false;
-        alert("ADD NEW");
+       this.$addDocumentDialog.open = true;
     }
 
     private searchExistingHomePageClicked() {
