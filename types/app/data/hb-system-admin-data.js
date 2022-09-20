@@ -8,7 +8,7 @@ var SystemAdminData_1;
 import { DataElement, StateChange } from "@domx/dataelement";
 import { customDataElement, dataProperty, event } from "@domx/dataelement/decorators";
 import { inject } from "../../domain/DependencyContainer/decorators";
-import { IHomePageRepoKey } from "../../domain/interfaces/DocumentInterfaces";
+import { HomePageRepoKey } from "../../domain/interfaces/DocumentInterfaces";
 import "./HbUserListRepo";
 let SystemAdminData = SystemAdminData_1 = class SystemAdminData extends DataElement {
     constructor() {
@@ -30,7 +30,7 @@ __decorate([
     dataProperty({ changeEvent: "settings-changed" })
 ], SystemAdminData.prototype, "settings", void 0);
 __decorate([
-    inject(IHomePageRepoKey)
+    inject(HomePageRepoKey)
 ], SystemAdminData.prototype, "homePageRepo", void 0);
 __decorate([
     event("request-sysadmin-settings")

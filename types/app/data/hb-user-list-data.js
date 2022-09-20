@@ -7,7 +7,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var UserListData_1;
 import { DataElement, StateChange } from "@domx/dataelement";
 import { customDataElement, dataProperty, event } from "@domx/dataelement/decorators";
-import { IUserListRepoKey } from "../../domain/interfaces/UserInterfaces";
+import { UserListRepoKey } from "../../domain/interfaces/UserInterfaces";
 import { inject } from "../../domain/DependencyContainer/decorators";
 import { sendFeedback } from "../../common/feedback";
 import "../../domain/User/HbUserListRepo";
@@ -37,7 +37,7 @@ __decorate([
     dataProperty({ changeEvent: "users-changed" })
 ], UserListData.prototype, "users", void 0);
 __decorate([
-    inject(IUserListRepoKey)
+    inject(UserListRepoKey)
 ], UserListData.prototype, "userList", void 0);
 __decorate([
     event("request-user-list")

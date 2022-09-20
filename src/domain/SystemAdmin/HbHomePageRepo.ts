@@ -8,7 +8,7 @@ import {
     IDocumentReference,
     IDocumentThumbnail,
     IHomePageRepo,
-    IHomePageRepoKey
+    HomePageRepoKey
 } from "../interfaces/DocumentInterfaces";
 
 
@@ -17,7 +17,7 @@ interface ISystemApp {
 };
 
 
-@provides<IHomePageRepo>(IHomePageRepoKey, !HbApp.isStorybook)
+@provides<IHomePageRepo>(HomePageRepoKey, !HbApp.isStorybook)
 class HbHomePageRepo implements IHomePageRepo {
     async getHomePageThumbnail(): Promise<IDocumentThumbnail | null> {
         const ref = await this.getHomePageRef();

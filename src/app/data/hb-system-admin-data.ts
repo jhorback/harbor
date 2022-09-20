@@ -1,7 +1,7 @@
 import { DataElement, StateChange } from "@domx/dataelement";
 import { customDataElement, dataProperty, event } from "@domx/dataelement/decorators";
 import { inject } from "../../domain/DependencyContainer/decorators";
-import { IDocumentThumbnail, IHomePageRepo, IHomePageRepoKey } from "../../domain/interfaces/DocumentInterfaces";
+import { IDocumentThumbnail, IHomePageRepo, HomePageRepoKey } from "../../domain/interfaces/DocumentInterfaces";
 import "./HbUserListRepo";
 
 
@@ -26,7 +26,7 @@ export class SystemAdminData extends DataElement {
     @dataProperty({changeEvent: "settings-changed"})
     settings:ISystemAdminData = SystemAdminData.defaultSettings;
 
-    @inject<IHomePageRepo>(IHomePageRepoKey)
+    @inject<IHomePageRepo>(HomePageRepoKey)
     private homePageRepo!:IHomePageRepo;
 
     @event("request-sysadmin-settings")

@@ -1,2 +1,2 @@
 export const IUserAuthKey = Symbol("USER_AUTH");
-export const IUserListRepoKey = Symbol("USER_LIST_REPO");
+export const UserListRepoKey = Symbol("USER_LIST_REPO");

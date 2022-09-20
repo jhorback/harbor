@@ -1,8 +1,3 @@
-import { TextContent } from "../content/contentTypes";
-
-
-
-
 
 
 export interface IContentType {
@@ -22,6 +17,7 @@ export interface IDocTypeDescriptor {
     element: string;
     validContentTypes: Array<string>;
     defaultContent: Array<IContentType>;
+    icon: string;
 }
 
 /**
@@ -62,8 +58,21 @@ export interface IDocData {
 }
 
 
+export const AddDocRepoKey:symbol = Symbol("ADD_DOC_REPO");
 
-export const IHomePageRepoKey:symbol = Symbol("HOME_PAGE_REPO_KEY");
+
+export interface IAddNewDocumentOptions {
+    docType: string;
+    title: string;
+}
+
+export interface IAddDocRepo {
+    addDoc(options:IAddNewDocumentOptions):Promise<IDocumentReference>;
+}
+
+
+
+export const HomePageRepoKey:symbol = Symbol("HOME_PAGE_REPO_KEY");
 
 
 export interface IHomePageRepo {

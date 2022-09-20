@@ -7,7 +7,18 @@ export const docTypes = {
         description: "A flexible free-form page that can contain any content",
         element: "hb-doc-page",
         validContentTypes: [contentTypes.text.type, contentTypes.image.type],
-        defaultContent: [new TextContent()]
+        defaultContent: [new TextContent()],
+        icon: "article"
+    },
+    doc2: {
+        type: "doc",
+        name: "Photo",
+        route: "docs",
+        description: "Some other text that may be a bit longer so it will be forced to wrap on a different line",
+        element: "hb-doc-page",
+        validContentTypes: [contentTypes.text.type, contentTypes.image.type],
+        defaultContent: [new TextContent()],
+        icon: "image"
     }
     /*
     * Album (hb-album-doc - album/albums) - Text (text), Album Art (Image), Release Date (custom), Songs (song-list)

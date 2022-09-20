@@ -8,7 +8,7 @@ import { getDocs, collection, doc, updateDoc } from "firebase/firestore";
 import { provides } from "../DependencyContainer/decorators";
 import { HbApp } from "../HbApp";
 import { HbDb } from "../HbDb";
-import { IUserListRepoKey } from "../interfaces/UserInterfaces";
+import { UserListRepoKey } from "../interfaces/UserInterfaces";
 import { UserModel } from "./UserModel";
 let HbUserListRepo = class HbUserListRepo {
     async getUsers() {
@@ -24,5 +24,5 @@ let HbUserListRepo = class HbUserListRepo {
     }
 };
 HbUserListRepo = __decorate([
-    provides(IUserListRepoKey, !HbApp.isStorybook)
+    provides(UserListRepoKey, !HbApp.isStorybook)
 ], HbUserListRepo);

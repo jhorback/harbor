@@ -1,6 +1,6 @@
 import { DataElement, StateChange } from "@domx/dataelement";
 import { customDataElement, dataProperty, event } from "@domx/dataelement/decorators";
-import { IUserData, IUserListRepo, IUserListRepoKey } from "../../domain/interfaces/UserInterfaces";
+import { IUserData, IUserListRepo, UserListRepoKey } from "../../domain/interfaces/UserInterfaces";
 import { inject } from "../../domain/DependencyContainer/decorators";
 import { sendFeedback } from "../../common/feedback";
 import "../../domain/User/HbUserListRepo";
@@ -31,7 +31,7 @@ export class UserListData extends DataElement {
     @dataProperty({changeEvent: "users-changed"})
     users:IUserListData = UserListData.defaultUsers;
 
-    @inject<IUserListRepo>(IUserListRepoKey)
+    @inject<IUserListRepo>(UserListRepoKey)
     private userList!:IUserListRepo;
 
     @event("request-user-list")

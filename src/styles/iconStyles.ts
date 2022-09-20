@@ -13,7 +13,7 @@ import { css } from 'lit-element';
  */
 export const iconStyles = css`
 /* iconStyles */
-.material-symbols-outlined, .icon-button {
+.material-symbols-outlined, .icon-button, .icon {
   font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 48;
   font-family: 'Material Symbols Outlined';
   font-weight: normal;

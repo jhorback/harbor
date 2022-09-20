@@ -9,7 +9,7 @@ import { docTypes } from "../Doc/docTypes";
 import { provides } from "../DependencyContainer/decorators";
 import { HbApp } from "../HbApp";
 import { HbDb } from "../HbDb";
-import { IHomePageRepoKey } from "../interfaces/DocumentInterfaces";
+import { HomePageRepoKey } from "../interfaces/DocumentInterfaces";
 ;
 let HbHomePageRepo = class HbHomePageRepo {
     async getHomePageThumbnail() {
@@ -49,5 +49,5 @@ let HbHomePageRepo = class HbHomePageRepo {
     }
 };
 HbHomePageRepo = __decorate([
-    provides(IHomePageRepoKey, !HbApp.isStorybook)
+    provides(HomePageRepoKey, !HbApp.isStorybook)
 ], HbHomePageRepo);

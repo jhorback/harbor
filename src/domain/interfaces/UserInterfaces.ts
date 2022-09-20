@@ -19,7 +19,7 @@ export interface IUserAuth {
     signOut(): Promise<void>;
 }
 
-export const IUserListRepoKey:symbol = Symbol("USER_LIST_REPO");
+export const UserListRepoKey:symbol = Symbol("USER_LIST_REPO");
 
 export interface IUserListRepo {
     getUsers(): Promise<Array<IUserData>>;

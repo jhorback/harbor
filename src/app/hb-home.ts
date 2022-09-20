@@ -3,7 +3,7 @@ import { customElement, query } from "lit/decorators.js";
 import "../doc/hb-doc-page";
 import "../domain/SystemAdmin/HbHomePageRepo";
 import { inject } from "../domain/DependencyContainer/decorators";
-import { IDocumentReference, IHomePageRepo, IHomePageRepoKey } from "../domain/interfaces/DocumentInterfaces";
+import { IDocumentReference, IHomePageRepo, HomePageRepoKey } from "../domain/interfaces/DocumentInterfaces";
 import { sendFeedback } from "../common/feedback";
 import { docTypes } from "../domain/Doc/docTypes";
 
@@ -17,7 +17,7 @@ import { docTypes } from "../domain/Doc/docTypes";
 @customElement('hb-home')
 export class HbHome extends LitElement {
 
-    @inject<IHomePageRepo>(IHomePageRepoKey)
+    @inject<IHomePageRepo>(HomePageRepoKey)
     private homePageRepo!:IHomePageRepo;
 
     @query("#home-container")

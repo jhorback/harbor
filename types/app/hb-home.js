@@ -9,7 +9,7 @@ import { customElement, query } from "lit/decorators.js";
 import "../doc/hb-doc-page";
 import "../domain/SystemAdmin/HbHomePageRepo";
 import { inject } from "../domain/DependencyContainer/decorators";
-import { IHomePageRepoKey } from "../domain/interfaces/DocumentInterfaces";
+import { HomePageRepoKey } from "../domain/interfaces/DocumentInterfaces";
 import { sendFeedback } from "../common/feedback";
 import { docTypes } from "../domain/Doc/docTypes";
 /**
@@ -96,7 +96,7 @@ HbHome.styles = [css `
         }
     `];
 __decorate([
-    inject(IHomePageRepoKey)
+    inject(HomePageRepoKey)
 ], HbHome.prototype, "homePageRepo", void 0);
 __decorate([
     query("#home-container")
