@@ -5,10 +5,11 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 import { html, css, LitElement } from "lit";
-import { customElement, property, state } from "lit/decorators.js";
+import { customElement, property, query, state } from "lit/decorators.js";
 import { styles } from "../../styles";
 import { linkProp } from "@domx/linkprop";
 import "../../common/hb-button";
+import "../../doc/hb-add-document-dialog";
 /**
  * // todo: home page dialogs
  *
@@ -44,10 +45,13 @@ let ProfileAdminTab = class ProfileAdminTab extends LitElement {
             <hb-system-admin-data
                 @settings-changed=${linkProp(this, "settings")}
             ></hb-system-admin-data>
+            <hb-add-document-dialog open></hb-add-document-dialog>
             <div class="home-page-container">
                 <div class="title-large">Home page</div>
                 ${this.settings?.homePageThumbnail ? html `
+
                     HAVE THUMBNAIL!!!
+
                 ` : html `
                     <div class="body-large">
                         The home page has not been set
@@ -69,7 +73,7 @@ let ProfileAdminTab = class ProfileAdminTab extends LitElement {
                         ?hidden=${!this.changeHomePage}
                         @click=${this.searchExistingHomePageClicked}
                     ></hb-button>
-                </div>                
+                </div>
             </div>
         `;
     }
@@ -78,7 +82,7 @@ let ProfileAdminTab = class ProfileAdminTab extends LitElement {
     }
     addNewHomePageClicked() {
         this.changeHomePage = false;
-        alert("ADD NEW");
+        this.$addDocumentDialog.open = true;
     }
     searchExistingHomePageClicked() {
         this.changeHomePage = false;
@@ -87,10 +91,10 @@ let ProfileAdminTab = class ProfileAdminTab extends LitElement {
 };
 ProfileAdminTab.styles = [styles.types, css `
         :host {
-            display: block;
-            margin-top: 2rem;
+            display: block; 
         }
         .home-page-container {
+            margin-top: 2rem;
             display: flex;
             flex-direction: column;
             gap: 1.5rem;
@@ -109,6 +113,9 @@ __decorate([
 __decorate([
     state()
 ], ProfileAdminTab.prototype, "changeHomePage", void 0);
+__decorate([
+    query("hb-add-document-dialog")
+], ProfileAdminTab.prototype, "$addDocumentDialog", void 0);
 ProfileAdminTab = __decorate([
     customElement('hb-profile-admin-tab')
 ], ProfileAdminTab);

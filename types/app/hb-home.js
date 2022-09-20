@@ -6,12 +6,12 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 import { html, css, LitElement } from "lit";
 import { customElement, query } from "lit/decorators.js";
-import "../document/hb-doc-page";
+import "../doc/hb-doc-page";
 import "../domain/SystemAdmin/HbHomePageRepo";
 import { inject } from "../domain/DependencyContainer/decorators";
 import { IHomePageRepoKey } from "../domain/interfaces/DocumentInterfaces";
 import { sendFeedback } from "../common/feedback";
-import { docTypes } from "../document/docTypes";
+import { docTypes } from "../domain/Doc/docTypes";
 /**
  * The job of this element is to look the home page
  * document up in the database and append the correct element to the dom

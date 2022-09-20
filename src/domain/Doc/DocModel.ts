@@ -1,5 +1,5 @@
 import { QueryDocumentSnapshot, Timestamp } from "firebase/firestore";
-import { TextContent } from "../../content/contentTypes";
+import { TextContent } from "../content/contentTypes";
 import { IContentType, IDocData } from "../interfaces/DocumentInterfaces";
 
 

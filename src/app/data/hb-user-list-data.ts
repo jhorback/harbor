@@ -3,8 +3,8 @@ import { customDataElement, dataProperty, event } from "@domx/dataelement/decora
 import { IUserData, IUserListRepo, IUserListRepoKey } from "../../domain/interfaces/UserInterfaces";
 import { inject } from "../../domain/DependencyContainer/decorators";
 import { sendFeedback } from "../../common/feedback";
-import "./HbUserListRepo";
-import { UserRole } from "./UserRoles";
+import "../../domain/User/HbUserListRepo";
+import { UserRole } from "../../domain/User/UserRoles";
 
 
 export interface IUserListData {

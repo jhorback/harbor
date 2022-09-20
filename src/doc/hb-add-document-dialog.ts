@@ -10,6 +10,19 @@ import "../common/hb-button";
  * // then take the doc type and doc name and add to db
  * // when done this dialog would need to fire an event on itself that contains the information
  * // to be able to set that as the home page - the documentReference?
+ * 
+ * hb-add-document-data
+ *  - state.docTypes []
+ *  - fires-event.document-added
+ *  - db.addDocument
+ * 
+ * hb-search-documents-data
+ *  - state.results: Array<IDocumentThumbnail>
+ *  - state.count
+ *  - state.searchText
+ *  - handles-event.search-text-changed
+ *  - fires-event.document-selected
+ *  - db.searchDocuments
  */
 @customElement('hb-add-document-dialog')
 export class AddDocumentDialog extends LitElement {

@@ -1,11 +1,11 @@
 import { html, css, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators.js";
 import { styles } from "../../styles";
-import { ISystemAdminData } from "../../domain/SystemAdmin/hb-system-admin-data";
+import { ISystemAdminData } from "../data/hb-system-admin-data";
 import { linkProp } from "@domx/linkprop";
 import "../../common/hb-button";
-import "../../document/hb-add-document-dialog";
-import { AddDocumentDialog } from "../../document/hb-add-document-dialog";
+import "../../doc/hb-add-document-dialog";
+import { AddDocumentDialog } from "../../doc/hb-add-document-dialog";
 
 
 /**

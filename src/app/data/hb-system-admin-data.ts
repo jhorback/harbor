@@ -1,7 +1,7 @@
 import { DataElement, StateChange } from "@domx/dataelement";
 import { customDataElement, dataProperty, event } from "@domx/dataelement/decorators";
 import { inject } from "../../domain/DependencyContainer/decorators";
-import { IDocumentThumbnail, IHomePageRepo, IHomePageRepoKey } from "../interfaces/DocumentInterfaces";
+import { IDocumentThumbnail, IHomePageRepo, IHomePageRepoKey } from "../../domain/interfaces/DocumentInterfaces";
 import "./HbUserListRepo";
 
 
@@ -44,7 +44,7 @@ export class SystemAdminData extends DataElement {
 
 
 const requestSettings = (homePageRepo:IHomePageRepo) => async (stateChange:StateChange) => {
-    const thumbnail = await homePageRepo.getDocumentThumbnail();
+    const thumbnail = await homePageRepo.getHomePageThumbnail();
     stateChange
         .next(updateThumbnail(thumbnail))
         .dispatch();

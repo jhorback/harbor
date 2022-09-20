@@ -7,7 +7,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 import { linkProp } from "@domx/linkprop";
 import { html, css, LitElement } from "lit";
 import { customElement, property, query } from "lit/decorators.js";
-import { UserListData } from "../../domain/User/hb-user-list-data";
+import { UserListData } from "../data/hb-user-list-data";
 import { styles } from "../../styles";
 import "./hb-user-card";
 /**

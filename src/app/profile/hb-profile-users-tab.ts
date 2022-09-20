@@ -1,7 +1,7 @@
 import { linkProp } from "@domx/linkprop";
 import { html, css, LitElement } from "lit";
 import { customElement, property, query } from "lit/decorators.js";
-import { UserListData, IUserListData } from "../../domain/User/hb-user-list-data";
+import { UserListData, IUserListData } from "../data/hb-user-list-data";
 import { styles } from "../../styles";
 import "./hb-user-card";
 

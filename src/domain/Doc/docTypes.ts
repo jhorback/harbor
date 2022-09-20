@@ -1,5 +1,5 @@
-import { contentTypes } from "../content/contentTypes";
-import { IDocTypeDescriptor } from "../domain/interfaces/DocumentInterfaces";
+import { contentTypes, TextContent } from "../content/contentTypes";
+import { IDocTypeDescriptor } from "../interfaces/DocumentInterfaces";
 
 
 
@@ -13,7 +13,8 @@ export const docTypes:{[key:string]: IDocTypeDescriptor}  = {
         route: "docs",
         description: "A flexible free-form page that can contain any content",
         element: "hb-doc-page",
-        validContentTypes: [contentTypes.text.type, contentTypes.image.type]
+        validContentTypes: [contentTypes.text.type, contentTypes.image.type],
+        defaultContent: [new TextContent()]
     }
     /*
     * Album (hb-album-doc - album/albums) - Text (text), Album Art (Image), Release Date (custom), Songs (song-list)

@@ -1,4 +1,4 @@
-import { TextContent } from "../../content/contentTypes";
+import { TextContent } from "../content/contentTypes";
 
 
 
@@ -68,6 +68,6 @@ export const IHomePageRepoKey:symbol = Symbol("HOME_PAGE_REPO_KEY");
 
 export interface IHomePageRepo {
     getHomePageRef():Promise<IDocumentReference|null>;
-    getDocumentThumbnail():Promise<IDocumentThumbnail|null>;
+    getHomePageThumbnail():Promise<IDocumentThumbnail|null>;
     setHomePage(documentRef: string):Promise<void>;
 }

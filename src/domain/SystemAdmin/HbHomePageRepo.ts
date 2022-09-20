@@ -1,9 +1,15 @@
 import { doc, getDoc } from "firebase/firestore";
-import { docTypes } from "../../document/docTypes";
+import { docTypes } from "../Doc/docTypes";
 import { provides } from "../DependencyContainer/decorators";
 import { HbApp } from "../HbApp";
 import { HbDb } from "../HbDb";
-import { IDocData, IDocumentReference, IDocumentThumbnail, IHomePageRepo, IHomePageRepoKey } from "../interfaces/DocumentInterfaces";
+import {
+    IDocData,
+    IDocumentReference,
+    IDocumentThumbnail,
+    IHomePageRepo,
+    IHomePageRepoKey
+} from "../interfaces/DocumentInterfaces";
 
 
 interface ISystemApp {
@@ -13,7 +19,7 @@ interface ISystemApp {
 
 @provides<IHomePageRepo>(IHomePageRepoKey, !HbApp.isStorybook)
 class HbHomePageRepo implements IHomePageRepo {
-    async getDocumentThumbnail(): Promise<IDocumentThumbnail | null> {
+    async getHomePageThumbnail(): Promise<IDocumentThumbnail | null> {
         const ref = await this.getHomePageRef();
         if (ref === null) {
             return null;

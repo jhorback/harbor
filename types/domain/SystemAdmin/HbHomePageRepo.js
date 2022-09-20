@@ -5,14 +5,14 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 import { doc, getDoc } from "firebase/firestore";
-import { docTypes } from "../../document/docTypes";
+import { docTypes } from "../Doc/docTypes";
 import { provides } from "../DependencyContainer/decorators";
 import { HbApp } from "../HbApp";
 import { HbDb } from "../HbDb";
 import { IHomePageRepoKey } from "../interfaces/DocumentInterfaces";
 ;
 let HbHomePageRepo = class HbHomePageRepo {
-    async getDocumentThumbnail() {
+    async getHomePageThumbnail() {
         const ref = await this.getHomePageRef();
         if (ref === null) {
             return null;

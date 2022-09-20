@@ -9,7 +9,7 @@ import { customElement, property } from "lit/decorators.js";
 import { UserRole } from "../../domain/User/UserRoles";
 import { styles } from "../../styles";
 import "../../common/hb-avatar";
-import { UserListData } from "../../domain/User/hb-user-list-data";
+import { UserListData } from "../data/hb-user-list-data";
 /**
  * @class ProfileAdminTab
  */

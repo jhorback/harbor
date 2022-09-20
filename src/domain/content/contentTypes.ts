@@ -1,4 +1,4 @@
-import { IContentType } from "../domain/interfaces/DocumentInterfaces";
+import { IContentType } from "../interfaces/DocumentInterfaces";
 
 
 
