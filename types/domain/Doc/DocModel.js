@@ -1,5 +1,5 @@
 import { Timestamp } from "firebase/firestore";
-import { TextContent } from "../content/contentTypes";
+import { docTypes } from "./docTypes";
 /**
  *
  */
@@ -21,7 +21,24 @@ export class DocModel {
         this.dateCreated = new Date();
         this.dateUpdated = new Date();
         this.authorUid = "";
-        this.content = [new TextContent()];
+        this.content = new Array();
+        this.toDocumentReference = () => ({
+            uid: this.uid,
+            docType: this.docType,
+            pid: this.pid,
+            documentRef: this.documentRef
+        });
+        this.toDocumentThumbnail = () => ({
+            uid: this.uid,
+            docType: this.docType,
+            pid: this.pid,
+            documentRef: `documents/${this.uid}`,
+            title: this.title,
+            thumbUrl: this.thumbUrl,
+            thumbDescription: this.useSubtitleAsThumbDescription ?
+                this.subtitle : this.thumbDescription,
+            href: `${docTypes[this.docType].route}/${this.pid}`
+        });
     }
     /**
      * Helper method to ensure doc properties when
@@ -35,7 +52,11 @@ export class DocModel {
         doc.docType = options.docType;
         doc.pid = DocModel.tokenize(doc.title);
         doc.uid = `${doc.docType}:${doc.pid}`;
+        doc.content = docTypes[doc.docType].defaultContent;
         return doc;
+    }
+    get documentRef() {
+        return `documents/${this.uid}`;
     }
     /**
      * Used to tokenize the title to get the page id.
@@ -48,16 +69,16 @@ export class DocModel {
     static toFirestore(doc) {
         return {
             ...doc,
-            firstLogin: Timestamp.fromDate(doc.dateCreated ?? new Date()),
-            lastLogin: Timestamp.fromDate(doc.dateUpdated ?? new Date())
+            dateCreated: Timestamp.fromDate(doc.dateCreated ?? new Date()),
+            dateUpdated: Timestamp.fromDate(doc.dateUpdated ?? new Date())
         };
     }
     static fromFirestore(snapshot) {
         const dbDoc = snapshot.data();
-        return {
-            ...dbDoc,
-            dateCreated: dbDoc.dateCreated.toDate(),
-            dateUpdated: dbDoc.dateUpdated.toDate()
-        };
+        const docModel = new DocModel();
+        Object.assign(docModel, dbDoc);
+        docModel.dateCreated = dbDoc.dateCreated.toDate();
+        docModel.dateUpdated = dbDoc.dateUpdated.toDate();
+        return docModel;
     }
 }

@@ -1,31 +1,42 @@
-import { getDocs, collection, QueryDocumentSnapshot, doc, updateDoc } from "firebase/firestore";
+import { doc, setDoc } from "firebase/firestore";
 import { ClientError } from "../ClientError";
 import { provides } from "../DependencyContainer/decorators";
 import { HbApp } from "../HbApp";
 import { HbDb } from "../HbDb";
-import { AddDocRepoKey, IAddDocRepo, IAddNewDocumentOptions, IDocumentReference } from "../interfaces/DocumentInterfaces";
 import { DocModel } from "./DocModel";
-
-
-
+import { FindDocRepo } from "../Doc/FindDocRepo";
+import {
+    AddDocRepoKey,
+    IAddDocRepo,
+    IAddNewDocumentOptions,
+    IDocumentReference
+} from "../interfaces/DocumentInterfaces";
 
 
 @provides<IAddDocRepo>(AddDocRepoKey, !HbApp.isStorybook)
 class AddDocRepo implements IAddDocRepo {
+    private findDocRepo:FindDocRepo;
+
+    constructor() {
+        this.findDocRepo = new FindDocRepo();
+    }
 
     async addDoc(options:IAddNewDocumentOptions): Promise<IDocumentReference> {
 
-        const clientError = new ClientError("The document already exists");
-        clientError.addPropertyError("title", "The document already exists");
-        throw clientError;
-
-        //const query = await getDocs(collection(HbDb.current, "users"));
-        const docRef:IDocumentReference = {
-            uid: "TEST",
-            docType: "TEST",
-            pid: "TEST",
-            documentRef: "TEST"
+        var newDoc = DocModel.createNewDoc(options);
+        
+        const existingDoc = this.findDocRepo.findDoc(newDoc.uid);
+        if (existingDoc !== null) {
+            const clientError = new ClientError("The document already exists");
+            clientError.addPropertyError("title", "The document already exists");
+            throw clientError;
         }
-        return docRef;
+        await this.addNewDoc(newDoc);
+        return newDoc.toDocumentReference();
+    }
+
+    private async addNewDoc(newDoc:DocModel) {
+        const ref = doc(HbDb.current, "documents", newDoc.uid).withConverter(DocModel);
+        await setDoc(ref, newDoc);
     }
 }

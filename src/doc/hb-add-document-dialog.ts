@@ -67,6 +67,7 @@ export class AddDocumentDialog extends LitElement {
         this.newDocTitle = "";
         this.selectedIndex = 0;
         this.$newDocumentTitle.value = "";
+        this.addDocumentError = "";
     }
 
     render() {
@@ -86,9 +87,7 @@ export class AddDocumentDialog extends LitElement {
                     ${this.state.docTypes.map((docType, index) => html`
                         <div
                             class=${classMap({"doc-type": true, "selected": this.isSelected(index)})}
-                            @click=${() => this.selectedIndex = index}
-                        >
-
+                            @click=${() => this.selectedIndex = index}>
                             <div>
                                 <div class="icon icon-small">${docType.icon}</div>
                             </div>

@@ -11,6 +11,7 @@ import { inject } from "../../domain/DependencyContainer/decorators";
 import { AddDocRepoKey } from "../../domain/interfaces/DocumentInterfaces";
 import { docTypes } from "../../domain/Doc/docTypes";
 import "../../domain/Doc/HbAddDocRepo";
+import { ClientError } from "../../domain/ClientError";
 let AddDocumentData = AddDocumentData_1 = class AddDocumentData extends DataElement {
     constructor() {
         super(...arguments);
@@ -52,9 +53,23 @@ const requestDocTypes = (state) => {
     state.docTypes = Object.keys(docTypes).map(key => docTypes[key]);
 };
 const addNewDocument = (repo, options) => async (stateChange) => {
-    const docRef = await repo.addDoc(options);
-    stateChange
-        .dispatchEvent(new CustomEvent("document-added", {
+    let docRef;
+    try {
+        docRef = await repo.addDoc(options);
+    }
+    catch (error) {
+        if (error instanceof ClientError) {
+            stateChange.dispatchEvent(new CustomEvent("add-document-error", {
+                bubbles: true,
+                detail: error
+            }));
+        }
+        else {
+            throw error;
+        }
+        return;
+    }
+    stateChange.dispatchEvent(new CustomEvent("document-added", {
         bubbles: true,
         detail: docRef
     }));

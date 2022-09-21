@@ -1,3 +1,4 @@
+import { Timestamp } from "firebase/firestore";
 
 
 export interface IContentType {
@@ -45,16 +46,16 @@ export interface IDocData {
     docType: string;
     pid: string;
     title: string,
-    showTitle: boolean,
-    subtitle: string|null,
-    showSubtitle: boolean,
-    thumbUrl: string|null,
-    thumbDescription: string|null,
-    useSubtitleAsThumbDescription: boolean,
-    dateCreated: Date,
-    dateUpdated: Date,
-    authorUid: string,
-    content: Array<IContentType>
+    showTitle: boolean;
+    subtitle: string|null;
+    showSubtitle: boolean;
+    thumbUrl: string|null;
+    thumbDescription: string|null;
+    useSubtitleAsThumbDescription: boolean;
+    dateCreated: Date|Timestamp;
+    dateUpdated: Date|Timestamp;
+    authorUid: string;
+    content: Array<IContentType>;
 }
 
 

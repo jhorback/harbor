@@ -58,7 +58,6 @@ const addNewDocument = (repo:IAddDocRepo, options:IAddNewDocumentOptions) => asy
 
     let docRef:IDocumentReference;
 
-
     try {
         docRef = await repo.addDoc(options);
     }

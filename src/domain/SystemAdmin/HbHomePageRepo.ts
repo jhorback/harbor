@@ -1,10 +1,9 @@
 import { doc, getDoc } from "firebase/firestore";
-import { docTypes } from "../Doc/docTypes";
 import { provides } from "../DependencyContainer/decorators";
 import { HbApp } from "../HbApp";
 import { HbDb } from "../HbDb";
+import { FindDocRepo } from "../Doc/FindDocRepo";
 import {
-    IDocData,
     IDocumentReference,
     IDocumentThumbnail,
     IHomePageRepo,
@@ -19,30 +18,24 @@ interface ISystemApp {
 
 @provides<IHomePageRepo>(HomePageRepoKey, !HbApp.isStorybook)
 class HbHomePageRepo implements IHomePageRepo {
+    private findDocRepo:FindDocRepo;
+
+    constructor() {
+        this.findDocRepo = new FindDocRepo();
+    }
+
     async getHomePageThumbnail(): Promise<IDocumentThumbnail | null> {
         const ref = await this.getHomePageRef();
         if (ref === null) {
             return null;
         }
 
-        const docRef = doc(HbDb.current, "documents", ref.uid);
-        const docSnap = await getDoc(docRef);
-        if (docSnap.exists() === false) {
+        const document = await this.findDocRepo.findDoc(ref.uid);
+        if (document === null) {
             return null;
         }
-        const document = docSnap.data() as IDocData;
 
-        return {
-            uid: document.uid,
-            docType: document.docType,
-            pid: document.pid,
-            documentRef: `documents/${document.uid}`,
-            title: document.title,
-            thumbUrl: document.thumbUrl,
-            thumbDescription: document.useSubtitleAsThumbDescription ?
-                document.subtitle : document.thumbDescription,
-            href: `${docTypes[document.docType].route}/${document.pid}`
-        };
+        return document.toDocumentThumbnail();
     }
 
     async getHomePageRef():Promise<IDocumentReference|null> {

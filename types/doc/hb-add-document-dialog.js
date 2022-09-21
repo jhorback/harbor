@@ -42,6 +42,7 @@ let AddDocumentDialog = class AddDocumentDialog extends LitElement {
         this.state = AddDocumentData.defaultState;
         this.selectedIndex = 0;
         this.addButtonEnabled = false;
+        this.addDocumentError = null;
         this.newDocTitle = "";
     }
     reset() {
@@ -49,12 +50,14 @@ let AddDocumentDialog = class AddDocumentDialog extends LitElement {
         this.newDocTitle = "";
         this.selectedIndex = 0;
         this.$newDocumentTitle.value = "";
+        this.addDocumentError = "";
     }
     render() {
         return html `
             <hb-add-document-data
                 @state-changed=${linkProp(this, "state")}
                 @document-added=${this.documentAdded}
+                @add-document-error=${this.handleAddDocumentError}
             ></hb-add-document-data>
             <dialog class="dark-theme">
                 
@@ -66,9 +69,7 @@ let AddDocumentDialog = class AddDocumentDialog extends LitElement {
                     ${this.state.docTypes.map((docType, index) => html `
                         <div
                             class=${classMap({ "doc-type": true, "selected": this.isSelected(index) })}
-                            @click=${() => this.selectedIndex = index}
-                        >
-
+                            @click=${() => this.selectedIndex = index}>
                             <div>
                                 <div class="icon icon-small">${docType.icon}</div>
                             </div>
@@ -86,12 +87,15 @@ let AddDocumentDialog = class AddDocumentDialog extends LitElement {
                 </div>
                 <div class="field">
                     <div class="label-large">Document name</div>
-                    <div class="text-input-container">
+                    <div class=${classMap({ "text-input-container": true, "property-error": this.addDocumentError ? true : false })}>
                         <input id="newDocumentTitle"
                             type="text"
                             class="text-input"
                             placeholder="Enter the document title"
                             @keyup=${this.textKeyUp}>
+                        <div class="error-text body-small">
+                            ${this.addDocumentError}
+                        </div>
                     </div>
                 </div>
                 <div class="buttons">
@@ -118,6 +122,10 @@ let AddDocumentDialog = class AddDocumentDialog extends LitElement {
     textKeyUp(event) {
         this.newDocTitle = event.target.value;
         this.addButtonEnabled = this.newDocTitle.length > 2;
+        this.addDocumentError = null;
+        if (this.addButtonEnabled && event.key === "Enter") {
+            this.addButtonClicked();
+        }
     }
     cancelButtonClicked() {
         this.reset();
@@ -129,13 +137,16 @@ let AddDocumentDialog = class AddDocumentDialog extends LitElement {
             title: this.newDocTitle
         }));
     }
+    handleAddDocumentError(event) {
+        const error = event.detail;
+        this.addDocumentError = error.message;
+    }
     documentAdded(event) {
-        //const docRef = event.detail as IDocumentReference;
         const docRef = event.detail;
-        alert(docRef.foo);
+        alert(docRef.docType);
     }
 };
-AddDocumentDialog.styles = [styles.types, styles.icons, css `
+AddDocumentDialog.styles = [styles.types, styles.icons, styles.colors, css `
         :host {
             display: block;
             z-index:1;
@@ -187,6 +198,11 @@ AddDocumentDialog.styles = [styles.types, styles.icons, css `
             gap: 1rem;
             justify-content: right;
         }
+
+
+        /*
+        jch: hb-text-input control?
+        */
         .text-input-container {
             padding-right: 2rem;
         }
@@ -199,6 +215,19 @@ AddDocumentDialog.styles = [styles.types, styles.icons, css `
             max-width: 100%;
             width: 100%;
             padding: 0 1rem;
+            background: transparent;
+        }
+        .property-error .text-input {
+            border-color: var(--md-sys-color-error);
+        }
+        .property-error .text-input:focus {
+            border-color: var(--md-sys-color-error) !important;
+            outline: none;
+        }
+        .error-text {
+            padding-left: 1rem;
+            padding-top: 4px;
+            height: 16px;
         }
   `];
 __decorate([
@@ -222,6 +251,9 @@ __decorate([
 __decorate([
     state()
 ], AddDocumentDialog.prototype, "addButtonEnabled", void 0);
+__decorate([
+    state()
+], AddDocumentDialog.prototype, "addDocumentError", void 0);
 AddDocumentDialog = __decorate([
     customElement('hb-add-document-dialog')
 ], AddDocumentDialog);
