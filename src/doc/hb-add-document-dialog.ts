@@ -7,6 +7,7 @@ import  "./data/hb-add-document-data";
 import "../common/hb-button";
 import { linkProp } from "@domx/linkprop";
 import { IDocumentReference } from "../domain/interfaces/DocumentInterfaces";
+import { ClientError } from "../domain/ClientError";
 
 
 /**
@@ -56,6 +57,9 @@ export class AddDocumentDialog extends LitElement {
     @state()
     addButtonEnabled = false;
 
+    @state()
+    addDocumentError:string|null = null;
+
     newDocTitle = "";
 
     private reset() {
@@ -70,6 +74,7 @@ export class AddDocumentDialog extends LitElement {
             <hb-add-document-data
                 @state-changed=${linkProp(this, "state")}
                 @document-added=${this.documentAdded}
+                @add-document-error=${this.handleAddDocumentError}
             ></hb-add-document-data>
             <dialog class="dark-theme">
                 
@@ -101,12 +106,15 @@ export class AddDocumentDialog extends LitElement {
                 </div>
                 <div class="field">
                     <div class="label-large">Document name</div>
-                    <div class="text-input-container">
+                    <div class=${classMap({"text-input-container":true, "property-error": this.addDocumentError ? true : false})}>
                         <input id="newDocumentTitle"
                             type="text"
                             class="text-input"
                             placeholder="Enter the document title"
                             @keyup=${this.textKeyUp}>
+                        <div class="error-text body-small">
+                            ${this.addDocumentError}
+                        </div>
                     </div>
                 </div>
                 <div class="buttons">
@@ -136,6 +144,7 @@ export class AddDocumentDialog extends LitElement {
     private textKeyUp(event:KeyboardEvent) {
         this.newDocTitle = (event.target as HTMLInputElement).value;
         this.addButtonEnabled = this.newDocTitle.length > 2;
+        this.addDocumentError = null;
         if (this.addButtonEnabled && event.key === "Enter") {
             this.addButtonClicked();
         }
@@ -152,13 +161,18 @@ export class AddDocumentDialog extends LitElement {
             title: this.newDocTitle
         }));
     }
+
+    private handleAddDocumentError(event:CustomEvent) {
+        const error = event.detail as ClientError;
+        this.addDocumentError = error.message;     
+    }
     
     private documentAdded(event:CustomEvent) {
         const docRef = event.detail as IDocumentReference;
         alert(docRef.docType);
     }
 
-    static styles = [styles.types, styles.icons, css`
+    static styles = [styles.types, styles.icons, styles.colors, css`
         :host {
             display: block;
             z-index:1;
@@ -210,6 +224,11 @@ export class AddDocumentDialog extends LitElement {
             gap: 1rem;
             justify-content: right;
         }
+
+
+        /*
+        jch: hb-text-input control?
+        */
         .text-input-container {
             padding-right: 2rem;
         }
@@ -222,6 +241,19 @@ export class AddDocumentDialog extends LitElement {
             max-width: 100%;
             width: 100%;
             padding: 0 1rem;
+            background: transparent;
+        }
+        .property-error .text-input {
+            border-color: var(--md-sys-color-error);
+        }
+        .property-error .text-input:focus {
+            border-color: var(--md-sys-color-error) !important;
+            outline: none;
+        }
+        .error-text {
+            padding-left: 1rem;
+            padding-top: 4px;
+            height: 16px;
         }
   `]
 }

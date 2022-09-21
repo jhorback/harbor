@@ -1,4 +1,5 @@
 import { getDocs, collection, QueryDocumentSnapshot, doc, updateDoc } from "firebase/firestore";
+import { ClientError } from "../ClientError";
 import { provides } from "../DependencyContainer/decorators";
 import { HbApp } from "../HbApp";
 import { HbDb } from "../HbDb";
@@ -13,6 +14,11 @@ import { DocModel } from "./DocModel";
 class AddDocRepo implements IAddDocRepo {
 
     async addDoc(options:IAddNewDocumentOptions): Promise<IDocumentReference> {
+
+        const clientError = new ClientError("The document already exists");
+        clientError.addPropertyError("title", "The document already exists");
+        throw clientError;
+
         //const query = await getDocs(collection(HbDb.current, "users"));
         const docRef:IDocumentReference = {
             uid: "TEST",
