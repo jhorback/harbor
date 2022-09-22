@@ -1,34 +1,22 @@
 import { html, css, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators.js";
 import { styles } from "../../styles";
-import { ISystemAdminData } from "../data/hb-system-admin-data";
+import {SystemAdminData } from "../data/hb-system-admin-data";
 import { linkProp } from "@domx/linkprop";
 import "../../common/hb-button";
 import "../../doc/hb-add-document-dialog";
 import { AddDocumentDialog } from "../../doc/hb-add-document-dialog";
+import { IDocumentReference } from "../../domain/interfaces/DocumentInterfaces";
 
 
 /**
- * // todo: home page dialogs
- * 
- * 
- * Both dialogs can return a value that can be used in the "set-home-page" event
- * 
- * Add Document Dialog
- * state: {
- *      docTypes: Array<IDocumentTypeDescriptor>
- * }
- * Handled Events:
- *  * add-document
- * 
- * Search Document Dialog
+ * // todo: Search Document Dialog
  * state: {
  *      results: {
  *          count:
  *          list?:
  *      }
  * }
- * 
  */
 
 
@@ -39,7 +27,7 @@ import { AddDocumentDialog } from "../../doc/hb-add-document-dialog";
 export class ProfileAdminTab extends LitElement {
 
     @property({type: Object})
-    settings!:ISystemAdminData;
+    settings = SystemAdminData.defaultSettings;
 
     @state()
     changeHomePage = false;
@@ -47,15 +35,26 @@ export class ProfileAdminTab extends LitElement {
     @query("hb-add-document-dialog")
     $addDocumentDialog!:AddDocumentDialog;
 
+    @query("hb-system-admin-data")
+    $systemAdminData!:SystemAdminData;
+
+    async connectedCallback() {
+        super.connectedCallback();
+        await this.updated;
+        this.$systemAdminData.dispatchEvent(SystemAdminData.requestSysadminSettingsEvent());
+    }
+
     render() {
         return html`
             <hb-system-admin-data
                 @settings-changed=${linkProp(this, "settings")}
             ></hb-system-admin-data>
-            <hb-add-document-dialog open></hb-add-document-dialog>
+            <hb-add-document-dialog
+                @document-added=${this.documentAdded}
+            ></hb-add-document-dialog>
             <div class="home-page-container">
                 <div class="title-large">Home page</div>
-                ${this.settings?.homePageThumbnail ? html`
+                ${this.settings.homePageThumbnail ? html`
 
                     HAVE THUMBNAIL!!!
 
@@ -92,6 +91,11 @@ export class ProfileAdminTab extends LitElement {
     private addNewHomePageClicked() {
         this.changeHomePage = false;
        this.$addDocumentDialog.open = true;
+    }
+
+    private documentAdded(event:CustomEvent) {
+        var docRef = event.detail as IDocumentReference;
+        this.$systemAdminData.dispatchEvent(SystemAdminData.updateHomePageEvent(docRef));
     }
 
     private searchExistingHomePageClicked() {

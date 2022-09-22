@@ -8,6 +8,6 @@ export class FindDocRepo {
     async findDoc(uid) {
         const docRef = doc(HbDb.current, "documents", uid).withConverter(DocModel);
         const docSnap = await getDoc(docRef);
-        return docSnap.data();
+        return docSnap.exists() ? docSnap.data() : null;
     }
 }

@@ -13,17 +13,6 @@ import "./data/hb-add-document-data";
 import "../common/hb-button";
 import { linkProp } from "@domx/linkprop";
 /**
- * // todo: add doc data element
- * // will need a data element to list out all document types
- * // then take the doc type and doc name and add to db
- * // when done this dialog would need to fire an event on itself that contains the information
- * // to be able to set that as the home page - the documentReference?
- *
- * hb-add-document-data
- *  - state.docTypes []
- *  - fires-event.document-added
- *  - db.addDocument
- *
  * hb-search-documents-data
  *  - documents.results: Array<IDocumentThumbnail>
  *  - documents.count
@@ -101,7 +90,7 @@ let AddDocumentDialog = class AddDocumentDialog extends LitElement {
                 <div class="buttons">
                     <hb-button
                         label="Cancel"
-                        @click=${this.cancelButtonClicked}
+                        @click=${this.close}
                     ></hb-button>
                     <hb-button
                         label="Add Document"
@@ -116,6 +105,10 @@ let AddDocumentDialog = class AddDocumentDialog extends LitElement {
         this.open && !this.$dialog.open && this.$dialog.showModal();
         !this.open && this.$dialog.close();
     }
+    close() {
+        this.reset();
+        this.open = false;
+    }
     isSelected(index) {
         return index === this.selectedIndex;
     }
@@ -126,10 +119,6 @@ let AddDocumentDialog = class AddDocumentDialog extends LitElement {
         if (this.addButtonEnabled && event.key === "Enter") {
             this.addButtonClicked();
         }
-    }
-    cancelButtonClicked() {
-        this.reset();
-        this.open = false;
     }
     addButtonClicked() {
         this.shadowRoot?.dispatchEvent(AddDocumentData.addNewDocumentEvent({
@@ -143,7 +132,8 @@ let AddDocumentDialog = class AddDocumentDialog extends LitElement {
     }
     documentAdded(event) {
         const docRef = event.detail;
-        alert(docRef.docType);
+        this.dispatchEvent(new CustomEvent("document-added", { detail: docRef }));
+        this.close();
     }
 };
 AddDocumentDialog.styles = [styles.types, styles.icons, styles.colors, css `

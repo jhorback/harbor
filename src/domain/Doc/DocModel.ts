@@ -1,13 +1,7 @@
 import { QueryDocumentSnapshot, Timestamp } from "firebase/firestore";
-import { IContentType, IDocData, IDocumentReference, IDocumentThumbnail } from "../interfaces/DocumentInterfaces";
+import { IAddNewDocumentOptions, IContentType, IDocData, IDocumentReference, IDocumentThumbnail } from "../interfaces/DocumentInterfaces";
 import { docTypes } from "./docTypes";
 
-
-
-interface ICreateNewDocOptions {
-    docType: string;
-    title: string;
-}
 
 /**
  *
@@ -19,8 +13,9 @@ export class DocModel implements IDocData {
      * @param options 
      * @returns 
      */
-     static createNewDoc(options:ICreateNewDocOptions):DocModel {
+     static createNewDoc(authorUid: string, options:IAddNewDocumentOptions):DocModel {
         const doc = new DocModel();
+        doc.authorUid = authorUid;
         doc.title = options.title;
         doc.docType = options.docType;
         doc.pid = DocModel.tokenize(doc.title);
@@ -81,9 +76,20 @@ export class DocModel implements IDocData {
 
     static toFirestore(doc:DocModel):IDocData {
         return {
-            ...doc,
+            uid: doc.uid,
+            authorUid: doc.authorUid,
+            docType: doc.docType,
+            pid: doc.pid,
+            title: doc.title,
+            showTitle: doc.showTitle,
+            subtitle: doc.subtitle,
+            showSubtitle: doc.showSubtitle,
+            thumbUrl: doc.thumbUrl,
+            thumbDescription: doc.thumbDescription,
+            useSubtitleAsThumbDescription: doc.useSubtitleAsThumbDescription,
             dateCreated: Timestamp.fromDate(doc.dateCreated ?? new Date()),
-            dateUpdated: Timestamp.fromDate(doc.dateUpdated ?? new Date())
+            dateUpdated: Timestamp.fromDate(doc.dateUpdated ?? new Date()),
+            content: doc.content.map(c => ({...c}))
         };
     }
     

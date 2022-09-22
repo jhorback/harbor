@@ -11,21 +11,32 @@ import {
     IAddNewDocumentOptions,
     IDocumentReference
 } from "../interfaces/DocumentInterfaces";
+import { HbCurrentUser } from "../HbCurrentUser";
 
 
 @provides<IAddDocRepo>(AddDocRepoKey, !HbApp.isStorybook)
 class AddDocRepo implements IAddDocRepo {
     private findDocRepo:FindDocRepo;
+    private currentUser:HbCurrentUser;
 
     constructor() {
         this.findDocRepo = new FindDocRepo();
+        this.currentUser = new HbCurrentUser();
+    }
+    
+    private getCurrentUserId():string {
+        const authorId = this.currentUser.uid;
+        if (!authorId) {
+            throw new Error("The current user is not logged in.");
+        }
+        return authorId;
     }
 
     async addDoc(options:IAddNewDocumentOptions): Promise<IDocumentReference> {
 
-        var newDoc = DocModel.createNewDoc(options);
-        
-        const existingDoc = this.findDocRepo.findDoc(newDoc.uid);
+        const newDoc = DocModel.createNewDoc(this.getCurrentUserId(), options);
+
+        const existingDoc = await this.findDocRepo.findDoc(newDoc.uid);
         if (existingDoc !== null) {
             const clientError = new ClientError("The document already exists");
             clientError.addPropertyError("title", "The document already exists");

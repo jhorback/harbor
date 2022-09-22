@@ -1,6 +1,6 @@
 import { DataElement, StateChange } from "@domx/dataelement";
 import { customDataElement, dataProperty, event } from "@domx/dataelement/decorators";
-import { IUserData, IHbAppInfo, IUserAuth, IUserAuthKey } from "./domain/interfaces/UserInterfaces";
+import { IUserData, IHbAppInfo, IUserAuth, UserAuthKey } from "./domain/interfaces/UserInterfaces";
 import { HbApp } from "./domain/HbApp";
 import { inject } from "./domain/DependencyContainer/decorators";
 import { sendFeedback } from "./common/feedback";
@@ -30,7 +30,7 @@ export class CurrentUserData extends DataElement {
     @dataProperty({changeEvent: "hb-app-info-changed"})
     hbAppInfo:IHbAppInfo = CurrentUserData.defaultHbAppInfo;
 
-    @inject<IUserAuth>(IUserAuthKey)
+    @inject<IUserAuth>(UserAuthKey)
     private userAuth!:IUserAuth;
 
     connectedCallback() {

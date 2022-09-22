@@ -11,6 +11,6 @@ export class FindDocRepo {
     async findDoc(uid:string):Promise<DocModel|null> {
         const docRef = doc(HbDb.current, "documents", uid).withConverter(DocModel);
         const docSnap = await getDoc(docRef);
-        return docSnap.data() as DocModel|null;
+        return docSnap.exists() ? docSnap.data() as DocModel : null;
     }
 }

@@ -17,6 +17,7 @@ import { docTypes } from "../domain/Doc/docTypes";
  * document up in the database and append the correct element to the dom
  *
  * // todo: use the hb-system-admin-data to load the homePageRef
+ * Basically, remove the local storage and extra logic from here
  */
 let HbHome = class HbHome extends LitElement {
     async connectedCallback() {

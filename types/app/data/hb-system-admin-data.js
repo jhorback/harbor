@@ -7,9 +7,9 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var SystemAdminData_1;
 import { DataElement, StateChange } from "@domx/dataelement";
 import { customDataElement, dataProperty, event } from "@domx/dataelement/decorators";
+import { sendFeedback } from "../../common/feedback";
 import { inject } from "../../domain/DependencyContainer/decorators";
 import { HomePageRepoKey } from "../../domain/interfaces/DocumentInterfaces";
-import "./HbUserListRepo";
 let SystemAdminData = SystemAdminData_1 = class SystemAdminData extends DataElement {
     constructor() {
         super(...arguments);
@@ -20,12 +20,14 @@ let SystemAdminData = SystemAdminData_1 = class SystemAdminData extends DataElem
             .tap(requestSettings(this.homePageRepo));
     }
     async updateHomePage(event) {
-        // todo: update home page
+        const docRef = event.detail;
+        StateChange.of(this, "settings")
+            .tap(updateHomePage(this.homePageRepo, docRef));
     }
 };
 SystemAdminData.defaultSettings = { homePageThumbnail: null };
 SystemAdminData.requestSysadminSettingsEvent = () => new CustomEvent("request-sysadmin-settings", { bubbles: true });
-SystemAdminData.updateHomePageEvent = (uid) => new CustomEvent("update-home-page", { bubbles: true, composed: true, detail: { /** fill this out */} });
+SystemAdminData.updateHomePageEvent = (documentReference) => new CustomEvent("update-home-page", { bubbles: true, composed: true, detail: documentReference });
 __decorate([
     dataProperty({ changeEvent: "settings-changed" })
 ], SystemAdminData.prototype, "settings", void 0);
@@ -44,6 +46,13 @@ SystemAdminData = SystemAdminData_1 = __decorate([
     })
 ], SystemAdminData);
 export { SystemAdminData };
+const updateHomePage = (homePageRepo, docRef) => async (stateChange) => {
+    await homePageRepo.setHomePage(docRef);
+    stateChange.tap(requestSettings(homePageRepo));
+    sendFeedback({
+        message: "The home page has been updated"
+    });
+};
 const requestSettings = (homePageRepo) => async (stateChange) => {
     const thumbnail = await homePageRepo.getHomePageThumbnail();
     stateChange

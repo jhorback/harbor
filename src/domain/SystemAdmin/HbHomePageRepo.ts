@@ -1,4 +1,4 @@
-import { doc, getDoc } from "firebase/firestore";
+import { doc, getDoc, setDoc } from "firebase/firestore";
 import { provides } from "../DependencyContainer/decorators";
 import { HbApp } from "../HbApp";
 import { HbDb } from "../HbDb";
@@ -39,7 +39,11 @@ class HbHomePageRepo implements IHomePageRepo {
     }
 
     async getHomePageRef():Promise<IDocumentReference|null> {
+        const systemApp = await this.getSystemApp();
+        return systemApp?.homePage || null;
+    }
 
+    private async getSystemApp():Promise<ISystemApp|null> {
         const docRef = doc(HbDb.current, "system", "app");
         const docSnap = await getDoc(docRef);
         if (docSnap.exists() === false) {
@@ -47,10 +51,12 @@ class HbHomePageRepo implements IHomePageRepo {
         }
 
         const systemApp = docSnap.data() as ISystemApp;
-        return systemApp.homePage || null;
+        return systemApp;
     }
 
-    setHomePage(documentRef: string):Promise<void> {
-        throw new Error("Not implemented");
+    async setHomePage(documentReference: IDocumentReference):Promise<void> {
+        const systemApp = await this.getSystemApp() || {};
+        systemApp.homePage = documentReference;
+        await setDoc(doc(HbDb.current, "system", "app"), systemApp);
     }
 }

@@ -12,13 +12,22 @@ import { HbDb } from "../HbDb";
 import { DocModel } from "./DocModel";
 import { FindDocRepo } from "../Doc/FindDocRepo";
 import { AddDocRepoKey } from "../interfaces/DocumentInterfaces";
+import { HbCurrentUser } from "../HbCurrentUser";
 let AddDocRepo = class AddDocRepo {
     constructor() {
         this.findDocRepo = new FindDocRepo();
+        this.currentUser = new HbCurrentUser();
+    }
+    getCurrentUserId() {
+        const authorId = this.currentUser.uid;
+        if (!authorId) {
+            throw new Error("The current user is not logged in.");
+        }
+        return authorId;
     }
     async addDoc(options) {
-        var newDoc = DocModel.createNewDoc(options);
-        const existingDoc = this.findDocRepo.findDoc(newDoc.uid);
+        const newDoc = DocModel.createNewDoc(this.getCurrentUserId(), options);
+        const existingDoc = await this.findDocRepo.findDoc(newDoc.uid);
         if (existingDoc !== null) {
             const clientError = new ClientError("The document already exists");
             clientError.addPropertyError("title", "The document already exists");

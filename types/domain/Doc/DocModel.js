@@ -46,8 +46,9 @@ export class DocModel {
      * @param options
      * @returns
      */
-    static createNewDoc(options) {
+    static createNewDoc(authorUid, options) {
         const doc = new DocModel();
+        doc.authorUid = authorUid;
         doc.title = options.title;
         doc.docType = options.docType;
         doc.pid = DocModel.tokenize(doc.title);
@@ -68,9 +69,20 @@ export class DocModel {
     }
     static toFirestore(doc) {
         return {
-            ...doc,
+            uid: doc.uid,
+            authorUid: doc.authorUid,
+            docType: doc.docType,
+            pid: doc.pid,
+            title: doc.title,
+            showTitle: doc.showTitle,
+            subtitle: doc.subtitle,
+            showSubtitle: doc.showSubtitle,
+            thumbUrl: doc.thumbUrl,
+            thumbDescription: doc.thumbDescription,
+            useSubtitleAsThumbDescription: doc.useSubtitleAsThumbDescription,
             dateCreated: Timestamp.fromDate(doc.dateCreated ?? new Date()),
-            dateUpdated: Timestamp.fromDate(doc.dateUpdated ?? new Date())
+            dateUpdated: Timestamp.fromDate(doc.dateUpdated ?? new Date()),
+            content: doc.content.map(c => ({ ...c }))
         };
     }
     static fromFirestore(snapshot) {

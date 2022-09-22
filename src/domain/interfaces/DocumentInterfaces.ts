@@ -79,5 +79,5 @@ export const HomePageRepoKey:symbol = Symbol("HOME_PAGE_REPO_KEY");
 export interface IHomePageRepo {
     getHomePageRef():Promise<IDocumentReference|null>;
     getHomePageThumbnail():Promise<IDocumentThumbnail|null>;
-    setHomePage(documentRef: string):Promise<void>;
+    setHomePage(documentReference: IDocumentReference):Promise<void>;
 }

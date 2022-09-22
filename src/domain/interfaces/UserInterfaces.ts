@@ -11,7 +11,7 @@ export interface IHbAppInfo {
 }
 
 
-export const IUserAuthKey:symbol = Symbol("USER_AUTH");
+export const UserAuthKey:symbol = Symbol("USER_AUTH");
 
 
 export interface IUserAuth {

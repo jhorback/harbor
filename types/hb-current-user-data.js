@@ -7,7 +7,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var CurrentUserData_1;
 import { DataElement, StateChange } from "@domx/dataelement";
 import { customDataElement, dataProperty, event } from "@domx/dataelement/decorators";
-import { IUserAuthKey } from "./domain/interfaces/UserInterfaces";
+import { UserAuthKey } from "./domain/interfaces/UserInterfaces";
 import { HbApp } from "./domain/HbApp";
 import { inject } from "./domain/DependencyContainer/decorators";
 import { sendFeedback } from "./common/feedback";
@@ -58,7 +58,7 @@ __decorate([
     dataProperty({ changeEvent: "hb-app-info-changed" })
 ], CurrentUserData.prototype, "hbAppInfo", void 0);
 __decorate([
-    inject(IUserAuthKey)
+    inject(UserAuthKey)
 ], CurrentUserData.prototype, "userAuth", void 0);
 __decorate([
     event("hb-current-user-changed")

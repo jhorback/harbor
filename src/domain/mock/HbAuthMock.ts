@@ -1,10 +1,10 @@
-import { IUserAuth, IUserAuthKey, IUserData } from "../interfaces/UserInterfaces";
+import { IUserAuth, UserAuthKey, IUserData } from "../interfaces/UserInterfaces";
 import {provides} from "../DependencyContainer/decorators";
 import { UserRole } from "../User/UserRoles";
 
 
 
-@provides<IUserAuth>(IUserAuthKey)
+@provides<IUserAuth>(UserAuthKey)
 class HbAutMock implements IUserAuth {
 
     connect(): void {
