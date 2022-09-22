@@ -10,6 +10,7 @@ import { HbApp } from "../HbApp";
 import { HbDb } from "../HbDb";
 import { FindDocRepo } from "../Doc/FindDocRepo";
 import { HomePageRepoKey } from "../interfaces/DocumentInterfaces";
+import { authorize, UserAction } from "../HbCurrentUser";
 ;
 let HbHomePageRepo = class HbHomePageRepo {
     constructor() {
@@ -45,6 +46,9 @@ let HbHomePageRepo = class HbHomePageRepo {
         await setDoc(doc(HbDb.current, "system", "app"), systemApp);
     }
 };
+__decorate([
+    authorize(UserAction.editSiteSettings)
+], HbHomePageRepo.prototype, "setHomePage", null);
 HbHomePageRepo = __decorate([
     provides(HomePageRepoKey, !HbApp.isStorybook)
 ], HbHomePageRepo);

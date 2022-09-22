@@ -12,7 +12,7 @@ import { HbDb } from "../HbDb";
 import { DocModel } from "./DocModel";
 import { FindDocRepo } from "../Doc/FindDocRepo";
 import { AddDocRepoKey } from "../interfaces/DocumentInterfaces";
-import { HbCurrentUser } from "../HbCurrentUser";
+import { authorize, UserAction, HbCurrentUser } from "../HbCurrentUser";
 let AddDocRepo = class AddDocRepo {
     constructor() {
         this.findDocRepo = new FindDocRepo();
@@ -41,6 +41,9 @@ let AddDocRepo = class AddDocRepo {
         await setDoc(ref, newDoc);
     }
 };
+__decorate([
+    authorize(UserAction.authorDocuments)
+], AddDocRepo.prototype, "addDoc", null);
 AddDocRepo = __decorate([
     provides(AddDocRepoKey, !HbApp.isStorybook)
 ], AddDocRepo);

@@ -42,9 +42,9 @@ export class HbCurrentUser {
     private static _uid:string|undefined;
     private static _userRole:UserRole = UserRole.none;
 
-    static setCurrentUser(uid:string|undefined, userRole: UserRole) {
+    static setCurrentUser(uid:string|undefined, userRole: UserRole|undefined|null) {
         this._uid = uid;
-        this._userRole = userRole;
+        this._userRole = userRole || UserRole.none;
     }
 
     get uid():string|undefined {

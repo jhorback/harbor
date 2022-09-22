@@ -9,6 +9,7 @@ import {
     IHomePageRepo,
     HomePageRepoKey
 } from "../interfaces/DocumentInterfaces";
+import { authorize, UserAction } from "../HbCurrentUser";
 
 
 interface ISystemApp {
@@ -54,6 +55,7 @@ class HbHomePageRepo implements IHomePageRepo {
         return systemApp;
     }
 
+    @authorize(UserAction.editSiteSettings)
     async setHomePage(documentReference: IDocumentReference):Promise<void> {
         const systemApp = await this.getSystemApp() || {};
         systemApp.homePage = documentReference;

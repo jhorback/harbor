@@ -1,4 +1,4 @@
-export const userCan = (user, action) => UserActionRoles[action].includes(user.role ? user.role : UserRole.none);
+export const roleHasAction = (role, action) => UserActionRoles[action].includes(role);
 export var UserRole;
 (function (UserRole) {
     UserRole["none"] = "NONE";

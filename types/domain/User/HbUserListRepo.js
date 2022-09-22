@@ -7,6 +7,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 import { getDocs, collection, doc, updateDoc } from "firebase/firestore";
 import { provides } from "../DependencyContainer/decorators";
 import { HbApp } from "../HbApp";
+import { authorize, UserAction } from "../HbCurrentUser";
 import { HbDb } from "../HbDb";
 import { UserListRepoKey } from "../interfaces/UserInterfaces";
 import { UserModel } from "./UserModel";
@@ -23,6 +24,12 @@ let HbUserListRepo = class HbUserListRepo {
         });
     }
 };
+__decorate([
+    authorize(UserAction.viewUsers)
+], HbUserListRepo.prototype, "getUsers", null);
+__decorate([
+    authorize(UserAction.editUsersRoles)
+], HbUserListRepo.prototype, "updateUserRole", null);
 HbUserListRepo = __decorate([
     provides(UserListRepoKey, !HbApp.isStorybook)
 ], HbUserListRepo);
