@@ -1,8 +1,9 @@
 import { IUserData } from "../interfaces/UserInterfaces";
 
 
-export const userCan = (user:IUserData, action:UserAction):boolean =>
-    UserActionRoles[action].includes(user.role ? user.role : UserRole.none);
+export const roleHasAction = (role:UserRole, action:UserAction): boolean => 
+    UserActionRoles[action].includes(role);
+
 
     
 export enum UserRole {

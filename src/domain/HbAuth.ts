@@ -17,6 +17,7 @@ import { HbDb } from "./HbDb";
 import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
 import { UserModel } from "./User/UserModel";
 import { UserRole } from "./User/UserRoles";
+import { HbCurrentUser } from "./HbCurrentUser";
 
 
 export class HbCurrentUserChangedEvent extends Event {
@@ -134,8 +135,10 @@ const listenForSignInEvent = (event:KeyboardEvent) => {
     }
 };
 
-const dispatchCurrentUserChangedEvent = (userData:IUserData) =>
+const dispatchCurrentUserChangedEvent = (userData:IUserData) => {
+    HbCurrentUser.setCurrentUser(userData.uid, userData.role);
     window.dispatchEvent(new HbCurrentUserChangedEvent(userData));
+}
 
 
 const getSignedInUser = async (authUser:User):Promise<IUserData> => {

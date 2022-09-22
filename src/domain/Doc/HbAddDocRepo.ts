@@ -11,7 +11,7 @@ import {
     IAddNewDocumentOptions,
     IDocumentReference
 } from "../interfaces/DocumentInterfaces";
-import { HbCurrentUser } from "../HbCurrentUser";
+import { authorize, UserAction, HbCurrentUser } from "../HbCurrentUser";
 
 
 @provides<IAddDocRepo>(AddDocRepoKey, !HbApp.isStorybook)
@@ -32,6 +32,7 @@ class AddDocRepo implements IAddDocRepo {
         return authorId;
     }
 
+    @authorize(UserAction.authorDocuments)
     async addDoc(options:IAddNewDocumentOptions): Promise<IDocumentReference> {
 
         const newDoc = DocModel.createNewDoc(this.getCurrentUserId(), options);
