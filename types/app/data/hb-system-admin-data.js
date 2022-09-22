@@ -10,24 +10,34 @@ import { customDataElement, dataProperty, event } from "@domx/dataelement/decora
 import { sendFeedback } from "../../common/feedback";
 import { inject } from "../../domain/DependencyContainer/decorators";
 import { HomePageRepoKey } from "../../domain/interfaces/DocumentInterfaces";
+export class RequestSysadminSettingsEvent extends Event {
+    constructor() {
+        super(RequestSysadminSettingsEvent.eventType, { bubbles: true });
+    }
+}
+RequestSysadminSettingsEvent.eventType = "request-sysadmin-settings";
+export class UpdateHomePageEvent extends Event {
+    constructor(documentReference) {
+        super(UpdateHomePageEvent.eventType, { bubbles: true, composed: true });
+        this.documentReference = documentReference;
+    }
+}
+UpdateHomePageEvent.eventType = "update-home-page";
 let SystemAdminData = SystemAdminData_1 = class SystemAdminData extends DataElement {
     constructor() {
         super(...arguments);
         this.settings = SystemAdminData_1.defaultSettings;
     }
-    async requestSysadminSettings() {
+    async requestSysadminSettings(event) {
         StateChange.of(this, "settings")
             .tap(requestSettings(this.homePageRepo));
     }
     async updateHomePage(event) {
-        const docRef = event.detail;
         StateChange.of(this, "settings")
-            .tap(updateHomePage(this.homePageRepo, docRef));
+            .tap(updateHomePage(this.homePageRepo, event.documentReference));
     }
 };
 SystemAdminData.defaultSettings = { homePageThumbnail: null };
-SystemAdminData.requestSysadminSettingsEvent = () => new CustomEvent("request-sysadmin-settings", { bubbles: true });
-SystemAdminData.updateHomePageEvent = (documentReference) => new CustomEvent("update-home-page", { bubbles: true, composed: true, detail: documentReference });
 __decorate([
     dataProperty({ changeEvent: "settings-changed" })
 ], SystemAdminData.prototype, "settings", void 0);
@@ -35,10 +45,10 @@ __decorate([
     inject(HomePageRepoKey)
 ], SystemAdminData.prototype, "homePageRepo", void 0);
 __decorate([
-    event("request-sysadmin-settings")
+    event(RequestSysadminSettingsEvent.eventType)
 ], SystemAdminData.prototype, "requestSysadminSettings", null);
 __decorate([
-    event("update-home-page")
+    event(UpdateHomePageEvent.eventType)
 ], SystemAdminData.prototype, "updateHomePage", null);
 SystemAdminData = SystemAdminData_1 = __decorate([
     customDataElement("hb-system-admin-data", {

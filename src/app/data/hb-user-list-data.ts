@@ -12,6 +12,24 @@ export interface IUserListData {
     count: Number;
 }
 
+export class RequestUserListEvent extends Event {
+    static eventType = "request-user-list";
+    constructor() {
+        super(RequestUserListEvent.eventType, { bubbles: true });
+    }
+}
+
+export class UpdateUserRoleEvent extends Event {
+    static eventType = "update-user-role";
+    uid:string;
+    role:UserRole;
+    constructor(uid:string, role:UserRole) {
+        super(UpdateUserRoleEvent.eventType, { bubbles: true, composed: true });
+        this.uid = uid;
+        this.role = role;
+    }
+}
+
 
 @customDataElement("hb-user-list-data", {
     eventsListenAt: "parent"
@@ -21,12 +39,6 @@ export class UserListData extends DataElement {
         list: [],
         count: 0
     };
-
-    static requestUserListEvent = () =>
-        new CustomEvent("request-user-list", {bubbles:true});
-    
-    static updateUserRoleEvent = (uid:string, role:UserRole) =>
-        new CustomEvent("update-user-role", {bubbles:true, composed:true, detail: {uid, role}});
     
     @dataProperty({changeEvent: "users-changed"})
     users:IUserListData = UserListData.defaultUsers;
@@ -34,18 +46,16 @@ export class UserListData extends DataElement {
     @inject<IUserListRepo>(UserListRepoKey)
     private userList!:IUserListRepo;
 
-    @event("request-user-list")
-    async getUserList() {
+    @event(RequestUserListEvent.eventType)
+    async getUserList(event:RequestUserListEvent) {
         StateChange.of(this, "users")
             .tap(requestUsers(this.userList));
     }
 
-    @event("update-user-role")
-    async updateUserRole(event:CustomEvent) {
-        const uid = event.detail.uid as string;
-        const role = event.detail.role as UserRole;
+    @event(UpdateUserRoleEvent.eventType)
+    async updateUserRole(event:UpdateUserRoleEvent) {
         StateChange.of(this, "users")
-            .tap(updateUserRole(this.userList, uid, role));
+            .tap(updateUserRole(this.userList, event.uid, event.role));
     }
 }
 

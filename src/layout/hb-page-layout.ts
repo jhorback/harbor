@@ -3,6 +3,7 @@ import { customElement, property, query } from "lit/decorators.js";
 import { UserMenu } from "./hb-user-menu";
 import "./hb-user-menu";
 import "./hb-app-bar";
+import { AvatarButtonClickedEvent } from "./hb-avatar-button";
 
 
 
@@ -34,7 +35,7 @@ export class PageLayout extends LitElement {
       `
     }
 
-    avatarButtonClicked() {
+    avatarButtonClicked(event:AvatarButtonClickedEvent) {
       this.$userMenu.open = !this.$userMenu.open;
     }
 

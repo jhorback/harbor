@@ -7,6 +7,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 import { UserAuthKey } from "../interfaces/UserInterfaces";
 import { provides } from "../DependencyContainer/decorators";
 import { UserRole } from "../User/UserRoles";
+import { HbCurrentUserChangedEvent } from "../HbAuth";
 let HbAutMock = class HbAutMock {
     connect() {
         setupAuthListener();
@@ -55,4 +56,4 @@ const listenForSignInEvent = (event) => {
         setCurrentUserAsAuthenticated();
     }
 };
-const dispatchCurrentUserChangedEvent = (detail) => window.dispatchEvent(new CustomEvent("hb-current-user-changed", { detail }));
+const dispatchCurrentUserChangedEvent = (detail) => window.dispatchEvent(new HbCurrentUserChangedEvent(detail));

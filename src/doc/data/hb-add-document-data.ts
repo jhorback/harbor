@@ -13,6 +13,23 @@ export interface IAddDocumentState {
 }
 
 
+export class AddNewDocumentEvent extends Event {
+    static eventType = "add-new-document";
+    options:IAddNewDocumentOptions;
+    constructor(options:IAddNewDocumentOptions) {
+        super(AddNewDocumentEvent.eventType, { bubbles: true });
+        this.options = options;
+    }
+}
+
+export class DocumentAddedEvent extends Event {
+    static eventType = "document-added";
+    documentReference:IDocumentReference;
+    constructor(documentReference:IDocumentReference) {
+        super(DocumentAddedEvent.eventType);
+        this.documentReference = documentReference;
+    }
+}
 
 
 @customDataElement("hb-add-document-data", {
@@ -20,11 +37,6 @@ export interface IAddDocumentState {
 })
 export class AddDocumentData extends DataElement {
     static defaultState:IAddDocumentState = {docTypes:[]};
-
-    static addNewDocumentEvent = (detail:IAddNewDocumentOptions) => new CustomEvent("add-new-document", {
-        bubbles: true,
-        detail
-    })
     
     @dataProperty()
     state:IAddDocumentState = AddDocumentData.defaultState;
@@ -39,9 +51,9 @@ export class AddDocumentData extends DataElement {
             .dispatch();
     }
 
-    @event("add-new-document")
-    addNewDocument(event:CustomEvent) {
-        const options = event.detail as IAddNewDocumentOptions;
+    @event(AddNewDocumentEvent.eventType)
+    addNewDocument(event:AddNewDocumentEvent) {
+        const options = event.options;
         StateChange.of(this)
             .tap(addNewDocument(this.addDocRepo, options));
     }
@@ -63,6 +75,7 @@ const addNewDocument = (repo:IAddDocRepo, options:IAddNewDocumentOptions) => asy
     }
     catch(error:any) {
         if (error instanceof ClientError) {
+            // FIXME: after stateChange CustomEvent -> Event
             stateChange.dispatchEvent(new CustomEvent("add-document-error", {
                 bubbles: true,
                 detail: error
@@ -74,6 +87,7 @@ const addNewDocument = (repo:IAddDocRepo, options:IAddNewDocumentOptions) => asy
         return;
     }
 
+    // FIXME: after stateChange CustomEvent -> Event
     stateChange.dispatchEvent(new CustomEvent("document-added", {
         bubbles: true,
         detail: docRef

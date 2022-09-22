@@ -12,6 +12,20 @@ import { AddDocRepoKey } from "../../domain/interfaces/DocumentInterfaces";
 import { docTypes } from "../../domain/Doc/docTypes";
 import "../../domain/Doc/HbAddDocRepo";
 import { ClientError } from "../../domain/ClientError";
+export class AddNewDocumentEvent extends Event {
+    constructor(options) {
+        super(AddNewDocumentEvent.eventType, { bubbles: true });
+        this.options = options;
+    }
+}
+AddNewDocumentEvent.eventType = "add-new-document";
+export class DocumentAddedEvent extends Event {
+    constructor(documentReference) {
+        super(DocumentAddedEvent.eventType);
+        this.documentReference = documentReference;
+    }
+}
+DocumentAddedEvent.eventType = "document-added";
 let AddDocumentData = AddDocumentData_1 = class AddDocumentData extends DataElement {
     constructor() {
         super(...arguments);
@@ -24,16 +38,12 @@ let AddDocumentData = AddDocumentData_1 = class AddDocumentData extends DataElem
             .dispatch();
     }
     addNewDocument(event) {
-        const options = event.detail;
+        const options = event.options;
         StateChange.of(this)
             .tap(addNewDocument(this.addDocRepo, options));
     }
 };
 AddDocumentData.defaultState = { docTypes: [] };
-AddDocumentData.addNewDocumentEvent = (detail) => new CustomEvent("add-new-document", {
-    bubbles: true,
-    detail
-});
 __decorate([
     dataProperty()
 ], AddDocumentData.prototype, "state", void 0);
@@ -41,7 +51,7 @@ __decorate([
     inject(AddDocRepoKey)
 ], AddDocumentData.prototype, "addDocRepo", void 0);
 __decorate([
-    event("add-new-document")
+    event(AddNewDocumentEvent.eventType)
 ], AddDocumentData.prototype, "addNewDocument", null);
 AddDocumentData = AddDocumentData_1 = __decorate([
     customDataElement("hb-add-document-data", {
@@ -59,6 +69,7 @@ const addNewDocument = (repo, options) => async (stateChange) => {
     }
     catch (error) {
         if (error instanceof ClientError) {
+            // FIXME: after stateChange CustomEvent -> Event
             stateChange.dispatchEvent(new CustomEvent("add-document-error", {
                 bubbles: true,
                 detail: error
@@ -69,6 +80,7 @@ const addNewDocument = (repo, options) => async (stateChange) => {
         }
         return;
     }
+    // FIXME: after stateChange CustomEvent -> Event
     stateChange.dispatchEvent(new CustomEvent("document-added", {
         bubbles: true,
         detail: docRef

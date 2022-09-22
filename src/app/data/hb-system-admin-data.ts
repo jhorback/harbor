@@ -14,18 +14,27 @@ export interface ISystemAdminData {
     homePageThumbnail: IDocumentThumbnail|null;
 }
 
+export class RequestSysadminSettingsEvent extends Event {
+    static eventType = "request-sysadmin-settings";
+    constructor() {
+        super(RequestSysadminSettingsEvent.eventType, { bubbles: true });
+    }
+}
+
+export class UpdateHomePageEvent extends Event {
+    static eventType = "update-home-page";
+    documentReference:IDocumentReference;
+    constructor(documentReference:IDocumentReference) {
+        super(UpdateHomePageEvent.eventType, { bubbles: true, composed: true});
+        this.documentReference = documentReference;
+    }
+}
 
 @customDataElement("hb-system-admin-data", {
     eventsListenAt: "parent"
 })
 export class SystemAdminData extends DataElement {
     static defaultSettings:ISystemAdminData = {homePageThumbnail:null};
-
-    static requestSysadminSettingsEvent = () =>
-        new CustomEvent("request-sysadmin-settings", {bubbles:true});
-    
-    static updateHomePageEvent = (documentReference:IDocumentReference) =>
-        new CustomEvent("update-home-page", {bubbles:true, composed:true, detail: documentReference});
     
     @dataProperty({changeEvent: "settings-changed"})
     settings:ISystemAdminData = SystemAdminData.defaultSettings;
@@ -33,17 +42,16 @@ export class SystemAdminData extends DataElement {
     @inject<IHomePageRepo>(HomePageRepoKey)
     private homePageRepo!:IHomePageRepo;
 
-    @event("request-sysadmin-settings")
-    async requestSysadminSettings() {
+    @event(RequestSysadminSettingsEvent.eventType)
+    async requestSysadminSettings(event: RequestSysadminSettingsEvent) {
         StateChange.of(this, "settings")
             .tap(requestSettings(this.homePageRepo));
     }
 
-    @event("update-home-page")
-    async updateHomePage(event:CustomEvent) {
-        const docRef = event.detail as IDocumentReference;
+    @event(UpdateHomePageEvent.eventType)
+    async updateHomePage(event:UpdateHomePageEvent) {
         StateChange.of(this, "settings")
-            .tap(updateHomePage(this.homePageRepo, docRef));
+            .tap(updateHomePage(this.homePageRepo, event.documentReference));
     }
 }
 

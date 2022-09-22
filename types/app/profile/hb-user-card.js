@@ -9,7 +9,7 @@ import { customElement, property } from "lit/decorators.js";
 import { UserRole } from "../../domain/User/UserRoles";
 import { styles } from "../../styles";
 import "../../common/hb-avatar";
-import { UserListData } from "../data/hb-user-list-data";
+import { UpdateUserRoleEvent } from "../data/hb-user-list-data";
 /**
  * @class ProfileAdminTab
  */
@@ -61,7 +61,7 @@ let UserCard = class UserCard extends LitElement {
         if (role === this.state.role) {
             role = UserRole.none;
         }
-        this.dispatchEvent(UserListData.updateUserRoleEvent(this.state.uid, role));
+        this.dispatchEvent(new UpdateUserRoleEvent(this.state.uid, role));
     }
 };
 UserCard.styles = [styles.types, css `

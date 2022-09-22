@@ -7,7 +7,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 import { html, css, LitElement } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import { typeStyles } from "../styles/typeStyles";
-import { CurrentUserData } from "../hb-current-user-data";
+import { CurrentUserData, SignOutEvent } from "../hb-current-user-data";
 import { linkProp } from "@domx/linkprop";
 import { AvatarSize } from "../common/hb-avatar";
 import "../common/hb-button";
@@ -72,7 +72,7 @@ let UserMenu = class UserMenu extends LitElement {
         `;
     }
     handleSignOutClick() {
-        this.dispatchEvent(CurrentUserData.signOutEvent());
+        this.dispatchEvent(new SignOutEvent());
     }
 };
 UserMenu.defaultState = {

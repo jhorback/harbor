@@ -7,6 +7,12 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 import { html, css, LitElement } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import { iconStyles } from "../styles/iconStyles";
+export class AvatarButtonClickedEvent extends Event {
+    constructor() {
+        super(AvatarButtonClickedEvent.eventType, { bubbles: true, composed: true });
+    }
+}
+AvatarButtonClickedEvent.eventType = "hb-avatar-button-click";
 /**
  * @class AvatarButton
  *
@@ -33,7 +39,7 @@ let AvatarButton = class AvatarButton extends LitElement {
         this.href = "";
     }
     onClick() {
-        this.dispatchEvent(new CustomEvent("hb-avatar-button-click", { bubbles: true, composed: true }));
+        this.dispatchEvent(new AvatarButtonClickedEvent());
     }
 };
 AvatarButton.styles = [iconStyles, css `

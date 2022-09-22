@@ -8,7 +8,7 @@ import { html, css, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators.js";
 import { classMap } from 'lit/directives/class-map.js';
 import { styles } from "../styles";
-import { AddDocumentData } from "./data/hb-add-document-data";
+import { AddDocumentData, AddNewDocumentEvent, DocumentAddedEvent } from "./data/hb-add-document-data";
 import "./data/hb-add-document-data";
 import "../common/hb-button";
 import { linkProp } from "@domx/linkprop";
@@ -121,7 +121,7 @@ let AddDocumentDialog = class AddDocumentDialog extends LitElement {
         }
     }
     addButtonClicked() {
-        this.shadowRoot?.dispatchEvent(AddDocumentData.addNewDocumentEvent({
+        this.shadowRoot?.dispatchEvent(new AddNewDocumentEvent({
             docType: this.state.docTypes[this.selectedIndex].type,
             title: this.newDocTitle
         }));
@@ -130,9 +130,11 @@ let AddDocumentDialog = class AddDocumentDialog extends LitElement {
         const error = event.detail;
         this.addDocumentError = error.message;
     }
+    // FIXME: after stateChange CustomEvent -> Event
+    // should just be able to re-dispatch?
     documentAdded(event) {
         const docRef = event.detail;
-        this.dispatchEvent(new CustomEvent("document-added", { detail: docRef }));
+        this.dispatchEvent(new DocumentAddedEvent(docRef));
         this.close();
     }
 };

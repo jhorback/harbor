@@ -7,7 +7,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 import { linkProp } from "@domx/linkprop";
 import { html, css, LitElement } from "lit";
 import { customElement, property, query } from "lit/decorators.js";
-import { UserListData } from "../data/hb-user-list-data";
+import { UserListData, RequestUserListEvent } from "../data/hb-user-list-data";
 import { styles } from "../../styles";
 import "./hb-user-card";
 /**
@@ -21,7 +21,7 @@ let ProfileUsersTab = class ProfileUsersTab extends LitElement {
     async connectedCallback() {
         super.connectedCallback();
         await this.updateComplete;
-        this.$userListData.dispatchEvent(UserListData.requestUserListEvent());
+        this.$userListData.dispatchEvent(new RequestUserListEvent());
     }
     render() {
         return html `

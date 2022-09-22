@@ -11,28 +11,38 @@ import { UserListRepoKey } from "../../domain/interfaces/UserInterfaces";
 import { inject } from "../../domain/DependencyContainer/decorators";
 import { sendFeedback } from "../../common/feedback";
 import "../../domain/User/HbUserListRepo";
+export class RequestUserListEvent extends Event {
+    constructor() {
+        super(RequestUserListEvent.eventType, { bubbles: true });
+    }
+}
+RequestUserListEvent.eventType = "request-user-list";
+export class UpdateUserRoleEvent extends Event {
+    constructor(uid, role) {
+        super(UpdateUserRoleEvent.eventType, { bubbles: true, composed: true });
+        this.uid = uid;
+        this.role = role;
+    }
+}
+UpdateUserRoleEvent.eventType = "update-user-role";
 let UserListData = UserListData_1 = class UserListData extends DataElement {
     constructor() {
         super(...arguments);
         this.users = UserListData_1.defaultUsers;
     }
-    async getUserList() {
+    async getUserList(event) {
         StateChange.of(this, "users")
             .tap(requestUsers(this.userList));
     }
     async updateUserRole(event) {
-        const uid = event.detail.uid;
-        const role = event.detail.role;
         StateChange.of(this, "users")
-            .tap(updateUserRole(this.userList, uid, role));
+            .tap(updateUserRole(this.userList, event.uid, event.role));
     }
 };
 UserListData.defaultUsers = {
     list: [],
     count: 0
 };
-UserListData.requestUserListEvent = () => new CustomEvent("request-user-list", { bubbles: true });
-UserListData.updateUserRoleEvent = (uid, role) => new CustomEvent("update-user-role", { bubbles: true, composed: true, detail: { uid, role } });
 __decorate([
     dataProperty({ changeEvent: "users-changed" })
 ], UserListData.prototype, "users", void 0);
@@ -40,10 +50,10 @@ __decorate([
     inject(UserListRepoKey)
 ], UserListData.prototype, "userList", void 0);
 __decorate([
-    event("request-user-list")
+    event(RequestUserListEvent.eventType)
 ], UserListData.prototype, "getUserList", null);
 __decorate([
-    event("update-user-role")
+    event(UpdateUserRoleEvent.eventType)
 ], UserListData.prototype, "updateUserRole", null);
 UserListData = UserListData_1 = __decorate([
     customDataElement("hb-user-list-data", {

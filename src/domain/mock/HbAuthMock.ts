@@ -1,6 +1,7 @@
 import { IUserAuth, UserAuthKey, IUserData } from "../interfaces/UserInterfaces";
 import {provides} from "../DependencyContainer/decorators";
 import { UserRole } from "../User/UserRoles";
+import { HbCurrentUserChangedEvent } from "../HbAuth";
 
 
 
@@ -66,5 +67,5 @@ const listenForSignInEvent = (event:KeyboardEvent) => {
 
 
 const dispatchCurrentUserChangedEvent = (detail:IUserData) =>
-    window.dispatchEvent(new CustomEvent("hb-current-user-changed", { detail }));
+    window.dispatchEvent(new HbCurrentUserChangedEvent(detail));
 

@@ -14,6 +14,13 @@ import { HbDb } from "./HbDb";
 import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
 import { UserModel } from "./User/UserModel";
 import { UserRole } from "./User/UserRoles";
+export class HbCurrentUserChangedEvent extends Event {
+    constructor(userData) {
+        super(HbCurrentUserChangedEvent.eventType);
+        this.userData = userData;
+    }
+}
+HbCurrentUserChangedEvent.eventType = "hb-current-user-changed";
 let HbAuth = class HbAuth {
     constructor() {
         this.connected = false;
@@ -94,7 +101,7 @@ const listenForSignInEvent = (event) => {
         signInWithRedirect(getAuth(FbApp.current), new GoogleAuthProvider());
     }
 };
-const dispatchCurrentUserChangedEvent = (detail) => window.dispatchEvent(new CustomEvent("hb-current-user-changed", { detail }));
+const dispatchCurrentUserChangedEvent = (userData) => window.dispatchEvent(new HbCurrentUserChangedEvent(userData));
 const getSignedInUser = async (authUser) => {
     const docRef = doc(HbDb.current, "users", authUser.uid).withConverter(UserModel);
     const docSnap = await getDoc(docRef);

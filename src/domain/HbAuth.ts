@@ -19,6 +19,15 @@ import { UserModel } from "./User/UserModel";
 import { UserRole } from "./User/UserRoles";
 
 
+export class HbCurrentUserChangedEvent extends Event {
+    static eventType = "hb-current-user-changed";
+    userData:IUserData;
+    constructor(userData: IUserData) {
+        super(HbCurrentUserChangedEvent.eventType);
+        this.userData = userData;
+    }
+}
+
 @provides<IUserAuth>(UserAuthKey, !HbApp.isStorybook)
 class HbAuth implements IUserAuth {
 
@@ -125,8 +134,8 @@ const listenForSignInEvent = (event:KeyboardEvent) => {
     }
 };
 
-const dispatchCurrentUserChangedEvent = (detail:IUserData) =>
-    window.dispatchEvent(new CustomEvent("hb-current-user-changed", { detail }));
+const dispatchCurrentUserChangedEvent = (userData:IUserData) =>
+    window.dispatchEvent(new HbCurrentUserChangedEvent(userData));
 
 
 const getSignedInUser = async (authUser:User):Promise<IUserData> => {

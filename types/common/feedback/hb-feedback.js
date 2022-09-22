@@ -7,6 +7,13 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 import { html, css, LitElement } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import { styles } from "../../styles";
+export class SystemFeedbackEvent extends Event {
+    constructor(feedbackOptions) {
+        super(SystemFeedbackEvent.eventType);
+        this.feedbackOptions = feedbackOptions;
+    }
+}
+SystemFeedbackEvent.eventType = "system-feedback";
 /**
  * @class Feedback
  */
@@ -21,15 +28,14 @@ let Feedback = class Feedback extends LitElement {
     }
     connectedCallback() {
         super.connectedCallback();
-        window.addEventListener("system-feedback", this.onSystemFeedback);
+        window.addEventListener(SystemFeedbackEvent.eventType, this.onSystemFeedback);
     }
     disconnectedCallback() {
         super.disconnectedCallback();
-        window.removeEventListener("system-feedback", this.onSystemFeedback);
+        window.removeEventListener(SystemFeedbackEvent.eventType, this.onSystemFeedback);
     }
     onSystemFeedback(event) {
-        const options = event.detail;
-        this.queue.push(options);
+        this.queue.push(event.feedbackOptions);
         this.tryNext();
     }
     tryNext() {
@@ -88,7 +94,6 @@ let Feedback = class Feedback extends LitElement {
         this.open = false;
     }
 };
-Feedback.feedbackEvent = (detail) => new CustomEvent("system-feedback", { detail });
 Feedback.styles = [styles.types, styles.colors, css `
         :host {
             background-color: var(--md-sys-color-inverse-surface);

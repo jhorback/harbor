@@ -7,7 +7,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 import { html, css, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators.js";
 import { styles } from "../../styles";
-import { SystemAdminData } from "../data/hb-system-admin-data";
+import { RequestSysadminSettingsEvent, SystemAdminData, UpdateHomePageEvent } from "../data/hb-system-admin-data";
 import { linkProp } from "@domx/linkprop";
 import "../../common/hb-button";
 import "../../doc/hb-add-document-dialog";
@@ -32,7 +32,7 @@ let ProfileAdminTab = class ProfileAdminTab extends LitElement {
     async connectedCallback() {
         super.connectedCallback();
         await this.updated;
-        this.$systemAdminData.dispatchEvent(SystemAdminData.requestSysadminSettingsEvent());
+        this.$systemAdminData.dispatchEvent(new RequestSysadminSettingsEvent());
     }
     render() {
         return html `
@@ -81,8 +81,7 @@ let ProfileAdminTab = class ProfileAdminTab extends LitElement {
         this.$addDocumentDialog.open = true;
     }
     documentAdded(event) {
-        var docRef = event.detail;
-        this.$systemAdminData.dispatchEvent(SystemAdminData.updateHomePageEvent(docRef));
+        this.$systemAdminData.dispatchEvent(new UpdateHomePageEvent(event.documentReference));
     }
     searchExistingHomePageClicked() {
         this.changeHomePage = false;
