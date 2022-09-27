@@ -1,5 +1,5 @@
 
-import { Feedback } from "./hb-feedback";
+import { SystemFeedbackEvent } from "./hb-feedback";
 
 
 export interface IFeedbackOptions {
@@ -22,5 +22,5 @@ export interface IFeedbackOptions {
  * @param options 
  */
 export const sendFeedback = (options:IFeedbackOptions) =>
-    window.dispatchEvent(Feedback.feedbackEvent(options));
+    window.dispatchEvent(new SystemFeedbackEvent(options));
 

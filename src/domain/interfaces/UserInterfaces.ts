@@ -11,7 +11,7 @@ export interface IHbAppInfo {
 }
 
 
-export const IUserAuthKey:symbol = Symbol("USER_AUTH");
+export const UserAuthKey:symbol = Symbol("USER_AUTH");
 
 
 export interface IUserAuth {
@@ -19,9 +19,9 @@ export interface IUserAuth {
     signOut(): Promise<void>;
 }
 
-export const IUserListKey:symbol = Symbol("USER_LIST");
+export const UserListRepoKey:symbol = Symbol("USER_LIST_REPO");
 
-export interface IUserList {
+export interface IUserListRepo {
     getUsers(): Promise<Array<IUserData>>;
     updateUserRole(uid:string, role:UserRole): Promise<void>
 }
@@ -36,9 +36,4 @@ export interface IUserData {
     firstLogin?: Date,
     lastLogin?: Date,
     role?: UserRole|null
-}
-
-export interface IUserDataPermissions {
-    isAuthor:Boolean;
-    isSysAdmin: Boolean;
 }

@@ -16,15 +16,21 @@ type FeedbackState = {
     eventDetail: object|undefined;
 }
 
+
+export class SystemFeedbackEvent extends Event {
+    static eventType = "system-feedback";
+    feedbackOptions:IFeedbackOptions;
+    constructor(feedbackOptions:IFeedbackOptions) {
+        super(SystemFeedbackEvent.eventType);
+        this.feedbackOptions = feedbackOptions
+    }
+}
+
 /**
  * @class Feedback
  */
 @customElement('hb-feedback')
 export class Feedback extends LitElement {
-
-    static feedbackEvent = (detail:IFeedbackOptions) =>
-        new CustomEvent("system-feedback", { detail });
-
 
     @property({type: Boolean, reflect: true})
     open = false;
@@ -45,17 +51,16 @@ export class Feedback extends LitElement {
 
     connectedCallback() {
         super.connectedCallback();
-        window.addEventListener("system-feedback", this.onSystemFeedback);
+        window.addEventListener(SystemFeedbackEvent.eventType, this.onSystemFeedback as EventListener);
     }
 
     disconnectedCallback(): void {
         super.disconnectedCallback();
-        window.removeEventListener("system-feedback", this.onSystemFeedback);
+        window.removeEventListener(SystemFeedbackEvent.eventType, this.onSystemFeedback as EventListener);
     }
 
-    onSystemFeedback(event:any) {
-        const options = event.detail as IFeedbackOptions;
-        this.queue.push(options);
+    onSystemFeedback(event:SystemFeedbackEvent) {
+        this.queue.push(event.feedbackOptions);
         this.tryNext();
     }
 
@@ -101,7 +106,7 @@ export class Feedback extends LitElement {
                 <div class="text body-large">${this.state.message}</div>
                 <div class="action">
                     ${this.state.showLinkButton ? html`
-                        <a href=${this.state.href}>${this.state.actionText}</a>
+                        <a @click=${this.linkClicked} href=${this.state.href}>${this.state.actionText}</a>
                     ` : html``}
                     ${this.state.showButton ? html`
                         <button @click=${this.buttonClicked} class="body-large">${this.state.actionText}</button>
@@ -116,6 +121,11 @@ export class Feedback extends LitElement {
             return;
         }
         window.dispatchEvent(new CustomEvent(this.state.event, {detail:this.state.eventDetail}));
+        this.open = false;
+    }
+    
+    private linkClicked() {
+        this.open = false;
     }
 
     static styles = [styles.types, styles.colors, css`

@@ -1,4 +1,4 @@
-export const userCan = (user, action) => UserActionRoles[action].includes(user.role ? user.role : UserRole.none);
+export const roleHasAction = (role, action) => UserActionRoles[action].includes(role);
 export var UserRole;
 (function (UserRole) {
     UserRole["none"] = "NONE";
@@ -23,7 +23,7 @@ export var UserAction;
 })(UserAction || (UserAction = {}));
 // export const userCanAction = (user:IUserData) => (action:UserAction) =>
 //     UserActionRoles[action].includes(user.role ? user.role : UserRole.none);
-// todo: fill out action roles (rename?), review implementation
+// jch: fill out action roles (rename?), review implementation
 const UserActionRoles = {
     [UserAction.authorDocuments]: [
         UserRole.userAdmin,

@@ -4,7 +4,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-import { IUserAuthKey } from "./interfaces/UserInterfaces";
+import { UserAuthKey } from "./interfaces/UserInterfaces";
 import { provides } from "./DependencyContainer/decorators";
 import { FbApp } from "./FbApp";
 import { HbApp } from "./HbApp";
@@ -14,6 +14,14 @@ import { HbDb } from "./HbDb";
 import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
 import { UserModel } from "./User/UserModel";
 import { UserRole } from "./User/UserRoles";
+import { HbCurrentUser } from "./HbCurrentUser";
+export class HbCurrentUserChangedEvent extends Event {
+    constructor(userData) {
+        super(HbCurrentUserChangedEvent.eventType);
+        this.userData = userData;
+    }
+}
+HbCurrentUserChangedEvent.eventType = "hb-current-user-changed";
 let HbAuth = class HbAuth {
     constructor() {
         this.connected = false;
@@ -44,7 +52,7 @@ let HbAuth = class HbAuth {
     }
 };
 HbAuth = __decorate([
-    provides(IUserAuthKey, !HbApp.isStorybook)
+    provides(UserAuthKey, !HbApp.isStorybook)
 ], HbAuth);
 const setupAuthListener = (hbAuth) => {
     onAuthStateChanged(hbAuth.auth, async (user) => {
@@ -94,7 +102,10 @@ const listenForSignInEvent = (event) => {
         signInWithRedirect(getAuth(FbApp.current), new GoogleAuthProvider());
     }
 };
-const dispatchCurrentUserChangedEvent = (detail) => window.dispatchEvent(new CustomEvent("hb-current-user-changed", { detail }));
+const dispatchCurrentUserChangedEvent = (userData) => {
+    HbCurrentUser.setCurrentUser(userData.uid, userData.role);
+    window.dispatchEvent(new HbCurrentUserChangedEvent(userData));
+};
 const getSignedInUser = async (authUser) => {
     const docRef = doc(HbDb.current, "users", authUser.uid).withConverter(UserModel);
     const docSnap = await getDoc(docRef);

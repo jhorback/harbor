@@ -7,11 +7,18 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var CurrentUserData_1;
 import { DataElement, StateChange } from "@domx/dataelement";
 import { customDataElement, dataProperty, event } from "@domx/dataelement/decorators";
-import { IUserAuthKey } from "./domain/interfaces/UserInterfaces";
+import { UserAuthKey } from "./domain/interfaces/UserInterfaces";
 import { HbApp } from "./domain/HbApp";
 import { inject } from "./domain/DependencyContainer/decorators";
 import { sendFeedback } from "./common/feedback";
 import "./domain/HbAuth";
+import { HbCurrentUserChangedEvent } from "./domain/HbAuth";
+export class SignOutEvent extends Event {
+    constructor() {
+        super(SignOutEvent.eventType, { bubbles: true, composed: true });
+    }
+}
+SignOutEvent.eventType = "sign-out";
 let CurrentUserData = CurrentUserData_1 = class CurrentUserData extends DataElement {
     constructor() {
         super(...arguments);
@@ -30,7 +37,7 @@ let CurrentUserData = CurrentUserData_1 = class CurrentUserData extends DataElem
     }
     hbCurrentUserChanged(event) {
         StateChange.of(this, "currentUser")
-            .next(setCurrentUserData(event.detail))
+            .next(setCurrentUserData(event.userData))
             .dispatch();
     }
     async signOut(event) {
@@ -50,7 +57,6 @@ CurrentUserData.defaultCurrentUser = {
 CurrentUserData.defaultHbAppInfo = {
     version: "v0.0.0"
 };
-CurrentUserData.signOutEvent = () => new Event("sign-out", { bubbles: true, composed: true });
 __decorate([
     dataProperty({ changeEvent: "current-user-changed" })
 ], CurrentUserData.prototype, "currentUser", void 0);
@@ -58,13 +64,13 @@ __decorate([
     dataProperty({ changeEvent: "hb-app-info-changed" })
 ], CurrentUserData.prototype, "hbAppInfo", void 0);
 __decorate([
-    inject(IUserAuthKey)
+    inject(UserAuthKey)
 ], CurrentUserData.prototype, "userAuth", void 0);
 __decorate([
-    event("hb-current-user-changed")
+    event(HbCurrentUserChangedEvent.eventType)
 ], CurrentUserData.prototype, "hbCurrentUserChanged", null);
 __decorate([
-    event("sign-out")
+    event(SignOutEvent.eventType)
 ], CurrentUserData.prototype, "signOut", null);
 CurrentUserData = CurrentUserData_1 = __decorate([
     customDataElement("hb-current-user-data", {

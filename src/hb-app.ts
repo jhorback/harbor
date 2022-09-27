@@ -2,6 +2,8 @@ import { html, css, LitElement } from "lit";
 import { customElement } from "lit/decorators.js";
 import { HbApp } from "./domain/HbApp";
 import "@domx/router/domx-route";
+import "@domx/router/domx-route-not-found";
+import "./app/hb-route-not-found-page";
 import "./app/hb-home";
 import "./app/profile/hb-profile-page";
 import "./app/hb-about-page";
@@ -39,6 +41,10 @@ export class HarborApp extends LitElement {
           element="hb-about-page"          
           append-to="#hb-app"
       ></domx-route>
+      <domx-route-not-found
+          element="hb-route-not-found-page"
+          append-to="#hb-app"
+      ></domx-route-not-found>
     `;
   }
 

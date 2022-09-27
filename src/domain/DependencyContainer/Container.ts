@@ -1,4 +1,4 @@
-// todo: ts issues with symbol index
+// jch: ts issues with symbol index
 
 export interface Type<T> extends Function { new (...args: any[]): T; }
 

@@ -7,6 +7,13 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 import { html, css, LitElement } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import { styles } from "../../styles";
+export class SystemFeedbackEvent extends Event {
+    constructor(feedbackOptions) {
+        super(SystemFeedbackEvent.eventType);
+        this.feedbackOptions = feedbackOptions;
+    }
+}
+SystemFeedbackEvent.eventType = "system-feedback";
 /**
  * @class Feedback
  */
@@ -21,15 +28,14 @@ let Feedback = class Feedback extends LitElement {
     }
     connectedCallback() {
         super.connectedCallback();
-        window.addEventListener("system-feedback", this.onSystemFeedback);
+        window.addEventListener(SystemFeedbackEvent.eventType, this.onSystemFeedback);
     }
     disconnectedCallback() {
         super.disconnectedCallback();
-        window.removeEventListener("system-feedback", this.onSystemFeedback);
+        window.removeEventListener(SystemFeedbackEvent.eventType, this.onSystemFeedback);
     }
     onSystemFeedback(event) {
-        const options = event.detail;
-        this.queue.push(options);
+        this.queue.push(event.feedbackOptions);
         this.tryNext();
     }
     tryNext() {
@@ -68,7 +74,7 @@ let Feedback = class Feedback extends LitElement {
                 <div class="text body-large">${this.state.message}</div>
                 <div class="action">
                     ${this.state.showLinkButton ? html `
-                        <a href=${this.state.href}>${this.state.actionText}</a>
+                        <a @click=${this.linkClicked} href=${this.state.href}>${this.state.actionText}</a>
                     ` : html ``}
                     ${this.state.showButton ? html `
                         <button @click=${this.buttonClicked} class="body-large">${this.state.actionText}</button>
@@ -82,9 +88,12 @@ let Feedback = class Feedback extends LitElement {
             return;
         }
         window.dispatchEvent(new CustomEvent(this.state.event, { detail: this.state.eventDetail }));
+        this.open = false;
+    }
+    linkClicked() {
+        this.open = false;
     }
 };
-Feedback.feedbackEvent = (detail) => new CustomEvent("system-feedback", { detail });
 Feedback.styles = [styles.types, styles.colors, css `
         :host {
             background-color: var(--md-sys-color-inverse-surface);

@@ -1,4 +1,4 @@
-// todo: ts issues with symbol index
+// jch: ts issues with symbol index
 /**
  * The `DependencyContainer` is a static class that can be used to
  * register dependencies so that implementations can be overridden

@@ -2,7 +2,7 @@ import { html, css, LitElement } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import { typeStyles } from "../styles/typeStyles";
 import { IUserData, IHbAppInfo } from "../domain/interfaces/UserInterfaces";
-import { CurrentUserData } from "../hb-current-user-data";
+import { CurrentUserData, SignOutEvent } from "../hb-current-user-data";
 import { linkProp } from "@domx/linkprop";
 import { AvatarSize } from "../common/hb-avatar";
 import "../common/hb-button";
@@ -94,7 +94,7 @@ export class UserMenu extends LitElement {
     }
 
     handleSignOutClick() {
-        this.dispatchEvent(CurrentUserData.signOutEvent());
+        this.dispatchEvent(new SignOutEvent());
     }
 
     static styles = [typeStyles, css`

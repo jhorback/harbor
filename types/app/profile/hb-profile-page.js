@@ -10,7 +10,7 @@ import { CurrentUserData } from "../../hb-current-user-data";
 import { linkProp } from "@domx/linkprop";
 import { AvatarSize } from "../../common/hb-avatar";
 import { styles } from "../../styles";
-import { userCan, UserAction } from "../../domain/User/UserRoles";
+import { isAuthorized, UserAction } from "../../domain/HbCurrentUser";
 import "../../layout/hb-page-layout";
 import "../../common/tabs/hb-link-tab";
 import "../../common/tabs/hb-tab-bar";
@@ -27,9 +27,6 @@ let ProfilePage = class ProfilePage extends LitElement {
         super(...arguments);
         this.selectedTab = "documents-tab";
         this.currentUser = CurrentUserData.defaultCurrentUser;
-    }
-    userCan(action) {
-        return userCan(this.currentUser, action);
     }
     render() {
         return html `
@@ -50,28 +47,28 @@ let ProfilePage = class ProfilePage extends LitElement {
                 id="documents-tab"
                 label="Documents"
                 href="/profile/docs"
-                ?hidden=${!this.userCan(UserAction.authorDocuments)}
+                ?hidden=${!isAuthorized(UserAction.authorDocuments)}
             ></hb-link-tab>
             <hb-link-tab
                 id="content-tab"
                 label="Content"
                 href="/profile/content"
-                ?hidden=${!this.userCan(UserAction.uploadContent)}
+                ?hidden=${!isAuthorized(UserAction.uploadContent)}
             ></hb-link-tab>
             <hb-link-tab
                 id="users-tab"
                 label="Users"
                 href="/profile/users"
-                ?hidden=${!this.userCan(UserAction.viewUsers)}
+                ?hidden=${!isAuthorized(UserAction.viewUsers)}
             ></hb-link-tab>
             <hb-link-tab
                 id="admin-tab"
                 label="Admin"
                 href="/profile/admin"
-                ?hidden=${!this.userCan(UserAction.editSiteSettings)}
+                ?hidden=${!isAuthorized(UserAction.editSiteSettings)}
             ></hb-link-tab>
         </hb-tab-bar>
-        ${this.userCan(UserAction.authorDocuments) ? html `
+        ${isAuthorized(UserAction.authorDocuments) ? html `
             <domx-route
                 pattern="/profile(/docs)"
                 element="hb-profile-docs-tab"
@@ -79,7 +76,7 @@ let ProfilePage = class ProfilePage extends LitElement {
                 @route-active=${() => this.selectTab("documents-tab")}
             ></domx-route>
         ` : html ``}
-        ${this.userCan(UserAction.uploadContent) ? html `
+        ${isAuthorized(UserAction.uploadContent) ? html `
             <domx-route
                 pattern="/profile/content"
                 element="hb-profile-content-tab"
@@ -87,7 +84,7 @@ let ProfilePage = class ProfilePage extends LitElement {
                 @route-active=${() => this.selectTab("content-tab")}
             ></domx-route>
         ` : html ``}
-        ${this.userCan(UserAction.viewUsers) ? html `
+        ${isAuthorized(UserAction.viewUsers) ? html `
             <domx-route
                 pattern="/profile/users"
                 element="hb-profile-users-tab"
@@ -95,7 +92,7 @@ let ProfilePage = class ProfilePage extends LitElement {
                 @route-active=${() => this.selectTab("users-tab")}
             ></domx-route>
         ` : html ``}
-        ${this.userCan(UserAction.editSiteSettings) ? html `
+        ${isAuthorized(UserAction.editSiteSettings) ? html `
             <domx-route
                 pattern="/profile/admin"
                 element="hb-profile-admin-tab"

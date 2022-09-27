@@ -17,12 +17,14 @@ let Button = class Button extends LitElement {
         this.label = "";
         this.disabled = false;
         this.selected = false;
+        this.tonal = false;
     }
     render() {
         return html `
             <button
                 ?disabled=${this.disabled}
                 ?selected=${this.selected}
+                ?tonal=${this.tonal}
                 class="label-large"
                 @click=${this.handleClick}>
                 ${this.label}
@@ -60,6 +62,18 @@ Button.styles = [typeStyles, css `
             color: var(--md-sys-color-on-primary);
             background-color:  var(--md-sys-color-primary);
         }
+        button[tonal] {
+            color: var(--md-sys-color-on-secondary-container);
+            background-color: var(--md-sys-color-secondary-container);
+            border: 1px solid var(--md-sys-color-secondary-container);
+            opacity: 0.9;
+        }
+        button[tonal]:hover {
+            opacity: 1;
+        }
+        button[tonal]:active {
+            opacity: 0.9;
+        }
         button[disabled], button[disabled]:hover, button[disabled]:active, button[disabled]:focus {
             color: var(--md-sys-color-on-surface);
             background-color: transparent;
@@ -75,6 +89,9 @@ __decorate([
 __decorate([
     property({ type: Boolean })
 ], Button.prototype, "selected", void 0);
+__decorate([
+    property({ type: Boolean })
+], Button.prototype, "tonal", void 0);
 Button = __decorate([
     customElement('hb-button')
 ], Button);

@@ -1,7 +1,7 @@
 import { linkProp } from "@domx/linkprop";
 import { html, css, LitElement } from "lit";
 import { customElement, property, query } from "lit/decorators.js";
-import { UserListData, IUserListData } from "../../domain/User/hb-user-list-data";
+import { UserListData, IUserListData, RequestUserListEvent } from "../data/hb-user-list-data";
 import { styles } from "../../styles";
 import "./hb-user-card";
 
@@ -22,7 +22,7 @@ export class ProfileUsersTab extends LitElement {
         super.connectedCallback();
 
         await this.updateComplete;
-        this.$userListData.dispatchEvent(UserListData.requestUserListEvent());
+        this.$userListData.dispatchEvent(new RequestUserListEvent());
     }
 
     render() {

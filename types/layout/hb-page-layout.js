@@ -29,7 +29,7 @@ let PageLayout = class PageLayout extends LitElement {
         <slot></slot>
       `;
     }
-    avatarButtonClicked() {
+    avatarButtonClicked(event) {
         this.$userMenu.open = !this.$userMenu.open;
     }
 };

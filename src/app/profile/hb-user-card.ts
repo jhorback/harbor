@@ -5,7 +5,7 @@ import { UserRole } from "../../domain/User/UserRoles";
 import { styles } from "../../styles";
 import { Button } from "../../common/hb-button";
 import "../../common/hb-avatar";
-import { UserListData } from "../../domain/User/hb-user-list-data";
+import { UpdateUserRoleEvent, UserListData } from "../data/hb-user-list-data";
 
 
 /**
@@ -66,7 +66,7 @@ export class UserCard extends LitElement {
         if (role === this.state.role) {
             role = UserRole.none;
         }
-        this.dispatchEvent(UserListData.updateUserRoleEvent(this.state.uid!, role));
+        this.dispatchEvent(new UpdateUserRoleEvent(this.state.uid!, role));
     }
 
     static styles = [styles.types, css`

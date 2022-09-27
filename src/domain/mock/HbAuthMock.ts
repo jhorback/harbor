@@ -1,10 +1,11 @@
-import { IUserAuth, IUserAuthKey, IUserData } from "../interfaces/UserInterfaces";
+import { IUserAuth, UserAuthKey, IUserData } from "../interfaces/UserInterfaces";
 import {provides} from "../DependencyContainer/decorators";
 import { UserRole } from "../User/UserRoles";
+import { HbCurrentUserChangedEvent } from "../HbAuth";
 
 
 
-@provides<IUserAuth>(IUserAuthKey)
+@provides<IUserAuth>(UserAuthKey)
 class HbAutMock implements IUserAuth {
 
     connect(): void {
@@ -66,5 +67,5 @@ const listenForSignInEvent = (event:KeyboardEvent) => {
 
 
 const dispatchCurrentUserChangedEvent = (detail:IUserData) =>
-    window.dispatchEvent(new CustomEvent("hb-current-user-changed", { detail }));
+    window.dispatchEvent(new HbCurrentUserChangedEvent(detail));
 

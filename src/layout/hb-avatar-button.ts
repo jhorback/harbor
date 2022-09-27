@@ -3,6 +3,13 @@ import { customElement, property } from "lit/decorators.js";
 import { iconStyles } from "../styles/iconStyles";
 
 
+export class AvatarButtonClickedEvent extends Event {
+  static eventType = "hb-avatar-button-click";
+  constructor() {
+    super(AvatarButtonClickedEvent.eventType, {bubbles: true, composed: true})
+  }
+}
+
 
 /**
  * @class AvatarButton
@@ -34,7 +41,7 @@ export class AvatarButton extends LitElement {
   }
 
   private onClick() {
-    this.dispatchEvent(new CustomEvent("hb-avatar-button-click", {bubbles:true, composed: true}));
+    this.dispatchEvent(new AvatarButtonClickedEvent());
   }
 
   static styles = [iconStyles, css`

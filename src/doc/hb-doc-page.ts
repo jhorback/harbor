@@ -18,7 +18,11 @@ export class HbDocPage extends LitElement {
                 <div class="page-container">
                     <h1>HB-DOC-PAGE</h1>
                     Test document, uid = <span class="primary-text">${this.uid}</span>
+                    <p>
+                        <a href="/bad-link">Bad Link</a>
+                    </p>
                 </div>
+                
             </hb-page-layout>
         `
     }

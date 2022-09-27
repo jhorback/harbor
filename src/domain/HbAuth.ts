@@ -1,4 +1,4 @@
-import { IUserAuth, IUserAuthKey, IUserData } from "./interfaces/UserInterfaces";
+import { IUserAuth, UserAuthKey, IUserData } from "./interfaces/UserInterfaces";
 import { provides } from "./DependencyContainer/decorators";
 import { FbApp } from "./FbApp";
 import { HbApp } from "./HbApp";
@@ -17,9 +17,19 @@ import { HbDb } from "./HbDb";
 import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
 import { UserModel } from "./User/UserModel";
 import { UserRole } from "./User/UserRoles";
+import { HbCurrentUser } from "./HbCurrentUser";
 
 
-@provides<IUserAuth>(IUserAuthKey, !HbApp.isStorybook)
+export class HbCurrentUserChangedEvent extends Event {
+    static eventType = "hb-current-user-changed";
+    userData:IUserData;
+    constructor(userData: IUserData) {
+        super(HbCurrentUserChangedEvent.eventType);
+        this.userData = userData;
+    }
+}
+
+@provides<IUserAuth>(UserAuthKey, !HbApp.isStorybook)
 class HbAuth implements IUserAuth {
 
     provider:GoogleAuthProvider;
@@ -125,8 +135,10 @@ const listenForSignInEvent = (event:KeyboardEvent) => {
     }
 };
 
-const dispatchCurrentUserChangedEvent = (detail:IUserData) =>
-    window.dispatchEvent(new CustomEvent("hb-current-user-changed", { detail }));
+const dispatchCurrentUserChangedEvent = (userData:IUserData) => {
+    HbCurrentUser.setCurrentUser(userData.uid, userData.role);
+    window.dispatchEvent(new HbCurrentUserChangedEvent(userData));
+}
 
 
 const getSignedInUser = async (authUser:User):Promise<IUserData> => {

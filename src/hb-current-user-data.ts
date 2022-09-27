@@ -1,11 +1,19 @@
 import { DataElement, StateChange } from "@domx/dataelement";
 import { customDataElement, dataProperty, event } from "@domx/dataelement/decorators";
-import { IUserData, IHbAppInfo, IUserAuth, IUserAuthKey } from "./domain/interfaces/UserInterfaces";
+import { IUserData, IHbAppInfo, IUserAuth, UserAuthKey } from "./domain/interfaces/UserInterfaces";
 import { HbApp } from "./domain/HbApp";
 import { inject } from "./domain/DependencyContainer/decorators";
 import { sendFeedback } from "./common/feedback";
 import "./domain/HbAuth";
+import { HbCurrentUserChangedEvent } from "./domain/HbAuth";
 
+
+export class SignOutEvent extends Event {
+    static eventType = "sign-out";
+    constructor() {
+        super(SignOutEvent.eventType, {bubbles: true, composed: true});
+    }
+}
 
 @customDataElement("hb-current-user-data", {
     eventsListenAt: "window"
@@ -21,16 +29,13 @@ export class CurrentUserData extends DataElement {
         version: "v0.0.0"
     };
 
-    static signOutEvent = () =>
-        new Event("sign-out", { bubbles: true, composed: true});
-
     @dataProperty({changeEvent: "current-user-changed"})
     currentUser:IUserData = CurrentUserData.defaultCurrentUser;
 
     @dataProperty({changeEvent: "hb-app-info-changed"})
     hbAppInfo:IHbAppInfo = CurrentUserData.defaultHbAppInfo;
 
-    @inject<IUserAuth>(IUserAuthKey)
+    @inject<IUserAuth>(UserAuthKey)
     private userAuth!:IUserAuth;
 
     connectedCallback() {
@@ -45,15 +50,15 @@ export class CurrentUserData extends DataElement {
             .dispatch();
     }
 
-    @event("hb-current-user-changed")
-    private hbCurrentUserChanged(event:CustomEvent) {
+    @event(HbCurrentUserChangedEvent.eventType)
+    private hbCurrentUserChanged(event:HbCurrentUserChangedEvent) {
         StateChange.of(this, "currentUser")
-            .next(setCurrentUserData(event.detail))
+            .next(setCurrentUserData(event.userData))
             .dispatch();
     }
 
-    @event("sign-out")
-    private async signOut(event:Event) {
+    @event(SignOutEvent.eventType)
+    private async signOut(event:SignOutEvent) {
         try{
             await this.userAuth.signOut();
         } catch (e:any) {

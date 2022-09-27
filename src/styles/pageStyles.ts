@@ -4,7 +4,7 @@ import { css } from 'lit-element';
 
 /** 
  * Common use page classes
- * // todo: create a storybook page for these/all styles?
+ * // jch: create a storybook page for these/all styles?
  * // May rethink these page-container styles and use size="small|large" attributes!!!
  */
 export const pageStyles = css`

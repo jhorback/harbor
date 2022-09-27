@@ -1,8 +1,9 @@
 import { IUserData } from "../interfaces/UserInterfaces";
 
 
-export const userCan = (user:IUserData, action:UserAction):boolean =>
-    UserActionRoles[action].includes(user.role ? user.role : UserRole.none);
+export const roleHasAction = (role:UserRole, action:UserAction): boolean => 
+    UserActionRoles[action].includes(role);
+
 
     
 export enum UserRole {
@@ -35,7 +36,7 @@ export enum UserAction {
 //     UserActionRoles[action].includes(user.role ? user.role : UserRole.none);
 
 
-// todo: fill out action roles (rename?), review implementation
+// jch: fill out action roles (rename?), review implementation
 const UserActionRoles:{[key:string]: Array<UserRole>} = {
     [UserAction.authorDocuments]: [
         UserRole.userAdmin,
