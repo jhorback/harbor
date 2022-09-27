@@ -12,6 +12,7 @@ export class DocModel {
         /** A tokenized version of the document title */
         this.pid = "";
         this.title = "";
+        this.titleUppercase = "";
         this.showTitle = true;
         this.subtitle = null;
         this.showSubtitle = true;
@@ -50,6 +51,7 @@ export class DocModel {
         const doc = new DocModel();
         doc.authorUid = authorUid;
         doc.title = options.title;
+        doc.titleUppercase = options.title.toUpperCase();
         doc.docType = options.docType;
         doc.pid = DocModel.tokenize(doc.title);
         doc.uid = `${doc.docType}:${doc.pid}`;
@@ -74,6 +76,7 @@ export class DocModel {
             docType: doc.docType,
             pid: doc.pid,
             title: doc.title,
+            titleUppercase: doc.title.toUpperCase(),
             showTitle: doc.showTitle,
             subtitle: doc.subtitle,
             showSubtitle: doc.showSubtitle,

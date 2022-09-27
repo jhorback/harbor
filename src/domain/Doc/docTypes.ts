@@ -17,8 +17,8 @@ export const docTypes:{[key:string]: IDocTypeDescriptor}  = {
         defaultContent: [new TextContent()],
         icon: "article"
     }, 
-    doc2: {
-        type: "doc",
+    photo: {
+        type: "photo",
         name: "Photo",
         route: "docs",
         description: "Some other text that may be a bit longer so it will be forced to wrap on a different line",

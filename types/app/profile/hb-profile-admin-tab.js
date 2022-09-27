@@ -10,16 +10,8 @@ import { styles } from "../../styles";
 import { RequestSysadminSettingsEvent, SystemAdminData, UpdateHomePageEvent } from "../data/hb-system-admin-data";
 import { linkProp } from "@domx/linkprop";
 import "../../common/hb-button";
+import "../../doc/hb-find-doc-dialog";
 import "../../doc/hb-add-document-dialog";
-/**
- * // todo: Search Document Dialog
- * state: {
- *      results: {
- *          count:
- *          list?:
- *      }
- * }
- */
 /**
  * @class ProfileAdminTab
  */
@@ -42,6 +34,9 @@ let ProfileAdminTab = class ProfileAdminTab extends LitElement {
             <hb-add-document-dialog
                 @document-added=${this.documentAdded}
             ></hb-add-document-dialog>
+            <hb-find-doc-dialog open
+                @document-selected=${this.documentSelected}
+            ></hb-find-doc-dialog>
             <div class="home-page-container">
                 <div class="title-large">Home page</div>
                 ${this.settings.homePageThumbnail ? html `
@@ -83,9 +78,12 @@ let ProfileAdminTab = class ProfileAdminTab extends LitElement {
     documentAdded(event) {
         this.$systemAdminData.dispatchEvent(new UpdateHomePageEvent(event.documentReference));
     }
+    documentSelected(event) {
+        alert("selected");
+    }
     searchExistingHomePageClicked() {
         this.changeHomePage = false;
-        alert("SEARCH EXISTING");
+        this.$findDocDialog.open = true;
     }
 };
 ProfileAdminTab.styles = [styles.types, css `
@@ -115,6 +113,9 @@ __decorate([
 __decorate([
     query("hb-add-document-dialog")
 ], ProfileAdminTab.prototype, "$addDocumentDialog", void 0);
+__decorate([
+    query("hb-find-doc-dialog")
+], ProfileAdminTab.prototype, "$findDocDialog", void 0);
 __decorate([
     query("hb-system-admin-data")
 ], ProfileAdminTab.prototype, "$systemAdminData", void 0);

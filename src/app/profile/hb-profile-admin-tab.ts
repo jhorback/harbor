@@ -4,20 +4,12 @@ import { styles } from "../../styles";
 import { RequestSysadminSettingsEvent, SystemAdminData, UpdateHomePageEvent } from "../data/hb-system-admin-data";
 import { linkProp } from "@domx/linkprop";
 import "../../common/hb-button";
-import "../../doc/hb-add-document-dialog";
 import { AddDocumentDialog } from "../../doc/hb-add-document-dialog";
+import { DocumentSelectedEvent, FindDocDialog } from "../../doc/hb-find-doc-dialog";
+import "../../doc/hb-find-doc-dialog";
 import { DocumentAddedEvent } from "../../doc/data/hb-add-document-data";
+import "../../doc/hb-add-document-dialog";
 
-
-/**
- * // todo: Search Document Dialog
- * state: {
- *      results: {
- *          count:
- *          list?:
- *      }
- * }
- */
 
 
 /**
@@ -34,6 +26,9 @@ export class ProfileAdminTab extends LitElement {
 
     @query("hb-add-document-dialog")
     $addDocumentDialog!:AddDocumentDialog;
+
+    @query("hb-find-doc-dialog")
+    $findDocDialog!:FindDocDialog;
 
     @query("hb-system-admin-data")
     $systemAdminData!:SystemAdminData;
@@ -52,11 +47,14 @@ export class ProfileAdminTab extends LitElement {
             <hb-add-document-dialog
                 @document-added=${this.documentAdded}
             ></hb-add-document-dialog>
+            <hb-find-doc-dialog open
+                @document-selected=${this.documentSelected}
+            ></hb-find-doc-dialog>
             <div class="home-page-container">
                 <div class="title-large">Home page</div>
                 ${this.settings.homePageThumbnail ? html`
 
-                    HAVE THUMBNAIL!!!
+                   ${this.settings.homePageThumbnail.title}
 
                 ` : html `
                     <div class="body-large">
@@ -90,16 +88,20 @@ export class ProfileAdminTab extends LitElement {
 
     private addNewHomePageClicked() {
         this.changeHomePage = false;
-       this.$addDocumentDialog.open = true;
+        this.$addDocumentDialog.open = true;
     }
 
     private documentAdded(event:DocumentAddedEvent) {
         this.$systemAdminData.dispatchEvent(new UpdateHomePageEvent(event.documentReference));
     }
 
+    private documentSelected(event:DocumentSelectedEvent) {
+        this.$systemAdminData.dispatchEvent(new UpdateHomePageEvent(event.documentReference));
+    }
+
     private searchExistingHomePageClicked() {
         this.changeHomePage = false;
-        alert("SEARCH EXISTING");
+        this.$findDocDialog.open = true;
     }
 
     static styles = [styles.types, css`

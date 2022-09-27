@@ -6,76 +6,57 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 import { html, css, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators.js";
-import { classMap } from 'lit/directives/class-map.js';
 import { styles } from "../styles";
-import { AddDocumentData, AddNewDocumentEvent, DocumentAddedEvent } from "./data/hb-add-document-data";
-import "./data/hb-add-document-data";
+import "./data/hb-search-docs-data";
 import "../common/hb-button";
 import { linkProp } from "@domx/linkprop";
+import { SearchDocsData, SearchDocsEvent } from "./data/hb-search-docs-data";
+export class DocumentSelectedEvent extends Event {
+    constructor(documentReference) {
+        super(DocumentSelectedEvent.eventType);
+        this.documentReference = documentReference;
+    }
+}
+DocumentSelectedEvent.eventType = "document-selected";
 /**
- * @fires {@link DocumentAddedEvent}
+ * hb-search-documents-data
+ *  - documents.results: Array<IDocumentThumbnail>
+ *  - documents.count
+ *  - documents.searchText
+ *  - handles-event.search-text-changed
+ *  - fires-event.document-selected
+ *  - db.searchDocuments
  */
-let AddDocumentDialog = class AddDocumentDialog extends LitElement {
+let FindDocDialog = class FindDocDialog extends LitElement {
     constructor() {
         super(...arguments);
         this.open = false;
-        this.state = AddDocumentData.defaultState;
-        this.selectedIndex = 0;
-        this.addButtonEnabled = false;
-        this.addDocumentError = null;
-        this.newDocTitle = "";
+        this.state = SearchDocsData.defaultState;
+        this.selectedIndex = null;
+        this.selectButtonEnabled = false;
+        this.searchText = "";
     }
     reset() {
-        this.addButtonEnabled = false;
-        this.newDocTitle = "";
-        this.selectedIndex = 0;
-        this.$newDocumentTitle.value = "";
-        this.addDocumentError = "";
+        this.selectButtonEnabled = false;
+        this.searchText = "";
+        this.selectedIndex = null;
     }
     render() {
         return html `
-            <hb-add-document-data
+            <hb-search-docs-data
                 @state-changed=${linkProp(this, "state")}
-                @document-added=${this.documentAdded}
-                @add-document-error=${this.handleAddDocumentError}
-            ></hb-add-document-data>
+            ></hb-search-docs-data>
             <dialog class="dark-theme">
                 
-                <h1 class="headline-small">Add New Document</h1>
+                <h1 class="headline-small">Find Document</h1>
 
-                <div class="field">            
-                    <div class="label-large">Document type</div>
-
-                    ${this.state.docTypes.map((docType, index) => html `
-                        <div
-                            class=${classMap({ "doc-type": true, "selected": this.isSelected(index) })}
-                            @click=${() => this.selectedIndex = index}>
-                            <div>
-                                <div class="icon icon-small">${docType.icon}</div>
-                            </div>
-                            <div class="text">
-                                <div class="body-large">${docType.name}</div>
-                                <div class="label-small">${docType.description}</div>
-                            </div>
-                            <div>
-                                <div class="icon icon-small">
-                                    ${this.isSelected(index) ? html `radio_button_checked` : html `radio_button_unchecked`}
-                                </div>
-                            </div>
-                        </div>
-                    `)}
-                </div>
                 <div class="field">
-                    <div class="label-large">Document name</div>
-                    <div class=${classMap({ "text-input-container": true, "property-error": this.addDocumentError ? true : false })}>
-                        <input id="newDocumentTitle"
+                    <div class="text-input-container">
+                        <input id="searchText"
                             type="text"
                             class="text-input"
-                            placeholder="Enter the document title"
+                            placeholder="Enter search text"
                             @keyup=${this.textKeyUp}>
-                        <div class="error-text body-small">
-                            ${this.addDocumentError}
-                        </div>
                     </div>
                 </div>
                 <div class="buttons">
@@ -84,8 +65,8 @@ let AddDocumentDialog = class AddDocumentDialog extends LitElement {
                         @click=${this.close}
                     ></hb-button>
                     <hb-button
-                        label="Add Document"
-                        ?disabled=${!this.addButtonEnabled}
+                        label="Select Document"
+                        ?disabled=${!this.selectButtonEnabled}
                         @click=${this.addButtonClicked}
                     ></hb-button>
                 </div>                
@@ -104,41 +85,22 @@ let AddDocumentDialog = class AddDocumentDialog extends LitElement {
         return index === this.selectedIndex;
     }
     textKeyUp(event) {
-        this.newDocTitle = event.target.value;
-        this.addButtonEnabled = this.newDocTitle.length > 2;
-        this.addDocumentError = null;
-        if (this.addButtonEnabled && event.key === "Enter") {
-            this.addButtonClicked();
+        this.searchText = event.target.value;
+        if (this.searchText.length > 2) {
+            this.$dataEl.dispatchEvent(new SearchDocsEvent({
+                text: this.searchText
+            }));
         }
     }
     addButtonClicked() {
-        this.shadowRoot?.dispatchEvent(new AddNewDocumentEvent({
-            docType: this.state.docTypes[this.selectedIndex].type,
-            title: this.newDocTitle
-        }));
-    }
-    handleAddDocumentError(event) {
-        const error = event.detail;
-        this.addDocumentError = error.message;
-    }
-    // FIXME: after stateChange CustomEvent -> Event
-    // should just be able to re-dispatch?
-    documentAdded(event) {
-        const docRef = event.detail;
-        this.dispatchEvent(new DocumentAddedEvent(docRef));
-        this.close();
+        alert("clicked");
     }
 };
-AddDocumentDialog.styles = [styles.types, styles.icons, styles.colors, css `
+FindDocDialog.styles = [styles.types, styles.icons, styles.colors, css `
         :host {
             display: block;
             z-index:1;
         }
-
-        
-        /*
-        jch: .dialog styles
-        */
         dialog {
             z-index:1;
             border: none !important;
@@ -154,8 +116,6 @@ AddDocumentDialog.styles = [styles.types, styles.icons, styles.colors, css `
         dialog::backdrop {
             background-color: rgb(0, 0, 0, 0.4)
         }
-
-
         .field {
             margin: 1rem 0;
             padding: 1rem 0;
@@ -222,29 +182,23 @@ AddDocumentDialog.styles = [styles.types, styles.icons, styles.colors, css `
   `];
 __decorate([
     property({ type: Boolean })
-], AddDocumentDialog.prototype, "open", void 0);
+], FindDocDialog.prototype, "open", void 0);
 __decorate([
     query("dialog")
-], AddDocumentDialog.prototype, "$dialog", void 0);
+], FindDocDialog.prototype, "$dialog", void 0);
 __decorate([
-    query("#newDocumentTitle")
-], AddDocumentDialog.prototype, "$newDocumentTitle", void 0);
-__decorate([
-    query("hb-add-document-data")
-], AddDocumentDialog.prototype, "$dataEl", void 0);
+    query("hb-search-docs-data")
+], FindDocDialog.prototype, "$dataEl", void 0);
 __decorate([
     property({ type: Object })
-], AddDocumentDialog.prototype, "state", void 0);
+], FindDocDialog.prototype, "state", void 0);
 __decorate([
     state()
-], AddDocumentDialog.prototype, "selectedIndex", void 0);
+], FindDocDialog.prototype, "selectedIndex", void 0);
 __decorate([
     state()
-], AddDocumentDialog.prototype, "addButtonEnabled", void 0);
-__decorate([
-    state()
-], AddDocumentDialog.prototype, "addDocumentError", void 0);
-AddDocumentDialog = __decorate([
-    customElement('hb-add-document-dialog')
-], AddDocumentDialog);
-export { AddDocumentDialog };
+], FindDocDialog.prototype, "selectButtonEnabled", void 0);
+FindDocDialog = __decorate([
+    customElement('hb-find-doc-dialog')
+], FindDocDialog);
+export { FindDocDialog };

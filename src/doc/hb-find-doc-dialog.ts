@@ -2,19 +2,28 @@ import { html, css, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators.js";
 import { classMap } from 'lit/directives/class-map.js';
 import { styles } from "../styles";
-import { AddDocumentData, AddNewDocumentEvent, DocumentAddedEvent } from "./data/hb-add-document-data";
-import  "./data/hb-add-document-data";
+import  "./data/hb-search-docs-data";
 import "../common/hb-button";
 import { linkProp } from "@domx/linkprop";
 import { IDocumentReference } from "../domain/interfaces/DocumentInterfaces";
-import { ClientError } from "../domain/ClientError";
+import { SearchDocsData, SearchDocsEvent } from "./data/hb-search-docs-data";
+
+
+export class DocumentSelectedEvent extends Event {
+    static eventType = "document-selected";
+    documentReference:IDocumentReference;
+    constructor(documentReference:IDocumentReference) {
+        super(DocumentSelectedEvent.eventType);
+        this.documentReference = documentReference;
+    }
+}
 
 
 /**  
- * @fires {@link DocumentAddedEvent}
+ * @fires {@link DocumentSelectedEvent}
  */
-@customElement('hb-add-document-dialog')
-export class AddDocumentDialog extends LitElement {
+@customElement('hb-find-doc-dialog')
+export class FindDocDialog extends LitElement {
 
     @property({type:Boolean})
     open = false;
@@ -22,89 +31,85 @@ export class AddDocumentDialog extends LitElement {
     @query("dialog")
     $dialog!:HTMLDialogElement;
 
-    @query("#newDocumentTitle")
-    $newDocumentTitle!:HTMLInputElement;
+    @query("#searchText")
+    $searchText!:HTMLInputElement;
 
-    @query("hb-add-document-data")
-    $dataEl!:AddDocumentData;
+    @query("hb-search-docs-data")
+    $dataEl!:SearchDocsData;
 
     @property({type: Object})
-    state = AddDocumentData.defaultState;
+    state = SearchDocsData.defaultState;
 
     @state()
-    selectedIndex = 0;
+    selectedIndex:number|null = null;
 
-    @state()
-    addButtonEnabled = false;
-
-    @state()
-    addDocumentError:string|null = null;
-
-    newDocTitle = "";
+    searchText = "";
 
     private reset() {
-        this.addButtonEnabled = false;
-        this.newDocTitle = "";
-        this.selectedIndex = 0;
-        this.$newDocumentTitle.value = "";
-        this.addDocumentError = "";
+        this.searchText = "";
+        this.selectedIndex = null;
+        this.$searchText.value = "";
     }
 
     render() {
+        const selectButtonEnabled = this.selectedIndex !== null
+            && this.state.list[this.selectedIndex];
+
+
         return html`
-            <hb-add-document-data
+            <hb-search-docs-data
                 @state-changed=${linkProp(this, "state")}
-                @document-added=${this.documentAdded}
-                @add-document-error=${this.handleAddDocumentError}
-            ></hb-add-document-data>
+            ></hb-search-docs-data>
             <dialog class="dark-theme">
                 
-                <h1 class="headline-small">Add New Document</h1>
+                <h1 class="headline-small">Find Document</h1>
 
-                <div class="field">            
-                    <div class="label-large">Document type</div>
-
-                    ${this.state.docTypes.map((docType, index) => html`
-                        <div
-                            class=${classMap({"doc-type": true, "selected": this.isSelected(index)})}
-                            @click=${() => this.selectedIndex = index}>
-                            <div>
-                                <div class="icon icon-small">${docType.icon}</div>
-                            </div>
-                            <div class="text">
-                                <div class="body-large">${docType.name}</div>
-                                <div class="label-small">${docType.description}</div>
-                            </div>
-                            <div>
-                                <div class="icon icon-small">
-                                    ${this.isSelected(index) ? html`radio_button_checked` : html`radio_button_unchecked`}
-                                </div>
-                            </div>
-                        </div>
-                    `)}
-                </div>
                 <div class="field">
-                    <div class="label-large">Document name</div>
-                    <div class=${classMap({"text-input-container":true, "property-error": this.addDocumentError ? true : false})}>
-                        <input id="newDocumentTitle"
+                    <div class="text-input-container">
+                        <input id="searchText"
                             type="text"
                             class="text-input"
-                            placeholder="Enter the document title"
+                            placeholder="Enter search text"
+                            value=${this.searchText}
                             @keyup=${this.textKeyUp}>
-                        <div class="error-text body-small">
-                            ${this.addDocumentError}
-                        </div>
                     </div>
                 </div>
+
+                <div>
+                    
+                    ${
+                        this.state.list.map((docModel, index) => {
+                            const listItem = docModel.toListItem();
+                            return html`
+                            <div
+                                class=${classMap({"doc-type": true, "selected": this.isSelected(index)})}
+                                @click=${() => this.selectedIndex = index}>
+                                <div>
+                                    <div class="icon icon-small">${listItem.icon}</div>
+                                </div>
+                                <div class="text">
+                                    <div class="body-large">${listItem.text}</div>
+                                    <div class="label-small">${listItem.description}</div>
+                                </div>
+                                <div>
+                                    <div class="icon icon-small">
+                                        ${this.isSelected(index) ? html`radio_button_checked` : html`radio_button_unchecked`}
+                                    </div>
+                                </div>
+                            </div>
+                        `})
+                    }
+                </div>
+
                 <div class="buttons">
                     <hb-button
                         label="Cancel"
                         @click=${this.close}
                     ></hb-button>
                     <hb-button
-                        label="Add Document"
-                        ?disabled=${!this.addButtonEnabled}
-                        @click=${this.addButtonClicked}
+                        label="Select Document"
+                        ?disabled=${this.iSelectButtonDisabled()}
+                        @click=${this.selectButtonClicked}
                     ></hb-button>
                 </div>                
             </dialog>
@@ -116,7 +121,12 @@ export class AddDocumentDialog extends LitElement {
         !this.open && this.$dialog.close();
     }
 
-    close () {
+    iSelectButtonDisabled() {
+       return this.selectedIndex === null
+            || this.state.list[this.selectedIndex] === undefined;
+    }
+
+    close() {
         this.reset();
         this.open = false;
     }
@@ -126,44 +136,28 @@ export class AddDocumentDialog extends LitElement {
     }
 
     private textKeyUp(event:KeyboardEvent) {
-        this.newDocTitle = (event.target as HTMLInputElement).value;
-        this.addButtonEnabled = this.newDocTitle.length > 2;
-        this.addDocumentError = null;
-        if (this.addButtonEnabled && event.key === "Enter") {
-            this.addButtonClicked();
-        }
-    }
-
-    private addButtonClicked() {
-        this.shadowRoot?.dispatchEvent(new AddNewDocumentEvent({
-            docType: this.state.docTypes[this.selectedIndex].type,
-            title: this.newDocTitle
+        this.searchText = (event.target as HTMLInputElement).value;
+        this.$dataEl.dispatchEvent(new SearchDocsEvent({
+            text: this.searchText
         }));
     }
 
-    private handleAddDocumentError(event:CustomEvent) {
-        const error = event.detail as ClientError;
-        this.addDocumentError = error.message;     
-    }
-    
-    // FIXME: after stateChange CustomEvent -> Event
-    // should just be able to re-dispatch?
-    private documentAdded(event:CustomEvent) {  
-        const docRef = event.detail as IDocumentReference;
-        this.dispatchEvent(new DocumentAddedEvent(docRef));
+    private selectButtonClicked() {
+        if (this.selectedIndex === null) {
+            return;
+        }
+
+        this.dispatchEvent(new DocumentSelectedEvent(this.state.list[this.selectedIndex].toDocumentReference()));
         this.close();
     }
+    
+
 
     static styles = [styles.types, styles.icons, styles.colors, css`
         :host {
             display: block;
             z-index:1;
         }
-
-        
-        /*
-        jch: .dialog styles
-        */
         dialog {
             z-index:1;
             border: none !important;
@@ -179,8 +173,6 @@ export class AddDocumentDialog extends LitElement {
         dialog::backdrop {
             background-color: rgb(0, 0, 0, 0.4)
         }
-
-
         .field {
             margin: 1rem 0;
             padding: 1rem 0;
@@ -249,6 +241,6 @@ export class AddDocumentDialog extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'hb-add-document-dialog': AddDocumentDialog
+    'hb-find-doc-dialog': FindDocDialog
   }
 }

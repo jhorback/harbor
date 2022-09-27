@@ -1,6 +1,9 @@
-import { QueryDocumentSnapshot, Timestamp } from "firebase/firestore";
+import {  QueryDocumentSnapshot, Timestamp } from "firebase/firestore";
 import { IAddNewDocumentOptions, IContentType, IDocData, IDocumentReference, IDocumentThumbnail } from "../interfaces/DocumentInterfaces";
+import { IListItem } from "../interfaces/UIInterfaces";
 import { docTypes } from "./docTypes";
+
+
 
 
 /**
@@ -17,6 +20,7 @@ export class DocModel implements IDocData {
         const doc = new DocModel();
         doc.authorUid = authorUid;
         doc.title = options.title;
+        doc.titleUppercase = options.title.toUpperCase();
         doc.docType = options.docType;
         doc.pid = DocModel.tokenize(doc.title);
         doc.uid = `${doc.docType}:${doc.pid}`;
@@ -31,6 +35,7 @@ export class DocModel implements IDocData {
     /** A tokenized version of the document title */
     pid = "";
     title = "";
+    titleUppercase = "";
     showTitle = true;
     subtitle = null;
     showSubtitle = true;
@@ -61,9 +66,17 @@ export class DocModel implements IDocData {
         title: this.title,
         thumbUrl: this.thumbUrl,
         thumbDescription: this.useSubtitleAsThumbDescription ?
-        this.subtitle : this.thumbDescription,
+            this.subtitle : this.thumbDescription,
         href: `${docTypes[this.docType].route}/${this.pid}`
-    })
+    });
+
+    toListItem = ():IListItem => ({
+        uid: this.uid,
+        text: this.title,
+        description: this.useSubtitleAsThumbDescription ?
+            this.subtitle : this.thumbDescription,
+        icon: docTypes[this.docType].icon
+    });
 
     /**
      * Used to tokenize the title to get the page id.
@@ -81,6 +94,7 @@ export class DocModel implements IDocData {
             docType: doc.docType,
             pid: doc.pid,
             title: doc.title,
+            titleUppercase: doc.title.toUpperCase(),
             showTitle: doc.showTitle,
             subtitle: doc.subtitle,
             showSubtitle: doc.showSubtitle,

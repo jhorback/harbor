@@ -13,8 +13,8 @@ import { UserRole } from "./UserRoles";
 class HbUserListRepo implements IUserListRepo {
     @authorize(UserAction.viewUsers)
     async getUsers(): Promise<IUserData[]> {
-        const query = await getDocs(collection(HbDb.current, "users").withConverter(UserModel));
-        const users = query.docs.map((doc:QueryDocumentSnapshot<IUserData>) => doc.data());
+        const snapshot = await getDocs(collection(HbDb.current, "users").withConverter(UserModel));
+        const users = snapshot.docs.map((doc:QueryDocumentSnapshot<IUserData>) => doc.data());
         return users;
     }
 

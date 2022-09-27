@@ -1,4 +1,6 @@
 import { Timestamp } from "firebase/firestore";
+import { DocModel } from "../Doc/DocModel";
+import { IThumbnail } from "./UIInterfaces";
 
 
 export interface IContentType {
@@ -32,12 +34,7 @@ export interface IDocumentReference {
     documentRef: string;
 }
 
-export interface IThumbnail {
-    title: string;
-    thumbUrl: string|null;
-    thumbDescription: string|null;
-    href: string;
-}
+
 
 export interface IDocumentThumbnail extends IThumbnail, IDocumentReference { }
 
@@ -46,6 +43,7 @@ export interface IDocData {
     docType: string;
     pid: string;
     title: string,
+    titleUppercase: string,
     showTitle: boolean;
     subtitle: string|null;
     showSubtitle: boolean;
@@ -59,23 +57,31 @@ export interface IDocData {
 }
 
 
+
+export const SearchDocsRepoKey:symbol = Symbol("SEARCH_DOCS_REPO");
+export interface ISearchDocsRepo {
+    searchDocs(options:ISearchDocsOptions):Promise<Array<DocModel>>;
+}
+export interface ISearchDocsOptions {
+    text:string|undefined;
+}
+
+
+
+
 export const AddDocRepoKey:symbol = Symbol("ADD_DOC_REPO");
-
-
+export interface IAddDocRepo {
+    addDoc(options:IAddNewDocumentOptions):Promise<IDocumentReference>;
+}
 export interface IAddNewDocumentOptions {
     docType: string;
     title: string;
 }
 
-export interface IAddDocRepo {
-    addDoc(options:IAddNewDocumentOptions):Promise<IDocumentReference>;
-}
 
 
 
 export const HomePageRepoKey:symbol = Symbol("HOME_PAGE_REPO_KEY");
-
-
 export interface IHomePageRepo {
     getHomePageRef():Promise<IDocumentReference|null>;
     getHomePageThumbnail():Promise<IDocumentThumbnail|null>;
