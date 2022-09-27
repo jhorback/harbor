@@ -45,25 +45,26 @@ let AddDocumentDialog = class AddDocumentDialog extends LitElement {
 
                 <div class="field">            
                     <div class="label-large">Document type</div>
-
-                    ${this.state.docTypes.map((docType, index) => html `
-                        <div
-                            class=${classMap({ "doc-type": true, "selected": this.isSelected(index) })}
-                            @click=${() => this.selectedIndex = index}>
-                            <div>
-                                <div class="icon icon-small">${docType.icon}</div>
-                            </div>
-                            <div class="text">
-                                <div class="body-large">${docType.name}</div>
-                                <div class="label-small">${docType.description}</div>
-                            </div>
-                            <div>
-                                <div class="icon icon-small">
-                                    ${this.isSelected(index) ? html `radio_button_checked` : html `radio_button_unchecked`}
+                    <div class="list">
+                        ${this.state.docTypes.map((docType, index) => html `
+                            <div
+                                class=${classMap({ "doc-type": true, "selected": this.isSelected(index) })}
+                                @click=${() => this.selectedIndex = index}>
+                                <div>
+                                    <div class="icon icon-small">${docType.icon}</div>
+                                </div>
+                                <div class="text">
+                                    <div class="body-large">${docType.name}</div>
+                                    <div class="label-small">${docType.description}</div>
+                                </div>
+                                <div>
+                                    <div class="icon icon-small">
+                                        ${this.isSelected(index) ? html `radio_button_checked` : html `radio_button_unchecked`}
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    `)}
+                        `)}
+                    </div>
                 </div>
                 <div class="field">
                     <div class="label-large">Document name</div>
@@ -183,10 +184,18 @@ AddDocumentDialog.styles = [styles.types, styles.icons, styles.colors, css `
         .doc-type .text {
             max-width: 25ch;
         }
+
+        
         .buttons {
             display: flex;
             gap: 1rem;
             justify-content: right;
+        }
+
+        .list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
         }
 
 

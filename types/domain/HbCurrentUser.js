@@ -24,13 +24,6 @@ export const authorize = (action) => {
         };
     };
 };
-// TODO: create a method and decorator for the UI components
-// that call into this class for role checking in lieu of UserRoles->canUse?
-// trying to see if I can store the user role in the token so I can get it here
-// create:
-// @authorize(UserAction) decorator for Repo methods
-// isAuthorized(UserAction) lit directive for UI components
-// both should call into the "authorize" method here
 export class HbCurrentUser {
     static setCurrentUser(uid, userRole) {
         this._uid = uid;

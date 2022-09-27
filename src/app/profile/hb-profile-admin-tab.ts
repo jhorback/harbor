@@ -47,7 +47,7 @@ export class ProfileAdminTab extends LitElement {
             <hb-add-document-dialog
                 @document-added=${this.documentAdded}
             ></hb-add-document-dialog>
-            <hb-find-doc-dialog open
+            <hb-find-doc-dialog
                 @document-selected=${this.documentSelected}
             ></hb-find-doc-dialog>
             <div class="home-page-container">

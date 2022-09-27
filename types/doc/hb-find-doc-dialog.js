@@ -6,6 +6,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 import { html, css, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators.js";
+import { classMap } from 'lit/directives/class-map.js';
 import { styles } from "../styles";
 import "./data/hb-search-docs-data";
 import "../common/hb-button";
@@ -19,13 +20,7 @@ export class DocumentSelectedEvent extends Event {
 }
 DocumentSelectedEvent.eventType = "document-selected";
 /**
- * hb-search-documents-data
- *  - documents.results: Array<IDocumentThumbnail>
- *  - documents.count
- *  - documents.searchText
- *  - handles-event.search-text-changed
- *  - fires-event.document-selected
- *  - db.searchDocuments
+ * @fires {@link DocumentSelectedEvent}
  */
 let FindDocDialog = class FindDocDialog extends LitElement {
     constructor() {
@@ -33,15 +28,16 @@ let FindDocDialog = class FindDocDialog extends LitElement {
         this.open = false;
         this.state = SearchDocsData.defaultState;
         this.selectedIndex = null;
-        this.selectButtonEnabled = false;
         this.searchText = "";
     }
     reset() {
-        this.selectButtonEnabled = false;
         this.searchText = "";
         this.selectedIndex = null;
+        this.$searchText.value = "";
     }
     render() {
+        const selectButtonEnabled = this.selectedIndex !== null
+            && this.state.list[this.selectedIndex];
         return html `
             <hb-search-docs-data
                 @state-changed=${linkProp(this, "state")}
@@ -55,10 +51,38 @@ let FindDocDialog = class FindDocDialog extends LitElement {
                         <input id="searchText"
                             type="text"
                             class="text-input"
+                            autofocus
                             placeholder="Enter search text"
+                            value=${this.searchText}
                             @keyup=${this.textKeyUp}>
                     </div>
                 </div>
+
+                <div class="list">
+                    
+                    ${this.state.list.map((docModel, index) => {
+            const listItem = docModel.toListItem();
+            return html `
+                            <div
+                                class=${classMap({ "doc-type": true, "selected": this.isSelected(index) })}
+                                @click=${() => this.selectedIndex = index}>
+                                <div>
+                                    <div class="icon icon-small">${listItem.icon}</div>
+                                </div>
+                                <div class="text">
+                                    <div class="body-large">${listItem.text}</div>
+                                    <div class="label-small">${listItem.description}</div>
+                                </div>
+                                <div>
+                                    <div class="icon icon-small">
+                                        ${this.isSelected(index) ? html `radio_button_checked` : html `radio_button_unchecked`}
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+        })}
+                </div>
+
                 <div class="buttons">
                     <hb-button
                         label="Cancel"
@@ -66,8 +90,8 @@ let FindDocDialog = class FindDocDialog extends LitElement {
                     ></hb-button>
                     <hb-button
                         label="Select Document"
-                        ?disabled=${!this.selectButtonEnabled}
-                        @click=${this.addButtonClicked}
+                        ?disabled=${this.iSelectButtonDisabled()}
+                        @click=${this.selectButtonClicked}
                     ></hb-button>
                 </div>                
             </dialog>
@@ -76,6 +100,10 @@ let FindDocDialog = class FindDocDialog extends LitElement {
     updated() {
         this.open && !this.$dialog.open && this.$dialog.showModal();
         !this.open && this.$dialog.close();
+    }
+    iSelectButtonDisabled() {
+        return this.selectedIndex === null
+            || this.state.list[this.selectedIndex] === undefined;
     }
     close() {
         this.reset();
@@ -86,14 +114,16 @@ let FindDocDialog = class FindDocDialog extends LitElement {
     }
     textKeyUp(event) {
         this.searchText = event.target.value;
-        if (this.searchText.length > 2) {
-            this.$dataEl.dispatchEvent(new SearchDocsEvent({
-                text: this.searchText
-            }));
-        }
+        this.$dataEl.dispatchEvent(new SearchDocsEvent({
+            text: this.searchText
+        }));
     }
-    addButtonClicked() {
-        alert("clicked");
+    selectButtonClicked() {
+        if (this.selectedIndex === null) {
+            return;
+        }
+        this.dispatchEvent(new DocumentSelectedEvent(this.state.list[this.selectedIndex].toDocumentReference()));
+        this.close();
     }
 };
 FindDocDialog.styles = [styles.types, styles.icons, styles.colors, css `
@@ -141,12 +171,23 @@ FindDocDialog.styles = [styles.types, styles.icons, styles.colors, css `
             border: 1px solid;
         }
         .doc-type .text {
+            flex-grow: 1;
+        }
+        .doc-type .text div {
             max-width: 25ch;
         }
         .buttons {
+            margin-top: 1rem;
             display: flex;
             gap: 1rem;
             justify-content: right;
+        }
+
+
+        .list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
         }
 
 
@@ -187,6 +228,9 @@ __decorate([
     query("dialog")
 ], FindDocDialog.prototype, "$dialog", void 0);
 __decorate([
+    query("#searchText")
+], FindDocDialog.prototype, "$searchText", void 0);
+__decorate([
     query("hb-search-docs-data")
 ], FindDocDialog.prototype, "$dataEl", void 0);
 __decorate([
@@ -195,9 +239,6 @@ __decorate([
 __decorate([
     state()
 ], FindDocDialog.prototype, "selectedIndex", void 0);
-__decorate([
-    state()
-], FindDocDialog.prototype, "selectButtonEnabled", void 0);
 FindDocDialog = __decorate([
     customElement('hb-find-doc-dialog')
 ], FindDocDialog);

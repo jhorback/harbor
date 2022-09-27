@@ -40,6 +40,13 @@ export class DocModel {
                 this.subtitle : this.thumbDescription,
             href: `${docTypes[this.docType].route}/${this.pid}`
         });
+        this.toListItem = () => ({
+            uid: this.uid,
+            text: this.title,
+            description: this.useSubtitleAsThumbDescription ?
+                this.subtitle : this.thumbDescription,
+            icon: docTypes[this.docType].icon
+        });
     }
     /**
      * Helper method to ensure doc properties when

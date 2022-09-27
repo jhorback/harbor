@@ -13,8 +13,8 @@ import { UserListRepoKey } from "../interfaces/UserInterfaces";
 import { UserModel } from "./UserModel";
 let HbUserListRepo = class HbUserListRepo {
     async getUsers() {
-        const query = await getDocs(collection(HbDb.current, "users").withConverter(UserModel));
-        const users = query.docs.map((doc) => doc.data());
+        const snapshot = await getDocs(collection(HbDb.current, "users").withConverter(UserModel));
+        const users = snapshot.docs.map((doc) => doc.data());
         return users;
     }
     async updateUserRole(uid, role) {

@@ -31,7 +31,10 @@ let SearchDocsData = SearchDocsData_1 = class SearchDocsData extends DataElement
             .tap(searchDocuments(this.searchDocsRepo, options));
     }
 };
-SearchDocsData.defaultState = {};
+SearchDocsData.defaultState = {
+    list: [],
+    count: 0
+};
 __decorate([
     dataProperty()
 ], SearchDocsData.prototype, "state", void 0);
@@ -48,15 +51,12 @@ SearchDocsData = SearchDocsData_1 = __decorate([
 ], SearchDocsData);
 export { SearchDocsData };
 const searchDocuments = (repo, options) => async (stateChange) => {
-    // alert("SEARCH DOCUMENTS");
-    /*
-    const searchText = event.detail.searchText.toUpperCase();
-    const docRef = hb.db.collection("docs");
-    const snapshot = await docRef.where("title_UPPERCASE", ">", searchText)
-        .where("title_UPPERCASE", "<", `${searchText}z`)
-        .get();
-    const docs = snapshot.docs.map(d => d.data());
-    this.set("docData.searchResults", docs);
-    this.set("docData.noSearchResults", docs.length === 0);
-    */
+    const docs = await repo.searchDocs(options);
+    stateChange
+        .next(updateDocsList(docs))
+        .dispatch();
+};
+const updateDocsList = (docs) => (state) => {
+    state.list = docs;
+    state.count = docs.length;
 };

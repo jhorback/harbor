@@ -69,13 +69,14 @@ export class FindDocDialog extends LitElement {
                         <input id="searchText"
                             type="text"
                             class="text-input"
+                            autofocus
                             placeholder="Enter search text"
                             value=${this.searchText}
                             @keyup=${this.textKeyUp}>
                     </div>
                 </div>
 
-                <div>
+                <div class="list">
                     
                     ${
                         this.state.list.map((docModel, index) => {
@@ -198,12 +199,23 @@ export class FindDocDialog extends LitElement {
             border: 1px solid;
         }
         .doc-type .text {
+            flex-grow: 1;
+        }
+        .doc-type .text div {
             max-width: 25ch;
         }
         .buttons {
+            margin-top: 1rem;
             display: flex;
             gap: 1rem;
             justify-content: right;
+        }
+
+
+        .list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
         }
 
 

@@ -34,14 +34,14 @@ let ProfileAdminTab = class ProfileAdminTab extends LitElement {
             <hb-add-document-dialog
                 @document-added=${this.documentAdded}
             ></hb-add-document-dialog>
-            <hb-find-doc-dialog open
+            <hb-find-doc-dialog
                 @document-selected=${this.documentSelected}
             ></hb-find-doc-dialog>
             <div class="home-page-container">
                 <div class="title-large">Home page</div>
                 ${this.settings.homePageThumbnail ? html `
 
-                    HAVE THUMBNAIL!!!
+                   ${this.settings.homePageThumbnail.title}
 
                 ` : html `
                     <div class="body-large">
@@ -79,7 +79,7 @@ let ProfileAdminTab = class ProfileAdminTab extends LitElement {
         this.$systemAdminData.dispatchEvent(new UpdateHomePageEvent(event.documentReference));
     }
     documentSelected(event) {
-        alert("selected");
+        this.$systemAdminData.dispatchEvent(new UpdateHomePageEvent(event.documentReference));
     }
     searchExistingHomePageClicked() {
         this.changeHomePage = false;
