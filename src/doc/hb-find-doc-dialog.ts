@@ -4,6 +4,7 @@ import { classMap } from 'lit/directives/class-map.js';
 import { styles } from "../styles";
 import  "./data/hb-search-docs-data";
 import "../common/hb-button";
+import "../common/hb-list-item";
 import { linkProp } from "@domx/linkprop";
 import { IDocumentReference } from "../domain/interfaces/DocumentInterfaces";
 import { SearchDocsData, SearchDocsEvent } from "./data/hb-search-docs-data";
@@ -82,22 +83,13 @@ export class FindDocDialog extends LitElement {
                         this.state.list.map((docModel, index) => {
                             const listItem = docModel.toListItem();
                             return html`
-                            <div
-                                class=${classMap({"doc-type": true, "selected": this.isSelected(index)})}
-                                @click=${() => this.selectedIndex = index}>
-                                <div>
-                                    <div class="icon icon-small">${listItem.icon}</div>
-                                </div>
-                                <div class="text">
-                                    <div class="body-large">${listItem.text}</div>
-                                    <div class="label-small">${listItem.description}</div>
-                                </div>
-                                <div>
-                                    <div class="icon icon-small">
-                                        ${this.isSelected(index) ? html`radio_button_checked` : html`radio_button_unchecked`}
-                                    </div>
-                                </div>
-                            </div>
+                                <hb-list-item
+                                    icon=${listItem.icon}
+                                    text=${listItem.text}
+                                    description=${listItem.description}
+                                    ?selected=${this.isSelected(index)}                                    
+                                    @hb-list-item-click=${() => this.selectedIndex = index}
+                                ></hb-list-item>
                         `})
                     }
                 </div>
@@ -180,42 +172,19 @@ export class FindDocDialog extends LitElement {
             display: flex;
             flex-direction: column;
             gap: 1.5rem;
-        }
-        .doc-type {
-            user-select: none;
-            border: 1px solid transparent;
-            border-radius:  var(--md-sys-shape-corner-medium);
-            padding: 0.5rem 0 0.5rem 0;
+        }        
+
+        .list {
             display: flex;
-            align-items: center;
-            justify-content: top;
-            cursor: default;
-            gap: 0.5rem;
+            flex-direction: column;
+            gap: 5px;
         }
-        .doc-type:hover {
-            border: 1px solid;
-        }
-        .doc-type.selected {
-            border: 1px solid;
-        }
-        .doc-type .text {
-            flex-grow: 1;
-        }
-        .doc-type .text div {
-            max-width: 25ch;
-        }
+
         .buttons {
             margin-top: 1rem;
             display: flex;
             gap: 1rem;
             justify-content: right;
-        }
-
-
-        .list {
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
         }
 
 

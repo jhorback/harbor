@@ -11,6 +11,7 @@ import { styles } from "../styles";
 import { AddDocumentData, AddNewDocumentEvent, DocumentAddedEvent } from "./data/hb-add-document-data";
 import "./data/hb-add-document-data";
 import "../common/hb-button";
+import "../common/hb-list-item";
 import { linkProp } from "@domx/linkprop";
 /**
  * @fires {@link DocumentAddedEvent}
@@ -47,22 +48,13 @@ let AddDocumentDialog = class AddDocumentDialog extends LitElement {
                     <div class="label-large">Document type</div>
                     <div class="list">
                         ${this.state.docTypes.map((docType, index) => html `
-                            <div
-                                class=${classMap({ "doc-type": true, "selected": this.isSelected(index) })}
-                                @click=${() => this.selectedIndex = index}>
-                                <div>
-                                    <div class="icon icon-small">${docType.icon}</div>
-                                </div>
-                                <div class="text">
-                                    <div class="body-large">${docType.name}</div>
-                                    <div class="label-small">${docType.description}</div>
-                                </div>
-                                <div>
-                                    <div class="icon icon-small">
-                                        ${this.isSelected(index) ? html `radio_button_checked` : html `radio_button_unchecked`}
-                                    </div>
-                                </div>
-                            </div>
+                            <hb-list-item
+                                icon=${docType.icon}
+                                text=${docType.name}
+                                description=${docType.description}
+                                ?selected=${this.isSelected(index)}                                    
+                                @hb-list-item-click=${() => this.selectedIndex = index}
+                            ></hb-list-item>
                         `)}
                     </div>
                 </div>
@@ -164,26 +156,6 @@ AddDocumentDialog.styles = [styles.types, styles.icons, styles.colors, css `
             flex-direction: column;
             gap: 1.5rem;
         }
-        .doc-type {
-            user-select: none;
-            border: 1px solid transparent;
-            border-radius:  var(--md-sys-shape-corner-medium);
-            padding: 0.5rem 0 0.5rem 0;
-            display: flex;
-            align-items: center;
-            justify-content: top;
-            cursor: default;
-            gap: 0.5rem;
-        }
-        .doc-type:hover {
-            border: 1px solid;
-        }
-        .doc-type.selected {
-            border: 1px solid;
-        }
-        .doc-type .text {
-            max-width: 25ch;
-        }
 
         
         .buttons {
@@ -195,7 +167,7 @@ AddDocumentDialog.styles = [styles.types, styles.icons, styles.colors, css `
         .list {
             display: flex;
             flex-direction: column;
-            gap: 0.5rem;
+            gap: 5px;
         }
 
 
