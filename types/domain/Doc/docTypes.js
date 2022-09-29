@@ -8,7 +8,8 @@ export const docTypes = {
         element: "hb-doc-page",
         validContentTypes: [contentTypes.text.type, contentTypes.image.type],
         defaultContent: [new TextContent()],
-        icon: "article"
+        icon: "article",
+        defaultThumbUrl: "/content/thumbs/default-doc-thumb.png"
     },
     photo: {
         type: "photo",
@@ -18,7 +19,8 @@ export const docTypes = {
         element: "hb-doc-page",
         validContentTypes: [contentTypes.text.type, contentTypes.image.type],
         defaultContent: [new TextContent()],
-        icon: "image"
+        icon: "image",
+        defaultThumbUrl: "/content/thumbs/default-doc-thumb.png"
     }
     /*
     * Album (hb-album-doc - album/albums) - Text (text), Album Art (Image), Release Date (custom), Songs (song-list)

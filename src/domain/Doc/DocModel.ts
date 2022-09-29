@@ -25,6 +25,7 @@ export class DocModel implements IDocData {
         doc.pid = DocModel.tokenize(doc.title);
         doc.uid = `${doc.docType}:${doc.pid}`;
         doc.content = docTypes[doc.docType].defaultContent;
+        doc.thumbUrl = docTypes[doc.docType].defaultThumbUrl;
         return doc;
     }
 
@@ -39,7 +40,7 @@ export class DocModel implements IDocData {
     showTitle = true;
     subtitle = null;
     showSubtitle = true;
-    thumbUrl = null;
+    thumbUrl = "";
     thumbDescription = null;
     useSubtitleAsThumbDescription = true;
     dateCreated = new Date();

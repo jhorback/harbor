@@ -16,7 +16,7 @@ export class DocModel {
         this.showTitle = true;
         this.subtitle = null;
         this.showSubtitle = true;
-        this.thumbUrl = null;
+        this.thumbUrl = "";
         this.thumbDescription = null;
         this.useSubtitleAsThumbDescription = true;
         this.dateCreated = new Date();
@@ -63,6 +63,7 @@ export class DocModel {
         doc.pid = DocModel.tokenize(doc.title);
         doc.uid = `${doc.docType}:${doc.pid}`;
         doc.content = docTypes[doc.docType].defaultContent;
+        doc.thumbUrl = docTypes[doc.docType].defaultThumbUrl;
         return doc;
     }
     get documentRef() {
