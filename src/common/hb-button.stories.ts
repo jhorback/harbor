@@ -35,11 +35,13 @@ export interface ButtonProps {
     disabled: boolean;
     selected: boolean;
     tonal: boolean;
+    textButton: boolean;
 }
 
 
-const ButtonTemplate = ({label, disabled, selected, tonal}: ButtonProps) => html`
+const ButtonTemplate = ({label, disabled, selected, tonal, textButton}: ButtonProps) => html`
     <hb-button
+        ?text-button=${textButton}
         ?disabled=${disabled}
         ?selected=${selected}
         ?tonal=${tonal}
@@ -56,5 +58,6 @@ Button.args = {
    label: "Button Text",
    disabled: false,
    selected: false,
-   tonal: false
+   tonal: false,
+   textButton: false
 };

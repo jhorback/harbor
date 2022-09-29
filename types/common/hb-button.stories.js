@@ -24,8 +24,9 @@ export default {
         }
     }
 };
-const ButtonTemplate = ({ label, disabled, selected, tonal }) => html `
+const ButtonTemplate = ({ label, disabled, selected, tonal, textButton }) => html `
     <hb-button
+        ?text-button=${textButton}
         ?disabled=${disabled}
         ?selected=${selected}
         ?tonal=${tonal}
@@ -39,5 +40,6 @@ Button.args = {
     label: "Button Text",
     disabled: false,
     selected: false,
-    tonal: false
+    tonal: false,
+    textButton: false
 };

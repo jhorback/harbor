@@ -48,8 +48,12 @@ Button.styles = [typeStyles, css `
             border-radius: var(--md-sys-shape-corner-extra-large);
             background-color: transparent;
         }
+        :host([text-button]) button {
+            border: 1px solid transparent;
+        }
         button:hover {
             background-color: var(--hb-sys-color-surface-tint2);
+            border-color: var(--md-sys-color-outline) !important;
         }
         button:focus, button:active {
             outline: none;
@@ -78,6 +82,9 @@ Button.styles = [typeStyles, css `
             color: var(--md-sys-color-on-surface);
             background-color: transparent;
             opacity: 0.38;
+        }
+        :host([text-button]) button[disabled] {
+            border-color: transparent !important;
         }
     `];
 __decorate([

@@ -96,10 +96,12 @@ export class FindDocDialog extends LitElement {
 
                 <div class="buttons">
                     <hb-button
+                        text-button
                         label="Cancel"
                         @click=${this.close}
                     ></hb-button>
                     <hb-button
+                        text-button
                         label="Select Document"
                         ?disabled=${this.iSelectButtonDisabled()}
                         @click=${this.selectButtonClicked}
@@ -159,7 +161,7 @@ export class FindDocDialog extends LitElement {
             
             box-shadow: 0 0 #0000, 0 0 #0000, 0 25px 50px -12px rgba(0, 0, 0, 0.25);
             
-            padding: 24px;
+            padding: 24px 24px 12px 24px;
             min-width: 300px;
             max-width: 534px;
         }
