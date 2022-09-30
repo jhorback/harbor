@@ -53,6 +53,7 @@ ${typeStyles}
 const onClick = (btnName:string) => () => alert("Clicked " + btnName);
 
 
+// @ts-ignore 
 const Template: Story<Partial<PageLayoutProps>> = (args:PageLayoutProps) => PageLayoutTemplate(args);
 
 

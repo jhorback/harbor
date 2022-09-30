@@ -9,7 +9,7 @@ import { DataElement, StateChange } from "@domx/dataelement";
 import { customDataElement, dataProperty, event } from "@domx/dataelement/decorators";
 import { UserListRepoKey } from "../../domain/interfaces/UserInterfaces";
 import { inject } from "../../domain/DependencyContainer/decorators";
-import { sendFeedback } from "../../common/feedback";
+import { sendFeedback } from "../../layout/feedback";
 import "../../domain/User/HbUserListRepo";
 export class RequestUserListEvent extends Event {
     constructor() {

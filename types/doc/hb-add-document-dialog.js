@@ -6,12 +6,12 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 import { html, css, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators.js";
-import { classMap } from 'lit/directives/class-map.js';
 import { styles } from "../styles";
 import { AddDocumentData, AddNewDocumentEvent, DocumentAddedEvent } from "./data/hb-add-document-data";
 import "./data/hb-add-document-data";
 import "../common/hb-button";
 import "../common/hb-list-item";
+import "../common/hb-text-input";
 import { linkProp } from "@domx/linkprop";
 /**
  * @fires {@link DocumentAddedEvent}
@@ -30,7 +30,6 @@ let AddDocumentDialog = class AddDocumentDialog extends LitElement {
         this.addButtonEnabled = false;
         this.newDocTitle = "";
         this.selectedIndex = 0;
-        this.$newDocumentTitle.value = "";
         this.addDocumentError = "";
     }
     render() {
@@ -61,16 +60,12 @@ let AddDocumentDialog = class AddDocumentDialog extends LitElement {
                 <hr>
                 <div class="field">
                     <div class="label-large">Document name</div>
-                    <div class=${classMap({ "text-input-container": true, "property-error": this.addDocumentError ? true : false })}>
-                        <input id="newDocumentTitle"
-                            type="text"
-                            class="text-input"
-                            placeholder="Enter the document title"
-                            @keyup=${this.textKeyUp}>
-                        <div class="error-text body-small">
-                            ${this.addDocumentError}
-                        </div>
-                    </div>
+                    <hb-text-input
+                        placeholder="Enter the document title"
+                        value=${this.newDocTitle}
+                        error-text=${this.addDocumentError}
+                        @hb-text-input-change=${this.textInputChange}
+                    ></hb-text-input>
                 </div>
                 <div class="dialog-buttons">
                     <hb-button
@@ -99,11 +94,11 @@ let AddDocumentDialog = class AddDocumentDialog extends LitElement {
     isSelected(index) {
         return index === this.selectedIndex;
     }
-    textKeyUp(event) {
-        this.newDocTitle = event.target.value;
+    textInputChange(event) {
+        this.newDocTitle = event.value;
         this.addButtonEnabled = this.newDocTitle.length > 2;
         this.addDocumentError = null;
-        if (this.addButtonEnabled && event.key === "Enter") {
+        if (this.addButtonEnabled && event.enterKey) {
             this.addButtonClicked();
         }
     }
@@ -139,46 +134,10 @@ AddDocumentDialog.styles = [styles.types, styles.dialog, css `
             gap: 1.5rem;
         }
 
-        
-        
-
         .list {
             display: flex;
             flex-direction: column;
             gap: 5px;
-        }
-
-
-        /*
-        jch: hb-text-input control?
-        */
-        .text-input-container {
-            padding-right: 2rem;
-        }
-        .text-input {
-            font-weight: var(--md-sys-typescale-body-large-font-weight);
-            font-size: var(--md-sys-typescale-body-large-font-size);
-            border-radius:  var(--md-sys-shape-corner-extra-small);
-            outline: 0;
-            border: 1px solid var(--md-sys-color-on-background);
-            color: var(--md-sys-color-on-background);
-            line-height: 54px;            
-            max-width: 100%;
-            width: 100%;
-            padding: 0 1rem;
-            background: transparent;
-        }
-        .property-error .text-input {
-            border-color: var(--md-sys-color-error);
-        }
-        .property-error .text-input:focus {
-            border-color: var(--md-sys-color-error) !important;
-            outline: none;
-        }
-        .error-text {
-            padding-left: 1rem;
-            padding-top: 4px;
-            height: 16px;
         }
   `];
 __decorate([
@@ -187,9 +146,6 @@ __decorate([
 __decorate([
     query("dialog")
 ], AddDocumentDialog.prototype, "$dialog", void 0);
-__decorate([
-    query("#newDocumentTitle")
-], AddDocumentDialog.prototype, "$newDocumentTitle", void 0);
 __decorate([
     query("hb-add-document-data")
 ], AddDocumentDialog.prototype, "$dataEl", void 0);

@@ -1,10 +1,11 @@
 import { html, css, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators.js";
-import { classMap } from 'lit/directives/class-map.js';
 import { styles } from "../styles";
 import  "./data/hb-search-docs-data";
 import "../common/hb-button";
 import "../common/hb-list-item";
+import "../common/hb-text-input";
+import { TextInputChangeEvent } from "../common/hb-text-input";
 import { linkProp } from "@domx/linkprop";
 import { IDocumentReference } from "../domain/interfaces/DocumentInterfaces";
 import { SearchDocsData, SearchDocsEvent } from "./data/hb-search-docs-data";
@@ -32,9 +33,6 @@ export class FindDocDialog extends LitElement {
     @query("dialog")
     $dialog!:HTMLDialogElement;
 
-    @query("#searchText")
-    $searchText!:HTMLInputElement;
-
     @query("hb-search-docs-data")
     $dataEl!:SearchDocsData;
 
@@ -49,7 +47,6 @@ export class FindDocDialog extends LitElement {
     private reset() {
         this.searchText = "";
         this.selectedIndex = null;
-        this.$searchText.value = "";
     }
 
     render() {
@@ -65,17 +62,12 @@ export class FindDocDialog extends LitElement {
                 
                 <h1 class="headline-small">Find Document</h1>
 
-                <div class="field">
-                    <div class="text-input-container">
-                        <input id="searchText"
-                            type="text"
-                            class="text-input"
-                            autofocus
-                            placeholder="Enter search text"
-                            value=${this.searchText}
-                            @keyup=${this.textKeyUp}>
-                    </div>
-                </div>
+                    <hb-text-input
+                        autofocus
+                        placeholder="Enter search text"
+                        value=${this.searchText}
+                        @hb-text-input-change=${this.textInputChange}
+                    ></hb-text-input>
 
                 <div class="list" ?hidden=${this.state.list.length === 0}>                    
                     ${this.state.list
@@ -129,8 +121,8 @@ export class FindDocDialog extends LitElement {
         return index === this.selectedIndex;
     }
 
-    private textKeyUp(event:KeyboardEvent) {
-        this.searchText = (event.target as HTMLInputElement).value;
+    private textInputChange(event:TextInputChangeEvent) {
+        this.searchText = event.value;
         this.$dataEl.dispatchEvent(new SearchDocsEvent({
             text: this.searchText
         }));
@@ -160,43 +152,9 @@ export class FindDocDialog extends LitElement {
         }        
 
         .list {
-            margin-top: 1rem;
             display: flex;
             flex-direction: column;
             gap: 5px;
-        }
-
-
-        /*
-        jch: hb-text-input control?
-        */
-        .text-input-container {
-            padding-right: 2rem;
-        }
-        .text-input {
-            font-weight: var(--md-sys-typescale-body-large-font-weight);
-            font-size: var(--md-sys-typescale-body-large-font-size);
-            border-radius:  var(--md-sys-shape-corner-extra-small);
-            outline: 0;
-            border: 1px solid var(--md-sys-color-on-background);
-            color: var(--md-sys-color-on-background);
-            line-height: 54px;            
-            max-width: 100%;
-            width: 100%;
-            padding: 0 1rem;
-            background: transparent;
-        }
-        .property-error .text-input {
-            border-color: var(--md-sys-color-error);
-        }
-        .property-error .text-input:focus {
-            border-color: var(--md-sys-color-error) !important;
-            outline: none;
-        }
-        .error-text {
-            padding-left: 1rem;
-            padding-top: 4px;
-            height: 16px;
         }
   `]
 }

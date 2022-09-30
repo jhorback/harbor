@@ -7,7 +7,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var SystemAdminData_1;
 import { DataElement, StateChange } from "@domx/dataelement";
 import { customDataElement, dataProperty, event } from "@domx/dataelement/decorators";
-import { sendFeedback } from "../../common/feedback";
+import { sendFeedback } from "../../layout/feedback";
 import { inject } from "../../domain/DependencyContainer/decorators";
 import { HomePageRepoKey } from "../../domain/interfaces/DocumentInterfaces";
 export class RequestSysadminSettingsEvent extends Event {
