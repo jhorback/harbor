@@ -61,7 +61,7 @@ export class FindDocDialog extends LitElement {
             <hb-search-docs-data
                 @state-changed=${linkProp(this, "state")}
             ></hb-search-docs-data>
-            <dialog class="dark-theme">
+            <dialog>
                 
                 <h1 class="headline-small">Find Document</h1>
 
@@ -77,7 +77,7 @@ export class FindDocDialog extends LitElement {
                     </div>
                 </div>
 
-                <div class="list">                    
+                <div class="list" ?hidden=${this.state.list.length === 0}>                    
                     ${this.state.list
                         .map(docModel => docModel.toListItem())
                         .map((listItem, index) => html`
@@ -91,7 +91,9 @@ export class FindDocDialog extends LitElement {
                     `)}
                 </div>
 
-                <div class="buttons">
+                <hr ?hidden=${this.state.list.length === 0}>
+
+                <div class="dialog-buttons">
                     <hb-button
                         text-button
                         label="Cancel"
@@ -145,45 +147,23 @@ export class FindDocDialog extends LitElement {
     
 
 
-    static styles = [styles.types, styles.icons, styles.colors, css`
+    static styles = [styles.types, styles.dialog, css`
         :host {
             display: block;
             z-index:1;
         }
-        dialog {
-            z-index:1;
-            border: none !important;
-            border-radius: var(--md-sys-shape-corner-extra-large);
-            background-color: var(--md-sys-color-surface-variant);
-            
-            box-shadow: 0 0 #0000, 0 0 #0000, 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-            
-            padding: 24px 24px 12px 24px;
-            min-width: 300px;
-            max-width: 534px;
-        }
-        dialog::backdrop {
-            background-color: rgb(0, 0, 0, 0.4)
-        }
+       
         .field {
-            margin: 1rem 0;
-            padding: 1rem 0;
             display: flex;
             flex-direction: column;
             gap: 1.5rem;
         }        
 
         .list {
+            margin-top: 1rem;
             display: flex;
             flex-direction: column;
             gap: 5px;
-        }
-
-        .buttons {
-            margin-top: 1rem;
-            display: flex;
-            gap: 1rem;
-            justify-content: right;
         }
 
 
@@ -197,7 +177,9 @@ export class FindDocDialog extends LitElement {
             font-weight: var(--md-sys-typescale-body-large-font-weight);
             font-size: var(--md-sys-typescale-body-large-font-size);
             border-radius:  var(--md-sys-shape-corner-extra-small);
-            border: 1px solid;
+            outline: 0;
+            border: 1px solid var(--md-sys-color-on-background);
+            color: var(--md-sys-color-on-background);
             line-height: 54px;            
             max-width: 100%;
             width: 100%;

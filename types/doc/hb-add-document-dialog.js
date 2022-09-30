@@ -40,7 +40,7 @@ let AddDocumentDialog = class AddDocumentDialog extends LitElement {
                 @document-added=${this.documentAdded}
                 @add-document-error=${this.handleAddDocumentError}
             ></hb-add-document-data>
-            <dialog class="dark-theme">
+            <dialog>
                 
                 <h1 class="headline-small">Add New Document</h1>
 
@@ -58,6 +58,7 @@ let AddDocumentDialog = class AddDocumentDialog extends LitElement {
                         `)}
                     </div>
                 </div>
+                <hr>
                 <div class="field">
                     <div class="label-large">Document name</div>
                     <div class=${classMap({ "text-input-container": true, "property-error": this.addDocumentError ? true : false })}>
@@ -71,7 +72,7 @@ let AddDocumentDialog = class AddDocumentDialog extends LitElement {
                         </div>
                     </div>
                 </div>
-                <div class="buttons">
+                <div class="dialog-buttons">
                     <hb-button
                         text-button
                         label="Cancel"
@@ -124,32 +125,11 @@ let AddDocumentDialog = class AddDocumentDialog extends LitElement {
         this.close();
     }
 };
-AddDocumentDialog.styles = [styles.types, styles.icons, styles.colors, css `
+AddDocumentDialog.styles = [styles.types, styles.dialog, css `
         :host {
             display: block;
             z-index:1;
         }
-
-        
-        /*
-        jch: .dialog styles
-        */
-        dialog {
-            z-index:1;
-            border: none !important;
-            border-radius: var(--md-sys-shape-corner-extra-large);
-            background-color: var(--md-sys-color-surface-variant);
-            
-            box-shadow: 0 0 #0000, 0 0 #0000, 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-            
-            padding: 24px 24px 12px 24px;
-            min-width: 300px;
-            max-width: 534px;
-        }
-        dialog::backdrop {
-            background-color: rgb(0, 0, 0, 0.4)
-        }
-
 
         .field {
             margin: 1rem 0;
@@ -160,11 +140,7 @@ AddDocumentDialog.styles = [styles.types, styles.icons, styles.colors, css `
         }
 
         
-        .buttons {
-            display: flex;
-            gap: 1rem;
-            justify-content: right;
-        }
+        
 
         .list {
             display: flex;
@@ -183,7 +159,9 @@ AddDocumentDialog.styles = [styles.types, styles.icons, styles.colors, css `
             font-weight: var(--md-sys-typescale-body-large-font-weight);
             font-size: var(--md-sys-typescale-body-large-font-size);
             border-radius:  var(--md-sys-shape-corner-extra-small);
-            border: 1px solid;
+            outline: 0;
+            border: 1px solid var(--md-sys-color-on-background);
+            color: var(--md-sys-color-on-background);
             line-height: 54px;            
             max-width: 100%;
             width: 100%;
