@@ -31,7 +31,9 @@ export class PageLayout extends LitElement {
           </div>
         </hb-app-bar>
         <hb-user-menu></hb-user-menu>
-        <slot></slot>
+        <div class="page-layout">
+          <slot></slot>
+        </div>
       `
     }
 
@@ -42,6 +44,17 @@ export class PageLayout extends LitElement {
     static styles = [css`
       :host {
         display: block;
+      }
+      .page-layout {
+        max-width: 750px;
+        margin: auto;
+        padding: 1rem;
+      }
+      :host([small]) .page-layout {
+        max-width: 80ch;
+      }
+      :host([large]) .page-layout {
+        max-width: 840px;
       }
     `]
 }

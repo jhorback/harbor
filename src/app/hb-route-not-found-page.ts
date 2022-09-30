@@ -13,7 +13,7 @@ import "../common/hb-link-button";
   render() {
       return html`      
           <hb-page-layout>
-              <div class="page-container">
+              <div class="container">
                   <h1 class="display-large">Page not found</h1>
                   <div class="help title-large">
                     The page you are looking for does not exist.
@@ -30,11 +30,11 @@ import "../common/hb-link-button";
       `;
     }
 
-    static styles = [styles.page, styles.types, styles.colors, css`
+    static styles = [styles.types, styles.colors, css`
         :host {
             display: block;
         }
-        .page-container {
+        .container {
             text-align: center;    
         }
         h1.display-large {
