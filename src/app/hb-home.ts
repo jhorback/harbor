@@ -4,7 +4,7 @@ import "../doc/hb-doc-page";
 import "../domain/SystemAdmin/HbHomePageRepo";
 import { inject } from "../domain/DependencyContainer/decorators";
 import { IDocumentReference, IHomePageRepo, HomePageRepoKey } from "../domain/interfaces/DocumentInterfaces";
-import { sendFeedback } from "../common/feedback";
+import { sendFeedback } from "../layout/feedback";
 import { docTypes } from "../domain/Doc/docTypes";
 
 

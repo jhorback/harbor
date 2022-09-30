@@ -8,7 +8,7 @@ import { UserAuthKey } from "./interfaces/UserInterfaces";
 import { provides } from "./DependencyContainer/decorators";
 import { FbApp } from "./FbApp";
 import { HbApp } from "./HbApp";
-import { sendFeedback } from "../common/feedback";
+import { sendFeedback } from "../layout/feedback";
 import { getAuth, GoogleAuthProvider, onAuthStateChanged, signOut, getRedirectResult, signInWithRedirect } from "firebase/auth";
 import { HbDb } from "./HbDb";
 import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";

@@ -19,7 +19,6 @@ const DialogTemplate = () => html `
             <li>The <b class="primary-text">hr</b> tag is also styled appropriately.</li>
         </ul>
         <hb-button
-            text-button
             label="Open Dialog"
             @click=${openDialog}
         ></hb-button>

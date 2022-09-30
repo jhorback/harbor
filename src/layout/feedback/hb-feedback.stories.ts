@@ -1,12 +1,12 @@
 import { Story, Meta } from '@storybook/web-components';
 import { html } from 'lit-html';
-import "../feedback/hb-feedback";
-import { sendFeedback } from "../feedback";
+import "./hb-feedback";
+import { sendFeedback } from ".";
 
 
 
 export default {
-    title: 'Common/Feedback',
+    title: 'Layout/Feedback',
     component: "hb-feedback",
     argTypes: {             
     },

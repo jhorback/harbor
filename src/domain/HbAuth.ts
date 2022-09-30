@@ -2,7 +2,7 @@ import { IUserAuth, UserAuthKey, IUserData } from "./interfaces/UserInterfaces";
 import { provides } from "./DependencyContainer/decorators";
 import { FbApp } from "./FbApp";
 import { HbApp } from "./HbApp";
-import { sendFeedback } from "../common/feedback";
+import { sendFeedback } from "../layout/feedback";
 import {
     getAuth,
     GoogleAuthProvider,

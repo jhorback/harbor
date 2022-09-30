@@ -2,7 +2,7 @@ import { DataElement, StateChange } from "@domx/dataelement";
 import { customDataElement, dataProperty, event } from "@domx/dataelement/decorators";
 import { IUserData, IUserListRepo, UserListRepoKey } from "../../domain/interfaces/UserInterfaces";
 import { inject } from "../../domain/DependencyContainer/decorators";
-import { sendFeedback } from "../../common/feedback";
+import { sendFeedback } from "../../layout/feedback";
 import "../../domain/User/HbUserListRepo";
 import { UserRole } from "../../domain/User/UserRoles";
 

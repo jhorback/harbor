@@ -8,7 +8,7 @@ import "./app/hb-home";
 import "./app/profile/hb-profile-page";
 import "./app/hb-about-page";
 import "./hb-current-user-data";
-import "./common/feedback/hb-feedback";
+import "./layout/feedback/hb-feedback";
 
 
 HbApp.init();

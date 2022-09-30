@@ -40,6 +40,7 @@ ${typeStyles}
 </style>
 `;
 const onClick = (btnName) => () => alert("Clicked " + btnName);
+// @ts-ignore 
 const Template = (args) => PageLayoutTemplate(args);
 export const PageLayout = Template.bind({});
 PageLayout.args = {
