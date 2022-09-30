@@ -10,6 +10,7 @@ import { styles } from "../styles";
 import "./data/hb-search-docs-data";
 import "../common/hb-button";
 import "../common/hb-list-item";
+import "../common/hb-text-input";
 import { linkProp } from "@domx/linkprop";
 import { SearchDocsData, SearchDocsEvent } from "./data/hb-search-docs-data";
 export class DocumentSelectedEvent extends Event {
@@ -33,7 +34,6 @@ let FindDocDialog = class FindDocDialog extends LitElement {
     reset() {
         this.searchText = "";
         this.selectedIndex = null;
-        this.$searchText.value = "";
     }
     render() {
         const selectButtonEnabled = this.selectedIndex !== null
@@ -46,17 +46,12 @@ let FindDocDialog = class FindDocDialog extends LitElement {
                 
                 <h1 class="headline-small">Find Document</h1>
 
-                <div class="field">
-                    <div class="text-input-container">
-                        <input id="searchText"
-                            type="text"
-                            class="text-input"
-                            autofocus
-                            placeholder="Enter search text"
-                            value=${this.searchText}
-                            @keyup=${this.textKeyUp}>
-                    </div>
-                </div>
+                    <hb-text-input
+                        autofocus
+                        placeholder="Enter search text"
+                        value=${this.searchText}
+                        @hb-text-input-change=${this.textInputChange}
+                    ></hb-text-input>
 
                 <div class="list" ?hidden=${this.state.list.length === 0}>                    
                     ${this.state.list
@@ -105,8 +100,8 @@ let FindDocDialog = class FindDocDialog extends LitElement {
     isSelected(index) {
         return index === this.selectedIndex;
     }
-    textKeyUp(event) {
-        this.searchText = event.target.value;
+    textInputChange(event) {
+        this.searchText = event.value;
         this.$dataEl.dispatchEvent(new SearchDocsEvent({
             text: this.searchText
         }));
@@ -132,43 +127,9 @@ FindDocDialog.styles = [styles.types, styles.dialog, css `
         }        
 
         .list {
-            margin-top: 1rem;
             display: flex;
             flex-direction: column;
             gap: 5px;
-        }
-
-
-        /*
-        jch: hb-text-input control?
-        */
-        .text-input-container {
-            padding-right: 2rem;
-        }
-        .text-input {
-            font-weight: var(--md-sys-typescale-body-large-font-weight);
-            font-size: var(--md-sys-typescale-body-large-font-size);
-            border-radius:  var(--md-sys-shape-corner-extra-small);
-            outline: 0;
-            border: 1px solid var(--md-sys-color-on-background);
-            color: var(--md-sys-color-on-background);
-            line-height: 54px;            
-            max-width: 100%;
-            width: 100%;
-            padding: 0 1rem;
-            background: transparent;
-        }
-        .property-error .text-input {
-            border-color: var(--md-sys-color-error);
-        }
-        .property-error .text-input:focus {
-            border-color: var(--md-sys-color-error) !important;
-            outline: none;
-        }
-        .error-text {
-            padding-left: 1rem;
-            padding-top: 4px;
-            height: 16px;
         }
   `];
 __decorate([
@@ -177,9 +138,6 @@ __decorate([
 __decorate([
     query("dialog")
 ], FindDocDialog.prototype, "$dialog", void 0);
-__decorate([
-    query("#searchText")
-], FindDocDialog.prototype, "$searchText", void 0);
 __decorate([
     query("hb-search-docs-data")
 ], FindDocDialog.prototype, "$dataEl", void 0);
