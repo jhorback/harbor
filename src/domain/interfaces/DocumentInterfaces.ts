@@ -21,6 +21,7 @@ export interface IDocTypeDescriptor {
     validContentTypes: Array<string>;
     defaultContent: Array<IContentType>;
     icon: string;
+    defaultThumbUrl: string;
 }
 
 /**
