@@ -4,6 +4,7 @@ import { styles } from "../../styles";
 import { RequestSysadminSettingsEvent, SystemAdminData, UpdateHomePageEvent } from "../data/hb-system-admin-data";
 import { linkProp } from "@domx/linkprop";
 import "../../common/hb-button";
+import "../../common/hb-horizontal-card";
 import { AddDocumentDialog } from "../../doc/hb-add-document-dialog";
 import { DocumentSelectedEvent, FindDocDialog } from "../../doc/hb-find-doc-dialog";
 import "../../doc/hb-find-doc-dialog";
@@ -54,7 +55,13 @@ export class ProfileAdminTab extends LitElement {
                 <div class="title-large">Home page</div>
                 ${this.settings.homePageThumbnail ? html`
 
-                   ${this.settings.homePageThumbnail.title}
+                    <hb-horizontal-card
+                        class="home-page-thumb"
+                        text=${this.settings.homePageThumbnail.title}
+                        description=${this.settings.homePageThumbnail.thumbDescription}
+                        media-url=${this.settings.homePageThumbnail.thumbUrl}
+                        media-href="/"
+                    ></hb-horizontal-card>                   
 
                 ` : html `
                     <div class="body-large">
@@ -107,6 +114,9 @@ export class ProfileAdminTab extends LitElement {
     static styles = [styles.types, css`
         :host {
             display: block; 
+        }
+        .home-page-thumb {
+            max-width: 300px;
         }
         .home-page-container {
             margin-top: 2rem;

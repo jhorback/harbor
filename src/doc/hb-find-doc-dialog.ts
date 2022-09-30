@@ -77,21 +77,18 @@ export class FindDocDialog extends LitElement {
                     </div>
                 </div>
 
-                <div class="list">
-                    
-                    ${
-                        this.state.list.map((docModel, index) => {
-                            const listItem = docModel.toListItem();
-                            return html`
-                                <hb-list-item
-                                    icon=${listItem.icon}
-                                    text=${listItem.text}
-                                    description=${listItem.description}
-                                    ?selected=${this.isSelected(index)}                                    
-                                    @hb-list-item-click=${() => this.selectedIndex = index}
-                                ></hb-list-item>
-                        `})
-                    }
+                <div class="list">                    
+                    ${this.state.list
+                        .map(docModel => docModel.toListItem())
+                        .map((listItem, index) => html`
+                        <hb-list-item
+                            icon=${listItem.icon}
+                            text=${listItem.text}
+                            description=${listItem.description}
+                            ?selected=${this.isSelected(index)}                                    
+                            @hb-list-item-click=${() => this.selectedIndex = index}
+                        ></hb-list-item>
+                    `)}
                 </div>
 
                 <div class="buttons">
