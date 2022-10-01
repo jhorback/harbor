@@ -1,11 +1,12 @@
 import { html, css, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators.js";
-import { classMap } from 'lit/directives/class-map.js';
 import { styles } from "../styles";
 import { AddDocumentData, AddNewDocumentEvent, DocumentAddedEvent } from "./data/hb-add-document-data";
 import  "./data/hb-add-document-data";
 import "../common/hb-button";
 import "../common/hb-list-item";
+import "../common/hb-text-input";
+import { TextInputChangeEvent } from "../common/hb-text-input";
 import { linkProp } from "@domx/linkprop";
 import { IDocumentReference } from "../domain/interfaces/DocumentInterfaces";
 import { ClientError } from "../domain/ClientError";
@@ -22,9 +23,6 @@ export class AddDocumentDialog extends LitElement {
 
     @query("dialog")
     $dialog!:HTMLDialogElement;
-
-    @query("#newDocumentTitle")
-    $newDocumentTitle!:HTMLInputElement;
 
     @query("hb-add-document-data")
     $dataEl!:AddDocumentData;
@@ -47,7 +45,6 @@ export class AddDocumentDialog extends LitElement {
         this.addButtonEnabled = false;
         this.newDocTitle = "";
         this.selectedIndex = 0;
-        this.$newDocumentTitle.value = "";
         this.addDocumentError = "";
     }
 
@@ -58,7 +55,7 @@ export class AddDocumentDialog extends LitElement {
                 @document-added=${this.documentAdded}
                 @add-document-error=${this.handleAddDocumentError}
             ></hb-add-document-data>
-            <dialog class="dark-theme">
+            <dialog>
                 
                 <h1 class="headline-small">Add New Document</h1>
 
@@ -76,20 +73,17 @@ export class AddDocumentDialog extends LitElement {
                         `)}
                     </div>
                 </div>
+                <hr>
                 <div class="field">
                     <div class="label-large">Document name</div>
-                    <div class=${classMap({"text-input-container":true, "property-error": this.addDocumentError ? true : false})}>
-                        <input id="newDocumentTitle"
-                            type="text"
-                            class="text-input"
-                            placeholder="Enter the document title"
-                            @keyup=${this.textKeyUp}>
-                        <div class="error-text body-small">
-                            ${this.addDocumentError}
-                        </div>
-                    </div>
+                    <hb-text-input
+                        placeholder="Enter the document title"
+                        value=${this.newDocTitle}
+                        error-text=${this.addDocumentError}
+                        @hb-text-input-change=${this.textInputChange}
+                    ></hb-text-input>
                 </div>
-                <div class="buttons">
+                <div class="dialog-buttons">
                     <hb-button
                         text-button
                         label="Cancel"
@@ -120,11 +114,11 @@ export class AddDocumentDialog extends LitElement {
         return index === this.selectedIndex;
     }
 
-    private textKeyUp(event:KeyboardEvent) {
-        this.newDocTitle = (event.target as HTMLInputElement).value;
+    private textInputChange(event:TextInputChangeEvent) {
+        this.newDocTitle = event.value;
         this.addButtonEnabled = this.newDocTitle.length > 2;
         this.addDocumentError = null;
-        if (this.addButtonEnabled && event.key === "Enter") {
+        if (this.addButtonEnabled && event.enterKey) {
             this.addButtonClicked();
         }
     }
@@ -149,32 +143,11 @@ export class AddDocumentDialog extends LitElement {
         this.close();
     }
 
-    static styles = [styles.types, styles.icons, styles.colors, css`
+    static styles = [styles.types, styles.dialog, css`
         :host {
             display: block;
             z-index:1;
         }
-
-        
-        /*
-        jch: .dialog styles
-        */
-        dialog {
-            z-index:1;
-            border: none !important;
-            border-radius: var(--md-sys-shape-corner-extra-large);
-            background-color: var(--md-sys-color-surface-variant);
-            
-            box-shadow: 0 0 #0000, 0 0 #0000, 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-            
-            padding: 24px 24px 12px 24px;
-            min-width: 300px;
-            max-width: 534px;
-        }
-        dialog::backdrop {
-            background-color: rgb(0, 0, 0, 0.4)
-        }
-
 
         .field {
             margin: 1rem 0;
@@ -184,48 +157,10 @@ export class AddDocumentDialog extends LitElement {
             gap: 1.5rem;
         }
 
-        
-        .buttons {
-            display: flex;
-            gap: 1rem;
-            justify-content: right;
-        }
-
         .list {
             display: flex;
             flex-direction: column;
             gap: 5px;
-        }
-
-
-        /*
-        jch: hb-text-input control?
-        */
-        .text-input-container {
-            padding-right: 2rem;
-        }
-        .text-input {
-            font-weight: var(--md-sys-typescale-body-large-font-weight);
-            font-size: var(--md-sys-typescale-body-large-font-size);
-            border-radius:  var(--md-sys-shape-corner-extra-small);
-            border: 1px solid;
-            line-height: 54px;            
-            max-width: 100%;
-            width: 100%;
-            padding: 0 1rem;
-            background: transparent;
-        }
-        .property-error .text-input {
-            border-color: var(--md-sys-color-error);
-        }
-        .property-error .text-input:focus {
-            border-color: var(--md-sys-color-error) !important;
-            outline: none;
-        }
-        .error-text {
-            padding-left: 1rem;
-            padding-top: 4px;
-            height: 16px;
         }
   `]
 }

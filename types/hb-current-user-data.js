@@ -10,7 +10,7 @@ import { customDataElement, dataProperty, event } from "@domx/dataelement/decora
 import { UserAuthKey } from "./domain/interfaces/UserInterfaces";
 import { HbApp } from "./domain/HbApp";
 import { inject } from "./domain/DependencyContainer/decorators";
-import { sendFeedback } from "./common/feedback";
+import { sendFeedback } from "./layout/feedback";
 import "./domain/HbAuth";
 import { HbCurrentUserChangedEvent } from "./domain/HbAuth";
 export class SignOutEvent extends Event {

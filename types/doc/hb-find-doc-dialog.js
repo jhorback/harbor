@@ -10,6 +10,7 @@ import { styles } from "../styles";
 import "./data/hb-search-docs-data";
 import "../common/hb-button";
 import "../common/hb-list-item";
+import "../common/hb-text-input";
 import { linkProp } from "@domx/linkprop";
 import { SearchDocsData, SearchDocsEvent } from "./data/hb-search-docs-data";
 export class DocumentSelectedEvent extends Event {
@@ -33,7 +34,6 @@ let FindDocDialog = class FindDocDialog extends LitElement {
     reset() {
         this.searchText = "";
         this.selectedIndex = null;
-        this.$searchText.value = "";
     }
     render() {
         const selectButtonEnabled = this.selectedIndex !== null
@@ -42,23 +42,18 @@ let FindDocDialog = class FindDocDialog extends LitElement {
             <hb-search-docs-data
                 @state-changed=${linkProp(this, "state")}
             ></hb-search-docs-data>
-            <dialog class="dark-theme">
+            <dialog>
                 
                 <h1 class="headline-small">Find Document</h1>
 
-                <div class="field">
-                    <div class="text-input-container">
-                        <input id="searchText"
-                            type="text"
-                            class="text-input"
-                            autofocus
-                            placeholder="Enter search text"
-                            value=${this.searchText}
-                            @keyup=${this.textKeyUp}>
-                    </div>
-                </div>
+                    <hb-text-input
+                        autofocus
+                        placeholder="Enter search text"
+                        value=${this.searchText}
+                        @hb-text-input-change=${this.textInputChange}
+                    ></hb-text-input>
 
-                <div class="list">                    
+                <div class="list" ?hidden=${this.state.list.length === 0}>                    
                     ${this.state.list
             .map(docModel => docModel.toListItem())
             .map((listItem, index) => html `
@@ -72,7 +67,9 @@ let FindDocDialog = class FindDocDialog extends LitElement {
                     `)}
                 </div>
 
-                <div class="buttons">
+                <hr ?hidden=${this.state.list.length === 0}>
+
+                <div class="dialog-buttons">
                     <hb-button
                         text-button
                         label="Cancel"
@@ -103,8 +100,8 @@ let FindDocDialog = class FindDocDialog extends LitElement {
     isSelected(index) {
         return index === this.selectedIndex;
     }
-    textKeyUp(event) {
-        this.searchText = event.target.value;
+    textInputChange(event) {
+        this.searchText = event.value;
         this.$dataEl.dispatchEvent(new SearchDocsEvent({
             text: this.searchText
         }));
@@ -117,29 +114,13 @@ let FindDocDialog = class FindDocDialog extends LitElement {
         this.close();
     }
 };
-FindDocDialog.styles = [styles.types, styles.icons, styles.colors, css `
+FindDocDialog.styles = [styles.types, styles.dialog, css `
         :host {
             display: block;
             z-index:1;
         }
-        dialog {
-            z-index:1;
-            border: none !important;
-            border-radius: var(--md-sys-shape-corner-extra-large);
-            background-color: var(--md-sys-color-surface-variant);
-            
-            box-shadow: 0 0 #0000, 0 0 #0000, 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-            
-            padding: 24px 24px 12px 24px;
-            min-width: 300px;
-            max-width: 534px;
-        }
-        dialog::backdrop {
-            background-color: rgb(0, 0, 0, 0.4)
-        }
+       
         .field {
-            margin: 1rem 0;
-            padding: 1rem 0;
             display: flex;
             flex-direction: column;
             gap: 1.5rem;
@@ -150,44 +131,6 @@ FindDocDialog.styles = [styles.types, styles.icons, styles.colors, css `
             flex-direction: column;
             gap: 5px;
         }
-
-        .buttons {
-            margin-top: 1rem;
-            display: flex;
-            gap: 1rem;
-            justify-content: right;
-        }
-
-
-        /*
-        jch: hb-text-input control?
-        */
-        .text-input-container {
-            padding-right: 2rem;
-        }
-        .text-input {
-            font-weight: var(--md-sys-typescale-body-large-font-weight);
-            font-size: var(--md-sys-typescale-body-large-font-size);
-            border-radius:  var(--md-sys-shape-corner-extra-small);
-            border: 1px solid;
-            line-height: 54px;            
-            max-width: 100%;
-            width: 100%;
-            padding: 0 1rem;
-            background: transparent;
-        }
-        .property-error .text-input {
-            border-color: var(--md-sys-color-error);
-        }
-        .property-error .text-input:focus {
-            border-color: var(--md-sys-color-error) !important;
-            outline: none;
-        }
-        .error-text {
-            padding-left: 1rem;
-            padding-top: 4px;
-            height: 16px;
-        }
   `];
 __decorate([
     property({ type: Boolean })
@@ -195,9 +138,6 @@ __decorate([
 __decorate([
     query("dialog")
 ], FindDocDialog.prototype, "$dialog", void 0);
-__decorate([
-    query("#searchText")
-], FindDocDialog.prototype, "$searchText", void 0);
 __decorate([
     query("hb-search-docs-data")
 ], FindDocDialog.prototype, "$dataEl", void 0);

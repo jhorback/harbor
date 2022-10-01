@@ -12,8 +12,8 @@ export default {
         layout: "fullscreen"
     },
 };
-const PageLayoutTemplate = ({}) => html `
-<hb-page-layout>
+const PageLayoutTemplate = ({ small, large }) => html `
+<hb-page-layout ?small=${small} ?large=${large}>
   <div slot="app-bar-buttons">
     <span class="icon-button icon-medium" @click=${onClick("Edit Document")}>edit_document</span>
     <span class="icon-button icon-medium" @click=${onClick("Add Document")}>add_circle</span>
@@ -40,6 +40,10 @@ ${typeStyles}
 </style>
 `;
 const onClick = (btnName) => () => alert("Clicked " + btnName);
+// @ts-ignore 
 const Template = (args) => PageLayoutTemplate(args);
 export const PageLayout = Template.bind({});
-PageLayout.args = {};
+PageLayout.args = {
+    small: false,
+    large: false
+};

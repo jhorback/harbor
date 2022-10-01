@@ -7,9 +7,9 @@ assignees: jhorback
 
 ---
 
+- [ ] Update any Rennovate dependency items
 - [ ] Ensure corresponding milestone issues are 100% complete
 - [ ] Create release branch using Gitflow
-- [ ] Update any Rennovate dependency items
 - [ ] Build and test
 - [ ] Review the README.md for any changes if neccessary
 - [ ] Update the CHANGELOG.md
@@ -17,3 +17,4 @@ assignees: jhorback
 - [ ] Merge release into master using Gitflow
 - [ ] Push git tags `git push origin --tags`.
 - [ ] Add release to git; add changelog notes for the specific release.
+- [ ] Close milestone

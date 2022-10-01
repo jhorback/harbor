@@ -17,12 +17,13 @@ export default {
 } as Meta;
 
 export interface PageLayoutProps {
-
+  small: boolean;
+  large: boolean;
 }
 
 
-const PageLayoutTemplate = ({}: PageLayoutProps) => html`
-<hb-page-layout>
+const PageLayoutTemplate = ({small, large}: PageLayoutProps) => html`
+<hb-page-layout ?small=${small} ?large=${large}>
   <div slot="app-bar-buttons">
     <span class="icon-button icon-medium" @click=${onClick("Edit Document")}>edit_document</span>
     <span class="icon-button icon-medium" @click=${onClick("Add Document")}>add_circle</span>
@@ -52,9 +53,12 @@ ${typeStyles}
 const onClick = (btnName:string) => () => alert("Clicked " + btnName);
 
 
+// @ts-ignore 
 const Template: Story<Partial<PageLayoutProps>> = (args:PageLayoutProps) => PageLayoutTemplate(args);
 
 
 export const PageLayout = Template.bind({});
 PageLayout.args = {
+  small: false,
+  large: false
 };
