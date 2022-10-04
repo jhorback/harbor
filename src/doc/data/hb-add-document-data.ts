@@ -26,8 +26,17 @@ export class DocumentAddedEvent extends Event {
     static eventType = "document-added";
     documentReference:IDocumentReference;
     constructor(documentReference:IDocumentReference) {
-        super(DocumentAddedEvent.eventType);
+        super(DocumentAddedEvent.eventType, {bubbles: true});
         this.documentReference = documentReference;
+    }
+}
+
+export class AddDocumentErrorEvent extends Event {
+    static eventType = "add-document-error";
+    error:ClientError;
+    constructor(error:ClientError) {
+        super(AddDocumentErrorEvent.eventType, {bubbles: true});
+        this.error = error;
     }
 }
 
@@ -75,11 +84,7 @@ const addNewDocument = (repo:IAddDocRepo, options:IAddNewDocumentOptions) => asy
     }
     catch(error:any) {
         if (error instanceof ClientError) {
-            // FIXME: after stateChange CustomEvent -> Event
-            stateChange.dispatchEvent(new CustomEvent("add-document-error", {
-                bubbles: true,
-                detail: error
-            }));
+            stateChange.dispatchEvent(new AddDocumentErrorEvent(error));
         }
         else {
             throw error;
@@ -87,9 +92,5 @@ const addNewDocument = (repo:IAddDocRepo, options:IAddNewDocumentOptions) => asy
         return;
     }
 
-    // FIXME: after stateChange CustomEvent -> Event
-    stateChange.dispatchEvent(new CustomEvent("document-added", {
-        bubbles: true,
-        detail: docRef
-    }));
+    stateChange.dispatchEvent(new DocumentAddedEvent(docRef));
 };

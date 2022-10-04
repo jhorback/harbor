@@ -109,14 +109,11 @@ let AddDocumentDialog = class AddDocumentDialog extends LitElement {
         }));
     }
     handleAddDocumentError(event) {
-        const error = event.detail;
-        this.addDocumentError = error.message;
+        this.addDocumentError = event.error.message;
     }
-    // FIXME: after stateChange CustomEvent -> Event
-    // should just be able to re-dispatch?
     documentAdded(event) {
-        const docRef = event.detail;
-        this.dispatchEvent(new DocumentAddedEvent(docRef));
+        event.stopImmediatePropagation();
+        this.dispatchEvent(new DocumentAddedEvent(event.documentReference));
         this.close();
     }
 };
