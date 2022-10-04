@@ -20,7 +20,7 @@
   },
   "dependencies": {
     "@domx/dataelement": "0.5.2",
-    "@domx/linkprop": "0.3.1",
+    "@domx/linkprop": "1.0.0",
     "@domx/router": "0.3.0",
     "@storybook/web-components": "6.5.12",
     "firebase": "9.10.0",
