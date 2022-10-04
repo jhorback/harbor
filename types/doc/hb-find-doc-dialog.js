@@ -11,15 +11,15 @@ import "./data/hb-search-docs-data";
 import "../common/hb-button";
 import "../common/hb-list-item";
 import "../common/hb-text-input";
-import { linkProp } from "@domx/linkprop";
+import { linkProp } from "@domx/dataelement";
 import { SearchDocsData, SearchDocsEvent } from "./data/hb-search-docs-data";
 export class DocumentSelectedEvent extends Event {
     constructor(documentReference) {
         super(DocumentSelectedEvent.eventType);
         this.documentReference = documentReference;
     }
+    static { this.eventType = "document-selected"; }
 }
-DocumentSelectedEvent.eventType = "document-selected";
 /**
  * @fires {@link DocumentSelectedEvent}
  */
@@ -113,8 +113,7 @@ let FindDocDialog = class FindDocDialog extends LitElement {
         this.dispatchEvent(new DocumentSelectedEvent(this.state.list[this.selectedIndex].toDocumentReference()));
         this.close();
     }
-};
-FindDocDialog.styles = [styles.types, styles.dialog, css `
+    static { this.styles = [styles.types, styles.dialog, css `
         :host {
             display: block;
             z-index:1;
@@ -131,7 +130,8 @@ FindDocDialog.styles = [styles.types, styles.dialog, css `
             flex-direction: column;
             gap: 5px;
         }
-  `];
+  `]; }
+};
 __decorate([
     property({ type: Boolean })
 ], FindDocDialog.prototype, "open", void 0);

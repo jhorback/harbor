@@ -40,8 +40,7 @@ let HorizontalCard = class HorizontalCard extends LitElement {
         console.log(`hb-avatar image failed to load, falling back to use an icon`);
         this.mediaUrl = "";
     }
-};
-HorizontalCard.styles = [styles.icons, styles.types, css `
+    static { this.styles = [styles.icons, styles.types, css `
         :host {
             display: block;
         }
@@ -79,7 +78,8 @@ HorizontalCard.styles = [styles.icons, styles.types, css `
             display: inline-block;
             border-radius:  0 8px 8px 0;
         }
-    `];
+    `]; }
+};
 __decorate([
     property({ type: String, attribute: "media-url" })
 ], HorizontalCard.prototype, "mediaUrl", void 0);

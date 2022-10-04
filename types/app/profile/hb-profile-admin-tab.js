@@ -8,7 +8,7 @@ import { html, css, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators.js";
 import { styles } from "../../styles";
 import { RequestSysadminSettingsEvent, SystemAdminData, UpdateHomePageEvent } from "../data/hb-system-admin-data";
-import { linkProp } from "@domx/linkprop";
+import { linkProp } from "@domx/dataelement";
 import "../../common/hb-button";
 import "../../common/hb-horizontal-card";
 import "../../doc/hb-find-doc-dialog";
@@ -92,8 +92,7 @@ let ProfileAdminTab = class ProfileAdminTab extends LitElement {
         this.changeHomePage = false;
         this.$findDocDialog.open = true;
     }
-};
-ProfileAdminTab.styles = [styles.types, css `
+    static { this.styles = [styles.types, css `
         :host {
             display: block; 
         }
@@ -113,7 +112,8 @@ ProfileAdminTab.styles = [styles.types, css `
         [hidden] {
             display: none;
         }
-    `];
+    `]; }
+};
 __decorate([
     property({ type: Object })
 ], ProfileAdminTab.prototype, "settings", void 0);

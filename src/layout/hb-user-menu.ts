@@ -3,7 +3,7 @@ import { customElement, property } from "lit/decorators.js";
 import { typeStyles } from "../styles/typeStyles";
 import { IUserData, IHbAppInfo } from "../domain/interfaces/UserInterfaces";
 import { CurrentUserData, SignOutEvent } from "../hb-current-user-data";
-import { linkProp } from "@domx/linkprop";
+import { linkProp } from "@domx/dataelement";
 import { AvatarSize } from "../common/hb-avatar";
 import "../common/hb-button";
 import "../common/hb-link-button";

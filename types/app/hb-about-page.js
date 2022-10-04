@@ -7,7 +7,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 import { html, css, LitElement } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import { CurrentUserData } from "../hb-current-user-data";
-import { linkProp } from "@domx/linkprop";
+import { linkProp } from "@domx/dataelement";
 import { styles } from "../styles";
 import "../layout/hb-page-layout";
 import "../common/hb-link-button";
@@ -67,8 +67,7 @@ let AboutPage = class AboutPage extends LitElement {
 </hb-page-layout>
         `;
     }
-};
-AboutPage.styles = [styles.types, styles.colors, css `
+    static { this.styles = [styles.types, styles.colors, css `
         :host {
             display: block;
         }
@@ -91,7 +90,8 @@ AboutPage.styles = [styles.types, styles.colors, css `
             justify-content: left;
             padding: 1rem 0;
         }
-    `];
+    `]; }
+};
 __decorate([
     property({ type: Object })
 ], AboutPage.prototype, "hbAppInfo", void 0);

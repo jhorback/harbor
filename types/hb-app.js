@@ -48,12 +48,12 @@ let HarborApp = class HarborApp extends LitElement {
       ></domx-route-not-found>
     `;
     }
-};
-HarborApp.styles = [css `
+    static { this.styles = [css `
     :host {
       display: block;
     }
-  `];
+  `]; }
+};
 HarborApp = __decorate([
     customElement('hb-app')
 ], HarborApp);

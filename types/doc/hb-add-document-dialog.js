@@ -12,7 +12,7 @@ import "./data/hb-add-document-data";
 import "../common/hb-button";
 import "../common/hb-list-item";
 import "../common/hb-text-input";
-import { linkProp } from "@domx/linkprop";
+import { linkProp } from "@domx/dataelement";
 /**
  * @fires {@link DocumentAddedEvent}
  */
@@ -119,8 +119,7 @@ let AddDocumentDialog = class AddDocumentDialog extends LitElement {
         this.dispatchEvent(new DocumentAddedEvent(docRef));
         this.close();
     }
-};
-AddDocumentDialog.styles = [styles.types, styles.dialog, css `
+    static { this.styles = [styles.types, styles.dialog, css `
         :host {
             display: block;
             z-index:1;
@@ -139,7 +138,8 @@ AddDocumentDialog.styles = [styles.types, styles.dialog, css `
             flex-direction: column;
             gap: 5px;
         }
-  `];
+  `]; }
+};
 __decorate([
     property({ type: Boolean })
 ], AddDocumentDialog.prototype, "open", void 0);

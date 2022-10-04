@@ -2,7 +2,7 @@ import { html, css, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators.js";
 import { styles } from "../../styles";
 import { RequestSysadminSettingsEvent, SystemAdminData, UpdateHomePageEvent } from "../data/hb-system-admin-data";
-import { linkProp } from "@domx/linkprop";
+import { linkProp } from "@domx/dataelement";
 import "../../common/hb-button";
 import "../../common/hb-horizontal-card";
 import { AddDocumentDialog } from "../../doc/hb-add-document-dialog";
