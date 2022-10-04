@@ -7,7 +7,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 import { html, css, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import { CurrentUserData } from "../../hb-current-user-data";
-import { linkProp } from "@domx/dataelement";
+import { linkProp } from "@domx/linkprop";
 import { AvatarSize } from "../../common/hb-avatar";
 import { styles } from "../../styles";
 import { isAuthorized, UserAction } from "../../domain/HbCurrentUser";
@@ -107,7 +107,8 @@ let ProfilePage = class ProfilePage extends LitElement {
     selectTab(tab) {
         this.selectedTab = tab;
     }
-    static { this.styles = [styles.types, css `
+};
+ProfilePage.styles = [styles.types, css `
         :host {
             display: block;
         }
@@ -119,8 +120,7 @@ let ProfilePage = class ProfilePage extends LitElement {
         #tab-content-container {
             padding: 1rem;
         }
-    `]; }
-};
+    `];
 __decorate([
     state()
 ], ProfilePage.prototype, "selectedTab", void 0);

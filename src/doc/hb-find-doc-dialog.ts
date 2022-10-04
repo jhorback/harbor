@@ -6,7 +6,7 @@ import "../common/hb-button";
 import "../common/hb-list-item";
 import "../common/hb-text-input";
 import { TextInputChangeEvent } from "../common/hb-text-input";
-import { linkProp } from "@domx/dataelement";
+import { linkProp } from "@domx/linkprop";
 import { IDocumentReference } from "../domain/interfaces/DocumentInterfaces";
 import { SearchDocsData, SearchDocsEvent } from "./data/hb-search-docs-data";
 

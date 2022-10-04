@@ -11,8 +11,8 @@ export class AvatarButtonClickedEvent extends Event {
     constructor() {
         super(AvatarButtonClickedEvent.eventType, { bubbles: true, composed: true });
     }
-    static { this.eventType = "hb-avatar-button-click"; }
 }
+AvatarButtonClickedEvent.eventType = "hb-avatar-button-click";
 /**
  * @class AvatarButton
  *
@@ -41,7 +41,8 @@ let AvatarButton = class AvatarButton extends LitElement {
     onClick() {
         this.dispatchEvent(new AvatarButtonClickedEvent());
     }
-    static { this.styles = [iconStyles, css `
+};
+AvatarButton.styles = [iconStyles, css `
     :host {
       display: inline-block;
       color: var(--md-sys-color-on-background);
@@ -92,8 +93,7 @@ let AvatarButton = class AvatarButton extends LitElement {
     [hidden] {
       display: none;
     }
-  `]; }
-};
+  `];
 __decorate([
     property({ type: String })
 ], AvatarButton.prototype, "href", void 0);

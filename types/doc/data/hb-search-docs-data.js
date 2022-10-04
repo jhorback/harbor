@@ -15,17 +15,13 @@ export class SearchDocsEvent extends Event {
         super(SearchDocsEvent.eventType, { bubbles: true });
         this.options = options;
     }
-    static { this.eventType = "search-docs"; }
 }
+SearchDocsEvent.eventType = "search-docs";
 let SearchDocsData = SearchDocsData_1 = class SearchDocsData extends DataElement {
     constructor() {
         super(...arguments);
         this.state = SearchDocsData_1.defaultState;
     }
-    static { this.defaultState = {
-        list: [],
-        count: 0
-    }; }
     connectedCallback() {
         super.connectedCallback();
     }
@@ -34,6 +30,10 @@ let SearchDocsData = SearchDocsData_1 = class SearchDocsData extends DataElement
         StateChange.of(this)
             .tap(searchDocuments(this.searchDocsRepo, options));
     }
+};
+SearchDocsData.defaultState = {
+    list: [],
+    count: 0
 };
 __decorate([
     dataProperty()

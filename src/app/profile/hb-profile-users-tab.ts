@@ -1,4 +1,4 @@
-import { linkProp } from "@domx/dataelement";
+import { linkProp } from "@domx/linkprop";
 import { html, css, LitElement } from "lit";
 import { customElement, property, query } from "lit/decorators.js";
 import { UserListData, IUserListData, RequestUserListEvent } from "../data/hb-user-list-data";

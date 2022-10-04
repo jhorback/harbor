@@ -23,12 +23,12 @@ let HbDocPage = class HbDocPage extends LitElement {
             </hb-page-layout>
         `;
     }
-    static { this.styles = [styles.types, styles.colors, css `
+};
+HbDocPage.styles = [styles.types, styles.colors, css `
         :host {
             display: block;
         }
-  `]; }
-};
+  `];
 __decorate([
     property({ type: String })
 ], HbDocPage.prototype, "uid", void 0);

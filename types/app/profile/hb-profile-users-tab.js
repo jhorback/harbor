@@ -4,7 +4,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-import { linkProp } from "@domx/dataelement";
+import { linkProp } from "@domx/linkprop";
 import { html, css, LitElement } from "lit";
 import { customElement, property, query } from "lit/decorators.js";
 import { UserListData, RequestUserListEvent } from "../data/hb-user-list-data";
@@ -35,7 +35,8 @@ let ProfileUsersTab = class ProfileUsersTab extends LitElement {
             </section> 
         `;
     }
-    static { this.styles = [styles.types, css `
+};
+ProfileUsersTab.styles = [styles.types, css `
         :host {
             display: block;
         }
@@ -45,8 +46,7 @@ let ProfileUsersTab = class ProfileUsersTab extends LitElement {
             column-gap: 1rem;
             row-gap: 1rem;
         }
-    `]; }
-};
+    `];
 __decorate([
     property({ type: Object })
 ], ProfileUsersTab.prototype, "users", void 0);

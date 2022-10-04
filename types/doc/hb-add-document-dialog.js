@@ -12,7 +12,7 @@ import "./data/hb-add-document-data";
 import "../common/hb-button";
 import "../common/hb-list-item";
 import "../common/hb-text-input";
-import { linkProp } from "@domx/dataelement";
+import { linkProp } from "@domx/linkprop";
 /**
  * @fires {@link DocumentAddedEvent}
  */
@@ -109,17 +109,15 @@ let AddDocumentDialog = class AddDocumentDialog extends LitElement {
         }));
     }
     handleAddDocumentError(event) {
-        const error = event.detail;
-        this.addDocumentError = error.message;
+        this.addDocumentError = event.error.message;
     }
-    // FIXME: after stateChange CustomEvent -> Event
-    // should just be able to re-dispatch?
     documentAdded(event) {
-        const docRef = event.detail;
-        this.dispatchEvent(new DocumentAddedEvent(docRef));
+        event.stopImmediatePropagation();
+        this.dispatchEvent(new DocumentAddedEvent(event.documentReference));
         this.close();
     }
-    static { this.styles = [styles.types, styles.dialog, css `
+};
+AddDocumentDialog.styles = [styles.types, styles.dialog, css `
         :host {
             display: block;
             z-index:1;
@@ -138,8 +136,7 @@ let AddDocumentDialog = class AddDocumentDialog extends LitElement {
             flex-direction: column;
             gap: 5px;
         }
-  `]; }
-};
+  `];
 __decorate([
     property({ type: Boolean })
 ], AddDocumentDialog.prototype, "open", void 0);

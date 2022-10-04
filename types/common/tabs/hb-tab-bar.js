@@ -25,7 +25,8 @@ let TabBar = class TabBar extends LitElement {
         const slotTabs = this.shadowRoot?.querySelector("slot")?.assignedElements({ flatten: true });
         slotTabs?.forEach(tab => tab.selected = tab.id === this.selectedTab);
     }
-    static { this.styles = [css `
+};
+TabBar.styles = [css `
         :host {
             display: block;
         }
@@ -36,8 +37,7 @@ let TabBar = class TabBar extends LitElement {
             justify-content: left; /* could expose this as stylable for "center" */
             padding: 1rem 0;
         }
-    `]; }
-};
+    `];
 __decorate([
     property({ type: String, attribute: "selected-tab", reflect: true })
 ], TabBar.prototype, "selectedTab", void 0);

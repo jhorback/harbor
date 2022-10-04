@@ -7,7 +7,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 import { html, css, LitElement } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import { CurrentUserData } from "../hb-current-user-data";
-import { linkProp } from "@domx/dataelement";
+import { linkProp } from "@domx/linkprop";
 import "./hb-avatar-button";
 /**
  * @class AppBar
@@ -38,7 +38,8 @@ let AppBar = class AppBar extends LitElement {
       </div>
     `;
     }
-    static { this.styles = [css `
+};
+AppBar.styles = [css `
     :host {
       display: block;
       height: 64px;
@@ -57,8 +58,7 @@ let AppBar = class AppBar extends LitElement {
     .app-bar hb-avatar-button {
       margin: 0 1rem;
     }
-  `]; }
-};
+  `];
 __decorate([
     property({ type: Object })
 ], AppBar.prototype, "currentUser", void 0);

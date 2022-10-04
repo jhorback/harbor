@@ -20,8 +20,8 @@ export class HbCurrentUserChangedEvent extends Event {
         super(HbCurrentUserChangedEvent.eventType);
         this.userData = userData;
     }
-    static { this.eventType = "hb-current-user-changed"; }
 }
+HbCurrentUserChangedEvent.eventType = "hb-current-user-changed";
 let HbAuth = class HbAuth {
     constructor() {
         this.connected = false;

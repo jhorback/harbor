@@ -14,8 +14,8 @@ export class TextInputChangeEvent extends Event {
         this.value = value;
         this.enterKey = enterKey;
     }
-    static { this.eventType = "hb-text-input-change"; }
 }
+TextInputChangeEvent.eventType = "hb-text-input-change";
 /**
  * @class TextInput
  * @fires hb-text-input
@@ -49,7 +49,8 @@ let TextInput = class TextInput extends LitElement {
         const enterKey = event.key === "Enter";
         this.dispatchEvent(new TextInputChangeEvent(value, enterKey));
     }
-    static { this.styles = [styles.icons, styles.types, css `
+};
+TextInput.styles = [styles.icons, styles.types, css `
         :host {
             display: block;
         }
@@ -82,8 +83,7 @@ let TextInput = class TextInput extends LitElement {
             padding-top: 4px;
             height: 16px;
         }
-    `]; }
-};
+    `];
 __decorate([
     property({ type: String, reflect: true })
 ], TextInput.prototype, "value", void 0);

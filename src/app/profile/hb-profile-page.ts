@@ -2,7 +2,7 @@ import { html, css, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import { IUserData } from "../../domain/interfaces/UserInterfaces";
 import { CurrentUserData } from "../../hb-current-user-data";
-import { linkProp } from "@domx/dataelement";
+import { linkProp } from "@domx/linkprop";
 import { AvatarSize } from "../../common/hb-avatar";
 import { styles } from "../../styles";
 import { isAuthorized, UserAction } from "../../domain/HbCurrentUser";

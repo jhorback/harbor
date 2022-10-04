@@ -17,22 +17,14 @@ export class SignOutEvent extends Event {
     constructor() {
         super(SignOutEvent.eventType, { bubbles: true, composed: true });
     }
-    static { this.eventType = "sign-out"; }
 }
+SignOutEvent.eventType = "sign-out";
 let CurrentUserData = CurrentUserData_1 = class CurrentUserData extends DataElement {
     constructor() {
         super(...arguments);
         this.currentUser = CurrentUserData_1.defaultCurrentUser;
         this.hbAppInfo = CurrentUserData_1.defaultHbAppInfo;
     }
-    static { this.defaultCurrentUser = {
-        isAuthenticated: false,
-        uid: "",
-        displayName: ""
-    }; }
-    static { this.defaultHbAppInfo = {
-        version: "v0.0.0"
-    }; }
     connectedCallback() {
         super.connectedCallback();
         this.userAuth.connect();
@@ -56,6 +48,14 @@ let CurrentUserData = CurrentUserData_1 = class CurrentUserData extends DataElem
             sendFeedback({ message: e.message });
         }
     }
+};
+CurrentUserData.defaultCurrentUser = {
+    isAuthenticated: false,
+    uid: "",
+    displayName: ""
+};
+CurrentUserData.defaultHbAppInfo = {
+    version: "v0.0.0"
 };
 __decorate([
     dataProperty({ changeEvent: "current-user-changed" })
