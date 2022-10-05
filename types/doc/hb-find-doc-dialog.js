@@ -13,6 +13,7 @@ import "../common/hb-list-item";
 import "../common/hb-text-input";
 import { linkProp } from "@domx/linkprop";
 import { SearchDocsData, SearchDocsEvent } from "./data/hb-search-docs-data";
+import { debounce } from "../common/debounce";
 export class DocumentSelectedEvent extends Event {
     constructor(documentReference) {
         super(DocumentSelectedEvent.eventType);
@@ -50,7 +51,8 @@ let FindDocDialog = class FindDocDialog extends LitElement {
                         autofocus
                         placeholder="Enter search text"
                         value=${this.searchText}
-                        @hb-text-input-change=${this.textInputChange}
+                        error-text=${this.hasNoResults() ? "There were no documents found" : ""}
+                        @hb-text-input-change=${debounce(this.textInputChange)}
                     ></hb-text-input>
 
                 <div class="list" ?hidden=${this.state.list.length === 0}>                    
@@ -84,6 +86,9 @@ let FindDocDialog = class FindDocDialog extends LitElement {
                 </div>                
             </dialog>
         `;
+    }
+    hasNoResults() {
+        return this.searchText.length > 0 && this.state.isLoading === false && this.state.count === 0;
     }
     updated() {
         this.open && !this.$dialog.open && this.$dialog.showModal();

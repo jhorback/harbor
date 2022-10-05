@@ -22,17 +22,17 @@ let SearchDocsData = SearchDocsData_1 = class SearchDocsData extends DataElement
         super(...arguments);
         this.state = SearchDocsData_1.defaultState;
     }
-    connectedCallback() {
-        super.connectedCallback();
-    }
     addNewDocument(event) {
         const options = event.options;
         StateChange.of(this)
-            .tap(searchDocuments(this.searchDocsRepo, options));
+            .next(setIsLoading(true))
+            .tap(searchDocuments(this.searchDocsRepo, options))
+            .dispatch();
     }
 };
 SearchDocsData.defaultState = {
     list: [],
+    isLoading: false,
     count: 0
 };
 __decorate([
@@ -54,9 +54,13 @@ const searchDocuments = (repo, options) => async (stateChange) => {
     const docs = await repo.searchDocs(options);
     stateChange
         .next(updateDocsList(docs))
+        .next(setIsLoading(false))
         .dispatch();
 };
 const updateDocsList = (docs) => (state) => {
     state.list = docs;
     state.count = docs.length;
+};
+const setIsLoading = (isLoading) => (state) => {
+    state.isLoading = isLoading;
 };
