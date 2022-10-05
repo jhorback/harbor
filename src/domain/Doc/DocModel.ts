@@ -66,7 +66,7 @@ export class DocModel implements IDocData {
         thumbUrl: this.thumbUrl,
         thumbDescription: this.useSubtitleAsThumbDescription ?
             this.subtitle : this.thumbDescription,
-        href: `${docTypes[this.docType].route}/${this.pid}`
+        href: `/${docTypes[this.docType].route}/${this.pid}`
     });
 
     toListItem = ():IListItem => ({
