@@ -9,11 +9,13 @@ import { classMap } from 'lit/directives/class-map.js';
 import { customElement, property } from "lit/decorators.js";
 import { styles } from "../styles";
 export class TextInputChangeEvent extends Event {
-    constructor(value, enterKey) {
+    constructor(target, enterKey) {
         super(TextInputChangeEvent.eventType, { bubbles: true, composed: false });
-        this.value = value;
         this.enterKey = enterKey;
+        this.targetEl = target;
     }
+    get value() { return this.targetEl.value; }
+    ;
 }
 TextInputChangeEvent.eventType = "hb-text-input-change";
 /**
@@ -45,9 +47,10 @@ let TextInput = class TextInput extends LitElement {
         `;
     }
     textKeyUp(event) {
-        const value = event.target.value;
+        const target = event.target;
+        const value = target.value;
         const enterKey = event.key === "Enter";
-        this.dispatchEvent(new TextInputChangeEvent(value, enterKey));
+        this.dispatchEvent(new TextInputChangeEvent(target, enterKey));
     }
 };
 TextInput.styles = [styles.icons, styles.types, css `

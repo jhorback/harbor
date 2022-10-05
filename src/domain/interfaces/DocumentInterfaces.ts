@@ -44,7 +44,6 @@ export interface IDocData {
     docType: string;
     pid: string;
     title: string,
-    titleUppercase: string,
     showTitle: boolean;
     subtitle: string|null;
     showSubtitle: boolean;
@@ -64,7 +63,7 @@ export interface ISearchDocsRepo {
     searchDocs(options:ISearchDocsOptions):Promise<Array<DocModel>>;
 }
 export interface ISearchDocsOptions {
-    text:string|undefined;
+    text?:string;
 }
 
 
