@@ -2,6 +2,7 @@ import { html, css, LitElement } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import { styles } from "../styles";
 import "../layout/hb-page-layout";
+import "./data/hb-doc-data";
 
 /**
  * 
@@ -10,13 +11,13 @@ import "../layout/hb-page-layout";
 export class HbDocPage extends LitElement {
 
     @property({type: String})
-    uid!:String;
+    pid!:String;
 
     render() {
         return html`      
             <hb-page-layout>                
                 <h1>HB-DOC-PAGE</h1>
-                Test document, uid = <span class="primary-text">${this.uid}</span>
+                Test document, pid = <span class="primary-text">${this.pid}</span>
                 <p>
                     <a href="/bad-link">Bad Link</a>
                 </p>

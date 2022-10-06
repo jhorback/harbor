@@ -8,6 +8,7 @@ import { html, css, LitElement } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import { styles } from "../styles";
 import "../layout/hb-page-layout";
+import "./data/hb-doc-data";
 /**
  *
  */
@@ -16,7 +17,7 @@ let HbDocPage = class HbDocPage extends LitElement {
         return html `      
             <hb-page-layout>                
                 <h1>HB-DOC-PAGE</h1>
-                Test document, uid = <span class="primary-text">${this.uid}</span>
+                Test document, pid = <span class="primary-text">${this.pid}</span>
                 <p>
                     <a href="/bad-link">Bad Link</a>
                 </p>
@@ -31,7 +32,7 @@ HbDocPage.styles = [styles.types, styles.colors, css `
   `];
 __decorate([
     property({ type: String })
-], HbDocPage.prototype, "uid", void 0);
+], HbDocPage.prototype, "pid", void 0);
 HbDocPage = __decorate([
     customElement('hb-doc-page')
 ], HbDocPage);
