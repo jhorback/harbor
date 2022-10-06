@@ -14,7 +14,7 @@ export const docTypes = {
     photo: {
         type: "photo",
         name: "Photo",
-        route: "docs",
+        route: "photos",
         description: "Some other text that may be a bit longer so it will be forced to wrap on a different line",
         element: "hb-doc-page",
         validContentTypes: [contentTypes.text.type, contentTypes.image.type],
