@@ -10,7 +10,7 @@ export class TextInputChangeEvent extends Event {
     enterKey:boolean;
     private targetEl:HTMLInputElement;
     constructor(target:HTMLInputElement, enterKey: boolean) {
-        super(TextInputChangeEvent.eventType, { bubbles:true, composed: false});
+        super(TextInputChangeEvent.eventType, { bubbles:true, composed: true});
         this.enterKey = enterKey;
         this.targetEl = target;
     }

@@ -10,7 +10,7 @@ import { customElement, property } from "lit/decorators.js";
 import { styles } from "../styles";
 export class TextInputChangeEvent extends Event {
     constructor(target, enterKey) {
-        super(TextInputChangeEvent.eventType, { bubbles: true, composed: false });
+        super(TextInputChangeEvent.eventType, { bubbles: true, composed: true });
         this.enterKey = enterKey;
         this.targetEl = target;
     }
