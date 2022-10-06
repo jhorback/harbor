@@ -5,34 +5,57 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 var DocData_1;
-import { DataElement } from "@domx/dataelement";
+import { DataElement, StateChange } from "@domx/dataelement";
 import { customDataElement, dataProperty } from "@domx/dataelement/decorators";
+import { inject } from "../../domain/DependencyContainer/decorators";
+import { DocModel } from "../../domain/Doc/DocModel";
+import { EditDocRepoKey } from "../../domain/interfaces/DocumentInterfaces";
+import "../../domain/Doc/HbEditDocRepo";
 let DocData = DocData_1 = class DocData extends DataElement {
     constructor() {
         super(...arguments);
         this.state = DocData_1.defaultState;
-        // @inject<ISearchDocsRepo>(SearchDocsRepoKey)
-        // private searchDocsRepo!:ISearchDocsRepo;
-        // @event(SearchDocsEvent.eventType)
-        // addNewDocument(event:SearchDocsEvent) {
-        //     const options = event.options;
-        //     StateChange.of(this)
-        //         .next(setIsLoading(true))
-        //         .tap(searchDocuments(this.searchDocsRepo, options))
-        //         .dispatch();
-        // }
+        this.documentUnsubscribe = null;
+    }
+    get uid() { return this.getAttribute("uid") || ""; }
+    set uid(uid) { this.setAttribute("uid", uid); }
+    documentSubscribe() {
+        this.documentUnsubscribe = this.editDocRepo.subscribeToDoc(this.uid, (doc) => {
+            StateChange.of(this)
+                .next(updateDoc(doc))
+                .dispatch();
+        });
+    }
+    connectedCallback() {
+        super.connectedCallback();
+        this.documentSubscribe();
+    }
+    disconnectedCallback() {
+        super.disconnectedCallback();
+        this.documentUnsubscribe && this.documentSubscribe();
     }
 };
-DocData.defaultState = {};
+DocData.defaultState = {
+    isLoaded: false,
+    currentUserCanEdit: false,
+    doc: new DocModel()
+};
 __decorate([
     dataProperty()
 ], DocData.prototype, "state", void 0);
+__decorate([
+    inject(EditDocRepoKey)
+], DocData.prototype, "editDocRepo", void 0);
 DocData = DocData_1 = __decorate([
     customDataElement("hb-doc-data", {
-        eventsListenAt: "parent"
+        eventsListenAt: "parent",
+        stateIdProperty: "uid"
     })
 ], DocData);
 export { DocData };
+const updateDoc = (doc) => (state) => {
+    state.doc = doc;
+};
 // const searchDocuments = (repo:ISearchDocsRepo, options:ISearchDocsOptions) => async (stateChange:StateChange) => {
 //     const docs = await repo.searchDocs(options);
 //     stateChange

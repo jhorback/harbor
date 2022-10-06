@@ -2,7 +2,10 @@ import {
     applyImmerToStateChange,
     applyDataElementRdtLogging
 } from "@domx/dataelement/middleware";
+import { Router } from "@domx/router";
 import { GoogleAnalytics } from "../domain/GoogleAnalytics";
+import { sendFeedback } from "../layout/feedback";
+import { NotFoundError, ServerError } from "./Errors";
 
 
 /**
@@ -33,10 +36,27 @@ export class HbApp {
     // 
 
     static init() {
+        handleApplicationErrors();
         applyImmerToStateChange();
         applyDataElementRdtLogging();
         if (!this.isStorybook) {
             GoogleAnalytics.init();
         }
     }
+}
+
+
+const handleApplicationErrors = () => {
+    window.addEventListener("error", (event:ErrorEvent) => {
+        if (event.error instanceof NotFoundError) {
+          Router.replaceUrl("/not-found");
+          console.error("Not Found Error:", event.error.message, {stack: event.error.stack});
+          event.preventDefault();
+        } else if (event.error instanceof ServerError) {
+          const message = `Server Error: ${event.error.message}`;
+          sendFeedback({ message });
+          console.error(message, {stack: event.error.stack});
+          event.preventDefault();
+        }
+    });
 }

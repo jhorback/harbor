@@ -9,7 +9,7 @@ import "../common/hb-text-input";
 import { TextInputChangeEvent } from "../common/hb-text-input";
 import { linkProp } from "@domx/linkprop";
 import { IDocumentReference } from "../domain/interfaces/DocumentInterfaces";
-import { ClientError } from "../domain/ClientError";
+import { ClientError } from "../domain/Errors";
 
 
 /**  

@@ -1,5 +1,5 @@
 import { doc, setDoc } from "firebase/firestore";
-import { ClientError } from "../ClientError";
+import { ClientError } from "../Errors";
 import { provides } from "../DependencyContainer/decorators";
 import { HbApp } from "../HbApp";
 import { HbDb } from "../HbDb";
