@@ -7,6 +7,7 @@ import { linkProp } from "@domx/dataelement";
 import "../layout/hb-page-layout";
 import "../common/hb-button";
 
+
 /**
  * 
  */
@@ -24,10 +25,10 @@ export class HbDocPage extends LitElement {
     state:IDocDataState = DocData.defaultState;
 
     @state()
-    inEditMode = false;
+    inEditMode = true;
 
     @state()
-    selectedSettingsTab:string = "settings";
+    selectedEditTab:string = "";
 
     render() {
         return html`
@@ -64,6 +65,7 @@ export class HbDocPage extends LitElement {
     }
 
     doneButtonClicked() {
+        this.selectedEditTab = "";
         this.inEditMode = false;
     }
 
@@ -73,6 +75,17 @@ export class HbDocPage extends LitElement {
         }
         [hidden] {
             display: none;
+        }
+        .edit-tabs {
+            display: flex;
+            gap: 24px;
+            margin-bottom: 1rem;
+        }
+        .edit-tab-content {
+            background-color: var(--md-sys-color-surface-variant);
+            border-radius:  var(--md-sys-shape-corner-medium);
+            padding: 1rem;
+            margin-bottom: 1rem;
         }
   `]
 }
@@ -102,8 +115,69 @@ const renderAppBarButtons = (page:HbDocPage, state:IDocDataState) => html`
 `;
 
 const renderEditTabs = (page:HbDocPage, state:IDocDataState) => html`
-    <div>EDIT TABS</div>
+    <div class="edit-tabs">
+        <hb-button           
+            text-button
+            label="Settings"
+            ?selected=${page.selectedEditTab === "settings"}
+            @click=${clickEditTab(page, "settings")}
+        ></hb-button>
+        <hb-button           
+            text-button
+            label="Thumbnail"
+            ?selected=${page.selectedEditTab === "thumbnail"}
+            @click=${clickEditTab(page, "thumbnail")}
+        ></hb-button>
+        <hb-button           
+            text-button
+            label="Author"
+            ?selected=${page.selectedEditTab === "author"}
+            @click=${clickEditTab(page, "author")}
+        ></hb-button>
+    </div>
+    ${renderEditTabContent(page, state)}
 `;
+
+
+const renderEditTabContent = (page:HbDocPage, state:IDocDataState) => page.selectedEditTab === "settings" ? 
+    renderEditSettingsTabContent(page, state) :
+    page.selectedEditTab === "thumbnail" ?
+        renderEditThumbnailTabContent(page, state) :
+        page.selectedEditTab === "author" ?
+            renderEditAuthorTabContent(page, state) :
+            html``;
+
+
+const renderEditSettingsTabContent = (page:HbDocPage, state:IDocDataState) => {
+    return html`
+        <div class="edit-tab-content">
+            Edit Settings Tab Content
+        </div>
+    `;
+};
+
+const renderEditThumbnailTabContent = (page:HbDocPage, state:IDocDataState) => {
+    return html`
+        <div class="edit-tab-content">
+            Edit Thumbnail Tab Content
+        </div>
+    `;
+};
+
+const renderEditAuthorTabContent = (page:HbDocPage, state:IDocDataState) => {
+    return html`
+        <div class="edit-tab-content">
+            Edit Author Tab Content
+        </div>
+    `;
+};
+
+
+const clickEditTab = (page:HbDocPage, tab:string) => (event:Event) => {
+    const nextTab = page.selectedEditTab === tab ? "" : tab;
+    page.selectedEditTab = nextTab;
+};
+
 
 declare global {
   interface HTMLElementTagNameMap {

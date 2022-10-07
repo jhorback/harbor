@@ -18,6 +18,7 @@ let Button = class Button extends LitElement {
         this.disabled = false;
         this.selected = false;
         this.tonal = false;
+        this.textButton = false;
     }
     render() {
         return html `
@@ -50,7 +51,7 @@ Button.styles = [typeStyles, css `
             width: 100%;
         }
         :host([text-button]) button {
-            border: 1px solid transparent;
+            border-color: transparent;
         }
         button:hover {
             background-color: var(--hb-sys-color-surface-tint2);
@@ -72,6 +73,9 @@ Button.styles = [typeStyles, css `
             background-color: var(--md-sys-color-secondary-container);
             border: 1px solid var(--md-sys-color-secondary-container);
             opacity: 0.9;
+        }
+        button[flat] {
+            border-color: transparent;
         }
         button[tonal]:hover {
             opacity: 1;
@@ -100,6 +104,9 @@ __decorate([
 __decorate([
     property({ type: Boolean })
 ], Button.prototype, "tonal", void 0);
+__decorate([
+    property({ type: Boolean, attribute: "text-button" })
+], Button.prototype, "textButton", void 0);
 Button = __decorate([
     customElement('hb-button')
 ], Button);

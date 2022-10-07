@@ -20,8 +20,8 @@ let HbDocPage = class HbDocPage extends LitElement {
         super(...arguments);
         this.docType = docTypes.doc.type;
         this.state = DocData.defaultState;
-        this.inEditMode = false;
-        this.selectedSettingsTab = "settings";
+        this.inEditMode = true;
+        this.selectedEditTab = "";
     }
     get uid() { return `${this.docType}:${this.pid}`; }
     render() {
@@ -56,6 +56,7 @@ let HbDocPage = class HbDocPage extends LitElement {
         this.inEditMode = true;
     }
     doneButtonClicked() {
+        this.selectedEditTab = "";
         this.inEditMode = false;
     }
 };
@@ -65,6 +66,17 @@ HbDocPage.styles = [styles.types, styles.icons, css `
         }
         [hidden] {
             display: none;
+        }
+        .edit-tabs {
+            display: flex;
+            gap: 24px;
+            margin-bottom: 1rem;
+        }
+        .edit-tab-content {
+            background-color: var(--md-sys-color-surface-variant);
+            border-radius:  var(--md-sys-shape-corner-medium);
+            padding: 1rem;
+            margin-bottom: 1rem;
         }
   `];
 __decorate([
@@ -78,7 +90,7 @@ __decorate([
 ], HbDocPage.prototype, "inEditMode", void 0);
 __decorate([
     state()
-], HbDocPage.prototype, "selectedSettingsTab", void 0);
+], HbDocPage.prototype, "selectedEditTab", void 0);
 HbDocPage = __decorate([
     customElement('hb-doc-page')
 ], HbDocPage);
@@ -106,5 +118,57 @@ const renderAppBarButtons = (page, state) => html `
     </div>
 `;
 const renderEditTabs = (page, state) => html `
-    <div>EDIT TABS</div>
+    <div class="edit-tabs">
+        <hb-button           
+            text-button
+            label="Settings"
+            ?selected=${page.selectedEditTab === "settings"}
+            @click=${clickEditTab(page, "settings")}
+        ></hb-button>
+        <hb-button           
+            text-button
+            label="Thumbnail"
+            ?selected=${page.selectedEditTab === "thumbnail"}
+            @click=${clickEditTab(page, "thumbnail")}
+        ></hb-button>
+        <hb-button           
+            text-button
+            label="Author"
+            ?selected=${page.selectedEditTab === "author"}
+            @click=${clickEditTab(page, "author")}
+        ></hb-button>
+    </div>
+    ${renderEditTabContent(page, state)}
 `;
+const renderEditTabContent = (page, state) => page.selectedEditTab === "settings" ?
+    renderEditSettingsTabContent(page, state) :
+    page.selectedEditTab === "thumbnail" ?
+        renderEditThumbnailTabContent(page, state) :
+        page.selectedEditTab === "author" ?
+            renderEditAuthorTabContent(page, state) :
+            html ``;
+const renderEditSettingsTabContent = (page, state) => {
+    return html `
+        <div class="edit-tab-content">
+            Edit Settings Tab Content
+        </div>
+    `;
+};
+const renderEditThumbnailTabContent = (page, state) => {
+    return html `
+        <div class="edit-tab-content">
+            Edit Thumbnail Tab Content
+        </div>
+    `;
+};
+const renderEditAuthorTabContent = (page, state) => {
+    return html `
+        <div class="edit-tab-content">
+            Edit Author Tab Content
+        </div>
+    `;
+};
+const clickEditTab = (page, tab) => (event) => {
+    const nextTab = page.selectedEditTab === tab ? "" : tab;
+    page.selectedEditTab = nextTab;
+};
