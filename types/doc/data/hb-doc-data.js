@@ -6,11 +6,13 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 var DocData_1;
 import { DataElement, StateChange } from "@domx/dataelement";
-import { customDataElement, dataProperty } from "@domx/dataelement/decorators";
+import { customDataElement, dataProperty, event } from "@domx/dataelement/decorators";
 import { inject } from "../../domain/DependencyContainer/decorators";
 import { DocModel } from "../../domain/Doc/DocModel";
 import { EditDocRepoKey } from "../../domain/interfaces/DocumentInterfaces";
+import { UserAction, HbCurrentUser } from "../../domain/HbCurrentUser";
 import "../../domain/Doc/HbEditDocRepo";
+import { HbCurrentUserChangedEvent } from "../../domain/HbAuth";
 let DocData = DocData_1 = class DocData extends DataElement {
     constructor() {
         super(...arguments);
@@ -19,25 +21,28 @@ let DocData = DocData_1 = class DocData extends DataElement {
     }
     get uid() { return this.getAttribute("uid") || ""; }
     set uid(uid) { this.setAttribute("uid", uid); }
-    documentSubscribe() {
-        this.documentUnsubscribe = this.editDocRepo.subscribeToDoc(this.uid, (doc) => {
-            StateChange.of(this)
-                .next(updateDoc(doc))
-                .dispatch();
-        });
-    }
     connectedCallback() {
         super.connectedCallback();
         this.documentSubscribe();
     }
+    documentSubscribe() {
+        this.documentUnsubscribe = this.editDocRepo.subscribeToDoc(this.uid, subscribeToDoc(this));
+    }
     disconnectedCallback() {
         super.disconnectedCallback();
-        this.documentUnsubscribe && this.documentSubscribe();
+        this.documentUnsubscribe && this.documentUnsubscribe();
+    }
+    currentUserChanged(event) {
+        StateChange.of(this)
+            .next(updateUserCanEdit(this.state.doc))
+            .next(updateUserCanAdd)
+            .dispatch();
     }
 };
 DocData.defaultState = {
     isLoaded: false,
     currentUserCanEdit: false,
+    currentUserCanAdd: false,
     doc: new DocModel()
 };
 __decorate([
@@ -46,6 +51,12 @@ __decorate([
 __decorate([
     inject(EditDocRepoKey)
 ], DocData.prototype, "editDocRepo", void 0);
+__decorate([
+    event(HbCurrentUserChangedEvent.eventType, {
+        listenAt: "window",
+        stopImmediatePropagation: false
+    })
+], DocData.prototype, "currentUserChanged", null);
 DocData = DocData_1 = __decorate([
     customDataElement("hb-doc-data", {
         eventsListenAt: "parent",
@@ -53,20 +64,25 @@ DocData = DocData_1 = __decorate([
     })
 ], DocData);
 export { DocData };
+const subscribeToDoc = (docData) => (doc) => {
+    StateChange.of(docData)
+        .next(updateDoc(doc))
+        .next(updateUserCanEdit(doc))
+        .next(updateUserCanAdd)
+        .dispatch();
+};
 const updateDoc = (doc) => (state) => {
+    state.isLoaded = true;
     state.doc = doc;
 };
-// const searchDocuments = (repo:ISearchDocsRepo, options:ISearchDocsOptions) => async (stateChange:StateChange) => {
-//     const docs = await repo.searchDocs(options);
-//     stateChange
-//         .next(updateDocsList(docs))
-//         .next(setIsLoading(false))
-//         .dispatch();
-// };
-// const updateDocsList = (docs:Array<DocModel>) => (state:ISearchDocsState) => {
-//     state.list = docs;
-//     state.count = docs.length;
-// };
-// const setIsLoading = (isLoading:boolean) => (state:ISearchDocsState) => {
-//     state.isLoading = isLoading;
-// };
+const updateUserCanEdit = (doc) => (state) => {
+    state.currentUserCanEdit = userCanEdit(doc);
+};
+const updateUserCanAdd = (state) => {
+    state.currentUserCanAdd = new HbCurrentUser().authorize(UserAction.authorDocuments);
+};
+const userCanEdit = (doc) => {
+    const currentUser = new HbCurrentUser();
+    return currentUser.uid === doc.authorUid
+        || currentUser.authorize(UserAction.editAnyDocument);
+};

@@ -40,7 +40,8 @@ class EditDocRepo implements IEditDocRepo {
                     unsubscribe();
                     throw new NotFoundError("Document not found: " + uid);
                 }
-                callback(snapshot.data() as DocModel);
+                const doc = snapshot.data() as DocModel;
+                callback(doc);
             }, (error:FirestoreError) => {
                 throw new ServerError(error.message, error);
             });

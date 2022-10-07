@@ -27,14 +27,18 @@ let EditDocRepo = class EditDocRepo {
         return authorId;
     }
     subscribeToDoc(uid, callback) {
-        return onSnapshot(doc(HbDb.current, "documents", uid).withConverter(DocModel), (snapshot) => {
+        const unsubscribe = onSnapshot(doc(HbDb.current, "documents", uid)
+            .withConverter(DocModel), (snapshot) => {
             if (snapshot.exists() === false) {
-                throw new NotFoundError("Document not found");
+                unsubscribe();
+                throw new NotFoundError("Document not found: " + uid);
             }
-            callback(snapshot.data());
+            const doc = snapshot.data();
+            callback(doc);
         }, (error) => {
             throw new ServerError(error.message, error);
         });
+        return unsubscribe;
     }
 };
 EditDocRepo = __decorate([

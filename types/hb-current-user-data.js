@@ -67,7 +67,10 @@ __decorate([
     inject(UserAuthKey)
 ], CurrentUserData.prototype, "userAuth", void 0);
 __decorate([
-    event(HbCurrentUserChangedEvent.eventType)
+    event(HbCurrentUserChangedEvent.eventType, {
+        listenAt: "window",
+        stopImmediatePropagation: false
+    })
 ], CurrentUserData.prototype, "hbCurrentUserChanged", null);
 __decorate([
     event(SignOutEvent.eventType)

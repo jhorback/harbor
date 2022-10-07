@@ -46,11 +46,12 @@ export class Button extends LitElement {
 
         button {
             height: 40px;
-            padding: 0 1rem;
+            padding: 0 24px;
             color: var(--md-sys-color-primary);
             border: 1px solid var(--md-sys-color-outline);
             border-radius: var(--md-sys-shape-corner-extra-large);
             background-color: transparent;
+            width: 100%;
         }
         :host([text-button]) button {
             border: 1px solid transparent;

@@ -50,7 +50,10 @@ export class CurrentUserData extends DataElement {
             .dispatch();
     }
 
-    @event(HbCurrentUserChangedEvent.eventType)
+    @event(HbCurrentUserChangedEvent.eventType, {
+        listenAt: "window",
+        stopImmediatePropagation: false
+    })
     private hbCurrentUserChanged(event:HbCurrentUserChangedEvent) {
         StateChange.of(this, "currentUser")
             .next(setCurrentUserData(event.userData))
