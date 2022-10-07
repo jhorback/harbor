@@ -34,13 +34,16 @@ class EditDocRepo implements IEditDocRepo {
     }
 
     subscribeToDoc(uid:string, callback:(doc: DocModel) => void):IUnsubscribe {
-        return onSnapshot(doc(HbDb.current, "documents", uid).withConverter(DocModel), (snapshot) => {
-            if (snapshot.exists() === false) {
-                throw new NotFoundError("Document not found");
-            }
-            callback(snapshot.data() as DocModel);
-        }, (error:FirestoreError) => {
-            throw new ServerError(error.message, error);
-        });
+        const unsubscribe = onSnapshot(doc(HbDb.current, "documents", uid)
+            .withConverter(DocModel), (snapshot) => {
+                if (snapshot.exists() === false) {
+                    unsubscribe();
+                    throw new NotFoundError("Document not found: " + uid);
+                }
+                callback(snapshot.data() as DocModel);
+            }, (error:FirestoreError) => {
+                throw new ServerError(error.message, error);
+            });
+        return unsubscribe;
     }
 }

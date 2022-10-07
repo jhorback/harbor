@@ -39,8 +39,12 @@ export class HbDocPage extends LitElement {
                 Test document, pid = <span class="primary-text">${this.pid}</span>
                 uid = <span class="primary-text">${this.uid}</span>
                 <p>
-                    <a href="/bad-link">Bad Link</a>
-                    <a href="/docs/foo-bar-baz">Bad Docs Link</a>
+                    <a href="/bad-link">Bad Link</a> |
+                    <a href="/docs/foo-bar-baz">Bad Docs Link</a> |
+                    <a href="/docs/new-home">NEW HOME</a> |
+                    <a href=" /docs/john-g-home">JOHN G HOME</a>
+                   
+                    
                 </p>
             </hb-page-layout>
         `;

@@ -37,44 +37,29 @@ export class DocData extends DataElement {
 
     private documentUnsubscribe:IUnsubscribe|null = null;
 
-    private documentSubscribe() {
-        this.documentUnsubscribe = this.editDocRepo.subscribeToDoc(this.uid, (doc) => {
-            StateChange.of(this)
-                .next(updateDoc(doc))
-                .dispatch();
-        });
-    }
-
     connectedCallback(): void {
         super.connectedCallback();
         this.documentSubscribe();
     }
 
+    private documentSubscribe() {
+        this.documentUnsubscribe = this.editDocRepo.subscribeToDoc(this.uid,
+            subscribeToDoc(this));
+    }
+
     disconnectedCallback(): void {
         super.disconnectedCallback();
-        this.documentUnsubscribe && this.documentSubscribe();
+        this.documentUnsubscribe && this.documentUnsubscribe();
     }
 }
 
 
+const subscribeToDoc = (docData:DocData) => (doc:DocModel) => {
+    StateChange.of(docData)
+        .next(updateDoc(doc))
+        .dispatch();
+};
+
 const updateDoc = (doc:DocModel) => (state:IDocDataState) => {
     state.doc = doc;
 };
-
-
-// const searchDocuments = (repo:ISearchDocsRepo, options:ISearchDocsOptions) => async (stateChange:StateChange) => {
-//     const docs = await repo.searchDocs(options);
-//     stateChange
-//         .next(updateDocsList(docs))
-//         .next(setIsLoading(false))
-//         .dispatch();
-// };
-
-// const updateDocsList = (docs:Array<DocModel>) => (state:ISearchDocsState) => {
-//     state.list = docs;
-//     state.count = docs.length;
-// };
-
-// const setIsLoading = (isLoading:boolean) => (state:ISearchDocsState) => {
-//     state.isLoading = isLoading;
-// };

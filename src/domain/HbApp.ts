@@ -48,15 +48,20 @@ export class HbApp {
 
 const handleApplicationErrors = () => {
     window.addEventListener("error", (event:ErrorEvent) => {
+
         if (event.error instanceof NotFoundError) {
+
           Router.replaceUrl("/not-found");
           console.error("Not Found Error:", event.error.message, {stack: event.error.stack});
           event.preventDefault();
+
         } else if (event.error instanceof ServerError) {
+
           const message = `Server Error: ${event.error.message}`;
           sendFeedback({ message });
           console.error(message, {stack: event.error.stack});
           event.preventDefault();
+          
         }
     });
 }
