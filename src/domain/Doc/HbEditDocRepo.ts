@@ -47,4 +47,13 @@ class EditDocRepo implements IEditDocRepo {
             });
         return unsubscribe;
     }
+
+    async saveDoc(docModel: DocModel) {
+        try {
+            await setDoc(doc(HbDb.current, "documents", docModel.uid)
+                .withConverter(DocModel), docModel);
+        } catch (error:any) {
+            throw new ServerError(error.message, error);
+        }
+    }
 }

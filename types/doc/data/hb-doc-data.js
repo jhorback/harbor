@@ -13,6 +13,20 @@ import { EditDocRepoKey } from "../../domain/interfaces/DocumentInterfaces";
 import { UserAction, HbCurrentUser } from "../../domain/HbCurrentUser";
 import "../../domain/Doc/HbEditDocRepo";
 import { HbCurrentUserChangedEvent } from "../../domain/HbAuth";
+export class UpdateShowTitleEvent extends Event {
+    constructor(showTitle) {
+        super(UpdateShowTitleEvent.eventType);
+        this.showTitle = showTitle;
+    }
+}
+UpdateShowTitleEvent.eventType = "update-show-title";
+export class UpdateShowSubtitleEvent extends Event {
+    constructor(showSubtitle) {
+        super(UpdateShowSubtitleEvent.eventType);
+        this.showSubtitle = showSubtitle;
+    }
+}
+UpdateShowSubtitleEvent.eventType = "update-show-subtitle";
 let DocData = DocData_1 = class DocData extends DataElement {
     constructor() {
         super(...arguments);
@@ -38,6 +52,18 @@ let DocData = DocData_1 = class DocData extends DataElement {
             .next(updateUserCanAdd)
             .dispatch();
     }
+    updateShowTitle(event) {
+        StateChange.of(this)
+            .next(updateShowTitle(event.showTitle))
+            .tap(saveDoc(this.editDocRepo, this.state.doc))
+            .dispatch();
+    }
+    updateShowSubtitle(event) {
+        StateChange.of(this)
+            .next(updateShowSubtitle(event.showSubtitle))
+            .tap(saveDoc(this.editDocRepo, this.state.doc))
+            .dispatch();
+    }
 };
 DocData.defaultState = {
     isLoaded: false,
@@ -57,9 +83,15 @@ __decorate([
         stopImmediatePropagation: false
     })
 ], DocData.prototype, "currentUserChanged", null);
+__decorate([
+    event(UpdateShowTitleEvent.eventType)
+], DocData.prototype, "updateShowTitle", null);
+__decorate([
+    event(UpdateShowSubtitleEvent.eventType)
+], DocData.prototype, "updateShowSubtitle", null);
 DocData = DocData_1 = __decorate([
     customDataElement("hb-doc-data", {
-        eventsListenAt: "parent",
+        eventsListenAt: "self",
         stateIdProperty: "uid"
     })
 ], DocData);
@@ -71,9 +103,8 @@ const subscribeToDoc = (docData) => (doc) => {
         .next(updateUserCanAdd)
         .dispatch();
 };
-const updateDoc = (doc) => (state) => {
-    state.isLoaded = true;
-    state.doc = doc;
+const saveDoc = (editDocRepo, doc) => (stateChange) => {
+    editDocRepo.saveDoc(doc);
 };
 const updateUserCanEdit = (doc) => (state) => {
     state.currentUserCanEdit = userCanEdit(doc);
@@ -85,4 +116,14 @@ const userCanEdit = (doc) => {
     const currentUser = new HbCurrentUser();
     return currentUser.uid === doc.authorUid
         || currentUser.authorize(UserAction.editAnyDocument);
+};
+const updateDoc = (doc) => (state) => {
+    state.isLoaded = true;
+    state.doc = doc;
+};
+const updateShowTitle = (showTitle) => (state) => {
+    state.doc.showTitle = showTitle;
+};
+const updateShowSubtitle = (showSubtitle) => (state) => {
+    state.doc.showSubtitle = showSubtitle;
 };

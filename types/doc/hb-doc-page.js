@@ -5,13 +5,14 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 import { html, css, LitElement } from "lit";
-import { customElement, property, state } from "lit/decorators.js";
+import { customElement, property, query, state } from "lit/decorators.js";
 import { styles } from "../styles";
 import { docTypes } from "../domain/Doc/docTypes";
-import { DocData } from "./data/hb-doc-data";
+import { DocData, UpdateShowSubtitleEvent, UpdateShowTitleEvent } from "./data/hb-doc-data";
 import { linkProp } from "@domx/dataelement";
 import "../layout/hb-page-layout";
 import "../common/hb-button";
+import "../common/hb-switch";
 /**
  *
  */
@@ -21,7 +22,7 @@ let HbDocPage = class HbDocPage extends LitElement {
         this.docType = docTypes.doc.type;
         this.state = DocData.defaultState;
         this.inEditMode = true;
-        this.selectedEditTab = "";
+        this.selectedEditTab = "settings";
     }
     get uid() { return `${this.docType}:${this.pid}`; }
     render() {
@@ -78,6 +79,31 @@ HbDocPage.styles = [styles.types, styles.icons, css `
             padding: 1rem;
             margin-bottom: 1rem;
         }
+
+
+        .edit-settings-tab-content {
+            display: flex;
+            gap: 48px;
+            padding: 0 32px 0 16px;
+            justify-content: space-between;
+        }
+
+
+        .switch-field {
+            display: flex;
+            gap: 32px;
+            align-items: center;
+        }
+        .switch-field > :first-child {
+            flex-grow: 1;
+        }
+        .switch-field:first-child {
+            margin-bottom: 1rem;
+        }
+        .text-field:first-child {
+            height: 32px;
+            margin-bottom: 1rem;
+        }
   `];
 __decorate([
     property({ type: String })
@@ -91,6 +117,9 @@ __decorate([
 __decorate([
     state()
 ], HbDocPage.prototype, "selectedEditTab", void 0);
+__decorate([
+    query("hb-doc-data")
+], HbDocPage.prototype, "$hbDocData", void 0);
 HbDocPage = __decorate([
     customElement('hb-doc-page')
 ], HbDocPage);
@@ -138,7 +167,7 @@ const renderEditTabs = (page, state) => html `
             @click=${clickEditTab(page, "author")}
         ></hb-button>
     </div>
-    ${renderEditTabContent(page, state)}
+    ${state.isLoaded ? renderEditTabContent(page, state) : html ``}
 `;
 const renderEditTabContent = (page, state) => page.selectedEditTab === "settings" ?
     renderEditSettingsTabContent(page, state) :
@@ -147,24 +176,59 @@ const renderEditTabContent = (page, state) => page.selectedEditTab === "settings
         page.selectedEditTab === "author" ?
             renderEditAuthorTabContent(page, state) :
             html ``;
-const renderEditSettingsTabContent = (page, state) => {
-    return html `
-        <div class="edit-tab-content">
-            Edit Settings Tab Content
-        </div>
-    `;
-};
+const renderEditSettingsTabContent = (page, state) => html `
+    <div class="edit-tab-content">
+        <div class="edit-settings-tab-content">
+            <div>
+                <div class="switch-field">
+                    <div>Show title</div>
+                    <hb-switch
+                        ?selected=${state.doc.showTitle}
+                        @hb-switch-change=${showTitleClicked(page)}
+                    ></hb-switch>
+                </div>
+                <div class="switch-field">
+                    <div>Show subtitle</div>
+                        <hb-switch
+                        ?selected=${state.doc.showSubtitle}
+                        @hb-switch-change=${showSubtitleClicked(page)}
+                    ></hb-switch>
+                </div>
+            </div>
+            <div>
+                <div class="text-field">
+                    <div class="label-large">Document updated</div>
+                    <div class="body=large">${state.doc.dateUpdated.toLocaleDateString()}</div>
+                </div>
+                <div class="text-field">
+                    <div class="label-large">Document created</div>
+                    <div class="body=large">${state.doc.dateCreated.toLocaleDateString()}</div>
+                </div>
+            </div>
+        </div>            
+    </div>
+`;
+const showTitleClicked = (page) => (event) => page.$hbDocData.dispatchEvent(new UpdateShowTitleEvent(event.selected));
+const showSubtitleClicked = (page) => (event) => page.$hbDocData.dispatchEvent(new UpdateShowSubtitleEvent(event.selected));
 const renderEditThumbnailTabContent = (page, state) => {
     return html `
         <div class="edit-tab-content">
-            Edit Thumbnail Tab Content
+            <pre style="margin:0;">
+                Set thumb
+                Thumb description
+                Image
+                Use subtitle as thumb description</pre>
         </div>
     `;
 };
 const renderEditAuthorTabContent = (page, state) => {
     return html `
         <div class="edit-tab-content">
-            Edit Author Tab Content
+            <pre style="margin:0">
+                Author Avatar
+                Author Name
+                Author Email
+                Author Last Login</pre>
         </div>
     `;
 };

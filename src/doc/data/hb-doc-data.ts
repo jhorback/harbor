@@ -6,6 +6,7 @@ import { EditDocRepoKey, IDocData, IEditDocRepo, IUnsubscribe } from "../../doma
 import { UserAction, HbCurrentUser } from "../../domain/HbCurrentUser";
 import "../../domain/Doc/HbEditDocRepo";
 import { HbCurrentUserChangedEvent } from "../../domain/HbAuth";
+import { State } from "@storybook/api";
 
 
 export interface IDocDataState {
@@ -15,10 +16,27 @@ export interface IDocDataState {
     doc:DocModel;
 }
 
+export class UpdateShowTitleEvent extends Event {
+    static eventType = "update-show-title";
+    showTitle:boolean;
+    constructor(showTitle:boolean) {
+        super(UpdateShowTitleEvent.eventType);
+        this.showTitle = showTitle;
+    }
+}
+
+export class UpdateShowSubtitleEvent extends Event {
+    static eventType = "update-show-subtitle";
+    showSubtitle:boolean;
+    constructor(showSubtitle:boolean) {
+        super(UpdateShowSubtitleEvent.eventType);
+        this.showSubtitle = showSubtitle;
+    }
+}
 
 
 @customDataElement("hb-doc-data", {
-    eventsListenAt: "parent",
+    eventsListenAt: "self",
     stateIdProperty: "uid"
 })
 export class DocData extends DataElement {
@@ -66,6 +84,22 @@ export class DocData extends DataElement {
             .next(updateUserCanAdd)
             .dispatch();
     }
+
+    @event(UpdateShowTitleEvent.eventType)
+    private updateShowTitle(event:UpdateShowTitleEvent) {
+        StateChange.of(this)
+            .next(updateShowTitle(event.showTitle))
+            .tap(saveDoc(this.editDocRepo, this.state.doc))
+            .dispatch();
+    }
+
+    @event(UpdateShowSubtitleEvent.eventType)
+    private updateShowSubtitle(event:UpdateShowSubtitleEvent) {
+        StateChange.of(this)
+            .next(updateShowSubtitle(event.showSubtitle))
+            .tap(saveDoc(this.editDocRepo, this.state.doc))
+            .dispatch();
+    }
 }
 
 
@@ -77,9 +111,8 @@ const subscribeToDoc = (docData:DocData) => (doc:DocModel) => {
         .dispatch();
 };
 
-const updateDoc = (doc:DocModel) => (state:IDocDataState) => {
-    state.isLoaded = true;
-    state.doc = doc;
+const saveDoc = (editDocRepo:IEditDocRepo, doc:DocModel) => (stateChange:StateChange) => {
+    editDocRepo.saveDoc(doc);
 };
 
 const updateUserCanEdit = (doc:DocModel) => (state:IDocDataState) => {
@@ -95,3 +128,19 @@ const userCanEdit = (doc:DocModel):boolean => {
     return currentUser.uid === doc.authorUid
         || currentUser.authorize(UserAction.editAnyDocument);
 }
+
+const updateDoc = (doc:DocModel) => (state:IDocDataState) => {
+    state.isLoaded = true;
+    state.doc = doc;
+};
+
+
+
+const updateShowTitle = (showTitle:boolean) => (state:IDocDataState) => {
+    state.doc.showTitle = showTitle;
+};
+
+const updateShowSubtitle = (showSubtitle:boolean) => (state:IDocDataState) => {
+    state.doc.showSubtitle = showSubtitle;
+};
+

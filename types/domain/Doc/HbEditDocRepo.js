@@ -4,7 +4,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-import { doc, onSnapshot } from "firebase/firestore";
+import { doc, onSnapshot, setDoc } from "firebase/firestore";
 import { ServerError } from "../Errors";
 import { provides } from "../DependencyContainer/decorators";
 import { HbApp } from "../HbApp";
@@ -39,6 +39,15 @@ let EditDocRepo = class EditDocRepo {
             throw new ServerError(error.message, error);
         });
         return unsubscribe;
+    }
+    async saveDoc(docModel) {
+        try {
+            await setDoc(doc(HbDb.current, "documents", docModel.uid)
+                .withConverter(DocModel), docModel);
+        }
+        catch (error) {
+            throw new ServerError(error.message, error);
+        }
     }
 };
 EditDocRepo = __decorate([
