@@ -1,5 +1,6 @@
 import { html, css, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators.js";
+import { live } from 'lit/directives/live.js';
 import { styles } from "../styles";
 import { docTypes } from "../domain/Doc/docTypes";
 import { DocData, IDocDataState, UpdateShowSubtitleEvent, UpdateShowTitleEvent } from "./data/hb-doc-data";
@@ -36,6 +37,9 @@ export class HbDocPage extends LitElement {
     $hbDocData!:DocData;
 
     render() {
+        const doc = this.state.doc;
+        doc.subtitle = "this is a subtitle";
+
         return html`
             <hb-doc-data
                 uid=${this.uid}
@@ -45,10 +49,23 @@ export class HbDocPage extends LitElement {
                 ${renderAppBarButtons(this, this.state)}
                 ${this.inEditMode ? renderEditTabs(this, this.state) : html``}
                 <div ?hidden=${!this.state.isLoaded}>
-                    <h1>${this.state.doc.title}</h1>
-                    Test document, pid = <span class="primary-text">${this.pid}</span>
-                    uid = <span class="primary-text">${this.uid}</span>
+                    <h1 class="headline-large" ?hidden=${!this.inEditMode && !doc.showTitle}>${doc.title}</h1>
+
+                    ${this.inEditMode ? html`
+                        <div contenteditable
+                            class="body-large" 
+                            .innerText=${live(doc.subtitle || "Enter a subtitle")}
+                            @input=${this.onInput} placeholder="hello there"></div>
+                        
+                    ` : html`
+                        <div class="body-large" ?hidden=${!doc.showSubtitle}>
+                            ${doc.subtitle}
+                        </div>
+                    `}
+ 
                     <p>
+                        Test document, pid = <span class="primary-text">${this.pid}</span>
+                        uid = <span class="primary-text">${this.uid}</span>
                         <a href="/bad-link">Bad Link</a> |
                         <a href="/docs/foo-bar-baz">Bad Docs Link</a> |
                         <a href="/docs/new-home">NEW HOME</a> |
@@ -59,6 +76,10 @@ export class HbDocPage extends LitElement {
                 
             </hb-page-layout>
         `;
+    }
+
+    onInput(event:InputEvent) {
+        console.log((event.currentTarget as HTMLDivElement).innerText);
     }
 
     addDocumentClicked() {
@@ -81,6 +102,22 @@ export class HbDocPage extends LitElement {
         [hidden] {
             display: none;
         }
+
+        [contenteditable] {
+            padding-bottom: 4px;
+        }
+        [contenteditable]:hover, [contenteditable]:focus {
+            background-color: var(--md-sys-color-surface-variant);
+            border:0;
+            outline:0;
+            position: relative;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            padding: 2px;
+        }
+
         .edit-tabs {
             display: flex;
             gap: 24px;

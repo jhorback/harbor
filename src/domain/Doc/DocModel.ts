@@ -36,7 +36,7 @@ export class DocModel implements IDocData {
     pid = "";
     title = "";
     showTitle = true;
-    subtitle = null;
+    subtitle:string|null = null;
     showSubtitle = true;
     thumbUrl = "";
     thumbDescription = null;
