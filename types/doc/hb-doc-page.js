@@ -13,6 +13,7 @@ import { linkProp } from "@domx/dataelement";
 import "../layout/hb-page-layout";
 import "../common/hb-button";
 import "../common/hb-switch";
+import "../common/hb-content-editable";
 /**
  *
  */
@@ -26,6 +27,8 @@ let HbDocPage = class HbDocPage extends LitElement {
     }
     get uid() { return `${this.docType}:${this.pid}`; }
     render() {
+        const doc = this.state.doc;
+        const placeholder = "Enter a subtitle";
         return html `
             <hb-doc-data
                 uid=${this.uid}
@@ -35,20 +38,36 @@ let HbDocPage = class HbDocPage extends LitElement {
                 ${renderAppBarButtons(this, this.state)}
                 ${this.inEditMode ? renderEditTabs(this, this.state) : html ``}
                 <div ?hidden=${!this.state.isLoaded}>
-                    <h1>${this.state.doc.title}</h1>
-                    Test document, pid = <span class="primary-text">${this.pid}</span>
-                    uid = <span class="primary-text">${this.uid}</span>
+                    <h1 class="headline-large" ?hidden=${!this.inEditMode && !doc.showTitle}>${doc.title}</h1>
+
+                    ${this.inEditMode ? html `
+                        <hb-content-editable
+                            class="body-large"
+                            value=${doc.subtitle}
+                            placeholder=${placeholder}
+                            @change=${this.subtitleChange}
+                        ></hb-content-editable>
+                        
+                    ` : html `
+                        <div class="body-large" ?hidden=${!doc.showSubtitle}>
+                            ${doc.subtitle}
+                        </div>
+                    `}
+ 
                     <p>
+                        Test document, pid = <span class="primary-text">${this.pid}</span>
+                        uid = <span class="primary-text">${this.uid}</span>
                         <a href="/bad-link">Bad Link</a> |
                         <a href="/docs/foo-bar-baz">Bad Docs Link</a> |
                         <a href="/docs/new-home">NEW HOME</a> |
-                        <a href=" /docs/john-g-home">JOHN G HOME</a>               
-                        
+                        <a href=" /docs/john-g-home">JOHN G HOME</a>
                     </p>
                 </div>
-                
             </hb-page-layout>
         `;
+    }
+    subtitleChange(event) {
+        console.log("SUBTITLE CHANGE:", `"${event.value}"`);
     }
     addDocumentClicked() {
         alert("add");
@@ -68,6 +87,9 @@ HbDocPage.styles = [styles.types, styles.icons, css `
         [hidden] {
             display: none;
         }
+
+        
+
         .edit-tabs {
             display: flex;
             gap: 24px;

@@ -1,6 +1,5 @@
 import { html, css, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators.js";
-import { live } from 'lit/directives/live.js';
 import { styles } from "../styles";
 import { docTypes } from "../domain/Doc/docTypes";
 import { DocData, IDocDataState, UpdateShowSubtitleEvent, UpdateShowTitleEvent } from "./data/hb-doc-data";
@@ -9,6 +8,8 @@ import "../layout/hb-page-layout";
 import "../common/hb-button";
 import "../common/hb-switch";
 import { SwitchChangeEvent } from "../common/hb-switch";
+import "../common/hb-content-editable";
+import { ContentEditableChangeEvent } from "../common/hb-content-editable";
 
 
 /**
@@ -38,7 +39,7 @@ export class HbDocPage extends LitElement {
 
     render() {
         const doc = this.state.doc;
-        doc.subtitle = "this is a subtitle";
+        const placeholder = "Enter a subtitle";
 
         return html`
             <hb-doc-data
@@ -52,10 +53,12 @@ export class HbDocPage extends LitElement {
                     <h1 class="headline-large" ?hidden=${!this.inEditMode && !doc.showTitle}>${doc.title}</h1>
 
                     ${this.inEditMode ? html`
-                        <div contenteditable
-                            class="body-large" 
-                            .innerText=${live(doc.subtitle || "Enter a subtitle")}
-                            @input=${this.onInput} placeholder="hello there"></div>
+                        <hb-content-editable
+                            class="body-large"
+                            value=${doc.subtitle}
+                            placeholder=${placeholder}
+                            @change=${this.subtitleChange}
+                        ></hb-content-editable>
                         
                     ` : html`
                         <div class="body-large" ?hidden=${!doc.showSubtitle}>
@@ -69,17 +72,15 @@ export class HbDocPage extends LitElement {
                         <a href="/bad-link">Bad Link</a> |
                         <a href="/docs/foo-bar-baz">Bad Docs Link</a> |
                         <a href="/docs/new-home">NEW HOME</a> |
-                        <a href=" /docs/john-g-home">JOHN G HOME</a>               
-                        
+                        <a href=" /docs/john-g-home">JOHN G HOME</a>
                     </p>
                 </div>
-                
             </hb-page-layout>
         `;
     }
 
-    onInput(event:InputEvent) {
-        console.log((event.currentTarget as HTMLDivElement).innerText);
+    subtitleChange(event:ContentEditableChangeEvent) {
+        console.log("SUBTITLE CHANGE:", `"${event.value}"`);
     }
 
     addDocumentClicked() {
@@ -103,20 +104,7 @@ export class HbDocPage extends LitElement {
             display: none;
         }
 
-        [contenteditable] {
-            padding-bottom: 4px;
-        }
-        [contenteditable]:hover, [contenteditable]:focus {
-            background-color: var(--md-sys-color-surface-variant);
-            border:0;
-            outline:0;
-            position: relative;
-            top: -2px;
-            left: -2px;
-            right: -2px;
-            bottom: -2px;
-            padding: 2px;
-        }
+        
 
         .edit-tabs {
             display: flex;
