@@ -42,7 +42,12 @@ let HbHomePageRepo = class HbHomePageRepo {
     }
     async setHomePage(documentReference) {
         const systemApp = await this.getSystemApp() || {};
-        systemApp.homePage = documentReference;
+        systemApp.homePage = {
+            uid: documentReference.uid,
+            docType: documentReference.docType,
+            pid: documentReference.pid,
+            documentRef: documentReference.documentRef
+        };
         await setDoc(doc(HbDb.current, "system", "app"), systemApp);
     }
 };

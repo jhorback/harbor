@@ -83,7 +83,7 @@ let ProfileAdminTab = class ProfileAdminTab extends LitElement {
         this.$addDocumentDialog.open = true;
     }
     documentAdded(event) {
-        this.$systemAdminData.dispatchEvent(new UpdateHomePageEvent(event.docModel));
+        this.$systemAdminData.dispatchEvent(new UpdateHomePageEvent(event.docModel.toDocumentReference()));
     }
     documentSelected(event) {
         this.$systemAdminData.dispatchEvent(new UpdateHomePageEvent(event.documentReference));
