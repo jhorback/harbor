@@ -5,6 +5,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [0.3.0] - 2022-10-12
+### Added
+- Theme switcher
+- Delete document
+- Add document from document app bar
+- Content editable component
+- Basic document editing features (edit subtitle, show title/subtitle)
+- User documents list
+
+
 ## [0.2.0] - 2022-09-30
 ### Added
 - Components: text input, dialog styles, horizontal card, list item, feedback (toast)

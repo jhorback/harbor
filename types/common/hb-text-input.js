@@ -14,10 +14,10 @@ export class TextInputChangeEvent extends Event {
         this.enterKey = enterKey;
         this.targetEl = target;
     }
+    static { this.eventType = "hb-text-input-change"; }
     get value() { return this.targetEl.value; }
     ;
 }
-TextInputChangeEvent.eventType = "hb-text-input-change";
 /**
  * @class TextInput
  * @fires hb-text-input
@@ -52,8 +52,7 @@ let TextInput = class TextInput extends LitElement {
         const enterKey = event.key === "Enter";
         this.dispatchEvent(new TextInputChangeEvent(target, enterKey));
     }
-};
-TextInput.styles = [styles.icons, styles.types, css `
+    static { this.styles = [styles.icons, styles.types, css `
         :host {
             display: block;
         }
@@ -86,7 +85,8 @@ TextInput.styles = [styles.icons, styles.types, css `
             padding-top: 4px;
             height: 16px;
         }
-    `];
+    `]; }
+};
 __decorate([
     property({ type: String, reflect: true })
 ], TextInput.prototype, "value", void 0);

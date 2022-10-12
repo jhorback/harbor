@@ -35,8 +35,7 @@ let Button = class Button extends LitElement {
     handleClick(event) {
         this.dispatchEvent(new Event("hb-button-click", { bubbles: true, composed: false }));
     }
-};
-Button.styles = [typeStyles, css `
+    static { this.styles = [typeStyles, css `
         :host {
             display: inline-block;
         }
@@ -91,7 +90,8 @@ Button.styles = [typeStyles, css `
         :host([text-button]) button[disabled] {
             border-color: transparent !important;
         }
-    `];
+    `]; }
+};
 __decorate([
     property({ type: String })
 ], Button.prototype, "label", void 0);
