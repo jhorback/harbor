@@ -29,6 +29,12 @@ export class HbApp {
     static isDev = import.meta.env.DEV;
     static isProd = import.meta.env.PROD;
     static isStorybook = import.meta.env.STORYBOOK ? true : false;
+    static get theme() { return localStorage.getItem("theme") || getSystemTheme(); }
+    static set theme(theme:string) { localStorage.setItem("theme", theme )}
+    static toggleTheme() {
+        HbApp.theme = HbApp.theme === "light" ? "dark" : "light";
+        updateHtmlTheme();
+    }
 
     // want a predicate for live mode vs use mocks
     // what is a good name for this?
@@ -39,10 +45,21 @@ export class HbApp {
         handleApplicationErrors();
         applyImmerToStateChange();
         applyDataElementRdtLogging();
+        updateHtmlTheme();
         if (!this.isStorybook) {
             GoogleAnalytics.init();
         }
     }
+}
+
+
+const getSystemTheme = () => window.matchMedia('(prefers-color-scheme: dark)').matches ? "dark" : "light";
+
+const updateHtmlTheme = () => {   
+    const htmlEl = document.querySelector("html");
+    htmlEl?.classList.remove(`dark-theme`);
+    htmlEl?.classList.remove(`light-theme`);    
+    htmlEl?.classList.add(`${HbApp.theme}-theme`);
 }
 
 
