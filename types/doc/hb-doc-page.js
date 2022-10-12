@@ -13,6 +13,7 @@ import "../layout/hb-page-layout";
 import "../common/hb-button";
 import "../common/hb-switch";
 import "../common/hb-content-editable";
+import "../doc/hb-delete-document-dialog";
 import "./hb-doc-author";
 import { DocData, UpdateShowSubtitleEvent, UpdateShowTitleEvent, UpdateSubtitleEvent } from "./data/hb-doc-data";
 import { sendFeedback } from "../layout/feedback";
@@ -48,8 +49,7 @@ let HbDocPage = class HbDocPage extends LitElement {
                             value=${doc.subtitle}
                             placeholder=${placeholder}
                             @change=${this.subtitleChange}
-                        ></hb-content-editable>
-                        
+                        ></hb-content-editable>                        
                     ` : html `
                         <div class="body-large" ?hidden=${!doc.showSubtitle}>
                             ${doc.subtitle}
@@ -74,6 +74,9 @@ let HbDocPage = class HbDocPage extends LitElement {
     }
     editDocumentClicked() {
         this.inEditMode = true;
+    }
+    deleteDocumentClicked() {
+        this.$deleteDocumentDialog.open = true;
     }
     doneButtonClicked() {
         this.selectedEditTab = "";
@@ -108,7 +111,7 @@ HbDocPage.styles = [styles.types, styles.icons, css `
         .edit-settings-tab-content {
             display: flex;
             gap: 48px;
-            padding: 0 32px 0 16px;
+            padding: 0 0 0 16px;
             justify-content: space-between;
         }
 
@@ -147,6 +150,9 @@ __decorate([
 __decorate([
     query("hb-add-document-dialog")
 ], HbDocPage.prototype, "$addDocumentDialog", void 0);
+__decorate([
+    query("hb-delete-document-dialog")
+], HbDocPage.prototype, "$deleteDocumentDialog", void 0);
 HbDocPage = __decorate([
     customElement('hb-doc-page')
 ], HbDocPage);
@@ -231,9 +237,19 @@ const renderEditSettingsTabContent = (page, state) => html `
                     <div class="body=large">${state.doc.dateUpdated.toLocaleDateString()}</div>
                 </div>
                 <div class="text-field">
-                    <div class="label-large">Document created</div>
+                    <div class="label-large">Document added</div>
                     <div class="body=large">${state.doc.dateCreated.toLocaleDateString()}</div>
                 </div>
+            </div>
+            <div>
+                <hb-button
+                    text-button
+                    label="Delete Document"
+                    @hb-button-click=${page.deleteDocumentClicked}
+                ></hb-button>
+                <hb-delete-document-dialog
+                    uid=${state.doc.uid}
+                ></hb-delete-document-dialog>
             </div>
         </div>            
     </div>
