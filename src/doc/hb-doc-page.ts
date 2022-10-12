@@ -9,6 +9,8 @@ import "../common/hb-switch";
 import { SwitchChangeEvent } from "../common/hb-switch";
 import "../common/hb-content-editable";
 import { ContentEditableChangeEvent } from "../common/hb-content-editable";
+import { DocumentAddedEvent } from "../doc/data/hb-add-document-data";
+import { AddDocumentDialog } from "../doc/hb-add-document-dialog";
 import "./hb-doc-author";
 import {
     DocData,
@@ -17,6 +19,7 @@ import {
     UpdateShowTitleEvent,
     UpdateSubtitleEvent
 } from "./data/hb-doc-data";
+import { sendFeedback } from "../layout/feedback";
 
 
 /**
@@ -36,13 +39,16 @@ export class HbDocPage extends LitElement {
     state:IDocDataState = DocData.defaultState;
 
     @state()
-    inEditMode = true;
+    inEditMode = false;
 
     @state()
-    selectedEditTab:string = "author";
+    selectedEditTab:string = "";
 
     @query("hb-doc-data")
     $hbDocData!:DocData;
+
+    @query("hb-add-document-dialog")
+    $addDocumentDialog!:AddDocumentDialog;
 
     render() {
         const doc = this.state.doc;
@@ -82,7 +88,15 @@ export class HbDocPage extends LitElement {
     }
 
     addDocumentClicked() {
-        alert("add");
+        this.$addDocumentDialog.open = true;
+    }
+
+    documentAdded(event:DocumentAddedEvent) {
+        sendFeedback({
+            message: "The document was added",
+            actionText: "View",
+            actionHref: event.docModel.toDocumentThumbnail().href
+        });        
     }
 
     editDocumentClicked() {
@@ -166,6 +180,9 @@ const renderAppBarButtons = (page:HbDocPage, state:IDocDataState) => html`
             label="Done"
             @hb-button-click=${page.doneButtonClicked}
         ></hb-button>
+        <hb-add-document-dialog
+            @document-added=${page.documentAdded}
+        ></hb-add-document-dialog>
     </div>
 `;
 

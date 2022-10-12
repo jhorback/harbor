@@ -8,8 +8,7 @@ import { FindDocRepo } from "../Doc/FindDocRepo";
 import {
     AddDocRepoKey,
     IAddDocRepo,
-    IAddNewDocumentOptions,
-    IDocumentReference
+    IAddNewDocumentOptions
 } from "../interfaces/DocumentInterfaces";
 import { authorize, UserAction, HbCurrentUser } from "../HbCurrentUser";
 
@@ -33,7 +32,7 @@ class AddDocRepo implements IAddDocRepo {
     }
 
     @authorize(UserAction.authorDocuments)
-    async addDoc(options:IAddNewDocumentOptions): Promise<IDocumentReference> {
+    async addDoc(options:IAddNewDocumentOptions): Promise<DocModel> {
 
         const newDoc = DocModel.createNewDoc(this.getCurrentUserId(), options);
 
@@ -44,7 +43,7 @@ class AddDocRepo implements IAddDocRepo {
             throw clientError;
         }
         await this.addNewDoc(newDoc);
-        return newDoc.toDocumentReference();
+        return newDoc;
     }
 
     private async addNewDoc(newDoc:DocModel) {

@@ -15,6 +15,7 @@ import "../common/hb-switch";
 import "../common/hb-content-editable";
 import "./hb-doc-author";
 import { DocData, UpdateShowSubtitleEvent, UpdateShowTitleEvent, UpdateSubtitleEvent } from "./data/hb-doc-data";
+import { sendFeedback } from "../layout/feedback";
 /**
  *
  */
@@ -23,8 +24,8 @@ let HbDocPage = class HbDocPage extends LitElement {
         super(...arguments);
         this.docType = docTypes.doc.type;
         this.state = DocData.defaultState;
-        this.inEditMode = true;
-        this.selectedEditTab = "author";
+        this.inEditMode = false;
+        this.selectedEditTab = "";
     }
     get uid() { return `${this.docType}:${this.pid}`; }
     render() {
@@ -62,7 +63,14 @@ let HbDocPage = class HbDocPage extends LitElement {
         this.$hbDocData.dispatchEvent(new UpdateSubtitleEvent(event.value));
     }
     addDocumentClicked() {
-        alert("add");
+        this.$addDocumentDialog.open = true;
+    }
+    documentAdded(event) {
+        sendFeedback({
+            message: "The document was added",
+            actionText: "View",
+            actionHref: event.docModel.toDocumentThumbnail().href
+        });
     }
     editDocumentClicked() {
         this.inEditMode = true;
@@ -136,6 +144,9 @@ __decorate([
 __decorate([
     query("hb-doc-data")
 ], HbDocPage.prototype, "$hbDocData", void 0);
+__decorate([
+    query("hb-add-document-dialog")
+], HbDocPage.prototype, "$addDocumentDialog", void 0);
 HbDocPage = __decorate([
     customElement('hb-doc-page')
 ], HbDocPage);
@@ -160,6 +171,9 @@ const renderAppBarButtons = (page, state) => html `
             label="Done"
             @hb-button-click=${page.doneButtonClicked}
         ></hb-button>
+        <hb-add-document-dialog
+            @document-added=${page.documentAdded}
+        ></hb-add-document-dialog>
     </div>
 `;
 const renderEditTabs = (page, state) => html `
