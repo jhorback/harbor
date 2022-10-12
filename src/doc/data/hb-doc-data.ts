@@ -34,6 +34,15 @@ export class UpdateShowSubtitleEvent extends Event {
     }
 }
 
+export class UpdateSubtitleEvent extends Event {
+    static eventType = "update-subtitle";
+    subtitle:string;
+    constructor(subtitle:string) {
+        super(UpdateSubtitleEvent.eventType);
+        this.subtitle = subtitle;
+    }
+}
+
 
 @customDataElement("hb-doc-data", {
     eventsListenAt: "self",
@@ -100,6 +109,14 @@ export class DocData extends DataElement {
             .tap(saveDoc(this.editDocRepo, this.state.doc))
             .dispatch();
     }
+
+    @event(UpdateSubtitleEvent.eventType)
+    private updateSubtitle(event:UpdateSubtitleEvent) {
+        StateChange.of(this)
+            .next(updateSubtitle(event.subtitle))
+            .tap(saveDoc(this.editDocRepo, this.state.doc))
+            .dispatch();
+    }
 }
 
 
@@ -142,5 +159,9 @@ const updateShowTitle = (showTitle:boolean) => (state:IDocDataState) => {
 
 const updateShowSubtitle = (showSubtitle:boolean) => (state:IDocDataState) => {
     state.doc.showSubtitle = showSubtitle;
+};
+
+const updateSubtitle = (subtitle:string) => (state:IDocDataState) => {
+    state.doc.subtitle = subtitle;
 };
 

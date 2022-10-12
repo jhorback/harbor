@@ -27,6 +27,13 @@ export class UpdateShowSubtitleEvent extends Event {
     }
 }
 UpdateShowSubtitleEvent.eventType = "update-show-subtitle";
+export class UpdateSubtitleEvent extends Event {
+    constructor(subtitle) {
+        super(UpdateSubtitleEvent.eventType);
+        this.subtitle = subtitle;
+    }
+}
+UpdateSubtitleEvent.eventType = "update-subtitle";
 let DocData = DocData_1 = class DocData extends DataElement {
     constructor() {
         super(...arguments);
@@ -64,6 +71,12 @@ let DocData = DocData_1 = class DocData extends DataElement {
             .tap(saveDoc(this.editDocRepo, this.state.doc))
             .dispatch();
     }
+    updateSubtitle(event) {
+        StateChange.of(this)
+            .next(updateSubtitle(event.subtitle))
+            .tap(saveDoc(this.editDocRepo, this.state.doc))
+            .dispatch();
+    }
 };
 DocData.defaultState = {
     isLoaded: false,
@@ -89,6 +102,9 @@ __decorate([
 __decorate([
     event(UpdateShowSubtitleEvent.eventType)
 ], DocData.prototype, "updateShowSubtitle", null);
+__decorate([
+    event(UpdateSubtitleEvent.eventType)
+], DocData.prototype, "updateSubtitle", null);
 DocData = DocData_1 = __decorate([
     customDataElement("hb-doc-data", {
         eventsListenAt: "self",
@@ -126,4 +142,7 @@ const updateShowTitle = (showTitle) => (state) => {
 };
 const updateShowSubtitle = (showSubtitle) => (state) => {
     state.doc.showSubtitle = showSubtitle;
+};
+const updateSubtitle = (subtitle) => (state) => {
+    state.doc.subtitle = subtitle;
 };

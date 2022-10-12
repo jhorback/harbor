@@ -2,7 +2,6 @@ import { html, css, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators.js";
 import { styles } from "../styles";
 import { docTypes } from "../domain/Doc/docTypes";
-import { DocData, IDocDataState, UpdateShowSubtitleEvent, UpdateShowTitleEvent } from "./data/hb-doc-data";
 import { linkProp } from "@domx/dataelement";
 import "../layout/hb-page-layout";
 import "../common/hb-button";
@@ -10,6 +9,13 @@ import "../common/hb-switch";
 import { SwitchChangeEvent } from "../common/hb-switch";
 import "../common/hb-content-editable";
 import { ContentEditableChangeEvent } from "../common/hb-content-editable";
+import {
+    DocData,
+    IDocDataState,
+    UpdateShowSubtitleEvent,
+    UpdateShowTitleEvent,
+    UpdateSubtitleEvent
+} from "./data/hb-doc-data";
 
 
 /**
@@ -29,10 +35,10 @@ export class HbDocPage extends LitElement {
     state:IDocDataState = DocData.defaultState;
 
     @state()
-    inEditMode = true;
+    inEditMode = false;
 
     @state()
-    selectedEditTab:string = "settings";
+    selectedEditTab:string = "";
 
     @query("hb-doc-data")
     $hbDocData!:DocData;
@@ -65,22 +71,13 @@ export class HbDocPage extends LitElement {
                             ${doc.subtitle}
                         </div>
                     `}
- 
-                    <p>
-                        Test document, pid = <span class="primary-text">${this.pid}</span>
-                        uid = <span class="primary-text">${this.uid}</span>
-                        <a href="/bad-link">Bad Link</a> |
-                        <a href="/docs/foo-bar-baz">Bad Docs Link</a> |
-                        <a href="/docs/new-home">NEW HOME</a> |
-                        <a href=" /docs/john-g-home">JOHN G HOME</a>
-                    </p>
                 </div>
             </hb-page-layout>
         `;
     }
 
     subtitleChange(event:ContentEditableChangeEvent) {
-        console.log("SUBTITLE CHANGE:", `"${event.value}"`);
+        this.$hbDocData.dispatchEvent(new UpdateSubtitleEvent(event.value));
     }
 
     addDocumentClicked() {
@@ -103,8 +100,10 @@ export class HbDocPage extends LitElement {
         [hidden] {
             display: none;
         }
-
-        
+        h1.headline-large {
+            margin-bottom: 1rem;
+        }
+   
 
         .edit-tabs {
             display: flex;
