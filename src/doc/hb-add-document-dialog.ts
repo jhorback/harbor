@@ -136,7 +136,7 @@ export class AddDocumentDialog extends LitElement {
     
     private documentAdded(event:DocumentAddedEvent) {  
         event.stopImmediatePropagation();
-        this.dispatchEvent(new DocumentAddedEvent(event.documentReference));
+        this.dispatchEvent(new DocumentAddedEvent(event.docModel));
         this.close();
     }
 

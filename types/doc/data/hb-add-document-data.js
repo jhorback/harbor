@@ -20,9 +20,9 @@ export class AddNewDocumentEvent extends Event {
 }
 AddNewDocumentEvent.eventType = "add-new-document";
 export class DocumentAddedEvent extends Event {
-    constructor(documentReference) {
+    constructor(docModel) {
         super(DocumentAddedEvent.eventType, { bubbles: true });
-        this.documentReference = documentReference;
+        this.docModel = docModel;
     }
 }
 DocumentAddedEvent.eventType = "document-added";
@@ -70,9 +70,9 @@ const requestDocTypes = (state) => {
     state.docTypes = Object.keys(docTypes).map(key => docTypes[key]);
 };
 const addNewDocument = (repo, options) => async (stateChange) => {
-    let docRef;
+    let docModel;
     try {
-        docRef = await repo.addDoc(options);
+        docModel = await repo.addDoc(options);
     }
     catch (error) {
         if (error instanceof ClientError) {
@@ -83,5 +83,5 @@ const addNewDocument = (repo, options) => async (stateChange) => {
         }
         return;
     }
-    stateChange.dispatchEvent(new DocumentAddedEvent(docRef));
+    stateChange.dispatchEvent(new DocumentAddedEvent(docModel));
 };

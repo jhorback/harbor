@@ -99,7 +99,7 @@ export class ProfileAdminTab extends LitElement {
     }
 
     private documentAdded(event:DocumentAddedEvent) {
-        this.$systemAdminData.dispatchEvent(new UpdateHomePageEvent(event.documentReference));
+        this.$systemAdminData.dispatchEvent(new UpdateHomePageEvent(event.docModel));
     }
 
     private documentSelected(event:DocumentSelectedEvent) {

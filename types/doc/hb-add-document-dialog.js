@@ -113,7 +113,7 @@ let AddDocumentDialog = class AddDocumentDialog extends LitElement {
     }
     documentAdded(event) {
         event.stopImmediatePropagation();
-        this.dispatchEvent(new DocumentAddedEvent(event.documentReference));
+        this.dispatchEvent(new DocumentAddedEvent(event.docModel));
         this.close();
     }
 };

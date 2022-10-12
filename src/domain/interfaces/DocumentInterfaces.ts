@@ -78,7 +78,7 @@ export interface IEditDocRepo {
 
 export const AddDocRepoKey:symbol = Symbol("ADD_DOC_REPO");
 export interface IAddDocRepo {
-    addDoc(options:IAddNewDocumentOptions):Promise<IDocumentReference>;
+    addDoc(options:IAddNewDocumentOptions):Promise<DocModel>;
 }
 export interface IAddNewDocumentOptions {
     docType: string;

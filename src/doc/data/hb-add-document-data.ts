@@ -5,6 +5,7 @@ import { IDocTypeDescriptor, IAddDocRepo, AddDocRepoKey, IAddNewDocumentOptions,
 import { docTypes } from "../../domain/Doc/docTypes";
 import "../../domain/Doc/HbAddDocRepo";
 import { ClientError } from "../../domain/Errors";
+import { DocModel } from "../../domain/Doc/DocModel";
 
 
 
@@ -24,10 +25,10 @@ export class AddNewDocumentEvent extends Event {
 
 export class DocumentAddedEvent extends Event {
     static eventType = "document-added";
-    documentReference:IDocumentReference;
-    constructor(documentReference:IDocumentReference) {
+    docModel:DocModel;
+    constructor(docModel:DocModel) {
         super(DocumentAddedEvent.eventType, {bubbles: true});
-        this.documentReference = documentReference;
+        this.docModel = docModel;
     }
 }
 
@@ -77,10 +78,10 @@ const requestDocTypes = (state:IAddDocumentState) => {
 
 const addNewDocument = (repo:IAddDocRepo, options:IAddNewDocumentOptions) => async (stateChange:StateChange) => {
 
-    let docRef:IDocumentReference;
+    let docModel:DocModel;
 
     try {
-        docRef = await repo.addDoc(options);
+        docModel = await repo.addDoc(options);
     }
     catch(error:any) {
         if (error instanceof ClientError) {
@@ -92,5 +93,5 @@ const addNewDocument = (repo:IAddDocRepo, options:IAddNewDocumentOptions) => asy
         return;
     }
 
-    stateChange.dispatchEvent(new DocumentAddedEvent(docRef));
+    stateChange.dispatchEvent(new DocumentAddedEvent(docModel));
 };

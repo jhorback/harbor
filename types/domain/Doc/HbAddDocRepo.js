@@ -34,7 +34,7 @@ let AddDocRepo = class AddDocRepo {
             throw clientError;
         }
         await this.addNewDoc(newDoc);
-        return newDoc.toDocumentReference();
+        return newDoc;
     }
     async addNewDoc(newDoc) {
         const ref = doc(HbDb.current, "documents", newDoc.uid).withConverter(DocModel);
