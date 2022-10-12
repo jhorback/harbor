@@ -24,6 +24,7 @@ export const UserListRepoKey:symbol = Symbol("USER_LIST_REPO");
 export interface IUserListRepo {
     getUsers(): Promise<Array<IUserData>>;
     updateUserRole(uid:string, role:UserRole): Promise<void>
+    getUser(uid:string): Promise<IUserData|null>
 }
 
 

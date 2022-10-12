@@ -9,6 +9,7 @@ import "../common/hb-switch";
 import { SwitchChangeEvent } from "../common/hb-switch";
 import "../common/hb-content-editable";
 import { ContentEditableChangeEvent } from "../common/hb-content-editable";
+import "./hb-doc-author";
 import {
     DocData,
     IDocDataState,
@@ -35,10 +36,10 @@ export class HbDocPage extends LitElement {
     state:IDocDataState = DocData.defaultState;
 
     @state()
-    inEditMode = false;
+    inEditMode = true;
 
     @state()
-    selectedEditTab:string = "";
+    selectedEditTab:string = "author";
 
     @query("hb-doc-data")
     $hbDocData!:DocData;
@@ -259,11 +260,9 @@ const renderEditThumbnailTabContent = (page:HbDocPage, state:IDocDataState) => {
 const renderEditAuthorTabContent = (page:HbDocPage, state:IDocDataState) => {
     return html`
         <div class="edit-tab-content">
-            <pre style="margin:0">
-                Author Avatar
-                Author Name
-                Author Email
-                Author Last Login</pre>
+            <hb-doc-author            
+                uid=${state.doc.authorUid}           
+            ></hb-doc-author>
         </div>
     `;
 };

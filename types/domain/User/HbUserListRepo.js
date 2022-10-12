@@ -4,7 +4,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-import { getDocs, collection, doc, updateDoc } from "firebase/firestore";
+import { getDocs, collection, doc, updateDoc, getDoc } from "firebase/firestore";
 import { provides } from "../DependencyContainer/decorators";
 import { HbApp } from "../HbApp";
 import { authorize, UserAction } from "../HbCurrentUser";
@@ -22,6 +22,11 @@ let HbUserListRepo = class HbUserListRepo {
         await updateDoc(docRef, {
             role
         });
+    }
+    async getUser(uid) {
+        const docRef = doc(HbDb.current, "users", uid).withConverter(UserModel);
+        const docSnap = await getDoc(docRef);
+        return docSnap.exists() ? docSnap.data() : Promise.resolve(null);
     }
 };
 __decorate([

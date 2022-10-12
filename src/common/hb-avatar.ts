@@ -5,6 +5,7 @@ import { iconStyles } from "../styles/iconStyles";
 
 export enum AvatarSize {
   small = "small",
+  medium = "medium",
   large = "large"
 }
 
@@ -67,6 +68,14 @@ export class Avatar extends LitElement {
     .small .avatar-text, .small .material-symbols-outlined {
       font-size: 24px;
       line-height: 32px;
+    }
+    .medium .avatar {
+      width: 48px;
+      height:48px;
+    }
+    .medium .avatar-text, .medium .material-symbols-outlined {
+      font-size: 42px;
+      line-height: 48px;
     }
     .large .avatar {
       width: 96px;

@@ -13,6 +13,7 @@ import "../layout/hb-page-layout";
 import "../common/hb-button";
 import "../common/hb-switch";
 import "../common/hb-content-editable";
+import "./hb-doc-author";
 import { DocData, UpdateShowSubtitleEvent, UpdateShowTitleEvent, UpdateSubtitleEvent } from "./data/hb-doc-data";
 /**
  *
@@ -22,8 +23,8 @@ let HbDocPage = class HbDocPage extends LitElement {
         super(...arguments);
         this.docType = docTypes.doc.type;
         this.state = DocData.defaultState;
-        this.inEditMode = false;
-        this.selectedEditTab = "";
+        this.inEditMode = true;
+        this.selectedEditTab = "author";
     }
     get uid() { return `${this.docType}:${this.pid}`; }
     render() {
@@ -239,11 +240,9 @@ const renderEditThumbnailTabContent = (page, state) => {
 const renderEditAuthorTabContent = (page, state) => {
     return html `
         <div class="edit-tab-content">
-            <pre style="margin:0">
-                Author Avatar
-                Author Name
-                Author Email
-                Author Last Login</pre>
+            <hb-doc-author            
+                uid=${state.doc.authorUid}           
+            ></hb-doc-author>
         </div>
     `;
 };
