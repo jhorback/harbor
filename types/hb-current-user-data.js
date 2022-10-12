@@ -10,21 +10,29 @@ import { customDataElement, dataProperty, event } from "@domx/dataelement/decora
 import { UserAuthKey } from "./domain/interfaces/UserInterfaces";
 import { HbApp } from "./domain/HbApp";
 import { inject } from "./domain/DependencyContainer/decorators";
-import { sendFeedback } from "./layout/feedback";
 import "./domain/HbAuth";
 import { HbCurrentUserChangedEvent } from "./domain/HbAuth";
+import { ServerError } from "./domain/Errors";
 export class SignOutEvent extends Event {
     constructor() {
         super(SignOutEvent.eventType, { bubbles: true, composed: true });
     }
+    static { this.eventType = "sign-out"; }
 }
-SignOutEvent.eventType = "sign-out";
 let CurrentUserData = CurrentUserData_1 = class CurrentUserData extends DataElement {
     constructor() {
         super(...arguments);
         this.currentUser = CurrentUserData_1.defaultCurrentUser;
         this.hbAppInfo = CurrentUserData_1.defaultHbAppInfo;
     }
+    static { this.defaultCurrentUser = {
+        isAuthenticated: false,
+        uid: "",
+        displayName: ""
+    }; }
+    static { this.defaultHbAppInfo = {
+        version: "v0.0.0"
+    }; }
     connectedCallback() {
         super.connectedCallback();
         this.userAuth.connect();
@@ -45,17 +53,9 @@ let CurrentUserData = CurrentUserData_1 = class CurrentUserData extends DataElem
             await this.userAuth.signOut();
         }
         catch (e) {
-            sendFeedback({ message: e.message });
+            throw new ServerError(e.message, e);
         }
     }
-};
-CurrentUserData.defaultCurrentUser = {
-    isAuthenticated: false,
-    uid: "",
-    displayName: ""
-};
-CurrentUserData.defaultHbAppInfo = {
-    version: "v0.0.0"
 };
 __decorate([
     dataProperty({ changeEvent: "current-user-changed" })
@@ -67,7 +67,10 @@ __decorate([
     inject(UserAuthKey)
 ], CurrentUserData.prototype, "userAuth", void 0);
 __decorate([
-    event(HbCurrentUserChangedEvent.eventType)
+    event(HbCurrentUserChangedEvent.eventType, {
+        listenAt: "window",
+        stopImmediatePropagation: false
+    })
 ], CurrentUserData.prototype, "hbCurrentUserChanged", null);
 __decorate([
     event(SignOutEvent.eventType)

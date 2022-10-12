@@ -83,7 +83,7 @@ let ProfileAdminTab = class ProfileAdminTab extends LitElement {
         this.$addDocumentDialog.open = true;
     }
     documentAdded(event) {
-        this.$systemAdminData.dispatchEvent(new UpdateHomePageEvent(event.documentReference));
+        this.$systemAdminData.dispatchEvent(new UpdateHomePageEvent(event.docModel.toDocumentReference()));
     }
     documentSelected(event) {
         this.$systemAdminData.dispatchEvent(new UpdateHomePageEvent(event.documentReference));
@@ -92,8 +92,7 @@ let ProfileAdminTab = class ProfileAdminTab extends LitElement {
         this.changeHomePage = false;
         this.$findDocDialog.open = true;
     }
-};
-ProfileAdminTab.styles = [styles.types, css `
+    static { this.styles = [styles.types, css `
         :host {
             display: block; 
         }
@@ -113,7 +112,8 @@ ProfileAdminTab.styles = [styles.types, css `
         [hidden] {
             display: none;
         }
-    `];
+    `]; }
+};
 __decorate([
     property({ type: Object })
 ], ProfileAdminTab.prototype, "settings", void 0);

@@ -1,7 +1,7 @@
 {
   "name": "harbor",
   "private": true,
-  "version": "0.2.0",
+  "version": "0.3.0",
   "type": "module",
   "files": [
     "dist",
@@ -19,12 +19,11 @@
     "deploy": "tsc && vite build && firebase deploy"
   },
   "dependencies": {
-    "@domx/dataelement": "0.5.2",
-    "@domx/linkprop": "0.3.1",
-    "@domx/router": "0.3.0",
+    "@domx/dataelement": "1.0.0",
+    "@domx/router": "1.0.1",
     "@storybook/web-components": "6.5.12",
-    "firebase": "9.10.0",
-    "lit": "2.3.1"
+    "firebase": "9.12.0",
+    "lit": "2.4.0"
   },
   "devDependencies": {
     "@babel/core": "7.19.3",
@@ -32,12 +31,12 @@
     "@storybook/addon-essentials": "6.5.12",
     "@storybook/addon-links": "6.5.12",
     "@storybook/addons": "6.5.12",
-    "@storybook/builder-vite": "0.2.3",
+    "@storybook/builder-vite": "0.2.4",
     "@storybook/theming": "6.5.12",
     "babel-loader": "8.2.5",
-    "lit-html": "2.3.1",
+    "lit-html": "2.4.0",
     "storybook-addon-themes": "6.1.0",
     "typescript": "4.8.4",
-    "vite": "3.1.4"
+    "vite": "3.1.7"
   }
 }

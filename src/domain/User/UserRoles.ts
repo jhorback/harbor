@@ -1,5 +1,3 @@
-import { IUserData } from "../interfaces/UserInterfaces";
-
 
 export const roleHasAction = (role:UserRole, action:UserAction): boolean => 
     UserActionRoles[action].includes(role);
@@ -15,28 +13,34 @@ export enum UserRole {
 
 
 export enum UserAction {
-    authorDocuments =       "AUTHOR_DOCUMENTS",         // create documents and access to documents tab
-    viewAllDocuments =      "VIEW_ALL_DOCUMENTS",       // in documents list and private documents
-    editAnyDocument =       "EDIT_ANY_DOCUMENT",        
+    /** create documents and access to profile documents tab */
+    authorDocuments =       "AUTHOR_DOCUMENTS",
+    /** in documents list and private documents */
+    viewAllDocuments =      "VIEW_ALL_DOCUMENTS",
+    /** allows user to edit any document */
+    editAnyDocument =       "EDIT_ANY_DOCUMENT",
+    /** allows user to delete their own documents */
     deleteDocuments =       "DELETE_DOCUMENTS",
+    /** allows user to delete any document */
     deleteAnyDocument =     "DELETE_ANY_DOCUMENT",
+    /** allows user to upload files and access to the profile content tab */
     uploadContent =         "UPLOAD_CONTENT",
+    /** allows user to view all content */
     viewAllContent =        "VIEW_ALL_CONTENT",
+    /** allows user to delete their own content */
     deleteContent =         "DELETE_CONTENT",
+    /** allows user to delete any content */
     deleteAnyContent =      "DELETE_ANY_CONTENT",
+    /** allows a user to view all user in the profile users tab */
     viewUsers =             "VIEW_USERS",
+    /** allows a user to edit any users role */
     editUsersRoles =        "EDIT_USERS_ROLES",
+    /** allows a user to change the home page */
     editSiteSettings =      "EDIT_SITE_SETTINGS"
 }
 
 
 
-
-// export const userCanAction = (user:IUserData) => (action:UserAction) =>
-//     UserActionRoles[action].includes(user.role ? user.role : UserRole.none);
-
-
-// jch: fill out action roles (rename?), review implementation
 const UserActionRoles:{[key:string]: Array<UserRole>} = {
     [UserAction.authorDocuments]: [
         UserRole.userAdmin,

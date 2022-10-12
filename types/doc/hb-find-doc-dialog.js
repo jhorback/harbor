@@ -13,13 +13,14 @@ import "../common/hb-list-item";
 import "../common/hb-text-input";
 import { linkProp } from "@domx/linkprop";
 import { SearchDocsData, SearchDocsEvent } from "./data/hb-search-docs-data";
+import { debounce } from "../common/debounce";
 export class DocumentSelectedEvent extends Event {
     constructor(documentReference) {
         super(DocumentSelectedEvent.eventType);
         this.documentReference = documentReference;
     }
+    static { this.eventType = "document-selected"; }
 }
-DocumentSelectedEvent.eventType = "document-selected";
 /**
  * @fires {@link DocumentSelectedEvent}
  */
@@ -50,7 +51,8 @@ let FindDocDialog = class FindDocDialog extends LitElement {
                         autofocus
                         placeholder="Enter search text"
                         value=${this.searchText}
-                        @hb-text-input-change=${this.textInputChange}
+                        error-text=${this.hasNoResults() ? "There were no documents found" : ""}
+                        @hb-text-input-change=${debounce(this.textInputChange)}
                     ></hb-text-input>
 
                 <div class="list" ?hidden=${this.state.list.length === 0}>                    
@@ -85,6 +87,9 @@ let FindDocDialog = class FindDocDialog extends LitElement {
             </dialog>
         `;
     }
+    hasNoResults() {
+        return this.searchText.length > 0 && this.state.isLoading === false && this.state.count === 0;
+    }
     updated() {
         this.open && !this.$dialog.open && this.$dialog.showModal();
         !this.open && this.$dialog.close();
@@ -113,8 +118,7 @@ let FindDocDialog = class FindDocDialog extends LitElement {
         this.dispatchEvent(new DocumentSelectedEvent(this.state.list[this.selectedIndex].toDocumentReference()));
         this.close();
     }
-};
-FindDocDialog.styles = [styles.types, styles.dialog, css `
+    static { this.styles = [styles.types, styles.dialog, css `
         :host {
             display: block;
             z-index:1;
@@ -131,7 +135,8 @@ FindDocDialog.styles = [styles.types, styles.dialog, css `
             flex-direction: column;
             gap: 5px;
         }
-  `];
+  `]; }
+};
 __decorate([
     property({ type: Boolean })
 ], FindDocDialog.prototype, "open", void 0);

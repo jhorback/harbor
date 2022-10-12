@@ -15,25 +15,25 @@ export class SearchDocsEvent extends Event {
         super(SearchDocsEvent.eventType, { bubbles: true });
         this.options = options;
     }
+    static { this.eventType = "search-docs"; }
 }
-SearchDocsEvent.eventType = "search-docs";
 let SearchDocsData = SearchDocsData_1 = class SearchDocsData extends DataElement {
     constructor() {
         super(...arguments);
         this.state = SearchDocsData_1.defaultState;
     }
-    connectedCallback() {
-        super.connectedCallback();
-    }
+    static { this.defaultState = {
+        list: [],
+        isLoading: false,
+        count: 0
+    }; }
     addNewDocument(event) {
         const options = event.options;
         StateChange.of(this)
-            .tap(searchDocuments(this.searchDocsRepo, options));
+            .next(setIsLoading(true))
+            .tap(searchDocuments(this.searchDocsRepo, options))
+            .dispatch();
     }
-};
-SearchDocsData.defaultState = {
-    list: [],
-    count: 0
 };
 __decorate([
     dataProperty()
@@ -54,9 +54,13 @@ const searchDocuments = (repo, options) => async (stateChange) => {
     const docs = await repo.searchDocs(options);
     stateChange
         .next(updateDocsList(docs))
+        .next(setIsLoading(false))
         .dispatch();
 };
 const updateDocsList = (docs) => (state) => {
     state.list = docs;
     state.count = docs.length;
+};
+const setIsLoading = (isLoading) => (state) => {
+    state.isLoading = isLoading;
 };

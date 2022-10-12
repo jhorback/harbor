@@ -18,6 +18,7 @@ let Button = class Button extends LitElement {
         this.disabled = false;
         this.selected = false;
         this.tonal = false;
+        this.textButton = false;
     }
     render() {
         return html `
@@ -34,22 +35,22 @@ let Button = class Button extends LitElement {
     handleClick(event) {
         this.dispatchEvent(new Event("hb-button-click", { bubbles: true, composed: false }));
     }
-};
-Button.styles = [typeStyles, css `
+    static { this.styles = [typeStyles, css `
         :host {
             display: inline-block;
         }
 
         button {
             height: 40px;
-            padding: 0 1rem;
+            padding: 0 24px;
             color: var(--md-sys-color-primary);
             border: 1px solid var(--md-sys-color-outline);
             border-radius: var(--md-sys-shape-corner-extra-large);
             background-color: transparent;
+            width: 100%;
         }
         :host([text-button]) button {
-            border: 1px solid transparent;
+            border-color: transparent;
         }
         button:hover {
             background-color: var(--hb-sys-color-surface-tint2);
@@ -72,6 +73,9 @@ Button.styles = [typeStyles, css `
             border: 1px solid var(--md-sys-color-secondary-container);
             opacity: 0.9;
         }
+        button[flat] {
+            border-color: transparent;
+        }
         button[tonal]:hover {
             opacity: 1;
         }
@@ -86,7 +90,8 @@ Button.styles = [typeStyles, css `
         :host([text-button]) button[disabled] {
             border-color: transparent !important;
         }
-    `];
+    `]; }
+};
 __decorate([
     property({ type: String })
 ], Button.prototype, "label", void 0);
@@ -99,6 +104,9 @@ __decorate([
 __decorate([
     property({ type: Boolean })
 ], Button.prototype, "tonal", void 0);
+__decorate([
+    property({ type: Boolean, attribute: "text-button" })
+], Button.prototype, "textButton", void 0);
 Button = __decorate([
     customElement('hb-button')
 ], Button);

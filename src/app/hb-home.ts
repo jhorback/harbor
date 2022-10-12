@@ -12,7 +12,7 @@ import { docTypes } from "../domain/Doc/docTypes";
  * The job of this element is to look the home page
  * document up in the database and append the correct element to the dom
  * 
- * // todo: use the hb-system-admin-data to load the homePageRef
+ * // jch: use the hb-system-admin-data to load the homePageRef
  * Basically, remove the local storage and extra logic from here
  */
 @customElement('hb-home')
@@ -81,12 +81,12 @@ export class HbHome extends LitElement {
             return;
         }
 
-        this.showDocElement(el, homePageRef.uid);
+        this.showDocElement(el, homePageRef.pid);
     }
 
-    private showDocElement(el:string, uid:string) {
+    private showDocElement(el:string, pid:string) {
         const docEl = document.createElement(el);
-        docEl.setAttribute("uid", uid);
+        docEl.setAttribute("pid", pid);
         this.$homeContainer.innerHTML = "";
         this.$homeContainer.append(docEl); 
     }

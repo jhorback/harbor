@@ -7,6 +7,7 @@ import "./app/hb-route-not-found-page";
 import "./app/hb-home";
 import "./app/profile/hb-profile-page";
 import "./app/hb-about-page";
+import "./doc/hb-doc-page";
 import "./hb-current-user-data";
 import "./layout/feedback/hb-feedback";
 
@@ -45,6 +46,16 @@ export class HarborApp extends LitElement {
           element="hb-route-not-found-page"
           append-to="#hb-app"
       ></domx-route-not-found>
+      <domx-route
+          pattern="/not-found"
+          element="hb-route-not-found-page"          
+          append-to="#hb-app"
+      ></domx-route>
+      <domx-route
+          pattern="/docs/:pid"
+          element="hb-doc-page"          
+          append-to="#hb-app"
+      ></domx-route>
     `;
   }
 

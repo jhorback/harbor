@@ -9,6 +9,7 @@ import { DocModel } from "../../domain/Doc/DocModel";
 
 export interface ISearchDocsState {
     list: Array<DocModel>;
+    isLoading:boolean;
     count: number;
 }
 
@@ -30,6 +31,7 @@ export class SearchDocsEvent extends Event {
 export class SearchDocsData extends DataElement {
     static defaultState:ISearchDocsState = {
         list: [],
+        isLoading: false,
         count: 0
     };
     
@@ -39,15 +41,14 @@ export class SearchDocsData extends DataElement {
     @inject<ISearchDocsRepo>(SearchDocsRepoKey)
     private searchDocsRepo!:ISearchDocsRepo;
 
-    connectedCallback() {
-        super.connectedCallback();
-    }
 
     @event(SearchDocsEvent.eventType)
     addNewDocument(event:SearchDocsEvent) {
         const options = event.options;
         StateChange.of(this)
-            .tap(searchDocuments(this.searchDocsRepo, options));
+            .next(setIsLoading(true))
+            .tap(searchDocuments(this.searchDocsRepo, options))
+            .dispatch();
     }
 }
 
@@ -56,10 +57,15 @@ const searchDocuments = (repo:ISearchDocsRepo, options:ISearchDocsOptions) => as
     const docs = await repo.searchDocs(options);
     stateChange
         .next(updateDocsList(docs))
+        .next(setIsLoading(false))
         .dispatch();
 };
 
 const updateDocsList = (docs:Array<DocModel>) => (state:ISearchDocsState) => {
     state.list = docs;
     state.count = docs.length;
+};
+
+const setIsLoading = (isLoading:boolean) => (state:ISearchDocsState) => {
+    state.isLoading = isLoading;
 };

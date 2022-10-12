@@ -1,15 +1,13 @@
 import { html, css, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators.js";
 import { styles } from "../styles";
-import { AddDocumentData, AddNewDocumentEvent, DocumentAddedEvent } from "./data/hb-add-document-data";
+import { AddDocumentData, AddDocumentErrorEvent, AddNewDocumentEvent, DocumentAddedEvent } from "./data/hb-add-document-data";
 import  "./data/hb-add-document-data";
 import "../common/hb-button";
 import "../common/hb-list-item";
 import "../common/hb-text-input";
 import { TextInputChangeEvent } from "../common/hb-text-input";
 import { linkProp } from "@domx/linkprop";
-import { IDocumentReference } from "../domain/interfaces/DocumentInterfaces";
-import { ClientError } from "../domain/ClientError";
 
 
 /**  
@@ -130,16 +128,13 @@ export class AddDocumentDialog extends LitElement {
         }));
     }
 
-    private handleAddDocumentError(event:CustomEvent) {
-        const error = event.detail as ClientError;
-        this.addDocumentError = error.message;     
+    private handleAddDocumentError(event:AddDocumentErrorEvent) {
+        this.addDocumentError = event.error.message;     
     }
     
-    // FIXME: after stateChange CustomEvent -> Event
-    // should just be able to re-dispatch?
-    private documentAdded(event:CustomEvent) {  
-        const docRef = event.detail as IDocumentReference;
-        this.dispatchEvent(new DocumentAddedEvent(docRef));
+    private documentAdded(event:DocumentAddedEvent) {  
+        event.stopImmediatePropagation();
+        this.dispatchEvent(new DocumentAddedEvent(event.docModel));
         this.close();
     }
 

@@ -10,6 +10,7 @@ import { iconStyles } from "../styles/iconStyles";
 export var AvatarSize;
 (function (AvatarSize) {
     AvatarSize["small"] = "small";
+    AvatarSize["medium"] = "medium";
     AvatarSize["large"] = "large";
 })(AvatarSize || (AvatarSize = {}));
 /**
@@ -36,8 +37,7 @@ let Avatar = class Avatar extends LitElement {
         console.log(`hb-avatar image failed to load, falling back to use an icon`);
         this.href = "";
     }
-};
-Avatar.styles = [iconStyles, css `
+    static { this.styles = [iconStyles, css `
     :host {
       display: inline-block;
       cursor: default;
@@ -68,6 +68,14 @@ Avatar.styles = [iconStyles, css `
       font-size: 24px;
       line-height: 32px;
     }
+    .medium .avatar {
+      width: 48px;
+      height:48px;
+    }
+    .medium .avatar-text, .medium .material-symbols-outlined {
+      font-size: 42px;
+      line-height: 48px;
+    }
     .large .avatar {
       width: 96px;
       height: 96px;
@@ -76,7 +84,8 @@ Avatar.styles = [iconStyles, css `
       font-size: 72px;
       line-height: 96px;
     }
-  `];
+  `]; }
+};
 __decorate([
     property({ type: String })
 ], Avatar.prototype, "size", void 0);

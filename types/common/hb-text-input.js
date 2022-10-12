@@ -9,13 +9,15 @@ import { classMap } from 'lit/directives/class-map.js';
 import { customElement, property } from "lit/decorators.js";
 import { styles } from "../styles";
 export class TextInputChangeEvent extends Event {
-    constructor(value, enterKey) {
-        super(TextInputChangeEvent.eventType, { bubbles: true, composed: false });
-        this.value = value;
+    constructor(target, enterKey) {
+        super(TextInputChangeEvent.eventType, { bubbles: true, composed: true });
         this.enterKey = enterKey;
+        this.targetEl = target;
     }
+    static { this.eventType = "hb-text-input-change"; }
+    get value() { return this.targetEl.value; }
+    ;
 }
-TextInputChangeEvent.eventType = "hb-text-input-change";
 /**
  * @class TextInput
  * @fires hb-text-input
@@ -45,12 +47,12 @@ let TextInput = class TextInput extends LitElement {
         `;
     }
     textKeyUp(event) {
-        const value = event.target.value;
+        const target = event.target;
+        const value = target.value;
         const enterKey = event.key === "Enter";
-        this.dispatchEvent(new TextInputChangeEvent(value, enterKey));
+        this.dispatchEvent(new TextInputChangeEvent(target, enterKey));
     }
-};
-TextInput.styles = [styles.icons, styles.types, css `
+    static { this.styles = [styles.icons, styles.types, css `
         :host {
             display: block;
         }
@@ -83,7 +85,8 @@ TextInput.styles = [styles.icons, styles.types, css `
             padding-top: 4px;
             height: 16px;
         }
-    `];
+    `]; }
+};
 __decorate([
     property({ type: String, reflect: true })
 ], TextInput.prototype, "value", void 0);

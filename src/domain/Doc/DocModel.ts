@@ -20,7 +20,6 @@ export class DocModel implements IDocData {
         const doc = new DocModel();
         doc.authorUid = authorUid;
         doc.title = options.title;
-        doc.titleUppercase = options.title.toUpperCase();
         doc.docType = options.docType;
         doc.pid = DocModel.tokenize(doc.title);
         doc.uid = `${doc.docType}:${doc.pid}`;
@@ -36,9 +35,8 @@ export class DocModel implements IDocData {
     /** A tokenized version of the document title */
     pid = "";
     title = "";
-    titleUppercase = "";
     showTitle = true;
-    subtitle = null;
+    subtitle:string|null = null;
     showSubtitle = true;
     thumbUrl = "";
     thumbDescription = null;
@@ -68,7 +66,7 @@ export class DocModel implements IDocData {
         thumbUrl: this.thumbUrl,
         thumbDescription: this.useSubtitleAsThumbDescription ?
             this.subtitle : this.thumbDescription,
-        href: `${docTypes[this.docType].route}/${this.pid}`
+        href: `/${docTypes[this.docType].route}/${this.pid}`
     });
 
     toListItem = ():IListItem => ({
@@ -95,7 +93,6 @@ export class DocModel implements IDocData {
             docType: doc.docType,
             pid: doc.pid,
             title: doc.title,
-            titleUppercase: doc.title.toUpperCase(),
             showTitle: doc.showTitle,
             subtitle: doc.subtitle,
             showSubtitle: doc.showSubtitle,

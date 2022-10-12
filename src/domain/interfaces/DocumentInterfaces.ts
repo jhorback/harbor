@@ -44,7 +44,6 @@ export interface IDocData {
     docType: string;
     pid: string;
     title: string,
-    titleUppercase: string,
     showTitle: boolean;
     subtitle: string|null;
     showSubtitle: boolean;
@@ -64,19 +63,31 @@ export interface ISearchDocsRepo {
     searchDocs(options:ISearchDocsOptions):Promise<Array<DocModel>>;
 }
 export interface ISearchDocsOptions {
-    text:string|undefined;
+    text?:string;
 }
 
+
+export const EditDocRepoKey:symbol = Symbol("EDIT_DOC_REPO");
+export type IUnsubscribe = () => void;
+export interface IEditDocRepo {
+    subscribeToDoc(uid:string, callback:(docModel: DocModel) => void):IUnsubscribe;
+    saveDoc(doc: DocModel):void;
+}
 
 
 
 export const AddDocRepoKey:symbol = Symbol("ADD_DOC_REPO");
 export interface IAddDocRepo {
-    addDoc(options:IAddNewDocumentOptions):Promise<IDocumentReference>;
+    addDoc(options:IAddNewDocumentOptions):Promise<DocModel>;
 }
 export interface IAddNewDocumentOptions {
     docType: string;
     title: string;
+}
+
+export const DeleteDocRepoKey:symbol = Symbol("DELETE_DOC_REPO");
+export interface IDeleteDocRepo {
+    deleteDoc(uid:string):Promise<void>;
 }
 
 

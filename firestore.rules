@@ -5,6 +5,10 @@ service cloud.firestore {
     function userHasRole(role) {
       return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == role;
     }
+    
+    function hasOnly(fields) {
+      return request.resource.data.diff(resource.data).affectedKeys().hasOnly(fields);
+    }
 
     match /documents/{doc} {
       allow read;
@@ -18,7 +22,7 @@ service cloud.firestore {
       allow create:
         if request.resource.data.role == "NONE";
       allow update:
-        if userHasRole("USER_ADMIN") || userHasRole("SITE_ADMIN");
+        if userHasRole("USER_ADMIN") || userHasRole("SITE_ADMIN") || hasOnly(['lastLogin'])
     }
 
     match /system/app {

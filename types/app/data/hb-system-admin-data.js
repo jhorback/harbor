@@ -14,20 +14,21 @@ export class RequestSysadminSettingsEvent extends Event {
     constructor() {
         super(RequestSysadminSettingsEvent.eventType, { bubbles: true });
     }
+    static { this.eventType = "request-sysadmin-settings"; }
 }
-RequestSysadminSettingsEvent.eventType = "request-sysadmin-settings";
 export class UpdateHomePageEvent extends Event {
     constructor(documentReference) {
         super(UpdateHomePageEvent.eventType, { bubbles: true, composed: true });
         this.documentReference = documentReference;
     }
+    static { this.eventType = "update-home-page"; }
 }
-UpdateHomePageEvent.eventType = "update-home-page";
 let SystemAdminData = SystemAdminData_1 = class SystemAdminData extends DataElement {
     constructor() {
         super(...arguments);
         this.settings = SystemAdminData_1.defaultSettings;
     }
+    static { this.defaultSettings = { homePageThumbnail: null }; }
     async requestSysadminSettings(event) {
         StateChange.of(this, "settings")
             .tap(requestSettings(this.homePageRepo));
@@ -37,7 +38,6 @@ let SystemAdminData = SystemAdminData_1 = class SystemAdminData extends DataElem
             .tap(updateHomePage(this.homePageRepo, event.documentReference));
     }
 };
-SystemAdminData.defaultSettings = { homePageThumbnail: null };
 __decorate([
     dataProperty({ changeEvent: "settings-changed" })
 ], SystemAdminData.prototype, "settings", void 0);

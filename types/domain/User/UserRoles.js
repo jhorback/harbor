@@ -8,22 +8,31 @@ export var UserRole;
 })(UserRole || (UserRole = {}));
 export var UserAction;
 (function (UserAction) {
+    /** create documents and access to profile documents tab */
     UserAction["authorDocuments"] = "AUTHOR_DOCUMENTS";
+    /** in documents list and private documents */
     UserAction["viewAllDocuments"] = "VIEW_ALL_DOCUMENTS";
+    /** allows user to edit any document */
     UserAction["editAnyDocument"] = "EDIT_ANY_DOCUMENT";
+    /** allows user to delete their own documents */
     UserAction["deleteDocuments"] = "DELETE_DOCUMENTS";
+    /** allows user to delete any document */
     UserAction["deleteAnyDocument"] = "DELETE_ANY_DOCUMENT";
+    /** allows user to upload files and access to the profile content tab */
     UserAction["uploadContent"] = "UPLOAD_CONTENT";
+    /** allows user to view all content */
     UserAction["viewAllContent"] = "VIEW_ALL_CONTENT";
+    /** allows user to delete their own content */
     UserAction["deleteContent"] = "DELETE_CONTENT";
+    /** allows user to delete any content */
     UserAction["deleteAnyContent"] = "DELETE_ANY_CONTENT";
+    /** allows a user to view all user in the profile users tab */
     UserAction["viewUsers"] = "VIEW_USERS";
+    /** allows a user to edit any users role */
     UserAction["editUsersRoles"] = "EDIT_USERS_ROLES";
+    /** allows a user to change the home page */
     UserAction["editSiteSettings"] = "EDIT_SITE_SETTINGS";
 })(UserAction || (UserAction = {}));
-// export const userCanAction = (user:IUserData) => (action:UserAction) =>
-//     UserActionRoles[action].includes(user.role ? user.role : UserRole.none);
-// jch: fill out action roles (rename?), review implementation
 const UserActionRoles = {
     [UserAction.authorDocuments]: [
         UserRole.userAdmin,

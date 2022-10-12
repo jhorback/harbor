@@ -35,8 +35,7 @@ let ProfileUsersTab = class ProfileUsersTab extends LitElement {
             </section> 
         `;
     }
-};
-ProfileUsersTab.styles = [styles.types, css `
+    static { this.styles = [styles.types, css `
         :host {
             display: block;
         }
@@ -46,7 +45,8 @@ ProfileUsersTab.styles = [styles.types, css `
             column-gap: 1rem;
             row-gap: 1rem;
         }
-    `];
+    `]; }
+};
 __decorate([
     property({ type: Object })
 ], ProfileUsersTab.prototype, "users", void 0);

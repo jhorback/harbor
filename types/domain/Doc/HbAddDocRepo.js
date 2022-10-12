@@ -5,7 +5,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 import { doc, setDoc } from "firebase/firestore";
-import { ClientError } from "../ClientError";
+import { ClientError } from "../Errors";
 import { provides } from "../DependencyContainer/decorators";
 import { HbApp } from "../HbApp";
 import { HbDb } from "../HbDb";
@@ -34,7 +34,7 @@ let AddDocRepo = class AddDocRepo {
             throw clientError;
         }
         await this.addNewDoc(newDoc);
-        return newDoc.toDocumentReference();
+        return newDoc;
     }
     async addNewDoc(newDoc) {
         const ref = doc(HbDb.current, "documents", newDoc.uid).withConverter(DocModel);

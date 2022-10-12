@@ -1,0 +1,122 @@
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+import { html, css, LitElement } from "lit";
+import { live } from "lit-html/directives/live.js";
+import { customElement, property, query } from "lit/decorators.js";
+export class ContentEditableChangeEvent extends Event {
+    constructor(value) {
+        super(ContentEditableChangeEvent.eventType, { bubbles: true, composed: true });
+        this.value = value;
+    }
+    static { this.eventType = "change"; }
+}
+/**
+ * @class Switch
+ * @fires hb-switch
+ */
+let ContentEditable = class ContentEditable extends LitElement {
+    constructor() {
+        super(...arguments);
+        this.value = "";
+        this.placeholder = "";
+    }
+    render() {
+        return html `
+            <div contenteditable="true"
+                .innerText=${live(this.value || this.placeholder)}
+                class=${this.getPlaceholderClass()}
+                @focus=${this.onFocus}
+                @keydown=${this.onKeydown}
+                @keyup=${this.onKeyup}
+                @blur=${this.onBlur}
+           ></div>
+        `;
+    }
+    onKeydown(event) {
+        this.clearPlaceholder();
+        if (event.key === "Enter") {
+            event.preventDefault();
+            this.$div.blur();
+            this.dispatchChange(event);
+        }
+    }
+    onKeyup() {
+        this.setPlaceholderClassOnDiv();
+    }
+    getPlaceholderClass() {
+        return this.getInnerText() === "" ? "placeholder" : "";
+    }
+    setPlaceholderClassOnDiv() {
+        this.$div.className = this.getPlaceholderClass();
+    }
+    clearPlaceholder() {
+        if (this.getInnerText() === this.placeholder) {
+            this.$div.innerText = "";
+        }
+    }
+    onFocus() {
+        this.clearPlaceholder();
+        var range = document.createRange();
+        range.selectNodeContents(this.$div);
+        var sel = window.getSelection();
+        sel?.removeAllRanges();
+        sel?.addRange(range);
+    }
+    onBlur(event) {
+        this.dispatchChange(event);
+        if (this.getInnerText() === "") {
+            this.$div.innerText = this.placeholder;
+        }
+    }
+    getInnerText() {
+        return this.$div ? this.$div.innerText.trim() : this.value;
+    }
+    dispatchChange(event) {
+        const value = this.getInnerText();
+        this.value = this.value === this.placeholder ? "" : value;
+        this.$div.innerText = this.value;
+        this.dispatchEvent(new ContentEditableChangeEvent(value));
+    }
+    static { this.styles = [css `
+        :host {
+            display: block;
+        }
+
+        [contenteditable] {
+            padding-bottom: 4px;
+        }
+
+        [contenteditable]:hover, [contenteditable]:focus {
+            background-color: var(--md-sys-color-surface-variant);
+            border:0;
+            outline:0;
+            position: relative;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            padding: 2px;
+        }
+
+        .placeholder {
+            opacity: 0.38;
+        }  
+    `]; }
+};
+__decorate([
+    property({ type: String })
+], ContentEditable.prototype, "value", void 0);
+__decorate([
+    property({ type: String })
+], ContentEditable.prototype, "placeholder", void 0);
+__decorate([
+    query("div")
+], ContentEditable.prototype, "$div", void 0);
+ContentEditable = __decorate([
+    customElement('hb-content-editable')
+], ContentEditable);
+export { ContentEditable };

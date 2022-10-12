@@ -16,7 +16,7 @@ import { docTypes } from "../domain/Doc/docTypes";
  * The job of this element is to look the home page
  * document up in the database and append the correct element to the dom
  *
- * // todo: use the hb-system-admin-data to load the homePageRef
+ * // jch: use the hb-system-admin-data to load the homePageRef
  * Basically, remove the local storage and extra logic from here
  */
 let HbHome = class HbHome extends LitElement {
@@ -69,11 +69,11 @@ let HbHome = class HbHome extends LitElement {
             this.showNotFound(`The docType element was not defined: ${el}`);
             return;
         }
-        this.showDocElement(el, homePageRef.uid);
+        this.showDocElement(el, homePageRef.pid);
     }
-    showDocElement(el, uid) {
+    showDocElement(el, pid) {
         const docEl = document.createElement(el);
-        docEl.setAttribute("uid", uid);
+        docEl.setAttribute("pid", pid);
         this.$homeContainer.innerHTML = "";
         this.$homeContainer.append(docEl);
     }
@@ -90,12 +90,12 @@ let HbHome = class HbHome extends LitElement {
             </div>            
         `;
     }
-};
-HbHome.styles = [css `
+    static { this.styles = [css `
         :host {
             display: block;
         }
-    `];
+    `]; }
+};
 __decorate([
     inject(HomePageRepoKey)
 ], HbHome.prototype, "homePageRepo", void 0);

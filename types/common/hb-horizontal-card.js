@@ -22,7 +22,9 @@ let HorizontalCard = class HorizontalCard extends LitElement {
         return html `
             <div class="horizontal-card" @click=${this.handleClick}>
                 <div class="text">
-                    <div class="title-medium readable">${this.text}</div>
+                    <a href=${this.mediaHref}>
+                        <div class="title-medium readable">${this.text}</div>
+                    </a>
                     <div class="body-medium readable">${this.description}</div>
                 </div>
                 <div class="media" ?hidden=${this.mediaUrl === ""}>
@@ -40,15 +42,14 @@ let HorizontalCard = class HorizontalCard extends LitElement {
         console.log(`hb-avatar image failed to load, falling back to use an icon`);
         this.mediaUrl = "";
     }
-};
-HorizontalCard.styles = [styles.icons, styles.types, css `
+    static { this.styles = [styles.icons, styles.types, css `
         :host {
             display: block;
         }
         .horizontal-card {
+            overflow: clip;
             display: flex;
             user-select: none;
-            border: 1px solid transparent;
             border-radius:  var(--md-sys-shape-corner-small);
             padding: 0 0 0 10px;
             align-items: center;
@@ -59,8 +60,16 @@ HorizontalCard.styles = [styles.icons, styles.types, css `
         .text {
             flex-grow: 1;
         }
+        a {
+            text-decoration: none;
+
+        }
         .title-medium {
             line-height: 2rem;
+        }
+        .body-medium {
+            max-height: 34px;
+            overflow: clip;
         }
         .readable {
             max-width: 35ch;
@@ -79,7 +88,8 @@ HorizontalCard.styles = [styles.icons, styles.types, css `
             display: inline-block;
             border-radius:  0 8px 8px 0;
         }
-    `];
+    `]; }
+};
 __decorate([
     property({ type: String, attribute: "media-url" })
 ], HorizontalCard.prototype, "mediaUrl", void 0);

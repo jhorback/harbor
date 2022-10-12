@@ -6,12 +6,13 @@ import { styles } from "../styles";
 
 export class TextInputChangeEvent extends Event {
     static eventType = "hb-text-input-change";
-    value:string;
+    get value() { return this.targetEl.value };
     enterKey:boolean;
-    constructor(value:string, enterKey: boolean) {
-        super(TextInputChangeEvent.eventType, { bubbles:true, composed: false});
-        this.value = value;
+    private targetEl:HTMLInputElement;
+    constructor(target:HTMLInputElement, enterKey: boolean) {
+        super(TextInputChangeEvent.eventType, { bubbles:true, composed: true});
         this.enterKey = enterKey;
+        this.targetEl = target;
     }
 }
 
@@ -52,9 +53,10 @@ export class TextInput extends LitElement {
     }
 
     textKeyUp(event:KeyboardEvent) {
-        const value = (event.target as HTMLInputElement).value;
+        const target = event.target as HTMLInputElement;
+        const value = target.value;
         const enterKey = event.key === "Enter";
-        this.dispatchEvent(new TextInputChangeEvent(value, enterKey));
+        this.dispatchEvent(new TextInputChangeEvent(target, enterKey));
     }
 
     static styles = [styles.icons, styles.types, css`
