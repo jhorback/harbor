@@ -1,4 +1,4 @@
-import { ClientError } from "./ClientError";
+import { ClientError } from "./Errors";
 import { UserAction, roleHasAction, UserRole } from "./User/UserRoles";
 export { UserAction };
 

@@ -1,4 +1,4 @@
-import { getDocs, collection, QueryDocumentSnapshot, doc, updateDoc } from "firebase/firestore";
+import { getDocs, collection, QueryDocumentSnapshot, doc, updateDoc, getDoc } from "firebase/firestore";
 import { provides } from "../DependencyContainer/decorators";
 import { HbApp } from "../HbApp";
 import { authorize, UserAction } from "../HbCurrentUser";
@@ -24,5 +24,11 @@ class HbUserListRepo implements IUserListRepo {
         await updateDoc(docRef, {
             role
         });
+    }
+
+    async getUser(uid:string) {
+        const docRef = doc(HbDb.current, "users", uid).withConverter<IUserData>(UserModel);
+        const docSnap = await getDoc(docRef);
+        return docSnap.exists() ? docSnap.data() as IUserData : Promise.resolve(null);
     }
 }

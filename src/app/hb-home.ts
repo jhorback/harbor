@@ -81,12 +81,12 @@ export class HbHome extends LitElement {
             return;
         }
 
-        this.showDocElement(el, homePageRef.uid);
+        this.showDocElement(el, homePageRef.pid);
     }
 
-    private showDocElement(el:string, uid:string) {
+    private showDocElement(el:string, pid:string) {
         const docEl = document.createElement(el);
-        docEl.setAttribute("uid", uid);
+        docEl.setAttribute("pid", pid);
         this.$homeContainer.innerHTML = "";
         this.$homeContainer.append(docEl); 
     }

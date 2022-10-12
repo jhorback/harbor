@@ -69,11 +69,11 @@ let HbHome = class HbHome extends LitElement {
             this.showNotFound(`The docType element was not defined: ${el}`);
             return;
         }
-        this.showDocElement(el, homePageRef.uid);
+        this.showDocElement(el, homePageRef.pid);
     }
-    showDocElement(el, uid) {
+    showDocElement(el, pid) {
         const docEl = document.createElement(el);
-        docEl.setAttribute("uid", uid);
+        docEl.setAttribute("pid", pid);
         this.$homeContainer.innerHTML = "";
         this.$homeContainer.append(docEl);
     }

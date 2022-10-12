@@ -4,7 +4,7 @@ import { inject } from "../../domain/DependencyContainer/decorators";
 import { IDocTypeDescriptor, IAddDocRepo, AddDocRepoKey, IAddNewDocumentOptions, IDocumentReference } from "../../domain/interfaces/DocumentInterfaces";
 import { docTypes } from "../../domain/Doc/docTypes";
 import "../../domain/Doc/HbAddDocRepo";
-import { ClientError } from "../../domain/ClientError";
+import { ClientError } from "../../domain/Errors";
 
 
 

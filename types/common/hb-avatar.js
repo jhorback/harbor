@@ -10,6 +10,7 @@ import { iconStyles } from "../styles/iconStyles";
 export var AvatarSize;
 (function (AvatarSize) {
     AvatarSize["small"] = "small";
+    AvatarSize["medium"] = "medium";
     AvatarSize["large"] = "large";
 })(AvatarSize || (AvatarSize = {}));
 /**
@@ -67,6 +68,14 @@ Avatar.styles = [iconStyles, css `
     .small .avatar-text, .small .material-symbols-outlined {
       font-size: 24px;
       line-height: 32px;
+    }
+    .medium .avatar {
+      width: 48px;
+      height:48px;
+    }
+    .medium .avatar-text, .medium .material-symbols-outlined {
+      font-size: 42px;
+      line-height: 48px;
     }
     .large .avatar {
       width: 96px;

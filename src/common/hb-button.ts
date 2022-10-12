@@ -22,6 +22,9 @@ export class Button extends LitElement {
     @property({type: Boolean})
     tonal = false;
 
+    @property({type: Boolean, attribute: "text-button"})
+    textButton = false;
+
     render() {
         return html`
             <button
@@ -46,14 +49,15 @@ export class Button extends LitElement {
 
         button {
             height: 40px;
-            padding: 0 1rem;
+            padding: 0 24px;
             color: var(--md-sys-color-primary);
             border: 1px solid var(--md-sys-color-outline);
             border-radius: var(--md-sys-shape-corner-extra-large);
             background-color: transparent;
+            width: 100%;
         }
         :host([text-button]) button {
-            border: 1px solid transparent;
+            border-color: transparent;
         }
         button:hover {
             background-color: var(--hb-sys-color-surface-tint2);
@@ -75,6 +79,9 @@ export class Button extends LitElement {
             background-color: var(--md-sys-color-secondary-container);
             border: 1px solid var(--md-sys-color-secondary-container);
             opacity: 0.9;
+        }
+        button[flat] {
+            border-color: transparent;
         }
         button[tonal]:hover {
             opacity: 1;

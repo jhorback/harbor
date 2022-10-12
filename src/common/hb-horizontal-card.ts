@@ -27,7 +27,9 @@ export class HorizontalCard extends LitElement {
         return html`
             <div class="horizontal-card" @click=${this.handleClick}>
                 <div class="text">
-                    <div class="title-medium readable">${this.text}</div>
+                    <a href=${this.mediaHref}>
+                        <div class="title-medium readable">${this.text}</div>
+                    </a>
                     <div class="body-medium readable">${this.description}</div>
                 </div>
                 <div class="media" ?hidden=${this.mediaUrl === ""}>
@@ -53,9 +55,9 @@ export class HorizontalCard extends LitElement {
             display: block;
         }
         .horizontal-card {
+            overflow: clip;
             display: flex;
             user-select: none;
-            border: 1px solid transparent;
             border-radius:  var(--md-sys-shape-corner-small);
             padding: 0 0 0 10px;
             align-items: center;
@@ -66,8 +68,16 @@ export class HorizontalCard extends LitElement {
         .text {
             flex-grow: 1;
         }
+        a {
+            text-decoration: none;
+
+        }
         .title-medium {
             line-height: 2rem;
+        }
+        .body-medium {
+            max-height: 34px;
+            overflow: clip;
         }
         .readable {
             max-width: 35ch;

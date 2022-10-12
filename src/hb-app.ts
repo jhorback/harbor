@@ -47,7 +47,12 @@ export class HarborApp extends LitElement {
           append-to="#hb-app"
       ></domx-route-not-found>
       <domx-route
-          pattern="/docs/:uid"
+          pattern="/not-found"
+          element="hb-route-not-found-page"          
+          append-to="#hb-app"
+      ></domx-route>
+      <domx-route
+          pattern="/docs/:pid"
           element="hb-doc-page"          
           append-to="#hb-app"
       ></domx-route>

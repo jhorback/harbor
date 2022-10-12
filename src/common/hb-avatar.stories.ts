@@ -22,9 +22,10 @@ export default {
             control: { type: "select" },
             options: [
                 "small",
+                "medium",
                 "large"
             ],
-            description: "The size of the avatar; small: 32px, large: 96px"
+            description: "The size of the avatar; small: 32px, medium: 48px, large: 96px"
         }
     }
 } as Meta;

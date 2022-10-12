@@ -67,6 +67,13 @@ export interface ISearchDocsOptions {
 }
 
 
+export const EditDocRepoKey:symbol = Symbol("EDIT_DOC_REPO");
+export type IUnsubscribe = () => void;
+export interface IEditDocRepo {
+    subscribeToDoc(uid:string, callback:(docModel: DocModel) => void):IUnsubscribe;
+    saveDoc(doc: DocModel):void;
+}
+
 
 
 export const AddDocRepoKey:symbol = Symbol("ADD_DOC_REPO");

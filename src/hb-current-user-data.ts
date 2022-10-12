@@ -3,9 +3,9 @@ import { customDataElement, dataProperty, event } from "@domx/dataelement/decora
 import { IUserData, IHbAppInfo, IUserAuth, UserAuthKey } from "./domain/interfaces/UserInterfaces";
 import { HbApp } from "./domain/HbApp";
 import { inject } from "./domain/DependencyContainer/decorators";
-import { sendFeedback } from "./layout/feedback";
 import "./domain/HbAuth";
 import { HbCurrentUserChangedEvent } from "./domain/HbAuth";
+import { ServerError } from "./domain/Errors";
 
 
 export class SignOutEvent extends Event {
@@ -50,7 +50,10 @@ export class CurrentUserData extends DataElement {
             .dispatch();
     }
 
-    @event(HbCurrentUserChangedEvent.eventType)
+    @event(HbCurrentUserChangedEvent.eventType, {
+        listenAt: "window",
+        stopImmediatePropagation: false
+    })
     private hbCurrentUserChanged(event:HbCurrentUserChangedEvent) {
         StateChange.of(this, "currentUser")
             .next(setCurrentUserData(event.userData))
@@ -62,7 +65,7 @@ export class CurrentUserData extends DataElement {
         try{
             await this.userAuth.signOut();
         } catch (e:any) {
-            sendFeedback({ message: e.message });
+            throw new ServerError(e.message, e);
         }
     }
 }
