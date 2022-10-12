@@ -1,11 +1,13 @@
 import { html, css, LitElement } from "lit";
-import { customElement, property } from "lit/decorators.js";
+import { customElement, property, state } from "lit/decorators.js";
 import { IHbAppInfo } from "../domain/interfaces/UserInterfaces";
+import { HbApp } from "../domain/HbApp";
 import { CurrentUserData } from "../hb-current-user-data";
 import { linkProp } from "@domx/linkprop";
 import { styles } from "../styles";
 import "../layout/hb-page-layout";
 import "../common/hb-link-button";
+import "../common/hb-switch";
 
 
 /**
@@ -17,6 +19,14 @@ export class AboutPage extends LitElement {
     @property({type: Object})
     hbAppInfo:IHbAppInfo = CurrentUserData.defaultHbAppInfo;
 
+    @property({type: Boolean})
+    darkTheme = false;
+
+    connectedCallback() {
+        super.connectedCallback();
+        this.darkTheme = HbApp.theme === "dark";
+    }
+
     render() {
         return html`
 <hb-current-user-data
@@ -25,6 +35,13 @@ export class AboutPage extends LitElement {
 <hb-page-layout small>
     <div class="headline-large">About Harbor
         <span class="primary-text">${this.hbAppInfo.version}</span>
+    </div>
+    <div class="theme-switcher">
+        <hb-switch
+            ?selected=${this.darkTheme}
+            @hb-switch-change=${this.toggleTheme}
+        ></hb-switch>
+        <div class="label-large">Dark Theme</div>
     </div>
     <!-- <hr> -->
     <div class="body-large text-content">
@@ -66,12 +83,24 @@ export class AboutPage extends LitElement {
         `;
     }
 
-    static styles = [styles.types, styles.colors, css`
+    toggleTheme() {
+        HbApp.toggleTheme();
+        this.darkTheme = HbApp.theme === "dark";
+    }
+
+    static styles = [styles.types, css`
         :host {
             display: block;
         }
         .headline-large {            
             padding-top: 2rem;
+            
+        }        
+        .theme-switcher {
+            display:flex;
+            gap: 20px;
+            margin: 2rem 0 0 0;
+            align-items: center;
         }
         hr {
             border-color: var(--md-sys-color-outline);
@@ -91,6 +120,7 @@ export class AboutPage extends LitElement {
         }
     `]
 }
+
 
 declare global {
   interface HTMLElementTagNameMap {
