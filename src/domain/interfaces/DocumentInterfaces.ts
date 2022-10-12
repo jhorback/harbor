@@ -85,6 +85,11 @@ export interface IAddNewDocumentOptions {
     title: string;
 }
 
+export const DeleteDocRepoKey:symbol = Symbol("DELETE_DOC_REPO");
+export interface IDeleteDocRepo {
+    deleteDoc(uid:string):Promise<void>;
+}
+
 
 
 
