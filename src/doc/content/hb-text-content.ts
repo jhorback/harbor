@@ -1,8 +1,8 @@
 import { html, css, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators.js";
-import { styles } from "../styles";
+import { styles } from "../../styles";
 import tinymce from "tinymce";
-import { TextContentData } from "../domain/Doc/contentTypes/textContentType";
+import { TextContentData } from "../../domain/Doc/contentTypes/textContentType";
 
 
 /**

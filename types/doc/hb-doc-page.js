@@ -17,7 +17,7 @@ import "../doc/hb-delete-document-dialog";
 import "./hb-doc-author";
 import { DocData, UpdateShowSubtitleEvent, UpdateShowTitleEvent, UpdateSubtitleEvent } from "./data/hb-doc-data";
 import { sendFeedback } from "../layout/feedback";
-import "../content/hb-text-content";
+import "./content/hb-text-content";
 /**
  *
  */

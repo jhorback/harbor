@@ -16,6 +16,7 @@ import "./app/hb-about-page";
 import "./doc/hb-doc-page";
 import "./hb-current-user-data";
 import "./layout/feedback/hb-feedback";
+import { docTypes } from "./domain/Doc/docTypes";
 HbApp.init();
 /**
  *
@@ -52,11 +53,13 @@ let HarborApp = class HarborApp extends LitElement {
           element="hb-route-not-found-page"          
           append-to="#hb-app"
       ></domx-route>
-      <domx-route
-          pattern="/docs/:pid"
-          element="hb-doc-page"          
+      ${docTypes.all().map(type => html `
+        <domx-route
+          pattern=${`${type.route}/:pid`}
+          element=${type.element}
           append-to="#hb-app"
-      ></domx-route>
+        ></domx-route>
+      `)}
     `;
     }
 };

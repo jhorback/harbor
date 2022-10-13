@@ -23,7 +23,7 @@ import {
 } from "./data/hb-doc-data";
 import { sendFeedback } from "../layout/feedback";
 import { IContentType } from "../domain/interfaces/DocumentInterfaces";
-import "../content/hb-text-content";
+import "./content/hb-text-content";
 
 
 /**
