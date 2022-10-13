@@ -1,7 +1,7 @@
 import { html, css, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators.js";
 import { styles } from "../styles";
-import { docTypes } from "../domain/Doc/docTypes";
+import { DocTypes, docTypes } from "../domain/Doc/docTypes";
 import { linkProp } from "@domx/dataelement";
 import "../layout/hb-page-layout";
 import "../common/hb-button";
@@ -22,6 +22,8 @@ import {
     UpdateSubtitleEvent
 } from "./data/hb-doc-data";
 import { sendFeedback } from "../layout/feedback";
+import { IContentType } from "../domain/interfaces/DocumentInterfaces";
+import "../content/hb-text-content";
 
 
 /**
@@ -30,7 +32,7 @@ import { sendFeedback } from "../layout/feedback";
 @customElement('hb-doc-page')
 export class HbDocPage extends LitElement {
 
-    docType:string = docTypes.doc.type;
+    docType:string = docTypes.get(DocTypes.doc).type;
 
     @property({type: String})
     pid!:String;
@@ -82,6 +84,9 @@ export class HbDocPage extends LitElement {
                             ${doc.subtitle}
                         </div>
                     `}
+                </div>
+                <div class="doc-content">
+                    ${this.state.doc.content.map(contentState => getContentElement(contentState))}
                 </div>
             </hb-page-layout>
         `;
@@ -164,9 +169,19 @@ export class HbDocPage extends LitElement {
             height: 32px;
             margin-bottom: 1rem;
         }
+
+        .doc-content{
+            margin: 1rem 0;
+        }
   `]
 }
 
+const getContentElement = (state:IContentType) => {
+    if (state.contentType === "text") {
+        return html`<hb-text-content .state=${state}></hb-text-content>`
+    }
+    return html``;
+};
 
 const renderAppBarButtons = (page:HbDocPage, state:IDocDataState) => html`
     <div slot="app-bar-buttons">

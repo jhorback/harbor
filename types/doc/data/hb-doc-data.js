@@ -18,34 +18,28 @@ export class UpdateShowTitleEvent extends Event {
         super(UpdateShowTitleEvent.eventType);
         this.showTitle = showTitle;
     }
-    static { this.eventType = "update-show-title"; }
 }
+UpdateShowTitleEvent.eventType = "update-show-title";
 export class UpdateShowSubtitleEvent extends Event {
     constructor(showSubtitle) {
         super(UpdateShowSubtitleEvent.eventType);
         this.showSubtitle = showSubtitle;
     }
-    static { this.eventType = "update-show-subtitle"; }
 }
+UpdateShowSubtitleEvent.eventType = "update-show-subtitle";
 export class UpdateSubtitleEvent extends Event {
     constructor(subtitle) {
         super(UpdateSubtitleEvent.eventType);
         this.subtitle = subtitle;
     }
-    static { this.eventType = "update-subtitle"; }
 }
+UpdateSubtitleEvent.eventType = "update-subtitle";
 let DocData = DocData_1 = class DocData extends DataElement {
     constructor() {
         super(...arguments);
         this.state = DocData_1.defaultState;
         this.documentUnsubscribe = null;
     }
-    static { this.defaultState = {
-        isLoaded: false,
-        currentUserCanEdit: false,
-        currentUserCanAdd: false,
-        doc: new DocModel()
-    }; }
     get uid() { return this.getAttribute("uid") || ""; }
     set uid(uid) { this.setAttribute("uid", uid); }
     connectedCallback() {
@@ -83,6 +77,12 @@ let DocData = DocData_1 = class DocData extends DataElement {
             .tap(saveDoc(this.editDocRepo, this.state.doc))
             .dispatch();
     }
+};
+DocData.defaultState = {
+    isLoaded: false,
+    currentUserCanEdit: false,
+    currentUserCanAdd: false,
+    doc: new DocModel()
 };
 __decorate([
     dataProperty()

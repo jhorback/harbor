@@ -24,6 +24,15 @@ export interface IDocTypeDescriptor {
     defaultThumbUrl: string;
 }
 
+
+export interface IContentTypeDescriptor {
+    type: string;
+    name: string;
+    description: string;
+    element: string;
+}
+
+
 /**
  * Describes a document reference for 
  * lookup purposes.

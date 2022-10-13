@@ -68,7 +68,7 @@ export class HbHome extends LitElement {
         } 
 
         // verify the docType exists
-        const docType = docTypes[homePageRef.docType];
+        const docType = docTypes.get(homePageRef.docType);
         if (!docType) {
             this.showNotFound(`The docType was not found: ${homePageRef.docType}`);
             return;

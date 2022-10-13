@@ -37,14 +37,14 @@ export class DocModel {
             thumbUrl: this.thumbUrl,
             thumbDescription: this.useSubtitleAsThumbDescription ?
                 this.subtitle : this.thumbDescription,
-            href: `/${docTypes[this.docType].route}/${this.pid}`
+            href: `${docTypes.get(this.docType).route}/${this.pid}`
         });
         this.toListItem = () => ({
             uid: this.uid,
             text: this.title,
             description: this.useSubtitleAsThumbDescription ?
                 this.subtitle : this.thumbDescription,
-            icon: docTypes[this.docType].icon
+            icon: docTypes.get(this.docType).icon
         });
     }
     /**
@@ -60,8 +60,8 @@ export class DocModel {
         doc.docType = options.docType;
         doc.pid = DocModel.tokenize(doc.title);
         doc.uid = `${doc.docType}:${doc.pid}`;
-        doc.content = docTypes[doc.docType].defaultContent;
-        doc.thumbUrl = docTypes[doc.docType].defaultThumbUrl;
+        doc.content = docTypes.get(doc.docType).defaultContent;
+        doc.thumbUrl = docTypes.get(doc.docType).defaultThumbUrl;
         return doc;
     }
     get documentRef() {

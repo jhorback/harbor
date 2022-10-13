@@ -59,12 +59,12 @@ let HarborApp = class HarborApp extends LitElement {
       ></domx-route>
     `;
     }
-    static { this.styles = [css `
+};
+HarborApp.styles = [css `
     :host {
       display: block;
     }
-  `]; }
-};
+  `];
 HarborApp = __decorate([
     customElement('hb-app')
 ], HarborApp);

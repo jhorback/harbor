@@ -32,12 +32,12 @@ let ProfileContentTab = class ProfileContentTab extends LitElement {
             <p>Content Tab</p>
         `;
     }
-    static { this.styles = [styles.types, css `
+};
+ProfileContentTab.styles = [styles.types, css `
         :host {
             display: block;
         }
-    `]; }
-};
+    `];
 ProfileContentTab = __decorate([
     customElement('hb-profile-content-tab')
 ], ProfileContentTab);

@@ -92,7 +92,8 @@ let ProfileAdminTab = class ProfileAdminTab extends LitElement {
         this.changeHomePage = false;
         this.$findDocDialog.open = true;
     }
-    static { this.styles = [styles.types, css `
+};
+ProfileAdminTab.styles = [styles.types, css `
         :host {
             display: block; 
         }
@@ -112,8 +113,7 @@ let ProfileAdminTab = class ProfileAdminTab extends LitElement {
         [hidden] {
             display: none;
         }
-    `]; }
-};
+    `];
 __decorate([
     property({ type: Object })
 ], ProfileAdminTab.prototype, "settings", void 0);

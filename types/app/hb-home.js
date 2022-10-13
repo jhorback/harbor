@@ -58,7 +58,7 @@ let HbHome = class HbHome extends LitElement {
             return;
         }
         // verify the docType exists
-        const docType = docTypes[homePageRef.docType];
+        const docType = docTypes.get(homePageRef.docType);
         if (!docType) {
             this.showNotFound(`The docType was not found: ${homePageRef.docType}`);
             return;
@@ -90,12 +90,12 @@ let HbHome = class HbHome extends LitElement {
             </div>            
         `;
     }
-    static { this.styles = [css `
+};
+HbHome.styles = [css `
         :host {
             display: block;
         }
-    `]; }
-};
+    `];
 __decorate([
     inject(HomePageRepoKey)
 ], HbHome.prototype, "homePageRepo", void 0);
