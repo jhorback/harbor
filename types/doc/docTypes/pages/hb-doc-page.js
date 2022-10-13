@@ -1,85 +1,56 @@
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
 import { html, css, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators.js";
-import { styles } from "../styles";
-import { DocTypes, docTypes } from "../domain/Doc/docTypes";
+import { styles } from "../../../styles";
+import { DocTypes, docTypes } from "../../../domain/Doc/docTypes";
 import { linkProp } from "@domx/dataelement";
-import "../layout/hb-page-layout";
-import "../common/hb-button";
-import "../common/hb-switch";
-import { SwitchChangeEvent } from "../common/hb-switch";
-import "../common/hb-content-editable";
-import { ContentEditableChangeEvent } from "../common/hb-content-editable";
-import { DocumentAddedEvent } from "../doc/data/hb-add-document-data";
-import { AddDocumentDialog } from "../doc/hb-add-document-dialog";
-import { DeleteDocumentDialog } from "../doc/hb-delete-document-dialog";
-import "../doc/hb-delete-document-dialog";
-import "./hb-doc-author";
-import {
-    DocData,
-    IDocDataState,
-    UpdateShowSubtitleEvent,
-    UpdateShowTitleEvent,
-    UpdateSubtitleEvent
-} from "./data/hb-doc-data";
-import { sendFeedback } from "../layout/feedback";
-import { IContentType } from "../domain/interfaces/DocumentInterfaces";
-import "./content/hb-text-content";
-
-
+import "../../../layout/hb-page-layout";
+import "../../../common/hb-button";
+import "../../../common/hb-switch";
+import "../../../common/hb-content-editable";
+import "../../hb-delete-document-dialog";
+import "../../hb-doc-author";
+import { DocData, UpdateShowSubtitleEvent, UpdateShowTitleEvent, UpdateSubtitleEvent } from "../../data/hb-doc-data";
+import { sendFeedback } from "../../../layout/feedback";
 /**
- * 
+ *
  */
-@customElement('hb-doc-page')
-export class HbDocPage extends LitElement {
-
-    docType:string = docTypes.get(DocTypes.doc).type;
-
-    @property({type: String})
-    pid!:String;
-
+let HbDocPage = class HbDocPage extends LitElement {
+    constructor() {
+        super(...arguments);
+        this.docType = docTypes.get(DocTypes.doc).type;
+        this.state = DocData.defaultState;
+        this.inEditMode = false;
+        this.selectedEditTab = "";
+    }
     get uid() { return `${this.docType}:${this.pid}`; }
-
-    @property({type: Object, attribute: false})
-    state:IDocDataState = DocData.defaultState;
-
-    @state()
-    inEditMode = false;
-
-    @state()
-    selectedEditTab:string = "";
-
-    @query("hb-doc-data")
-    $hbDocData!:DocData;
-
-    @query("hb-add-document-dialog")
-    $addDocumentDialog!:AddDocumentDialog;
-
-    @query("hb-delete-document-dialog")
-    $deleteDocumentDialog!:DeleteDocumentDialog;
-
     render() {
         const doc = this.state.doc;
         const placeholder = "Enter a subtitle";
-
-        return html`
+        return html `
             <hb-doc-data
                 uid=${this.uid}
                 @state-changed=${linkProp(this, "state")}
             ></hb-doc-data>     
             <hb-page-layout>
                 ${renderAppBarButtons(this, this.state)}
-                ${this.inEditMode ? renderEditTabs(this, this.state) : html``}
+                ${this.inEditMode ? renderEditTabs(this, this.state) : html ``}
                 <div ?hidden=${!this.state.isLoaded}>
                     <h1 class="headline-large" ?hidden=${!this.inEditMode && !doc.showTitle}>${doc.title}</h1>
 
-                    ${this.inEditMode ? html`
+                    ${this.inEditMode ? html `
                         <hb-content-editable
                             class="body-large"
                             value=${doc.subtitle}
                             placeholder=${placeholder}
                             @change=${this.subtitleChange}
                         ></hb-content-editable>                        
-                    ` : html`
+                    ` : html `
                         <div class="body-large" ?hidden=${!doc.showSubtitle}>
                             ${doc.subtitle}
                         </div>
@@ -91,37 +62,31 @@ export class HbDocPage extends LitElement {
             </hb-page-layout>
         `;
     }
-
-    subtitleChange(event:ContentEditableChangeEvent) {
+    subtitleChange(event) {
         this.$hbDocData.dispatchEvent(new UpdateSubtitleEvent(event.value));
     }
-
     addDocumentClicked() {
         this.$addDocumentDialog.open = true;
     }
-
-    documentAdded(event:DocumentAddedEvent) {
+    documentAdded(event) {
         sendFeedback({
             message: "The document was added",
             actionText: "View",
             actionHref: event.docModel.toDocumentThumbnail().href
-        });        
+        });
     }
-
     editDocumentClicked() {
         this.inEditMode = true;
     }
-
     deleteDocumentClicked() {
         this.$deleteDocumentDialog.open = true;
     }
-
     doneButtonClicked() {
         this.selectedEditTab = "";
         this.inEditMode = false;
     }
-
-    static styles = [styles.types, styles.icons, css`
+};
+HbDocPage.styles = [styles.types, styles.icons, css `
         :host {
             display: block;
         }
@@ -173,17 +138,39 @@ export class HbDocPage extends LitElement {
         .doc-content{
             margin: 1rem 0;
         }
-  `]
-}
-
-const getContentElement = (state:IContentType) => {
+  `];
+__decorate([
+    property({ type: String })
+], HbDocPage.prototype, "pid", void 0);
+__decorate([
+    property({ type: Object, attribute: false })
+], HbDocPage.prototype, "state", void 0);
+__decorate([
+    state()
+], HbDocPage.prototype, "inEditMode", void 0);
+__decorate([
+    state()
+], HbDocPage.prototype, "selectedEditTab", void 0);
+__decorate([
+    query("hb-doc-data")
+], HbDocPage.prototype, "$hbDocData", void 0);
+__decorate([
+    query("hb-add-document-dialog")
+], HbDocPage.prototype, "$addDocumentDialog", void 0);
+__decorate([
+    query("hb-delete-document-dialog")
+], HbDocPage.prototype, "$deleteDocumentDialog", void 0);
+HbDocPage = __decorate([
+    customElement('hb-doc-page')
+], HbDocPage);
+export { HbDocPage };
+const getContentElement = (state) => {
     if (state.contentType === "text") {
-        return html`<hb-text-content .state=${state}></hb-text-content>`
+        return html `<hb-text-content .state=${state}></hb-text-content>`;
     }
-    return html``;
+    return html ``;
 };
-
-const renderAppBarButtons = (page:HbDocPage, state:IDocDataState) => html`
+const renderAppBarButtons = (page, state) => html `
     <div slot="app-bar-buttons">
         <span
             ?hidden=${!state.currentUserCanEdit || page.inEditMode}
@@ -208,8 +195,7 @@ const renderAppBarButtons = (page:HbDocPage, state:IDocDataState) => html`
         ></hb-add-document-dialog>
     </div>
 `;
-
-const renderEditTabs = (page:HbDocPage, state:IDocDataState) => html`
+const renderEditTabs = (page, state) => html `
     <div class="edit-tabs">
         <hb-button           
             text-button
@@ -230,21 +216,16 @@ const renderEditTabs = (page:HbDocPage, state:IDocDataState) => html`
             @click=${clickEditTab(page, "author")}
         ></hb-button>
     </div>
-    ${state.isLoaded ? renderEditTabContent(page, state) : html``}
+    ${state.isLoaded ? renderEditTabContent(page, state) : html ``}
 `;
-
-
-const renderEditTabContent = (page:HbDocPage, state:IDocDataState) => page.selectedEditTab === "settings" ? 
+const renderEditTabContent = (page, state) => page.selectedEditTab === "settings" ?
     renderEditSettingsTabContent(page, state) :
     page.selectedEditTab === "thumbnail" ?
         renderEditThumbnailTabContent(page, state) :
         page.selectedEditTab === "author" ?
             renderEditAuthorTabContent(page, state) :
-            html``;
-
-
-
-const renderEditSettingsTabContent = (page:HbDocPage, state:IDocDataState) => html`
+            html ``;
+const renderEditSettingsTabContent = (page, state) => html `
     <div class="edit-tab-content">
         <div class="edit-settings-tab-content">
             <div>
@@ -286,17 +267,10 @@ const renderEditSettingsTabContent = (page:HbDocPage, state:IDocDataState) => ht
         </div>            
     </div>
 `;
-
-
-const showTitleClicked = (page:HbDocPage) => (event:SwitchChangeEvent) =>
-    page.$hbDocData.dispatchEvent(new UpdateShowTitleEvent(event.selected));
-
-const showSubtitleClicked = (page:HbDocPage) => (event:SwitchChangeEvent) => 
-    page.$hbDocData.dispatchEvent(new UpdateShowSubtitleEvent(event.selected));
-
-
-const renderEditThumbnailTabContent = (page:HbDocPage, state:IDocDataState) => {
-    return html`
+const showTitleClicked = (page) => (event) => page.$hbDocData.dispatchEvent(new UpdateShowTitleEvent(event.selected));
+const showSubtitleClicked = (page) => (event) => page.$hbDocData.dispatchEvent(new UpdateShowSubtitleEvent(event.selected));
+const renderEditThumbnailTabContent = (page, state) => {
+    return html `
         <div class="edit-tab-content">
             <pre style="margin:0;">
                 Set thumb
@@ -306,9 +280,8 @@ const renderEditThumbnailTabContent = (page:HbDocPage, state:IDocDataState) => {
         </div>
     `;
 };
-
-const renderEditAuthorTabContent = (page:HbDocPage, state:IDocDataState) => {
-    return html`
+const renderEditAuthorTabContent = (page, state) => {
+    return html `
         <div class="edit-tab-content">
             <hb-doc-author            
                 uid=${state.doc.authorUid}           
@@ -316,16 +289,7 @@ const renderEditAuthorTabContent = (page:HbDocPage, state:IDocDataState) => {
         </div>
     `;
 };
-
-
-const clickEditTab = (page:HbDocPage, tab:string) => (event:Event) => {
+const clickEditTab = (page, tab) => (event) => {
     const nextTab = page.selectedEditTab === tab ? "" : tab;
     page.selectedEditTab = nextTab;
 };
-
-
-declare global {
-  interface HTMLElementTagNameMap {
-    'hb-doc-page': HbDocPage
-  }
-}

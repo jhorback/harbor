@@ -1,4 +1,4 @@
-import { IContentTypeDescriptor } from "../../interfaces/DocumentInterfaces";
+import { IContentTypeDescriptor } from "../interfaces/DocumentInterfaces";
 
 
 export enum ContentTypes {

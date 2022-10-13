@@ -1,10 +1,7 @@
-import { IDocTypeDescriptor } from "../../interfaces/DocumentInterfaces";
-import { ContentTypes } from "../contentTypes";
+import { ContentTypes } from "../../domain/Doc/contentTypes";
 import { TextContentData } from "../contentTypes/textContentType";
-import { docTypes } from "./docTypes";
-
-
-const docDocType:IDocTypeDescriptor = {
+import { docTypes } from "../../domain/Doc/docTypes";
+const docDocType = {
     type: "doc",
     name: "Document",
     route: "/docs",
@@ -15,10 +12,4 @@ const docDocType:IDocTypeDescriptor = {
     icon: "article",
     defaultThumbUrl: "/content/thumbs/default-doc-thumb.png"
 };
-
 docTypes.register("doc", docDocType);
-
-
-
-
-

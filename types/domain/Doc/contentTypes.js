@@ -1,12 +1,9 @@
-import "./contentTypes/textContentType";
-import "./contentTypes/imageContentType";
 export var ContentTypes;
 (function (ContentTypes) {
     ContentTypes["text"] = "text";
     ContentTypes["image"] = "image";
 })(ContentTypes || (ContentTypes = {}));
 ;
-const registeredContentTypes = {};
 export const contentTypes = {
     register: (key, type) => registeredContentTypes[key] = type,
     get: (type) => {
@@ -20,3 +17,4 @@ export const contentTypes = {
         return Object.keys(registeredContentTypes).map(type => registeredContentTypes[type]);
     }
 };
+const registeredContentTypes = {};

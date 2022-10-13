@@ -13,11 +13,10 @@ import "./app/hb-route-not-found-page";
 import "./app/hb-home";
 import "./app/profile/hb-profile-page";
 import "./app/hb-about-page";
-import "./doc/hb-doc-page";
 import "./hb-current-user-data";
 import "./layout/feedback/hb-feedback";
 import { docTypes } from "./domain/Doc/docTypes";
-HbApp.init();
+await HbApp.init();
 /**
  *
  */

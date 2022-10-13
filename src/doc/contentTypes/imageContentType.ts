@@ -1,5 +1,5 @@
-import { IContentType, IContentTypeDescriptor } from "../../interfaces/DocumentInterfaces";
-import { contentTypes } from "./contentTypes";
+import { IContentType, IContentTypeDescriptor } from "../../domain/interfaces/DocumentInterfaces";
+import { contentTypes } from "../../domain/Doc/contentTypes";
 
 
 export class ImageContentData implements IContentType {

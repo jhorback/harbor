@@ -1,9 +1,7 @@
-import "./docTypes/docDocType";
 export var DocTypes;
 (function (DocTypes) {
     DocTypes["doc"] = "doc";
 })(DocTypes || (DocTypes = {}));
-const registeredDocTypes = {};
 export const docTypes = {
     register: (key, type) => registeredDocTypes[key] = type,
     get: (type) => {
@@ -17,3 +15,4 @@ export const docTypes = {
         return Object.keys(registeredDocTypes).map(type => registeredDocTypes[type]);
     }
 };
+const registeredDocTypes = {};

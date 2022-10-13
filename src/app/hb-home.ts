@@ -1,6 +1,5 @@
 import { html, css, LitElement } from "lit";
 import { customElement, query } from "lit/decorators.js";
-import "../doc/hb-doc-page";
 import "../domain/SystemAdmin/HbHomePageRepo";
 import { inject } from "../domain/DependencyContainer/decorators";
 import { IDocumentReference, IHomePageRepo, HomePageRepoKey } from "../domain/interfaces/DocumentInterfaces";

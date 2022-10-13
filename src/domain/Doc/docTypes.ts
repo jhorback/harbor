@@ -1,4 +1,4 @@
-import { IDocTypeDescriptor } from "../../interfaces/DocumentInterfaces";
+import { IDocTypeDescriptor } from "../interfaces/DocumentInterfaces";
 
 
 export enum DocTypes {
