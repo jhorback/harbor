@@ -23,6 +23,7 @@ import {
 } from "../../data/hb-doc-data";
 import { sendFeedback } from "../../../layout/feedback";
 import { IContentType } from "../../../domain/interfaces/DocumentInterfaces";
+import { contentTypes } from "../../../domain/Doc/contentTypes";
 
 
 /**
@@ -85,7 +86,7 @@ export class HbDocPage extends LitElement {
                     `}
                 </div>
                 <div class="doc-content">
-                    ${this.state.doc.content.map(contentState => getContentElement(contentState))}
+                    ${this.state.doc.content.map(state => contentTypes.get(state.contentType).render(state))}
                 </div>
             </hb-page-layout>
         `;
@@ -175,12 +176,6 @@ export class HbDocPage extends LitElement {
   `]
 }
 
-const getContentElement = (state:IContentType) => {
-    if (state.contentType === "text") {
-        return html`<hb-text-content .state=${state}></hb-text-content>`
-    }
-    return html``;
-};
 
 const renderAppBarButtons = (page:HbDocPage, state:IDocDataState) => html`
     <div slot="app-bar-buttons">

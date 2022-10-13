@@ -8,6 +8,7 @@ const imageContentType = {
     type: "image",
     name: "Image",
     description: "An image in the format of jpg, gif, png, etc.",
-    element: "hb-image-content"
+    render: (state) => { throw new Error("Not Implemented"); }
+    /*html`<hb-image-content .state=${state}></hb-image-content>`*/
 };
 contentTypes.register("image", imageContentType);

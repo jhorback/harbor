@@ -17,6 +17,7 @@ import "../../hb-delete-document-dialog";
 import "../../hb-doc-author";
 import { DocData, UpdateShowSubtitleEvent, UpdateShowTitleEvent, UpdateSubtitleEvent } from "../../data/hb-doc-data";
 import { sendFeedback } from "../../../layout/feedback";
+import { contentTypes } from "../../../domain/Doc/contentTypes";
 /**
  *
  */
@@ -57,7 +58,7 @@ let HbDocPage = class HbDocPage extends LitElement {
                     `}
                 </div>
                 <div class="doc-content">
-                    ${this.state.doc.content.map(contentState => getContentElement(contentState))}
+                    ${this.state.doc.content.map(state => contentTypes.get(state.contentType).render(state))}
                 </div>
             </hb-page-layout>
         `;
@@ -164,12 +165,6 @@ HbDocPage = __decorate([
     customElement('hb-doc-page')
 ], HbDocPage);
 export { HbDocPage };
-const getContentElement = (state) => {
-    if (state.contentType === "text") {
-        return html `<hb-text-content .state=${state}></hb-text-content>`;
-    }
-    return html ``;
-};
 const renderAppBarButtons = (page, state) => html `
     <div slot="app-bar-buttons">
         <span

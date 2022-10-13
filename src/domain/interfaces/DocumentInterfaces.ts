@@ -1,4 +1,5 @@
 import { Timestamp } from "firebase/firestore";
+import { TemplateResult } from "lit-html";
 import { DocModel } from "../Doc/DocModel";
 import { IThumbnail } from "./UIInterfaces";
 
@@ -29,7 +30,7 @@ export interface IContentTypeDescriptor {
     type: string;
     name: string;
     description: string;
-    element: string;
+    render(state:IContentType):TemplateResult;
 }
 
 
