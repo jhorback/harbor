@@ -6,7 +6,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 var TextContent_1;
 import { html, css, LitElement } from "lit";
-import { customElement } from "lit/decorators.js";
+import { customElement, property } from "lit/decorators.js";
 import { styles } from "../../../styles";
 import { TextContentData } from "../textContentType";
 /**
@@ -28,6 +28,9 @@ TextContent.styles = [styles.types, styles.dialog, css `
             display: block;
         }
   `];
+__decorate([
+    property({ type: Object })
+], TextContent.prototype, "state", void 0);
 TextContent = TextContent_1 = __decorate([
     customElement('hb-text-content')
 ], TextContent);

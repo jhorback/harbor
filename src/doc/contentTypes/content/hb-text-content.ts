@@ -11,6 +11,7 @@ import { TextContentData } from "../textContentType";
 export class TextContent extends LitElement {
     static defaultState = new TextContentData();
 
+    @property({type: Object})
     state:TextContentData = TextContent.defaultState;
 
     render() {
