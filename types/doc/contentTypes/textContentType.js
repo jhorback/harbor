@@ -5,11 +5,22 @@ export class TextContentData {
         this.contentType = "text";
         this.text = "";
     }
+    static of(text) {
+        const data = new TextContentData();
+        data.text = text;
+        return data;
+    }
 }
 const textContentType = {
     type: "text",
     name: "Text",
     description: "A rich text field",
-    render: (state) => html `<hb-text-content .state=${state}></hb-text-content>`
+    render: (options) => html `
+        <hb-text-content
+            index=${options.index}
+            .state=${options.state}
+            ?doc-edit=${options.inDocEditMode}
+        ></hb-text-content>
+    `
 };
 contentTypes.register("text", textContentType);

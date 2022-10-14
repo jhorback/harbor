@@ -89,7 +89,7 @@ export class HbDocPage extends LitElement {
                     ${this.state.doc.content.map((state, index) => contentTypes.get(state.contentType).render({
                         index,
                         state,
-                        inEditMode: this.inEditMode
+                        inDocEditMode: this.inEditMode
                     }))}
                 </div>
             </hb-page-layout>
@@ -97,7 +97,7 @@ export class HbDocPage extends LitElement {
     }
 
     subtitleChange(event:ContentEditableChangeEvent) {
-        this.$hbDocData.dispatchEvent(new UpdateSubtitleEvent(event.value));
+        this.shadowRoot?.dispatchEvent(new UpdateSubtitleEvent(event.value));
     }
 
     addDocumentClicked() {
@@ -287,10 +287,10 @@ const renderEditSettingsTabContent = (page:HbDocPage, state:IDocDataState) => ht
 
 
 const showTitleClicked = (page:HbDocPage) => (event:SwitchChangeEvent) =>
-    page.$hbDocData.dispatchEvent(new UpdateShowTitleEvent(event.selected));
+    page.shadowRoot?.dispatchEvent(new UpdateShowTitleEvent(event.selected));
 
 const showSubtitleClicked = (page:HbDocPage) => (event:SwitchChangeEvent) => 
-    page.$hbDocData.dispatchEvent(new UpdateShowSubtitleEvent(event.selected));
+    page.shadowRoot?.dispatchEvent(new UpdateShowSubtitleEvent(event.selected));
 
 
 const renderEditThumbnailTabContent = (page:HbDocPage, state:IDocDataState) => {

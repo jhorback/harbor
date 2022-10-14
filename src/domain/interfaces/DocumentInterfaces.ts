@@ -35,8 +35,8 @@ export interface IContentTypeDescriptor {
 
 export interface IContentTypeRenderOptions {
     state:IContentType;
-    index:Number;
-    inEditMode:Boolean
+    index:number;
+    inDocEditMode:boolean
 }
 
 

@@ -2,8 +2,8 @@ import { html, css, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators.js";
 import { unsafeHTML } from "lit/directives/unsafe-html.js";
 import { styles } from "../../../styles";
+import { UpdateDocContentEvent } from "../../data/hb-doc-data";
 import { TextContentData } from "../textContentType";
-import "@tinymce/tinymce-webcomponent";
 
 /**
  */
@@ -11,23 +11,22 @@ import "@tinymce/tinymce-webcomponent";
 export class TextContent extends LitElement {
     static defaultState = new TextContentData();
 
-    @property({type:Number})
-    index:Number = -1;
+    @property({type:String})
 
-    @property({type:Boolean, attribute: "edit-mode"})
-    inEditMode:Boolean = false;
+    @property({type:Number})
+    index:number = -1;
+
+    @property({type:Boolean, attribute: "doc-edit"})
+    inDocEditMode:Boolean = false;
 
     @property({type: Object})
     state:TextContentData = TextContent.defaultState;
 
-    @query("tinymce-editor")
-    $editor!:HTMLDivElement;
+    @state()
+    inEditMode = false;
 
     render() {
-        this.state.text = "<b>this is bold text</b>";
-        return html`
-            Text Content ${this.index} : ${this.inEditMode}
-            ${unsafeHTML(this.state.text)}
+        return this.inEditMode ? html`
             <tinymce-editor
                 @change=${this.tinymceChange}
                 api-key="g3l947xa1kp0eguyzlt3vwy92xiobi1mowojbtjllsw91xyt"
@@ -43,19 +42,41 @@ export class TextContent extends LitElement {
                 content_css="dark"
                 setup="setupEditor"
                 on-Change="tinymceChangeHandler"
-                >
-                ${this.state.text}
-                </tinymce-editor>
+            >${this.state.text}</tinymce-editor>
+        ` : html`
+            <div @click=${this.textClicked}>
+                ${unsafeHTML(this.state.text)}
+            </div>
         `;
     }
 
+    updated() {
+        if (!this.inDocEditMode) {
+            this.inEditMode = false;
+        }
+
+        if (this.inEditMode) {
+            // @ts-ignore
+            import("@tinymce/tinymce-webcomponent");
+        }
+    }
+
+    textClicked() {
+        if (this.inDocEditMode) {
+            this.inEditMode = true;
+        }
+    }
+
     tinymceChange(event:ChangeEvent) {
-        console.log(event.value);
+        this.dispatchEvent(new UpdateDocContentEvent(this.index, TextContentData.of(event.value)));
     }
 
     static styles = [styles.types, styles.dialog, css`
         :host {
             display: block;
+        }
+        :host([doc-edit]:hover) {
+            background-color: var(--md-sys-color-surface-variant);
         }
   `]
 }

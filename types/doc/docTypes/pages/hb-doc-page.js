@@ -58,13 +58,17 @@ let HbDocPage = class HbDocPage extends LitElement {
                     `}
                 </div>
                 <div class="doc-content">
-                    ${this.state.doc.content.map(state => contentTypes.get(state.contentType).render(state))}
+                    ${this.state.doc.content.map((state, index) => contentTypes.get(state.contentType).render({
+            index,
+            state,
+            inDocEditMode: this.inEditMode
+        }))}
                 </div>
             </hb-page-layout>
         `;
     }
     subtitleChange(event) {
-        this.$hbDocData.dispatchEvent(new UpdateSubtitleEvent(event.value));
+        this.shadowRoot?.dispatchEvent(new UpdateSubtitleEvent(event.value));
     }
     addDocumentClicked() {
         this.$addDocumentDialog.open = true;
@@ -262,8 +266,8 @@ const renderEditSettingsTabContent = (page, state) => html `
         </div>            
     </div>
 `;
-const showTitleClicked = (page) => (event) => page.$hbDocData.dispatchEvent(new UpdateShowTitleEvent(event.selected));
-const showSubtitleClicked = (page) => (event) => page.$hbDocData.dispatchEvent(new UpdateShowSubtitleEvent(event.selected));
+const showTitleClicked = (page) => (event) => page.shadowRoot?.dispatchEvent(new UpdateShowTitleEvent(event.selected));
+const showSubtitleClicked = (page) => (event) => page.shadowRoot?.dispatchEvent(new UpdateShowSubtitleEvent(event.selected));
 const renderEditThumbnailTabContent = (page, state) => {
     return html `
         <div class="edit-tab-content">

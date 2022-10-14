@@ -4,6 +4,11 @@ import { html } from "lit-html";
 
 
 export class TextContentData implements IContentType {
+    static of(text:string):TextContentData {
+        const data = new TextContentData();
+        data.text = text;
+        return data;
+    }
     contentType = "text";
     text = "";
 }
@@ -16,7 +21,7 @@ const textContentType:IContentTypeDescriptor = {
         <hb-text-content
             index=${options.index}
             .state=${options.state}
-            ?edit-mode=${options.inEditMode}
+            ?doc-edit=${options.inDocEditMode}
         ></hb-text-content>
     `
 };
