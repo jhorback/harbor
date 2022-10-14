@@ -22,9 +22,9 @@
     "@domx/dataelement": "1.0.0",
     "@domx/router": "1.0.1",
     "@storybook/web-components": "6.5.12",
+    "@tinymce/tinymce-webcomponent": "^2.0.1",
     "firebase": "9.12.0",
-    "lit": "2.4.0",
-    "tinymce": "^6.2.0"
+    "lit": "2.4.0"
   },
   "devDependencies": {
     "@babel/core": "7.19.3",

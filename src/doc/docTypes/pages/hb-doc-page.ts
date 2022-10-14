@@ -86,7 +86,11 @@ export class HbDocPage extends LitElement {
                     `}
                 </div>
                 <div class="doc-content">
-                    ${this.state.doc.content.map(state => contentTypes.get(state.contentType).render(state))}
+                    ${this.state.doc.content.map((state, index) => contentTypes.get(state.contentType).render({
+                        index,
+                        state,
+                        inEditMode: this.inEditMode
+                    }))}
                 </div>
             </hb-page-layout>
         `;

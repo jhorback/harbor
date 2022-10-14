@@ -30,7 +30,13 @@ export interface IContentTypeDescriptor {
     type: string;
     name: string;
     description: string;
-    render(state:IContentType):TemplateResult;
+    render(options:IContentTypeRenderOptions):TemplateResult;
+}
+
+export interface IContentTypeRenderOptions {
+    state:IContentType;
+    index:Number;
+    inEditMode:Boolean
 }
 
 
