@@ -1,5 +1,5 @@
 import { html, css, LitElement } from "lit";
-import { customElement } from "lit/decorators.js";
+import { customElement, state } from "lit/decorators.js";
 import { HbApp } from "./domain/HbApp";
 import "@domx/router/domx-route";
 import "@domx/router/domx-route-not-found";
@@ -12,13 +12,20 @@ import "./layout/feedback/hb-feedback";
 import { docTypes } from "./domain/Doc/docTypes";
 
 
-await HbApp.init();
-
 /**
  * 
  */
 @customElement('hb-app')
 export class HarborApp extends LitElement {
+
+    @state()
+    isInitialized = false;
+
+    async connectedCallback() {
+        super.connectedCallback();
+        await HbApp.init();
+        this.isInitialized = true;
+    }
 
   render() {
     return html`
@@ -27,38 +34,40 @@ export class HarborApp extends LitElement {
       <hb-current-user-data></hb-current-user-data>
       <hb-feedback></hb-feedback>
       <div id="hb-app"></div>
-      <domx-route
-          pattern="/"
-          element="hb-home"
-          append-to="#hb-app"
-      ></domx-route>
-      <domx-route
-          pattern="/profile(/*tail)"
-          element="hb-profile-page"
-          append-to="#hb-app"
-      ></domx-route>
-      <domx-route
-          pattern="/about"
-          element="hb-about-page"          
-          append-to="#hb-app"
-      ></domx-route>
-      <domx-route-not-found
-          element="hb-route-not-found-page"
-          append-to="#hb-app"
-      ></domx-route-not-found>
-      <domx-route
-          pattern="/not-found"
-          element="hb-route-not-found-page"          
-          append-to="#hb-app"
-      ></domx-route>
-      ${docTypes.all().map(type => html`
-        <domx-route
-          pattern=${`${type.route}/:pid`}
-          element=${type.element}
-          append-to="#hb-app"
-        ></domx-route>
-      `)}
-    `;
+      ${!this.isInitialized ? html`` : html`
+            <domx-route
+                pattern="/"
+                element="hb-home"
+                append-to="#hb-app"
+            ></domx-route>
+            <domx-route
+                pattern="/profile(/*tail)"
+                element="hb-profile-page"
+                append-to="#hb-app"
+            ></domx-route>
+            <domx-route
+                pattern="/about"
+                element="hb-about-page"          
+                append-to="#hb-app"
+            ></domx-route>
+            <domx-route-not-found
+                element="hb-route-not-found-page"
+                append-to="#hb-app"
+            ></domx-route-not-found>
+            <domx-route
+                pattern="/not-found"
+                element="hb-route-not-found-page"          
+                append-to="#hb-app"
+            ></domx-route>
+            ${docTypes.all().map(type => html`
+                <domx-route
+                pattern=${`${type.route}/:pid`}
+                element=${type.element}
+                append-to="#hb-app"
+                ></domx-route>
+            `)}
+        `}
+      `;
   }
 
   static styles = [css`

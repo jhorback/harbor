@@ -62,7 +62,7 @@
   text-align: right;
 }
 .tox-tinymce {
-  border: 1px solid #8e9199;
+  border: 0px solid #8e9199;
   border-radius: 12px;
   box-shadow: none;
   box-sizing: border-box;
@@ -79,7 +79,7 @@
 }
 .tox-tinymce-inline .tox-editor-header {
   background-color: transparent;
-  border: 1px solid #8e9199;
+  border: 0px solid #8e9199;
   border-radius: 12px;
   box-shadow: none;
 }

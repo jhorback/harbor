@@ -31,8 +31,7 @@ let LinkButton = class LinkButton extends LitElement {
             </a>
         `;
     }
-};
-LinkButton.styles = [typeStyles, css `
+    static { this.styles = [typeStyles, css `
         :host {
             display: inline-block;
         }
@@ -66,7 +65,8 @@ LinkButton.styles = [typeStyles, css `
             opacity: 0.38;
             cursor: default;
         }
-    `];
+    `]; }
+};
 __decorate([
     property({ type: String })
 ], LinkButton.prototype, "label", void 0);

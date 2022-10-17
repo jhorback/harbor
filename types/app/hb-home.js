@@ -89,12 +89,12 @@ let HbHome = class HbHome extends LitElement {
             </div>            
         `;
     }
-};
-HbHome.styles = [css `
+    static { this.styles = [css `
         :host {
             display: block;
         }
-    `];
+    `]; }
+};
 __decorate([
     inject(HomePageRepoKey)
 ], HbHome.prototype, "homePageRepo", void 0);

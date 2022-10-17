@@ -21,23 +21,26 @@ let TextContent = TextContent_1 = class TextContent extends LitElement {
         this.state = TextContent_1.defaultState;
         this.inEditMode = false;
     }
+    static { this.defaultState = new TextContentData(); }
+    /**
+     * style formats:
+     * https://www.tiny.cloud/docs/configure/content-formatting/#formats
+     * custom button:
+     * https://www.tiny.cloud/docs/demo/custom-toolbar-button/#
+     * custom menu button:
+     * https://www.tiny.cloud/docs/demo/custom-toolbar-menu-button/
+     */
     render() {
         return this.inEditMode ? html `
             <tinymce-editor
+                config="tinymceSettings.config"
+                on-Change="tinymceSettings.changeHandler"
                 @change=${this.tinymceChange}
                 api-key="g3l947xa1kp0eguyzlt3vwy92xiobi1mowojbtjllsw91xyt"
                 height="500"
                 menubar="false"
-                plugins="advlist autolink lists link image charmap preview anchor
-                searchreplace visualblocks code fullscreen
-                insertdatetime media table code help wordcount"
-                toolbar="undo redo | formatselect | bold italic backcolor |
-                alignleft aligncenter alignright alignjustify |
-                bullist numlist outdent indent | removeformat | help"
-                skin="borderless"
-                content_css="dark"
-                setup="setupEditor"
-                on-Change="tinymceChangeHandler"
+                toolbar="undo redo | styles | bold italic underline strikethrough | align |
+                bullist numlist indent hr | link image media table | codesample  fullscreen"
             >${this.state.text}</tinymce-editor>
         ` : html `
             <div @click=${this.textClicked}>
@@ -62,16 +65,30 @@ let TextContent = TextContent_1 = class TextContent extends LitElement {
     tinymceChange(event) {
         this.dispatchEvent(new UpdateDocContentEvent(this.index, TextContentData.of(event.value)));
     }
-};
-TextContent.defaultState = new TextContentData();
-TextContent.styles = [styles.types, styles.dialog, css `
+    static { this.styles = [styles.types, styles.dialog, css `
         :host {
             display: block;
+            position: relative;
         }
+        // :host::before {
+        //     content: "";
+        //     background-color: var(--md-sys-color-surface-variant);
+        //     width: 100%;
+        //     height:100%;
+        //     border-radius: var(--md-sys-shape-corner-medium);
+        //     display: block;
+        //     position: absolute;
+        //     left:-20px;
+        //     top:-20px;
+        //     right: -20px;
+        //     bottom: -20px;
+        //     z-index: -1;
+        // }
         :host([doc-edit]:hover) {
             background-color: var(--md-sys-color-surface-variant);
         }
-  `];
+  `]; }
+};
 __decorate([
     property({ type: String }),
     property({ type: Number })
@@ -89,9 +106,27 @@ TextContent = TextContent_1 = __decorate([
     customElement('hb-text-content')
 ], TextContent);
 export { TextContent };
-if (!window.tinymceChangeHandler) {
-    window.tinymceChangeHandler = (event) => {
-        event.target.targetElm.dispatchEvent(new ChangeEvent(event.level.content));
+if (!window.tinymceSettings) {
+    window.tinymceSettings = {
+        config: {
+            branding: false,
+            statusbar: false,
+            content_css: "/tinymce/skins/content/harbor/content.css",
+            skin_url: "/tinymce/skins/ui/harbor",
+            plugins: "autolink lists link image autoresize fullscreen media table " +
+                "tinymcespellchecker codesample",
+            style_formats_merge: false,
+            style_formats: [
+                { title: 'Heading 1', block: 'h2', attributes: { class: 'headline-medium' } },
+                { title: 'Heading 2', block: 'h3', attributes: { class: 'headline-small' } },
+                { title: 'Heading 3', block: 'h4', attributes: { class: 'title-large' } },
+                { title: "Quote", format: "blockquote" },
+                { title: "Paragraph", format: "p" },
+            ]
+        },
+        changeHandler: (event) => {
+            event.target.targetElm.dispatchEvent(new ChangeEvent(event.level.content));
+        }
     };
 }
 ;
@@ -100,5 +135,5 @@ class ChangeEvent extends Event {
         super(ChangeEvent.eventType, { bubbles: true, composed: true });
         this.value = value;
     }
+    static { this.eventType = "change"; }
 }
-ChangeEvent.eventType = "change";

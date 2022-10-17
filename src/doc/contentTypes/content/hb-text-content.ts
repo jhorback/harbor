@@ -17,13 +17,13 @@ export class TextContent extends LitElement {
     index:number = -1;
 
     @property({type:Boolean, attribute: "doc-edit"})
-    inDocEditMode:Boolean = true;
+    inDocEditMode:Boolean = false;
 
     @property({type: Object})
     state:TextContentData = TextContent.defaultState;
 
     @state()
-    inEditMode = true;
+    inEditMode = false;
 
     /**
      * style formats:
@@ -107,8 +107,7 @@ if (!window.tinymceSettings) {
             content_css: "/tinymce/skins/content/harbor/content.css",
             skin_url: "/tinymce/skins/ui/harbor",
             plugins: "autolink lists link image autoresize fullscreen media table " +
-                "tinymcespellchecker codesample hr tabfocus textpattern",
-            tabfocus_elements: ':prev,:next',
+                "tinymcespellchecker codesample",
             style_formats_merge: false,
             style_formats: [               
                   { title: 'Heading 1', block: 'h2', attributes: { class: 'headline-medium' } },
