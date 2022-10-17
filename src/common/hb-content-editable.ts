@@ -101,19 +101,20 @@ export class ContentEditable extends LitElement {
         }
 
         [contenteditable] {
-            padding-bottom: 4px;
+            padding-bottom: 16px;
         }
 
         [contenteditable]:hover, [contenteditable]:focus {
             background-color: var(--md-sys-color-surface-variant);
-            border:0;
+            border: 0;
+            border-radius: var(--md-sys-shape-corner-medium);
             outline:0;
             position: relative;
-            top: -2px;
-            left: -2px;
-            right: -2px;
-            bottom: -2px;
-            padding: 2px;
+            top: -8px;
+            left: -8px;
+            right: -8px;
+            bottom: -8px;
+            padding: 8px;
         }
 
         .placeholder {
