@@ -1,38 +1,25 @@
-import { contentTypes, TextContent } from "../content/contentTypes";
 import { IDocTypeDescriptor } from "../interfaces/DocumentInterfaces";
 
 
+export enum DocTypes {
+    doc = "doc"
+}
 
 
 
-
-export const docTypes:{[key:string]: IDocTypeDescriptor}  = {
-    doc: {
-        type: "doc",
-        name: "Document",
-        route: "docs",
-        description: "A flexible free-form page that can contain any content",
-        element: "hb-doc-page",
-        validContentTypes: [contentTypes.text.type, contentTypes.image.type],
-        defaultContent: [new TextContent()],
-        icon: "article",
-        defaultThumbUrl: "/content/thumbs/default-doc-thumb.png"
-    }, 
-    photo: {
-        type: "photo",
-        name: "Photo",
-        route: "photos",
-        description: "Some other text that may be a bit longer so it will be forced to wrap on a different line",
-        element: "hb-doc-page",
-        validContentTypes: [contentTypes.text.type, contentTypes.image.type],
-        defaultContent: [new TextContent()],
-        icon: "image",
-        defaultThumbUrl: "/content/thumbs/default-doc-thumb.png"
+export const docTypes = {
+    register: (key:string, type:IDocTypeDescriptor) => registeredDocTypes[key] = type,
+    get: (type:string) => {
+        const dt = registeredDocTypes[type];
+        if (dt === null) {
+            throw new Error("doc type not found");
+        }
+        return dt;
+    },
+    all: () => {
+        return Object.keys(registeredDocTypes).map(type => registeredDocTypes[type])
     }
-    /*
-    * Album (hb-album-doc - album/albums) - Text (text), Album Art (Image), Release Date (custom), Songs (song-list)
-    * Song (hb-song-doc - song/songs) - Description (text), Audio (audio), Lyrics (text), Release Date (custom)
-    * Poetry (hb-poetry-doc - poetry/poetry) - Description, Poem(s)
-    * Poem (hb-poem-doc - poem/poems) - Image (image), Poem (text)
-    */
 };
+
+
+const registeredDocTypes:{[type:string]: IDocTypeDescriptor}  = {};

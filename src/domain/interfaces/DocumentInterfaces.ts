@@ -1,4 +1,5 @@
 import { Timestamp } from "firebase/firestore";
+import { TemplateResult } from "lit-html";
 import { DocModel } from "../Doc/DocModel";
 import { IThumbnail } from "./UIInterfaces";
 
@@ -23,6 +24,21 @@ export interface IDocTypeDescriptor {
     icon: string;
     defaultThumbUrl: string;
 }
+
+
+export interface IContentTypeDescriptor {
+    type: string;
+    name: string;
+    description: string;
+    render(options:IContentTypeRenderOptions):TemplateResult;
+}
+
+export interface IContentTypeRenderOptions {
+    state:IContentType;
+    index:number;
+    inDocEditMode:boolean
+}
+
 
 /**
  * Describes a document reference for 

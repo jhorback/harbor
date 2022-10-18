@@ -7,7 +7,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 import { html, css, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators.js";
 import { styles } from "../styles";
-import { docTypes } from "../domain/Doc/docTypes";
+import { DocTypes, docTypes } from "../domain/Doc/docTypes";
 import { linkProp } from "@domx/dataelement";
 import "../layout/hb-page-layout";
 import "../common/hb-button";
@@ -17,13 +17,14 @@ import "../doc/hb-delete-document-dialog";
 import "./hb-doc-author";
 import { DocData, UpdateShowSubtitleEvent, UpdateShowTitleEvent, UpdateSubtitleEvent } from "./data/hb-doc-data";
 import { sendFeedback } from "../layout/feedback";
+import "./content/hb-text-content";
 /**
  *
  */
 let HbDocPage = class HbDocPage extends LitElement {
     constructor() {
         super(...arguments);
-        this.docType = docTypes.doc.type;
+        this.docType = docTypes.get(DocTypes.doc).type;
         this.state = DocData.defaultState;
         this.inEditMode = false;
         this.selectedEditTab = "";
@@ -56,6 +57,9 @@ let HbDocPage = class HbDocPage extends LitElement {
                         </div>
                     `}
                 </div>
+                <div class="doc-content">
+                    ${this.state.doc.content.map(contentState => getContentElement(contentState))}
+                </div>
             </hb-page-layout>
         `;
     }
@@ -82,7 +86,8 @@ let HbDocPage = class HbDocPage extends LitElement {
         this.selectedEditTab = "";
         this.inEditMode = false;
     }
-    static { this.styles = [styles.types, styles.icons, css `
+};
+HbDocPage.styles = [styles.types, styles.icons, css `
         :host {
             display: block;
         }
@@ -130,8 +135,11 @@ let HbDocPage = class HbDocPage extends LitElement {
             height: 32px;
             margin-bottom: 1rem;
         }
-  `]; }
-};
+
+        .doc-content{
+            margin: 1rem 0;
+        }
+  `];
 __decorate([
     property({ type: String })
 ], HbDocPage.prototype, "pid", void 0);
@@ -157,6 +165,12 @@ HbDocPage = __decorate([
     customElement('hb-doc-page')
 ], HbDocPage);
 export { HbDocPage };
+const getContentElement = (state) => {
+    if (state.contentType === "text") {
+        return html `<hb-text-content .state=${state}></hb-text-content>`;
+    }
+    return html ``;
+};
 const renderAppBarButtons = (page, state) => html `
     <div slot="app-bar-buttons">
         <span

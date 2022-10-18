@@ -1,27 +1,29 @@
 import { html, css, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators.js";
-import { styles } from "../styles";
-import { docTypes } from "../domain/Doc/docTypes";
+import { styles } from "../../../styles";
+import { DocTypes, docTypes } from "../../../domain/Doc/docTypes";
 import { linkProp } from "@domx/dataelement";
-import "../layout/hb-page-layout";
-import "../common/hb-button";
-import "../common/hb-switch";
-import { SwitchChangeEvent } from "../common/hb-switch";
-import "../common/hb-content-editable";
-import { ContentEditableChangeEvent } from "../common/hb-content-editable";
-import { DocumentAddedEvent } from "../doc/data/hb-add-document-data";
-import { AddDocumentDialog } from "../doc/hb-add-document-dialog";
-import { DeleteDocumentDialog } from "../doc/hb-delete-document-dialog";
-import "../doc/hb-delete-document-dialog";
-import "./hb-doc-author";
+import "../../../layout/hb-page-layout";
+import "../../../common/hb-button";
+import "../../../common/hb-switch";
+import { SwitchChangeEvent } from "../../../common/hb-switch";
+import "../../../common/hb-content-editable";
+import { ContentEditableChangeEvent } from "../../../common/hb-content-editable";
+import { DocumentAddedEvent } from "../../data/hb-add-document-data";
+import { AddDocumentDialog } from "../../hb-add-document-dialog";
+import { DeleteDocumentDialog } from "../../hb-delete-document-dialog";
+import "../../hb-delete-document-dialog";
+import "../../hb-doc-author";
 import {
     DocData,
     IDocDataState,
     UpdateShowSubtitleEvent,
     UpdateShowTitleEvent,
     UpdateSubtitleEvent
-} from "./data/hb-doc-data";
-import { sendFeedback } from "../layout/feedback";
+} from "../../data/hb-doc-data";
+import { sendFeedback } from "../../../layout/feedback";
+import { IContentType } from "../../../domain/interfaces/DocumentInterfaces";
+import { contentTypes } from "../../../domain/Doc/contentTypes";
 
 
 /**
@@ -30,7 +32,7 @@ import { sendFeedback } from "../layout/feedback";
 @customElement('hb-doc-page')
 export class HbDocPage extends LitElement {
 
-    docType:string = docTypes.doc.type;
+    docType:string = docTypes.get(DocTypes.doc).type;
 
     @property({type: String})
     pid!:String;
@@ -83,12 +85,19 @@ export class HbDocPage extends LitElement {
                         </div>
                     `}
                 </div>
+                <div class="doc-content">
+                    ${this.state.doc.content.map((state, index) => contentTypes.get(state.contentType).render({
+                        index,
+                        state,
+                        inDocEditMode: this.inEditMode
+                    }))}
+                </div>
             </hb-page-layout>
         `;
     }
 
     subtitleChange(event:ContentEditableChangeEvent) {
-        this.$hbDocData.dispatchEvent(new UpdateSubtitleEvent(event.value));
+        this.shadowRoot?.dispatchEvent(new UpdateSubtitleEvent(event.value));
     }
 
     addDocumentClicked() {
@@ -163,6 +172,10 @@ export class HbDocPage extends LitElement {
         .text-field:first-child {
             height: 32px;
             margin-bottom: 1rem;
+        }
+
+        .doc-content{
+            margin: 1rem 0;
         }
   `]
 }
@@ -274,10 +287,10 @@ const renderEditSettingsTabContent = (page:HbDocPage, state:IDocDataState) => ht
 
 
 const showTitleClicked = (page:HbDocPage) => (event:SwitchChangeEvent) =>
-    page.$hbDocData.dispatchEvent(new UpdateShowTitleEvent(event.selected));
+    page.shadowRoot?.dispatchEvent(new UpdateShowTitleEvent(event.selected));
 
 const showSubtitleClicked = (page:HbDocPage) => (event:SwitchChangeEvent) => 
-    page.$hbDocData.dispatchEvent(new UpdateShowSubtitleEvent(event.selected));
+    page.shadowRoot?.dispatchEvent(new UpdateShowSubtitleEvent(event.selected));
 
 
 const renderEditThumbnailTabContent = (page:HbDocPage, state:IDocDataState) => {

@@ -47,7 +47,8 @@ let ProfileDocsTab = class ProfileDocsTab extends LitElement {
             </div>
         `;
     }
-    static { this.styles = [styles.types, css `
+};
+ProfileDocsTab.styles = [styles.types, css `
         :host {
             display: block;
         }
@@ -57,8 +58,7 @@ let ProfileDocsTab = class ProfileDocsTab extends LitElement {
             column-gap: 16px;
             row-gap: 16px;
         }
-    `]; }
-};
+    `];
 __decorate([
     property({ type: Object })
 ], ProfileDocsTab.prototype, "state", void 0);

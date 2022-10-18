@@ -14,21 +14,13 @@ import { NotFoundError, ServerError } from "./Errors";
  * https://storybook.js.org/docs/react/configure/environment-variables
  */
 export class HbApp {
-    static { this.version = __APP_VERSION__; }
-    static { this.isDev = import.meta.env.DEV; }
-    static { this.isProd = import.meta.env.PROD; }
-    static { this.isStorybook = import.meta.env.STORYBOOK ? true : false; }
     static get theme() { return localStorage.getItem("theme") || getSystemTheme(); }
     static set theme(theme) { localStorage.setItem("theme", theme); }
     static toggleTheme() {
         HbApp.theme = HbApp.theme === "light" ? "dark" : "light";
         updateHtmlTheme();
     }
-    // want a predicate for live mode vs use mocks
-    // what is a good name for this?
-    // useFirebase: true?
-    // 
-    static init() {
+    static async init() {
         handleApplicationErrors();
         applyImmerToStateChange();
         applyDataElementRdtLogging();
@@ -36,8 +28,18 @@ export class HbApp {
         if (!this.isStorybook) {
             GoogleAnalytics.init();
         }
+        /**
+         * import all doc pages and content
+         * In the future, can create a module to import
+         * dynamic packages based on system settings
+         */
+        await import("../doc/index");
     }
 }
+HbApp.version = __APP_VERSION__;
+HbApp.isDev = import.meta.env.DEV;
+HbApp.isProd = import.meta.env.PROD;
+HbApp.isStorybook = import.meta.env.STORYBOOK ? true : false;
 const getSystemTheme = () => window.matchMedia('(prefers-color-scheme: dark)').matches ? "dark" : "light";
 const updateHtmlTheme = () => {
     const htmlEl = document.querySelector("html");

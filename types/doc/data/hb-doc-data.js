@@ -18,34 +18,36 @@ export class UpdateShowTitleEvent extends Event {
         super(UpdateShowTitleEvent.eventType);
         this.showTitle = showTitle;
     }
-    static { this.eventType = "update-show-title"; }
 }
+UpdateShowTitleEvent.eventType = "update-show-title";
 export class UpdateShowSubtitleEvent extends Event {
     constructor(showSubtitle) {
         super(UpdateShowSubtitleEvent.eventType);
         this.showSubtitle = showSubtitle;
     }
-    static { this.eventType = "update-show-subtitle"; }
 }
+UpdateShowSubtitleEvent.eventType = "update-show-subtitle";
 export class UpdateSubtitleEvent extends Event {
     constructor(subtitle) {
         super(UpdateSubtitleEvent.eventType);
         this.subtitle = subtitle;
     }
-    static { this.eventType = "update-subtitle"; }
 }
+UpdateSubtitleEvent.eventType = "update-subtitle";
+export class UpdateDocContentEvent extends Event {
+    constructor(index, state) {
+        super(UpdateDocContentEvent.eventType, { bubbles: true, composed: true });
+        this.index = index;
+        this.state = state;
+    }
+}
+UpdateDocContentEvent.eventType = "update-doc-content";
 let DocData = DocData_1 = class DocData extends DataElement {
     constructor() {
         super(...arguments);
         this.state = DocData_1.defaultState;
         this.documentUnsubscribe = null;
     }
-    static { this.defaultState = {
-        isLoaded: false,
-        currentUserCanEdit: false,
-        currentUserCanAdd: false,
-        doc: new DocModel()
-    }; }
     get uid() { return this.getAttribute("uid") || ""; }
     set uid(uid) { this.setAttribute("uid", uid); }
     connectedCallback() {
@@ -83,6 +85,18 @@ let DocData = DocData_1 = class DocData extends DataElement {
             .tap(saveDoc(this.editDocRepo, this.state.doc))
             .dispatch();
     }
+    updateDocContent(event) {
+        StateChange.of(this)
+            .next(updateDocContent(event.index, event.state))
+            .tap(saveDoc(this.editDocRepo, this.state.doc))
+            .dispatch();
+    }
+};
+DocData.defaultState = {
+    isLoaded: false,
+    currentUserCanEdit: false,
+    currentUserCanAdd: false,
+    doc: new DocModel()
 };
 __decorate([
     dataProperty()
@@ -105,9 +119,12 @@ __decorate([
 __decorate([
     event(UpdateSubtitleEvent.eventType)
 ], DocData.prototype, "updateSubtitle", null);
+__decorate([
+    event(UpdateDocContentEvent.eventType)
+], DocData.prototype, "updateDocContent", null);
 DocData = DocData_1 = __decorate([
     customDataElement("hb-doc-data", {
-        eventsListenAt: "self",
+        eventsListenAt: "parent",
         stateIdProperty: "uid"
     })
 ], DocData);
@@ -145,4 +162,7 @@ const updateShowSubtitle = (showSubtitle) => (state) => {
 };
 const updateSubtitle = (subtitle) => (state) => {
     state.doc.subtitle = subtitle;
+};
+const updateDocContent = (index, data) => (state) => {
+    state.doc.content[index] = data;
 };
