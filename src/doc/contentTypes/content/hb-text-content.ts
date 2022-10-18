@@ -76,7 +76,7 @@ export class TextContent extends LitElement {
         this.dispatchEvent(new UpdateDocContentEvent(this.index, TextContentData.of(event.value)));
     }
 
-    static styles = [styles.types, styles.dialog, css`
+    static styles = [styles.types, styles.format, css`
         :host {
             display: block;
             position: relative;

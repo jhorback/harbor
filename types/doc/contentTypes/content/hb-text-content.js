@@ -69,7 +69,7 @@ let TextContent = TextContent_1 = class TextContent extends LitElement {
     }
 };
 TextContent.defaultState = new TextContentData();
-TextContent.styles = [styles.types, styles.dialog, css `
+TextContent.styles = [styles.types, styles.format, css `
         :host {
             display: block;
             position: relative;
