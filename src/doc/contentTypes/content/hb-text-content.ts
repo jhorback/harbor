@@ -47,7 +47,10 @@ export class TextContent extends LitElement {
             >${this.state.text}</tinymce-editor>
         ` : html`
             <div @click=${this.textClicked}>
-                ${unsafeHTML(this.state.text)}
+                ${this.inDocEditMode && this.state.text === "" ? html`
+                    Click to enter text content
+                    ` :
+                    unsafeHTML(this.state.text)}
             </div>
         `;
     }
@@ -118,7 +121,7 @@ if (!window.tinymceSettings) {
               ]
         },
         changeHandler: (event:ITinyMceChangeEvent) => {
-            event.target.targetElm.dispatchEvent(new ChangeEvent(event.level.content))
+            event.target.targetElm.dispatchEvent(new ChangeEvent(event.target.getContent()))
         }  
     } 
 }
@@ -126,10 +129,8 @@ if (!window.tinymceSettings) {
 
 interface ITinyMceChangeEvent {
     target: {
-        targetElm: HTMLElement
-    }
-    level: {
-        content: string
+        targetElm: HTMLElement,
+        getContent: Function
     }
 };
 
