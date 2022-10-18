@@ -71,12 +71,12 @@ let HarborApp = class HarborApp extends LitElement {
         `}
       `;
     }
-    static { this.styles = [css `
+};
+HarborApp.styles = [css `
     :host {
       display: block;
     }
-  `]; }
-};
+  `];
 __decorate([
     state()
 ], HarborApp.prototype, "isInitialized", void 0);

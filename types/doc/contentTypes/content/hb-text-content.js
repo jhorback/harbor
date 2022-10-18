@@ -21,7 +21,6 @@ let TextContent = TextContent_1 = class TextContent extends LitElement {
         this.state = TextContent_1.defaultState;
         this.inEditMode = false;
     }
-    static { this.defaultState = new TextContentData(); }
     /**
      * style formats:
      * https://www.tiny.cloud/docs/configure/content-formatting/#formats
@@ -44,7 +43,10 @@ let TextContent = TextContent_1 = class TextContent extends LitElement {
             >${this.state.text}</tinymce-editor>
         ` : html `
             <div @click=${this.textClicked}>
-                ${unsafeHTML(this.state.text)}
+                ${this.inDocEditMode && this.state.text === "" ? html `
+                    Click to enter text content
+                    ` :
+            unsafeHTML(this.state.text)}
             </div>
         `;
     }
@@ -65,7 +67,9 @@ let TextContent = TextContent_1 = class TextContent extends LitElement {
     tinymceChange(event) {
         this.dispatchEvent(new UpdateDocContentEvent(this.index, TextContentData.of(event.value)));
     }
-    static { this.styles = [styles.types, styles.dialog, css `
+};
+TextContent.defaultState = new TextContentData();
+TextContent.styles = [styles.types, styles.dialog, css `
         :host {
             display: block;
             position: relative;
@@ -87,8 +91,7 @@ let TextContent = TextContent_1 = class TextContent extends LitElement {
         :host([doc-edit]:hover) {
             background-color: var(--md-sys-color-surface-variant);
         }
-  `]; }
-};
+  `];
 __decorate([
     property({ type: String }),
     property({ type: Number })
@@ -113,6 +116,42 @@ if (!window.tinymceSettings) {
             statusbar: false,
             content_css: "/tinymce/skins/content/harbor/content.css",
             skin_url: "/tinymce/skins/ui/harbor",
+            automatic_uploads: true,
+            image_title: true,
+            file_picker_types: 'image',
+            // jch - this works; but need to update for firebase storage
+            // file_picker_callback: function (cb, value, meta) {
+            //     var input = document.createElement('input');
+            //     input.setAttribute('type', 'file');
+            //     input.setAttribute('accept', 'image/*');
+            //     /*
+            //       Note: In modern browsers input[type="file"] is functional without
+            //       even adding it to the DOM, but that might not be the case in some older
+            //       or quirky browsers like IE, so you might want to add it to the DOM
+            //       just in case, and visually hide it. And do not forget do remove it
+            //       once you do not need it anymore.
+            //     */
+            //     input.onchange = function () {
+            //       var file = this.files[0];
+            //       var reader = new FileReader();
+            //       reader.onload = function () {
+            //         /*
+            //           Note: Now we need to register the blob in TinyMCEs image blob
+            //           registry. In the next release this part hopefully won't be
+            //           necessary, as we are looking to handle it internally.
+            //         */
+            //         var id = 'blobid' + (new Date()).getTime();
+            //         var blobCache =  tinymce.activeEditor.editorUpload.blobCache;
+            //         var base64 = reader.result.split(',')[1];
+            //         var blobInfo = blobCache.create(id, file, base64);
+            //         blobCache.add(blobInfo);
+            //         /* call the callback and populate the Title field with the file name */
+            //         cb(blobInfo.blobUri(), { title: file.name });
+            //       };
+            //       reader.readAsDataURL(file);
+            //     };
+            //     input.click();
+            //   },
             plugins: "autolink lists link image autoresize fullscreen media table " +
                 "tinymcespellchecker codesample",
             style_formats_merge: false,
@@ -125,7 +164,7 @@ if (!window.tinymceSettings) {
             ]
         },
         changeHandler: (event) => {
-            event.target.targetElm.dispatchEvent(new ChangeEvent(event.level.content));
+            event.target.targetElm.dispatchEvent(new ChangeEvent(event.target.getContent()));
         }
     };
 }
@@ -135,5 +174,5 @@ class ChangeEvent extends Event {
         super(ChangeEvent.eventType, { bubbles: true, composed: true });
         this.value = value;
     }
-    static { this.eventType = "change"; }
 }
+ChangeEvent.eventType = "change";

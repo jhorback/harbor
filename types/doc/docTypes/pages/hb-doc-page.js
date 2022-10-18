@@ -90,7 +90,8 @@ let HbDocPage = class HbDocPage extends LitElement {
         this.selectedEditTab = "";
         this.inEditMode = false;
     }
-    static { this.styles = [styles.types, styles.icons, css `
+};
+HbDocPage.styles = [styles.types, styles.icons, css `
         :host {
             display: block;
         }
@@ -142,8 +143,7 @@ let HbDocPage = class HbDocPage extends LitElement {
         .doc-content{
             margin: 1rem 0;
         }
-  `]; }
-};
+  `];
 __decorate([
     property({ type: String })
 ], HbDocPage.prototype, "pid", void 0);
