@@ -57,10 +57,10 @@ export class HbApp {
 const getSystemTheme = () => window.matchMedia('(prefers-color-scheme: dark)').matches ? "dark" : "light";
 
 const updateHtmlTheme = () => {   
-    const htmlEl = document.querySelector("html");
-    htmlEl?.classList.remove(`dark-theme`);
-    htmlEl?.classList.remove(`light-theme`);    
-    htmlEl?.classList.add(`${HbApp.theme}-theme`);
+    const bodyEl = document.querySelector("body");
+    bodyEl?.classList.remove(`dark-theme`);
+    bodyEl?.classList.remove(`light-theme`);    
+    bodyEl?.classList.add(`${HbApp.theme}-theme`);
 };
 
 

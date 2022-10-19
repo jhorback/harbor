@@ -4,6 +4,7 @@ import { unsafeHTML } from "lit/directives/unsafe-html.js";
 import { styles } from "../../../styles";
 import { UpdateDocContentEvent } from "../../data/hb-doc-data";
 import { TextContentData } from "../textContentType";
+import { HbApp } from "../../../domain/HbApp";
 
 /**
  */
@@ -76,7 +77,7 @@ export class TextContent extends LitElement {
         this.dispatchEvent(new UpdateDocContentEvent(this.index, TextContentData.of(event.value)));
     }
 
-    static styles = [styles.types, styles.dialog, css`
+    static styles = [styles.types, styles.format, css`
         :host {
             display: block;
             position: relative;
@@ -95,9 +96,9 @@ export class TextContent extends LitElement {
         //     bottom: -20px;
         //     z-index: -1;
         // }
-        :host([doc-edit]:hover) {
-            background-color: var(--md-sys-color-surface-variant);
-        }
+        // :host([doc-edit]:hover) {
+        //     background-color: var(--md-sys-color-surface-variant);
+        // }
   `]
 }
 
@@ -107,8 +108,13 @@ if (!window.tinymceSettings) {
         config: {
             branding: false,
             statusbar: false,
-            content_css: "/tinymce/skins/content/harbor/content.css",
-            skin_url: "/tinymce/skins/ui/harbor",
+            content_css: "/theme/harbor/tinymce/content.css",
+            skin_url: "/theme/harbor/tinymce",
+            body_class: `material-theme ${HbApp.theme}-theme`,
+            content_style: "body { margin-top: 1rem; }",
+            toolbar_sticky: true,
+            text_patterns: true,
+            link_context_toolbar: false,
             automatic_uploads: true,
             image_title: true,
             file_picker_types: 'image',
