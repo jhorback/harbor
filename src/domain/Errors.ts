@@ -22,6 +22,12 @@ interface IPropertyErrors { [key: string]: string }
 
 export class ClientError extends Error {
 
+    static of(message:string, properties:IPropertyErrors):ClientError {
+        const error = new ClientError(message);
+        error.properties = properties;
+        return error;
+    }
+
     constructor(message:string) {
         super(message);
     }

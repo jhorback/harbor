@@ -5,6 +5,8 @@ import { styles } from "../../../styles";
 import { UpdateDocContentEvent } from "../../data/hb-doc-data";
 import { TextContentData } from "../textContentType";
 import { HbApp } from "../../../domain/HbApp";
+import { HbUploadFilesRepo } from "../../../domain/Files/HbUploadFilesRepo";
+import { ClientError } from "../../../domain/Errors";
 
 /**
  */
@@ -26,14 +28,6 @@ export class TextContent extends LitElement {
     @state()
     inEditMode = false;
 
-    /**
-     * style formats:
-     * https://www.tiny.cloud/docs/configure/content-formatting/#formats
-     * custom button:
-     * https://www.tiny.cloud/docs/demo/custom-toolbar-button/#
-     * custom menu button:
-     * https://www.tiny.cloud/docs/demo/custom-toolbar-menu-button/
-     */
     render() {
         return this.inEditMode ? html`
             <tinymce-editor
@@ -111,51 +105,53 @@ if (!window.tinymceSettings) {
             content_css: "/theme/harbor/tinymce/content.css",
             skin_url: "/theme/harbor/tinymce",
             body_class: `material-theme ${HbApp.theme}-theme`,
-            content_style: "body { margin-top: 1rem; }",
+            content_style: "body { margin-top: 1rem; margin-left: 4px; }",
             toolbar_sticky: true,
             text_patterns: true,
             link_context_toolbar: false,
             automatic_uploads: true,
             image_title: true,
-            file_picker_types: 'image',
-            // jch - this works; but need to update for firebase storage
-            // file_picker_callback: function (cb, value, meta) {
-            //     var input = document.createElement('input');
-            //     input.setAttribute('type', 'file');
-            //     input.setAttribute('accept', 'image/*');
+            file_picker_types: "image media",
+            file_picker_callback: function (cb, value, meta) {
+                const fileRepo = new HbUploadFilesRepo();
+                var input = document.createElement('input');
+                input.setAttribute('type', 'file');
+                const accept = meta.filetype === "media" ? "." + [
+                    ...fileRepo.supportedFileTypes.audio,
+                    ...fileRepo.supportedFileTypes.video
+                    ].join(", .") : "." + fileRepo.supportedFileTypes.images.join(", .");
+                input.setAttribute("accept", accept);
+
+                
+                input.onchange = async function (event:Event) {
+                    const thisInputEl = event.target as HTMLInputElement;
+                    var file = thisInputEl.files![0];
+                    
+
+                    try {
+                        const fileName = await fileRepo.uploadFile(file, {
+                            allowOverwrite: false
+                        });
+    
+                        cb(fileName, { title: file.name });
+                    } catch (error:any) {
+                        if (error instanceof ClientError && error.properties["reason"] === "exists") {
+                            const ans = confirm("The file already exists.\n\nWould you like to overwrite it?");
+                            if (ans) {
+                                const fileName = await fileRepo.uploadFile(file, {
+                                    allowOverwrite: true
+                                });
             
-            //     /*
-            //       Note: In modern browsers input[type="file"] is functional without
-            //       even adding it to the DOM, but that might not be the case in some older
-            //       or quirky browsers like IE, so you might want to add it to the DOM
-            //       just in case, and visually hide it. And do not forget do remove it
-            //       once you do not need it anymore.
-            //     */
+                                cb(fileName, { title: file.name });
+                            }
+                        } else {
+                            throw error;
+                        }
+                    }
+                };
             
-            //     input.onchange = function () {
-            //       var file = this.files[0];
-            
-            //       var reader = new FileReader();
-            //       reader.onload = function () {
-            //         /*
-            //           Note: Now we need to register the blob in TinyMCEs image blob
-            //           registry. In the next release this part hopefully won't be
-            //           necessary, as we are looking to handle it internally.
-            //         */
-            //         var id = 'blobid' + (new Date()).getTime();
-            //         var blobCache =  tinymce.activeEditor.editorUpload.blobCache;
-            //         var base64 = reader.result.split(',')[1];
-            //         var blobInfo = blobCache.create(id, file, base64);
-            //         blobCache.add(blobInfo);
-            
-            //         /* call the callback and populate the Title field with the file name */
-            //         cb(blobInfo.blobUri(), { title: file.name });
-            //       };
-            //       reader.readAsDataURL(file);
-            //     };
-            
-            //     input.click();
-            //   },
+                input.click();
+              },
             plugins: "autolink lists link image autoresize fullscreen media table " +
                 "tinymcespellchecker codesample",
             style_formats_merge: false,
@@ -173,6 +169,13 @@ if (!window.tinymceSettings) {
     } 
 }
 
+/*
+Clean up this file
+Use an injected interface for File repo
+Research progress on uploads (consider creating a ticket)
+    Ticket can be both a dialog for overwrite confirmation
+    And a dialog for showing upload progress
+*/
 
 interface ITinyMceChangeEvent {
     target: {
