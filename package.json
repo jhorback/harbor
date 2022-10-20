@@ -36,7 +36,7 @@
     "@storybook/builder-vite": "0.2.4",
     "@storybook/theming": "6.5.12",
     "babel-loader": "8.2.5",
-    "clean-css": "^4.2.4",
+    "clean-css": "5.3.1",
     "lit-html": "2.4.0",
     "storybook-addon-themes": "6.1.0",
     "ts-node": "^10.9.1",
