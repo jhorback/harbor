@@ -1,9 +1,16 @@
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import { provides } from "../DependencyContainer/decorators";
 import { ClientError, ServerError } from "../Errors";
 import { HbCurrentUser } from "../HbCurrentUser";
 import { HbStorage } from "../HbStorage";
-import { FileType } from "../interfaces/FileInterfaces";
-export class HbUploadFilesRepo {
+import { FileType, UploadFilesRepoKey } from "../interfaces/FileInterfaces";
+let HbUploadFilesRepo = class HbUploadFilesRepo {
     constructor() {
         this.supportedFileTypes = {
             images: ["avif", "gif", "jpeg", "jpg", "png", "svg", "webp"],
@@ -52,4 +59,8 @@ export class HbUploadFilesRepo {
                 this.supportedFileTypes.video.includes(ext) ? FileType.video : "files";
         return `files/${this.currentUser.uid}/${fileType}/${fileName}`;
     }
-}
+};
+HbUploadFilesRepo = __decorate([
+    provides(UploadFilesRepoKey)
+], HbUploadFilesRepo);
+export { HbUploadFilesRepo };

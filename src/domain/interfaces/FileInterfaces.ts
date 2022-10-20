@@ -8,6 +8,8 @@ export enum FileType {
 };
 
 
+export const UploadFilesRepoKey:symbol = Symbol("UPLOAD_FILES_REPO");
+
 export interface IUploadFilesRepo {
     supportedFileTypes: {
         images: Array<string>,

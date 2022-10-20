@@ -5,3 +5,4 @@ export var FileType;
     FileType["video"] = "video";
 })(FileType || (FileType = {}));
 ;
+export const UploadFilesRepoKey = Symbol("UPLOAD_FILES_REPO");

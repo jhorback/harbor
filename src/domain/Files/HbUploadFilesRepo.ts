@@ -1,11 +1,13 @@
 import { getDownloadURL, ref, uploadBytes, UploadResult } from "firebase/storage";
+import { provides } from "../DependencyContainer/decorators";
 import { ClientError, ServerError } from "../Errors";
 import { HbCurrentUser } from "../HbCurrentUser";
 import { HbStorage } from "../HbStorage";
-import { FileType, IUploadFileOptions, IUploadFilesRepo } from "../interfaces/FileInterfaces";
+import { FileType, IUploadFileOptions, IUploadFilesRepo, UploadFilesRepoKey } from "../interfaces/FileInterfaces";
 
 
 
+@provides<IUploadFilesRepo>(UploadFilesRepoKey)
 export class HbUploadFilesRepo implements IUploadFilesRepo {
     private currentUser:HbCurrentUser;
 

@@ -12,8 +12,7 @@ import { styles } from "../../../styles";
 import { UpdateDocContentEvent } from "../../data/hb-doc-data";
 import { TextContentData } from "../textContentType";
 import { HbApp } from "../../../domain/HbApp";
-import { HbUploadFilesRepo } from "../../../domain/Files/HbUploadFilesRepo";
-import { ClientError } from "../../../domain/Errors";
+import { FileUploaderClient } from "../../../files/FileUploaderClient";
 /**
  */
 let TextContent = TextContent_1 = class TextContent extends LitElement {
@@ -115,45 +114,10 @@ if (!window.tinymceSettings) {
             content_style: "body { margin-top: 1rem; margin-left: 4px; }",
             toolbar_sticky: true,
             text_patterns: true,
-            link_context_toolbar: false,
             automatic_uploads: true,
             image_title: true,
             file_picker_types: "image media",
-            file_picker_callback: function (cb, value, meta) {
-                const fileRepo = new HbUploadFilesRepo();
-                var input = document.createElement('input');
-                input.setAttribute('type', 'file');
-                const accept = meta.filetype === "media" ? "." + [
-                    ...fileRepo.supportedFileTypes.audio,
-                    ...fileRepo.supportedFileTypes.video
-                ].join(", .") : "." + fileRepo.supportedFileTypes.images.join(", .");
-                input.setAttribute("accept", accept);
-                input.onchange = async function (event) {
-                    const thisInputEl = event.target;
-                    var file = thisInputEl.files[0];
-                    try {
-                        const fileName = await fileRepo.uploadFile(file, {
-                            allowOverwrite: false
-                        });
-                        cb(fileName, { title: file.name });
-                    }
-                    catch (error) {
-                        if (error instanceof ClientError && error.properties["reason"] === "exists") {
-                            const ans = confirm("The file already exists.\n\nWould you like to overwrite it?");
-                            if (ans) {
-                                const fileName = await fileRepo.uploadFile(file, {
-                                    allowOverwrite: true
-                                });
-                                cb(fileName, { title: file.name });
-                            }
-                        }
-                        else {
-                            throw error;
-                        }
-                    }
-                };
-                input.click();
-            },
+            file_picker_callback: (callback, value, meta) => new FileUploaderClient({ accept: meta.filetype }).handleFileUpload(callback),
             plugins: "autolink lists link image autoresize fullscreen media table " +
                 "tinymcespellchecker codesample",
             style_formats_merge: false,
