@@ -1,9 +1,9 @@
-import { getDownloadURL, ref, uploadBytes, UploadResult } from "firebase/storage";
+import { getDownloadURL, ref, uploadBytes, uploadBytesResumable, UploadResult } from "firebase/storage";
 import { provides } from "../DependencyContainer/decorators";
 import { ClientError, ServerError } from "../Errors";
 import { HbCurrentUser } from "../HbCurrentUser";
 import { HbStorage } from "../HbStorage";
-import { FileType, IUploadFileOptions, IUploadFilesRepo, UploadFilesRepoKey } from "../interfaces/FileInterfaces";
+import { FileType, FileUploadProgressEvent, IUploadFileOptions, IUploadFilesRepo, UploadFilesRepoKey } from "../interfaces/FileInterfaces";
 
 
 
@@ -13,8 +13,8 @@ export class HbUploadFilesRepo implements IUploadFilesRepo {
 
     supportedFileTypes = {
         images: ["avif", "gif", "jpeg", "jpg", "png", "svg", "webp"],
-        audio: ["mp3", "m4a", "wav", "aac", "oga", "pcm", "aiff"],
-        video: ["mp4", "m4v", "mpg", "mpeg", "avi", "wmv", "webm"]
+        audio: ["aac", "aiff", "m4a", "mp3", "oga", "pcm", "wav"],
+        video: ["avi", "m4v", "mp4",  "mpeg", "mpg", "webm", "wmv"]
     };
 
     constructor() {
@@ -23,18 +23,11 @@ export class HbUploadFilesRepo implements IUploadFilesRepo {
 
     async uploadFile(file:File, options:IUploadFileOptions):Promise<string> {
         const storagePath = this.getStoragePath(file.name);
-        const storageRef = ref(HbStorage.current, storagePath);
 
-        if (options.allowOverwrite === false) {
-            const exists = await this.fileExists(storagePath);
-            if (exists) {
-                throw ClientError.of("File Exists", {
-                    "reason": "exists"
-                });
-            }
-        }
+        await this.verifyOverwrite(options.allowOverwrite, storagePath);
 
         try {
+            const storageRef = ref(HbStorage.current, storagePath);
             const snapshot:UploadResult = await uploadBytes(storageRef, file);
             const url = await getDownloadURL(snapshot.ref);
             return url;
@@ -42,6 +35,41 @@ export class HbUploadFilesRepo implements IUploadFilesRepo {
         } catch(error:any) {
             throw new ServerError("uploadImage error", error);
         }        
+    }
+
+    async uploadFileWithProgress(file:File, options:IUploadFileOptions):Promise<string|null> {
+        const storagePath = this.getStoragePath(file.name);
+        
+
+        await this.verifyOverwrite(options.allowOverwrite, storagePath);
+
+        const storageRef = ref(HbStorage.current, storagePath);
+        const uploadTask = uploadBytesResumable(storageRef, file);
+
+        options.signal?.addEventListener("abort", () => {
+            uploadTask.cancel();
+        });
+    
+        return new Promise((resolve, reject) => {
+            uploadTask.on('state_changed',
+                (snapshot) => options.signal?.dispatchEvent(
+                    new FileUploadProgressEvent(snapshot.bytesTransferred, snapshot.totalBytes)),
+                (error) => error.code === "storage/canceled" ?
+                    resolve(null) : reject(new ServerError("File Upload Error", error)),
+                async () => resolve( await getDownloadURL(uploadTask.snapshot.ref))
+            );
+        });
+    }
+
+    private async verifyOverwrite(allowOverwrite:boolean, storagePath:string):Promise<void> {
+        if (allowOverwrite === false) {
+            const exists = await this.fileExists(storagePath);
+            if (exists) {
+                throw ClientError.of("File Exists", {
+                    "reason": "exists"
+                });
+            }
+        }
     }
 
     private async fileExists(storagePath:string):Promise<boolean> {

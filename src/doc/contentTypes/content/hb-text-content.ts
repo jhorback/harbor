@@ -5,7 +5,8 @@ import { styles } from "../../../styles";
 import { UpdateDocContentEvent } from "../../data/hb-doc-data";
 import { TextContentData } from "../textContentType";
 import { HbApp } from "../../../domain/HbApp";
-import { FileUploadCallback, FileUploaderAccept, FileUploaderClient } from "../../../files/FileUploaderClient";
+import { FileUploaderAccept, FileUploaderClient } from "../../../files/FileUploaderClient";
+import { FileUploadCompletedEvent } from "../../../domain/interfaces/FileInterfaces";
 
 
 /**
@@ -111,10 +112,13 @@ if (!window.tinymceSettings) {
             automatic_uploads: true,
             image_title: true,
             file_picker_types: "image media",
-            file_picker_callback: (callback:FileUploadCallback, value:string, meta:IFilePickerMetaFields) =>
-                new FileUploaderClient({accept:meta.filetype as FileUploaderAccept}).handleFileUpload(callback),
-            plugins: "autolink lists link image autoresize fullscreen media table " +
-                "tinymcespellchecker codesample",
+            file_picker_callback: (callback:FileUploadCallback, value:string, meta:IFilePickerMetaFields) => {
+                const client = new FileUploaderClient({accept:meta.filetype as FileUploaderAccept});
+                client.onComplete((event:FileUploadCompletedEvent) => 
+                    event.uploadedFile && callback(event.uploadedFile.url, {title:event.uploadedFile.name}));
+                client.handleFileUpload();
+            },
+            plugins: "autolink lists link image autoresize fullscreen media table tinymcespellchecker codesample",
             style_formats_merge: false,
             style_formats: [               
                   { title: 'Heading 1', block: 'h2', attributes: { class: 'headline-medium' } },
@@ -129,6 +133,9 @@ if (!window.tinymceSettings) {
         }  
     } 
 }
+
+type FileUploadCallback = (fileName:string, meta:{ title: string }) => void;
+
 
 interface IFilePickerMetaFields {
     filetype: string;
