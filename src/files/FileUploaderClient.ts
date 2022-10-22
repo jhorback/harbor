@@ -6,7 +6,7 @@ import { UploadStatusPanel } from "./hb-upload-status-panel";
 
 
 export enum FileUploaderAccept {
-    image = "image",
+    images = "images",
     audio = "audio",
     video = "video",
     media = "media"
@@ -33,10 +33,13 @@ export class FileUploaderClient {
 
     private statusPanel:UploadStatusPanel;
 
+    private acceptOption:FileUploaderAccept;
+
     constructor(options:IFileUploaderClientOptions) {
         if (options.multiple === true) {
             throw new Error("Not Implemented");
         }
+        this.acceptOption = options.accept;
         this.fileInput = this.createFileInput(options.accept);
         this.uploadController = this.initializeUploadController();
         this.statusPanel = document.createElement("hb-upload-status-panel");
@@ -59,7 +62,7 @@ export class FileUploaderClient {
         
         // set the accept attribute
         const acceptArray = new Array();
-        if (accept === FileUploaderAccept.image) {
+        if (accept === FileUploaderAccept.images) {
             acceptArray.push(...this.filesRepo.supportedFileTypes.images);
         } else if (accept === FileUploaderAccept.audio) {
             acceptArray.push(...this.filesRepo.supportedFileTypes.audio);
@@ -87,6 +90,7 @@ export class FileUploaderClient {
 
     private onFileUpdated(event:FileUploadCompletedEvent) {
         const state = new FileUploadStatusData();
+        state.uploadFileTypes = this.acceptOption;
         state.ofFile = this.uploads.length;
         let numberComplete = 0;
 
@@ -96,11 +100,15 @@ export class FileUploaderClient {
             if (file.needsAllowOverwritePermission && state.requiresOverwrite === false) {
                 state.requiresOverwrite = true;
                 state.requiresOverwriteFileIndex = index;
+                state.requiresOverwriteFileName = file.name;
                 state.highlightFileSrc = file.base64Src;
             }
 
             if (file.complete) {
                 numberComplete = numberComplete + 1;
+                if (file.cancelled) {
+                    state.skippedFiles.push(file.name);
+                }
 
             // only set the highlight if we don't have one and the file is not complete
             } else if (state.highlightFileSrc === null) {
@@ -111,7 +119,8 @@ export class FileUploaderClient {
             state.totalBytes = state.totalBytes + file.totalBytes;
 
             if (file.error) {
-                state.errorMessages.push(file.error.message);
+                state.skippedFiles.push(file.name);
+                state.errors.push(new FileUploadError(file, file.error));
             }
         });
 
@@ -122,9 +131,6 @@ export class FileUploaderClient {
         // if we are complete check for errors and dispatch the completed event
         } else {
             state.isComplete = true;
-            if (state.errorMessages.length > 0) {
-                state.hasErrors = true;
-            }
             this.dispatchCompletedEvent();
         }
 
@@ -148,7 +154,7 @@ export class FileUploaderClient {
     private onFileInputChange(event:Event) {
 
         // add the status panel and hook up the events
-        document.body.appendChild(this.statusPanel);
+        this.statusPanel = UploadStatusPanel.open();
 
         // handle allowing overwrite on a file
         this.statusPanel.addEventListener(OverwriteFileEvent.eventType, (event:Event) => {
@@ -158,6 +164,7 @@ export class FileUploaderClient {
             // if allowing overwrite, retry
             if (overwriteEvent.allowOverwrite === true) {
                 this.tryUpload(fileData, true);
+                fileData.setNeedsAllowOverwritePermission(false);
 
             // otherwise cancel
             } else {
@@ -207,6 +214,16 @@ export class FileUploaderClient {
     }
 }
 
+
+export class FileUploadError extends Error {
+    fileState:Object;
+    cause:Error;
+    constructor(fileState:Object, cause:Error) {
+        super("File Upload Error");
+        this.cause = cause;
+        this.fileState = {...fileState};
+    }
+}
 
 
 /**
@@ -319,6 +336,7 @@ class FileUpdatedEvent extends Event {
  * of all uploads
  */
 export class FileUploadStatusData {
+    uploadFileTypes = "files";
     onFile:number = 0;
     ofFile:number = 0;
     bytesTransferred:number = 0;
@@ -330,9 +348,9 @@ export class FileUploadStatusData {
     requiresOverwrite:boolean = false;
     /** the index of the a file that requires overwrite permission */
     requiresOverwriteFileIndex:number = -1;
-    /** only true if all files are complete but some have errors */
-    hasErrors:boolean = false;
-    errorMessages:Array<string> = new Array();
+    requiresOverwriteFileName:string = "";
+    errors:Array<Error> = new Array();;
+    skippedFiles:Array<string> = new Array();
     /** true when all work is done */
     isComplete:boolean = false;
     /**
@@ -349,7 +367,7 @@ export class FileUploadStatusData {
 export class CancelUploadEvent extends Event {
     static eventType = "cancel-upload";
     constructor() {
-        super(CancelUploadEvent.eventType);
+        super(CancelUploadEvent.eventType, {bubbles:true, composed:true});
     }
 }
 
@@ -361,7 +379,7 @@ export class OverwriteFileEvent extends Event {
     allowOverwrite:boolean;
     fileIndex:number;
     constructor(fileIndex:number, allowOverwrite:boolean) {
-        super(OverwriteFileEvent.eventType);
+        super(OverwriteFileEvent.eventType, {bubbles:true, composed:true});
         this.fileIndex = fileIndex;
         this.allowOverwrite = allowOverwrite;
     }
