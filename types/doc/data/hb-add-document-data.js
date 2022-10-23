@@ -17,34 +17,34 @@ export class AddNewDocumentEvent extends Event {
         super(AddNewDocumentEvent.eventType, { bubbles: true });
         this.options = options;
     }
+    static { this.eventType = "add-new-document"; }
 }
-AddNewDocumentEvent.eventType = "add-new-document";
 export class DocumentAddedEvent extends Event {
     constructor(docModel) {
         super(DocumentAddedEvent.eventType, { bubbles: true });
         this.docModel = docModel;
     }
+    static { this.eventType = "document-added"; }
 }
-DocumentAddedEvent.eventType = "document-added";
 export class AddDocumentErrorEvent extends Event {
     constructor(error) {
         super(AddDocumentErrorEvent.eventType, { bubbles: true });
         this.error = error;
     }
+    static { this.eventType = "add-document-error"; }
 }
-AddDocumentErrorEvent.eventType = "add-document-error";
 let AddDocumentData = AddDocumentData_1 = class AddDocumentData extends DataElement {
     constructor() {
         super(...arguments);
         this.state = AddDocumentData_1.defaultState;
     }
+    static { this.defaultState = { docTypes: docTypes.all() }; }
     addNewDocument(event) {
         const options = event.options;
         StateChange.of(this)
             .tap(addNewDocument(this.addDocRepo, options));
     }
 };
-AddDocumentData.defaultState = { docTypes: docTypes.all() };
 __decorate([
     dataProperty()
 ], AddDocumentData.prototype, "state", void 0);
