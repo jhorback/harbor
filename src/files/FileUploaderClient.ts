@@ -1,7 +1,8 @@
 import { inject } from "../domain/DependencyContainer/decorators";
 import { ClientError } from "../domain/Errors";
-import { FileUploadCompletedEvent, FileUploadProgressEvent, IUploadedFile, IUploadFileOptions, IUploadFilesRepo, UploadFilesRepoKey } from "../domain/interfaces/FileInterfaces";
+import { FileType, FileUploadCompletedEvent, FileUploadProgressEvent, IUploadedFile, IUploadFileOptions, IUploadFilesRepo, UploadFilesRepoKey } from "../domain/interfaces/FileInterfaces";
 import "../domain/Files/HbUploadFilesRepo";
+import { convertPictureToBase64Src, extractMediaTags } from "../domain/Files/extractMediaTags";
 import { UploadStatusPanel } from "./hb-upload-status-panel";
 
 
@@ -181,7 +182,8 @@ export class FileUploaderClient {
 
         // try upload on all files from the file input
         Array.from(this.fileInput.files as FileList).forEach(file => {
-            const fileData = new UploadFileState(this.uploadController, file);
+            const fileData = new UploadFileState(this.uploadController, file,
+                this.filesRepo.getFileTypeFromExtension(file.name));
             this.uploads.push(fileData);
             this.tryUpload(fileData, false);
         });
@@ -230,7 +232,7 @@ export class FileUploadError extends Error {
  * Used for tracking the progress of a single file
  */
 class UploadFileState {
-    constructor(uploadController:AbortController, file:File) {
+    constructor(uploadController:AbortController, file:File, fileType:FileType) {
         this._uploadController = uploadController;
         this._file = file;
         this._fileController = new AbortController();
@@ -241,6 +243,24 @@ class UploadFileState {
         this._complete = false;
         this._fileUrl = null;
         this._cancelled = false;
+        this._base64Src = this.setBase64Src(fileType)
+    }
+
+    setBase64Src(fileType:FileType):string {
+        if (fileType === FileType.images) {
+            return URL.createObjectURL(this._file);
+        }
+        this.tryExtractMediaThumb();
+        return `/content/thumbs/${fileType}-thumb.svg`;
+    }
+
+    async tryExtractMediaThumb() {
+        try {
+            const tags = await extractMediaTags(this._file);
+            this._base64Src = convertPictureToBase64Src(tags.picture);
+        } catch(e) {
+            console.log("Unable to pull media tags", e);
+        }
     }
 
     public get file() { return this._file; }
@@ -252,8 +272,10 @@ class UploadFileState {
     public get cancelled() { return this._cancelled; }
     public get error() { return this._error; }
     public get fileUrl() { return this._fileUrl; }
-    /** jch - need to implement - get base64 string for thumbnail */
-    public get base64Src() { return "BASE64 IMAGE FOR:" + this._file.name }
+    // jch - if img use base64, or canned url for audio, video, file
+    // if image then URL.create
+    // if audio/video try parsing the tags for the picture
+    public get base64Src() { return this._base64Src; }
     public get name() { return this._file.name }
 
     
@@ -267,6 +289,7 @@ class UploadFileState {
     private _cancelled:boolean;
     private _error:Error|null;
     private _fileUrl:string|null;
+    private _base64Src:string;
 
     cancelUpload() {
         this._fileController.abort();

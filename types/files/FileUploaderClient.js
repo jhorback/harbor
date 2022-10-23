@@ -6,8 +6,9 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 import { inject } from "../domain/DependencyContainer/decorators";
 import { ClientError } from "../domain/Errors";
-import { FileUploadCompletedEvent, FileUploadProgressEvent, UploadFilesRepoKey } from "../domain/interfaces/FileInterfaces";
+import { FileType, FileUploadCompletedEvent, FileUploadProgressEvent, UploadFilesRepoKey } from "../domain/interfaces/FileInterfaces";
 import "../domain/Files/HbUploadFilesRepo";
+import { convertPictureToBase64Src, extractMediaTags } from "../domain/Files/extractMediaTags";
 import { UploadStatusPanel } from "./hb-upload-status-panel";
 export var FileUploaderAccept;
 (function (FileUploaderAccept) {
@@ -153,7 +154,7 @@ export class FileUploaderClient {
         });
         // try upload on all files from the file input
         Array.from(this.fileInput.files).forEach(file => {
-            const fileData = new UploadFileState(this.uploadController, file);
+            const fileData = new UploadFileState(this.uploadController, file, this.filesRepo.getFileTypeFromExtension(file.name));
             this.uploads.push(fileData);
             this.tryUpload(fileData, false);
         });
@@ -192,7 +193,7 @@ export class FileUploadError extends Error {
  * Used for tracking the progress of a single file
  */
 class UploadFileState {
-    constructor(uploadController, file) {
+    constructor(uploadController, file, fileType) {
         this._uploadController = uploadController;
         this._file = file;
         this._fileController = new AbortController();
@@ -203,6 +204,23 @@ class UploadFileState {
         this._complete = false;
         this._fileUrl = null;
         this._cancelled = false;
+        this._base64Src = this.setBase64Src(fileType);
+    }
+    setBase64Src(fileType) {
+        if (fileType === FileType.images) {
+            return URL.createObjectURL(this._file);
+        }
+        this.tryExtractMediaThumb();
+        return `/content/thumbs/${fileType}-thumb.svg`;
+    }
+    async tryExtractMediaThumb() {
+        try {
+            const tags = await extractMediaTags(this._file);
+            this._base64Src = convertPictureToBase64Src(tags.picture);
+        }
+        catch (e) {
+            console.log("Unable to pull media tags", e);
+        }
     }
     get file() { return this._file; }
     get fileController() { return this._fileController; }
@@ -213,8 +231,10 @@ class UploadFileState {
     get cancelled() { return this._cancelled; }
     get error() { return this._error; }
     get fileUrl() { return this._fileUrl; }
-    /** jch - need to implement - get base64 string for thumbnail */
-    get base64Src() { return "BASE64 IMAGE FOR:" + this._file.name; }
+    // jch - if img use base64, or canned url for audio, video, file
+    // if image then URL.create
+    // if audio/video try parsing the tags for the picture
+    get base64Src() { return this._base64Src; }
     get name() { return this._file.name; }
     cancelUpload() {
         this._fileController.abort();

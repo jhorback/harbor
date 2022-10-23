@@ -19,6 +19,12 @@ let HbUploadFilesRepo = class HbUploadFilesRepo {
         };
         this.currentUser = new HbCurrentUser();
     }
+    getFileTypeFromExtension(fileName) {
+        const ext = (fileName.split('.').pop() || "").toLowerCase();
+        return this.supportedFileTypes.images.includes(ext) ? FileType.images :
+            this.supportedFileTypes.audio.includes(ext) ? FileType.audio :
+                this.supportedFileTypes.video.includes(ext) ? FileType.video : FileType.files;
+    }
     async uploadFile(file, options) {
         const storagePath = this.getStoragePath(file.name);
         await this.verifyOverwrite(options.allowOverwrite, storagePath);
@@ -69,11 +75,7 @@ let HbUploadFilesRepo = class HbUploadFilesRepo {
         }
     }
     getStoragePath(fileName) {
-        const ext = (fileName.split('.').pop() || "").toLowerCase();
-        const fileType = this.supportedFileTypes.images.includes(ext) ? FileType.images :
-            this.supportedFileTypes.audio.includes(ext) ? FileType.audio :
-                this.supportedFileTypes.video.includes(ext) ? FileType.video : "files";
-        return `files/${this.currentUser.uid}/${fileType}/${fileName}`;
+        return `files/${this.currentUser.uid}/${this.getFileTypeFromExtension(fileName)}/${fileName}`;
     }
 };
 HbUploadFilesRepo = __decorate([

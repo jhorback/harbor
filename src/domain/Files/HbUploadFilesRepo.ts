@@ -11,14 +11,21 @@ import { FileType, FileUploadProgressEvent, IUploadFileOptions, IUploadFilesRepo
 export class HbUploadFilesRepo implements IUploadFilesRepo {
     private currentUser:HbCurrentUser;
 
+    constructor() {
+        this.currentUser = new HbCurrentUser();
+    }
+
     supportedFileTypes = {
         images: ["avif", "gif", "jpeg", "jpg", "png", "svg", "webp"],
         audio: ["aac", "aiff", "m4a", "mp3", "oga", "pcm", "wav"],
         video: ["avi", "m4v", "mp4",  "mpeg", "mpg", "webm", "wmv"]
     };
 
-    constructor() {
-        this.currentUser = new HbCurrentUser();
+    getFileTypeFromExtension(fileName:string):FileType {
+        const ext = (fileName.split('.').pop() || "").toLowerCase();
+        return this.supportedFileTypes.images.includes(ext) ? FileType.images :
+            this.supportedFileTypes.audio.includes(ext) ? FileType.audio :
+            this.supportedFileTypes.video.includes(ext) ? FileType.video : FileType.files;
     }
 
     async uploadFile(file:File, options:IUploadFileOptions):Promise<string> {
@@ -85,11 +92,7 @@ export class HbUploadFilesRepo implements IUploadFilesRepo {
         }
     }
 
-    private getStoragePath(fileName:string) {
-        const ext = (fileName.split('.').pop() || "").toLowerCase();
-        const fileType = this.supportedFileTypes.images.includes(ext) ? FileType.images :
-            this.supportedFileTypes.audio.includes(ext) ? FileType.audio :
-            this.supportedFileTypes.video.includes(ext) ? FileType.video : "files";
-        return `files/${this.currentUser.uid}/${fileType}/${fileName}`;
+    private getStoragePath(fileName:string) { 
+        return `files/${this.currentUser.uid}/${this.getFileTypeFromExtension(fileName)}/${fileName}`;
     }
 }

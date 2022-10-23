@@ -1,6 +1,7 @@
 import { html } from 'lit-html';
 import { FileUploadError } from './FileUploaderClient';
 import { UploadStatusPanel as Panel } from "./hb-upload-status-panel";
+import { extractMediaTags, convertPictureToBase64Src, convertPictureToFile } from "../domain/Files/extractMediaTags";
 export default {
     title: 'App/Upload Status Panel',
     component: "hb-upload-status-panel",
@@ -24,7 +25,33 @@ const UploadStatusPanelTemplate = ({ state }) => html `
     <button @click=${clickedButton("complete")}>Complete</button>
     <button @click=${clickedButton("doneWithSkipped")}>Complete With Skipped</button>
     <button @click=${closeElement}>Close</button>
+    <h2>extractMediaTags Test</h2>
+    <p>Use jsmediatags to pull out meta data</p>
+    <input type="file" @change=${onInputChange}>
 `;
+const onInputChange = async (event) => {
+    //@ts-ignore
+    const file = event.target.files[0];
+    try {
+        const tags = await extractMediaTags(file);
+        addMessageDiv("Parsed tags", tags);
+        var img = document.createElement("img");
+        img.src = convertPictureToBase64Src(tags.picture);
+        document.body.appendChild(img);
+        img = document.createElement("img");
+        img.src = URL.createObjectURL(convertPictureToFile("name", tags.picture.data));
+        document.body.appendChild(img);
+    }
+    catch (error) {
+        addMessageDiv("Caught error", error);
+    }
+};
+const addMessageDiv = (message, data) => {
+    const div = document.createElement("div");
+    div.innerText = `${message}: ${JSON.stringify(data)}`;
+    console.log(message, data);
+    document.body.appendChild(div);
+};
 const clickedButton = (name) => {
     return (event) => {
         createElement();

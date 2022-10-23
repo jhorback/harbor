@@ -4,7 +4,8 @@
 export enum FileType {
     images = "images",
     audio = "audio",
-    video = "video"
+    video = "video",
+    files = "files",
 };
 
 
@@ -16,6 +17,8 @@ export interface IUploadFilesRepo {
         audio: Array<string>,
         video: Array<string>
     };
+
+    getFileTypeFromExtension(fileName:string):FileType;
 
     /**
      * Will throw a ClientError if the allowOverwrite option is false
