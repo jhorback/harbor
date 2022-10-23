@@ -85,11 +85,11 @@ export class FileUploaderClient {
     private initializeUploadController():AbortController {
         const controller = new AbortController();
         controller.signal.addEventListener(FileUpdatedEvent.eventType, (event:Event) =>
-            this.onFileUpdated(event as FileUploadCompletedEvent));
+            this.onFileUpdated(event as FileUpdatedEvent));
         return controller;
     }
 
-    private onFileUpdated(event:FileUploadCompletedEvent) {
+    private onFileUpdated(event:FileUpdatedEvent) {
         const state = new FileUploadStatusData();
         state.uploadFileTypes = this.acceptOption;
         state.ofFile = this.uploads.length;
@@ -101,7 +101,7 @@ export class FileUploaderClient {
             if (file.needsAllowOverwritePermission && state.requiresOverwrite === false) {
                 state.requiresOverwrite = true;
                 state.requiresOverwriteFileIndex = index;
-                state.requiresOverwriteFileName = file.name;
+                state.requiresOverwriteFileName = file.name;                
                 state.highlightFileSrc = file.base64Src;
             }
 
@@ -258,6 +258,7 @@ class UploadFileState {
         try {
             const tags = await extractMediaTags(this._file);
             this._base64Src = convertPictureToBase64Src(tags.picture);
+            this.dispatchUpdate();
         } catch(e) {
             console.log("Unable to pull media tags", e);
         }
@@ -272,9 +273,6 @@ class UploadFileState {
     public get cancelled() { return this._cancelled; }
     public get error() { return this._error; }
     public get fileUrl() { return this._fileUrl; }
-    // jch - if img use base64, or canned url for audio, video, file
-    // if image then URL.create
-    // if audio/video try parsing the tags for the picture
     public get base64Src() { return this._base64Src; }
     public get name() { return this._file.name }
 
@@ -326,6 +324,7 @@ class UploadFileState {
         this._cancelled = true;
         this._totalBytes = 0;
         this._bytesTransferred = 0;
+        this._needsAllowOverwritePermission = false;
         this.dispatchUpdate();
     }
 
@@ -365,7 +364,7 @@ export class FileUploadStatusData {
     bytesTransferred:number = 0;
     totalBytes:number = 0;
     get percentComplete():number {
-        return this.totalBytes === 0 ? 0 : (this.bytesTransferred /  this.totalBytes) * 100;
+        return this.totalBytes === 0 ? 0 : Math.round((this.bytesTransferred /  this.totalBytes) * 100);
     }
     /** is true when at least 1 file requires overwrite */
     requiresOverwrite:boolean = false;

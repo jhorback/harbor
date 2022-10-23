@@ -28,8 +28,12 @@
     */
 export const extractMediaTags = async (file) => {
     return new Promise(async (resolve, reject) => {
-        //@ts-ignore - load jsmediatgs from cdn
-        await import("https://cdnjs.cloudflare.com/ajax/libs/jsmediatags/3.9.5/jsmediatags.min.js");
+        try {
+            await loadScript();
+        }
+        catch (error) {
+            reject(error);
+        }
         window.jsmediatags.read(file, {
             onSuccess: (jsmt) => resolve({
                 title: jsmt.tags.title,
@@ -42,6 +46,26 @@ export const extractMediaTags = async (file) => {
             }),
             onError: (error) => reject(error)
         });
+    });
+};
+let addedScript = false;
+const loadScript = () => {
+    return new Promise((resolve, reject) => {
+        if (addedScript) {
+            resolve();
+        }
+        if (!addedScript) {
+            const script = document.createElement("script");
+            script.src = "https://cdnjs.cloudflare.com/ajax/libs/jsmediatags/3.9.5/jsmediatags.min.js";
+            document.body.append(script);
+            script.onload = () => {
+                resolve();
+            };
+            script.onerror = () => {
+                reject();
+            };
+            addedScript = true;
+        }
     });
 };
 export const convertPictureToFile = (name, pictureData) => new File([new Blob([new Uint8Array(pictureData)])], name);

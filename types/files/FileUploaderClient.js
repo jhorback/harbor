@@ -217,6 +217,7 @@ class UploadFileState {
         try {
             const tags = await extractMediaTags(this._file);
             this._base64Src = convertPictureToBase64Src(tags.picture);
+            this.dispatchUpdate();
         }
         catch (e) {
             console.log("Unable to pull media tags", e);
@@ -231,9 +232,6 @@ class UploadFileState {
     get cancelled() { return this._cancelled; }
     get error() { return this._error; }
     get fileUrl() { return this._fileUrl; }
-    // jch - if img use base64, or canned url for audio, video, file
-    // if image then URL.create
-    // if audio/video try parsing the tags for the picture
     get base64Src() { return this._base64Src; }
     get name() { return this._file.name; }
     cancelUpload() {
@@ -266,6 +264,7 @@ class UploadFileState {
         this._cancelled = true;
         this._totalBytes = 0;
         this._bytesTransferred = 0;
+        this._needsAllowOverwritePermission = false;
         this.dispatchUpdate();
     }
     dispatchUpdate() {
@@ -310,7 +309,7 @@ export class FileUploadStatusData {
         this.highlightFileSrc = null;
     }
     get percentComplete() {
-        return this.totalBytes === 0 ? 0 : (this.bytesTransferred / this.totalBytes) * 100;
+        return this.totalBytes === 0 ? 0 : Math.round((this.bytesTransferred / this.totalBytes) * 100);
     }
     ;
 }

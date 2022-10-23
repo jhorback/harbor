@@ -29,6 +29,9 @@ let UploadStatusPanel = class UploadStatusPanel extends LitElement {
         return el;
     }
     render() {
+        if (this.state.isComplete && this.state.skippedFiles.length === 0) {
+            setTimeout(this.close.bind(this), 2000);
+        }
         return html `
             <div class="container">
                 ${!this.state.isComplete ? html `
@@ -118,6 +121,7 @@ let UploadStatusPanel = class UploadStatusPanel extends LitElement {
 };
 UploadStatusPanel.styles = [styles.types, styles.icons, css `
         :host {
+            z-index: 2000;
             background-color: var(--md-sys-color-surface-variant);
             color: var(--md-sys-color-on-surface);
             border-radius: 8px;

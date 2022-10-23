@@ -113,7 +113,8 @@ if (!window.tinymceSettings) {
             image_title: true,
             file_picker_types: "image media",
             file_picker_callback: (callback:FileUploadCallback, value:string, meta:IFilePickerMetaFields) => {
-                const client = new FileUploaderClient({accept:meta.filetype as FileUploaderAccept});
+                const accept = meta.filetype === "image" ? FileUploaderAccept.images : FileUploaderAccept.media;
+                const client = new FileUploaderClient({accept:accept});
                 client.onComplete((event:FileUploadCompletedEvent) => 
                     event.uploadedFile && callback(event.uploadedFile.url, {title:event.uploadedFile.name}));
                 client.handleFileUpload();

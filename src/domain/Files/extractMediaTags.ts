@@ -32,8 +32,11 @@ export const extractMediaTags = async (file:File):Promise<IMediaTags> => {
 
     return new Promise(async (resolve, reject) => {
 
-        //@ts-ignore - load jsmediatgs from cdn
-        await import("https://cdnjs.cloudflare.com/ajax/libs/jsmediatags/3.9.5/jsmediatags.min.js");
+        try {
+            await loadScript();
+        } catch(error) {
+            reject(error);
+        }
 
         window.jsmediatags.read(file, {
             onSuccess:(jsmt:IJsMediaTags) => resolve({
@@ -47,6 +50,27 @@ export const extractMediaTags = async (file:File):Promise<IMediaTags> => {
             }),
             onError:(error:any) => reject(error)
         });
+    });
+};
+
+let addedScript = false;
+const loadScript = ():Promise<void> => {
+    return new Promise((resolve, reject) => {
+        if (addedScript) {
+            resolve();
+        }
+        if (!addedScript) {
+            const script = document.createElement("script");
+            script.src = "https://cdnjs.cloudflare.com/ajax/libs/jsmediatags/3.9.5/jsmediatags.min.js";
+            document.body.append(script);
+            script.onload = () => {
+                resolve();
+            };
+            script.onerror = () => {
+                reject();
+            };
+            addedScript = true;
+        }
     });
 };
 
