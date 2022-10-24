@@ -1,7 +1,7 @@
 {
   "name": "harbor",
   "private": true,
-  "version": "0.3.0",
+  "version": "0.4.0",
   "type": "module",
   "files": [
     "dist",
@@ -16,27 +16,31 @@
     "storybook": "start-storybook -p 6007",
     "build-storybook": "build-storybook",
     "test": "tsc",
-    "deploy": "tsc && vite build && firebase deploy"
+    "deploy": "tsc && vite build && firebase deploy",
+    "theme": "ts-node -T .\\scripts\\generateTinymceTheme.ts"
   },
   "dependencies": {
     "@domx/dataelement": "1.0.0",
     "@domx/router": "1.0.1",
-    "@storybook/web-components": "6.5.12",
-    "firebase": "9.12.0",
+    "@storybook/web-components": "6.5.13",
+    "@tinymce/tinymce-webcomponent": "2.0.1",
+    "firebase": "9.12.1",
     "lit": "2.4.0"
   },
   "devDependencies": {
-    "@babel/core": "7.19.3",
-    "@storybook/addon-actions": "6.5.12",
-    "@storybook/addon-essentials": "6.5.12",
-    "@storybook/addon-links": "6.5.12",
-    "@storybook/addons": "6.5.12",
+    "@babel/core": "7.19.6",
+    "@storybook/addon-actions": "6.5.13",
+    "@storybook/addon-essentials": "6.5.13",
+    "@storybook/addon-links": "6.5.13",
+    "@storybook/addons": "6.5.13",
     "@storybook/builder-vite": "0.2.4",
-    "@storybook/theming": "6.5.12",
+    "@storybook/theming": "6.5.13",
     "babel-loader": "8.2.5",
+    "clean-css": "5.3.1",
     "lit-html": "2.4.0",
     "storybook-addon-themes": "6.1.0",
+    "ts-node": "10.9.1",
     "typescript": "4.8.4",
-    "vite": "3.1.7"
+    "vite": "3.1.8"
   }
 }

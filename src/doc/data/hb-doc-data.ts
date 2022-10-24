@@ -2,7 +2,7 @@ import { DataElement, StateChange } from "@domx/dataelement";
 import { customDataElement, dataProperty, event } from "@domx/dataelement/decorators";
 import { inject } from "../../domain/DependencyContainer/decorators";
 import { DocModel } from "../../domain/Doc/DocModel";
-import { EditDocRepoKey, IEditDocRepo, IUnsubscribe } from "../../domain/interfaces/DocumentInterfaces";
+import { EditDocRepoKey, IContentType, IContentTypeRenderOptions, IEditDocRepo, IUnsubscribe } from "../../domain/interfaces/DocumentInterfaces";
 import { UserAction, HbCurrentUser } from "../../domain/HbCurrentUser";
 import "../../domain/Doc/HbEditDocRepo";
 import { HbCurrentUserChangedEvent } from "../../domain/HbAuth";
@@ -42,9 +42,20 @@ export class UpdateSubtitleEvent extends Event {
     }
 }
 
+export class UpdateDocContentEvent extends Event {
+    static eventType = "update-doc-content";
+    index:number;
+    state:IContentType;
+    constructor(index:number, state:IContentType) {
+        super(UpdateDocContentEvent.eventType, {bubbles:true, composed:true});
+        this.index = index;
+        this.state = state;
+    }
+}
+
 
 @customDataElement("hb-doc-data", {
-    eventsListenAt: "self",
+    eventsListenAt: "parent",
     stateIdProperty: "uid"
 })
 export class DocData extends DataElement {
@@ -116,6 +127,14 @@ export class DocData extends DataElement {
             .tap(saveDoc(this.editDocRepo, this.state.doc))
             .dispatch();
     }
+
+    @event(UpdateDocContentEvent.eventType)
+    private updateDocContent(event:UpdateDocContentEvent) {
+        StateChange.of(this)
+            .next(updateDocContent(event.index, event.state))
+            .tap(saveDoc(this.editDocRepo, this.state.doc))
+            .dispatch();
+    }
 }
 
 
@@ -162,5 +181,9 @@ const updateShowSubtitle = (showSubtitle:boolean) => (state:IDocDataState) => {
 
 const updateSubtitle = (subtitle:string) => (state:IDocDataState) => {
     state.doc.subtitle = subtitle;
+};
+
+const updateDocContent = (index:number, data:IContentType) => (state:IDocDataState) => {
+    state.doc.content[index] = data;
 };
 

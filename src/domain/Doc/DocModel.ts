@@ -23,8 +23,8 @@ export class DocModel implements IDocData {
         doc.docType = options.docType;
         doc.pid = DocModel.tokenize(doc.title);
         doc.uid = `${doc.docType}:${doc.pid}`;
-        doc.content = docTypes[doc.docType].defaultContent;
-        doc.thumbUrl = docTypes[doc.docType].defaultThumbUrl;
+        doc.content = docTypes.get(doc.docType).defaultContent;
+        doc.thumbUrl = docTypes.get(doc.docType).defaultThumbUrl;
         return doc;
     }
 
@@ -66,7 +66,7 @@ export class DocModel implements IDocData {
         thumbUrl: this.thumbUrl,
         thumbDescription: this.useSubtitleAsThumbDescription ?
             this.subtitle : this.thumbDescription,
-        href: `/${docTypes[this.docType].route}/${this.pid}`
+        href: `${docTypes.get(this.docType).route}/${this.pid}`
     });
 
     toListItem = ():IListItem => ({
@@ -74,7 +74,7 @@ export class DocModel implements IDocData {
         text: this.title,
         description: this.useSubtitleAsThumbDescription ?
             this.subtitle : this.thumbDescription,
-        icon: docTypes[this.docType].icon
+        icon: docTypes.get(this.docType).icon
     });
 
     /**

@@ -5,7 +5,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 import { html, css, LitElement } from "lit";
-import { customElement } from "lit/decorators.js";
+import { customElement, state } from "lit/decorators.js";
 import { HbApp } from "./domain/HbApp";
 import "@domx/router/domx-route";
 import "@domx/router/domx-route-not-found";
@@ -13,14 +13,22 @@ import "./app/hb-route-not-found-page";
 import "./app/hb-home";
 import "./app/profile/hb-profile-page";
 import "./app/hb-about-page";
-import "./doc/hb-doc-page";
 import "./hb-current-user-data";
 import "./layout/feedback/hb-feedback";
-HbApp.init();
+import { docTypes } from "./domain/Doc/docTypes";
 /**
  *
  */
 let HarborApp = class HarborApp extends LitElement {
+    constructor() {
+        super(...arguments);
+        this.isInitialized = false;
+    }
+    async connectedCallback() {
+        super.connectedCallback();
+        await HbApp.init();
+        this.isInitialized = true;
+    }
     render() {
         return html `
       <!-- Keeping this at the app level retains the
@@ -28,36 +36,40 @@ let HarborApp = class HarborApp extends LitElement {
       <hb-current-user-data></hb-current-user-data>
       <hb-feedback></hb-feedback>
       <div id="hb-app"></div>
-      <domx-route
-          pattern="/"
-          element="hb-home"
-          append-to="#hb-app"
-      ></domx-route>
-      <domx-route
-          pattern="/profile(/*tail)"
-          element="hb-profile-page"
-          append-to="#hb-app"
-      ></domx-route>
-      <domx-route
-          pattern="/about"
-          element="hb-about-page"          
-          append-to="#hb-app"
-      ></domx-route>
-      <domx-route-not-found
-          element="hb-route-not-found-page"
-          append-to="#hb-app"
-      ></domx-route-not-found>
-      <domx-route
-          pattern="/not-found"
-          element="hb-route-not-found-page"          
-          append-to="#hb-app"
-      ></domx-route>
-      <domx-route
-          pattern="/docs/:pid"
-          element="hb-doc-page"          
-          append-to="#hb-app"
-      ></domx-route>
-    `;
+      ${!this.isInitialized ? html `` : html `
+            <domx-route
+                pattern="/"
+                element="hb-home"
+                append-to="#hb-app"
+            ></domx-route>
+            <domx-route
+                pattern="/profile(/*tail)"
+                element="hb-profile-page"
+                append-to="#hb-app"
+            ></domx-route>
+            <domx-route
+                pattern="/about"
+                element="hb-about-page"          
+                append-to="#hb-app"
+            ></domx-route>
+            <domx-route-not-found
+                element="hb-route-not-found-page"
+                append-to="#hb-app"
+            ></domx-route-not-found>
+            <domx-route
+                pattern="/not-found"
+                element="hb-route-not-found-page"          
+                append-to="#hb-app"
+            ></domx-route>
+            ${docTypes.all().map(type => html `
+                <domx-route
+                pattern=${`${type.route}/:pid`}
+                element=${type.element}
+                append-to="#hb-app"
+                ></domx-route>
+            `)}
+        `}
+      `;
     }
     static { this.styles = [css `
     :host {
@@ -65,6 +77,9 @@ let HarborApp = class HarborApp extends LitElement {
     }
   `]; }
 };
+__decorate([
+    state()
+], HarborApp.prototype, "isInitialized", void 0);
 HarborApp = __decorate([
     customElement('hb-app')
 ], HarborApp);

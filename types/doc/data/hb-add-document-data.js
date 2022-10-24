@@ -38,13 +38,7 @@ let AddDocumentData = AddDocumentData_1 = class AddDocumentData extends DataElem
         super(...arguments);
         this.state = AddDocumentData_1.defaultState;
     }
-    static { this.defaultState = { docTypes: [] }; }
-    connectedCallback() {
-        super.connectedCallback();
-        StateChange.of(this)
-            .next(requestDocTypes)
-            .dispatch();
-    }
+    static { this.defaultState = { docTypes: docTypes.all() }; }
     addNewDocument(event) {
         const options = event.options;
         StateChange.of(this)
@@ -66,9 +60,6 @@ AddDocumentData = AddDocumentData_1 = __decorate([
     })
 ], AddDocumentData);
 export { AddDocumentData };
-const requestDocTypes = (state) => {
-    state.docTypes = Object.keys(docTypes).map(key => docTypes[key]);
-};
 const addNewDocument = (repo, options) => async (stateChange) => {
     let docModel;
     try {

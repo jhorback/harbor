@@ -6,9 +6,6 @@ import { UserData } from "../app/data/hb-user-data";
 import { AvatarSize } from "../common/hb-avatar";
 
 
-
-
-
 /**  
  * @fires {@link DocumentSelectedEvent}
  */

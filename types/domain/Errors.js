@@ -14,6 +14,11 @@ export class ClientError extends Error {
         super(message);
         this.properties = {};
     }
+    static of(message, properties) {
+        const error = new ClientError(message);
+        error.properties = properties;
+        return error;
+    }
     addPropertyError(property, error) {
         this.properties[property] = error;
     }

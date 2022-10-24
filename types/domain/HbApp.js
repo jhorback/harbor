@@ -24,11 +24,7 @@ export class HbApp {
         HbApp.theme = HbApp.theme === "light" ? "dark" : "light";
         updateHtmlTheme();
     }
-    // want a predicate for live mode vs use mocks
-    // what is a good name for this?
-    // useFirebase: true?
-    // 
-    static init() {
+    static async init() {
         handleApplicationErrors();
         applyImmerToStateChange();
         applyDataElementRdtLogging();
@@ -36,14 +32,20 @@ export class HbApp {
         if (!this.isStorybook) {
             GoogleAnalytics.init();
         }
+        /**
+         * import all doc pages and content
+         * In the future, can create a module to import
+         * dynamic packages based on system settings
+         */
+        await import("../doc/index");
     }
 }
 const getSystemTheme = () => window.matchMedia('(prefers-color-scheme: dark)').matches ? "dark" : "light";
 const updateHtmlTheme = () => {
-    const htmlEl = document.querySelector("html");
-    htmlEl?.classList.remove(`dark-theme`);
-    htmlEl?.classList.remove(`light-theme`);
-    htmlEl?.classList.add(`${HbApp.theme}-theme`);
+    const bodyEl = document.querySelector("body");
+    bodyEl?.classList.remove(`dark-theme`);
+    bodyEl?.classList.remove(`light-theme`);
+    bodyEl?.classList.add(`${HbApp.theme}-theme`);
 };
 const handleApplicationErrors = () => {
     window.addEventListener("error", (event) => {

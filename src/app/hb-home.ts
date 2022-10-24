@@ -1,6 +1,5 @@
 import { html, css, LitElement } from "lit";
 import { customElement, query } from "lit/decorators.js";
-import "../doc/hb-doc-page";
 import "../domain/SystemAdmin/HbHomePageRepo";
 import { inject } from "../domain/DependencyContainer/decorators";
 import { IDocumentReference, IHomePageRepo, HomePageRepoKey } from "../domain/interfaces/DocumentInterfaces";
@@ -12,7 +11,7 @@ import { docTypes } from "../domain/Doc/docTypes";
  * The job of this element is to look the home page
  * document up in the database and append the correct element to the dom
  * 
- * // jch: use the hb-system-admin-data to load the homePageRef
+ * // TODO: use the hb-system-admin-data to load the homePageRef
  * Basically, remove the local storage and extra logic from here
  */
 @customElement('hb-home')
@@ -68,7 +67,7 @@ export class HbHome extends LitElement {
         } 
 
         // verify the docType exists
-        const docType = docTypes[homePageRef.docType];
+        const docType = docTypes.get(homePageRef.docType);
         if (!docType) {
             this.showNotFound(`The docType was not found: ${homePageRef.docType}`);
             return;

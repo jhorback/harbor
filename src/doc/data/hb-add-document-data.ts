@@ -46,20 +46,13 @@ export class AddDocumentErrorEvent extends Event {
     eventsListenAt: "parent"
 })
 export class AddDocumentData extends DataElement {
-    static defaultState:IAddDocumentState = {docTypes:[]};
+    static defaultState:IAddDocumentState = {docTypes:docTypes.all()};
     
     @dataProperty()
     state:IAddDocumentState = AddDocumentData.defaultState;
 
     @inject<IAddDocRepo>(AddDocRepoKey)
     private addDocRepo!:IAddDocRepo;
-
-    connectedCallback() {
-        super.connectedCallback();
-        StateChange.of(this)
-            .next(requestDocTypes)
-            .dispatch();
-    }
 
     @event(AddNewDocumentEvent.eventType)
     addNewDocument(event:AddNewDocumentEvent) {
@@ -68,12 +61,6 @@ export class AddDocumentData extends DataElement {
             .tap(addNewDocument(this.addDocRepo, options));
     }
 }
-
-
-
-const requestDocTypes = (state:IAddDocumentState) => {
-    state.docTypes = Object.keys(docTypes).map(key => docTypes[key]);
-};
 
 
 const addNewDocument = (repo:IAddDocRepo, options:IAddNewDocumentOptions) => async (stateChange:StateChange) => {
