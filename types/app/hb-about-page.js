@@ -85,8 +85,7 @@ let AboutPage = class AboutPage extends LitElement {
         HbApp.toggleTheme();
         this.darkTheme = HbApp.theme === "dark";
     }
-};
-AboutPage.styles = [styles.types, css `
+    static { this.styles = [styles.types, css `
         :host {
             display: block;
         }
@@ -116,7 +115,8 @@ AboutPage.styles = [styles.types, css `
             justify-content: left;
             padding: 1rem 0;
         }
-    `];
+    `]; }
+};
 __decorate([
     property({ type: Object })
 ], AboutPage.prototype, "hbAppInfo", void 0);

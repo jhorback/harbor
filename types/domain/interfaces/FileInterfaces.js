@@ -17,8 +17,8 @@ export class FileUploadProgressEvent extends Event {
         this.bytesTransferred = bytesTransferred;
         this.totalBytes = totalBytes;
     }
+    static { this.eventType = "file-upload-progress"; }
 }
-FileUploadProgressEvent.eventType = "file-upload-progress";
 /**
  * This is used internally on the {@link FileUploaderClient}
  * on the uploadController signal to listen for when all files have
@@ -30,5 +30,5 @@ export class FileUploadCompletedEvent extends Event {
         this.uploadedFiles = uploadedFiles;
         this.uploadedFile = uploadedFiles[0];
     }
+    static { this.eventType = "file-upload-complete"; }
 }
-FileUploadCompletedEvent.eventType = "file-upload-complete";
