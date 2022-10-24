@@ -25,6 +25,7 @@ export const authorize = (action) => {
     };
 };
 export class HbCurrentUser {
+    static { this._userRole = UserRole.none; }
     static setCurrentUser(uid, userRole) {
         this._uid = uid;
         this._userRole = userRole || UserRole.none;
@@ -39,4 +40,3 @@ export class HbCurrentUser {
         return roleHasAction(HbCurrentUser._userRole, action);
     }
 }
-HbCurrentUser._userRole = UserRole.none;

@@ -35,8 +35,7 @@ let DocAuthor = class DocAuthor extends LitElement {
             </div>
         `;
     }
-};
-DocAuthor.styles = [styles.types, styles.dialog, css `
+    static { this.styles = [styles.types, styles.dialog, css `
         :host {
             display: block;
         }
@@ -48,7 +47,8 @@ DocAuthor.styles = [styles.types, styles.dialog, css `
         .body-medium {
             margin-bottom: 2px;
         }
-  `];
+  `]; }
+};
 __decorate([
     property({ type: String })
 ], DocAuthor.prototype, "uid", void 0);

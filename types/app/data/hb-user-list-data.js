@@ -15,21 +15,25 @@ export class RequestUserListEvent extends Event {
     constructor() {
         super(RequestUserListEvent.eventType, { bubbles: true });
     }
+    static { this.eventType = "request-user-list"; }
 }
-RequestUserListEvent.eventType = "request-user-list";
 export class UpdateUserRoleEvent extends Event {
     constructor(uid, role) {
         super(UpdateUserRoleEvent.eventType, { bubbles: true, composed: true });
         this.uid = uid;
         this.role = role;
     }
+    static { this.eventType = "update-user-role"; }
 }
-UpdateUserRoleEvent.eventType = "update-user-role";
 let UserListData = UserListData_1 = class UserListData extends DataElement {
     constructor() {
         super(...arguments);
         this.users = UserListData_1.defaultUsers;
     }
+    static { this.defaultUsers = {
+        list: [],
+        count: 0
+    }; }
     async getUserList(event) {
         StateChange.of(this, "users")
             .tap(requestUsers(this.userList));
@@ -38,10 +42,6 @@ let UserListData = UserListData_1 = class UserListData extends DataElement {
         StateChange.of(this, "users")
             .tap(updateUserRole(this.userList, event.uid, event.role));
     }
-};
-UserListData.defaultUsers = {
-    list: [],
-    count: 0
 };
 __decorate([
     dataProperty({ changeEvent: "users-changed" })

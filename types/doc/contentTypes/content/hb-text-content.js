@@ -23,6 +23,7 @@ let TextContent = TextContent_1 = class TextContent extends LitElement {
         this.state = TextContent_1.defaultState;
         this.inEditMode = false;
     }
+    static { this.defaultState = new TextContentData(); }
     render() {
         return this.inEditMode ? html `
             <tinymce-editor
@@ -61,9 +62,7 @@ let TextContent = TextContent_1 = class TextContent extends LitElement {
     tinymceChange(event) {
         this.dispatchEvent(new UpdateDocContentEvent(this.index, TextContentData.of(event.value)));
     }
-};
-TextContent.defaultState = new TextContentData();
-TextContent.styles = [styles.types, styles.format, css `
+    static { this.styles = [styles.types, styles.format, css `
         :host {
             display: block;
             position: relative;
@@ -85,7 +84,8 @@ TextContent.styles = [styles.types, styles.format, css `
         // :host([doc-edit]:hover) {
         //     background-color: var(--md-sys-color-surface-variant);
         // }
-  `];
+  `]; }
+};
 __decorate([
     property({ type: String }),
     property({ type: Number })
@@ -144,5 +144,5 @@ class ChangeEvent extends Event {
         super(ChangeEvent.eventType, { bubbles: true, composed: true });
         this.value = value;
     }
+    static { this.eventType = "change"; }
 }
-ChangeEvent.eventType = "change";
