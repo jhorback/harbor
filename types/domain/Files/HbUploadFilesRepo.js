@@ -4,39 +4,88 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import { doc, setDoc } from "firebase/firestore";
+import { getDownloadURL, getMetadata, ref, uploadBytesResumable } from "firebase/storage";
 import { provides } from "../DependencyContainer/decorators";
 import { ClientError, ServerError } from "../Errors";
 import { HbCurrentUser } from "../HbCurrentUser";
+import { HbDb } from "../HbDb";
 import { HbStorage } from "../HbStorage";
-import { FileType, UploadFilesRepoKey } from "../interfaces/FileInterfaces";
+import { FileUploadType, FileUploadProgressEvent, UploadFilesRepoKey } from "../interfaces/FileInterfaces";
+import { convertPictureToBase64Src, extractMediaTags } from "./extractMediaTags";
 let HbUploadFilesRepo = class HbUploadFilesRepo {
     constructor() {
         this.supportedFileTypes = {
             images: ["avif", "gif", "jpeg", "jpg", "png", "svg", "webp"],
-            audio: ["mp3", "m4a", "wav", "aac", "oga", "pcm", "aiff"],
-            video: ["mp4", "m4v", "mpg", "mpeg", "avi", "wmv", "webm"]
+            audio: ["aac", "aiff", "m4a", "mp3", "oga", "pcm", "wav"],
+            video: ["avi", "m4v", "mp4", "mpeg", "mpg", "webm", "wmv"]
         };
         this.currentUser = new HbCurrentUser();
     }
-    async uploadFile(file, options) {
+    getFileTypeFromExtension(fileName) {
+        const ext = (fileName.split('.').pop() || "").toLowerCase();
+        return this.supportedFileTypes.images.includes(ext) ? FileUploadType.images :
+            this.supportedFileTypes.audio.includes(ext) ? FileUploadType.audio :
+                this.supportedFileTypes.video.includes(ext) ? FileUploadType.video : FileUploadType.files;
+    }
+    async uploadFileWithProgress(file, options) {
         const storagePath = this.getStoragePath(file.name);
+        await this.verifyOverwrite(options.allowOverwrite, storagePath);
         const storageRef = ref(HbStorage.current, storagePath);
-        if (options.allowOverwrite === false) {
+        const uploadTask = uploadBytesResumable(storageRef, file);
+        options.signal?.addEventListener("abort", () => {
+            uploadTask.cancel();
+        });
+        return new Promise((resolve, reject) => {
+            uploadTask.on('state_changed', (snapshot) => options.signal?.dispatchEvent(new FileUploadProgressEvent(snapshot.bytesTransferred, snapshot.totalBytes)), (error) => error.code === "storage/canceled" ?
+                resolve(null) : reject(new ServerError("File Upload Error", error)), async () => {
+                const url = await this.addFileToDb(file, uploadTask.snapshot);
+                resolve(url);
+            });
+        });
+    }
+    /**
+     * Resolves with the download url
+     */
+    async addFileToDb(file, snapshot) {
+        const storagePath = snapshot.ref.fullPath;
+        const [md, url, mediaTags] = await Promise.all([
+            getMetadata(snapshot.ref),
+            getDownloadURL(snapshot.ref),
+            this.resolveMediaTags(file)
+        ]);
+        const thumbUrl = mediaTags ? convertPictureToBase64Src(mediaTags.picture) : url;
+        const fileData = {
+            name: md.name,
+            ownerUid: this.currentUser.uid,
+            storagePath,
+            url,
+            thumbUrl,
+            size: md.size,
+            type: md.contentType,
+            updated: md.updated,
+            mediaTags
+        };
+        const ref = doc(HbDb.current, `users/${this.currentUser.uid}/files`, file.name);
+        await setDoc(ref, fileData);
+        return url;
+    }
+    async resolveMediaTags(file) {
+        try {
+            return await extractMediaTags(file);
+        }
+        catch (error) {
+            return null;
+        }
+    }
+    async verifyOverwrite(allowOverwrite, storagePath) {
+        if (allowOverwrite === false) {
             const exists = await this.fileExists(storagePath);
             if (exists) {
                 throw ClientError.of("File Exists", {
                     "reason": "exists"
                 });
             }
-        }
-        try {
-            const snapshot = await uploadBytes(storageRef, file);
-            const url = await getDownloadURL(snapshot.ref);
-            return url;
-        }
-        catch (error) {
-            throw new ServerError("uploadImage error", error);
         }
     }
     async fileExists(storagePath) {
@@ -53,11 +102,7 @@ let HbUploadFilesRepo = class HbUploadFilesRepo {
         }
     }
     getStoragePath(fileName) {
-        const ext = (fileName.split('.').pop() || "").toLowerCase();
-        const fileType = this.supportedFileTypes.images.includes(ext) ? FileType.images :
-            this.supportedFileTypes.audio.includes(ext) ? FileType.audio :
-                this.supportedFileTypes.video.includes(ext) ? FileType.video : "files";
-        return `files/${this.currentUser.uid}/${fileType}/${fileName}`;
+        return `users/${this.currentUser.uid}/${fileName}`;
     }
 };
 HbUploadFilesRepo = __decorate([

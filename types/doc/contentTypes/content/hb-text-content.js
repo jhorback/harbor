@@ -12,7 +12,7 @@ import { styles } from "../../../styles";
 import { UpdateDocContentEvent } from "../../data/hb-doc-data";
 import { TextContentData } from "../textContentType";
 import { HbApp } from "../../../domain/HbApp";
-import { FileUploaderClient } from "../../../files/FileUploaderClient";
+import { FileUploaderAccept, FileUploaderClient } from "../../../files/FileUploaderClient";
 /**
  */
 let TextContent = TextContent_1 = class TextContent extends LitElement {
@@ -117,9 +117,13 @@ if (!window.tinymceSettings) {
             automatic_uploads: true,
             image_title: true,
             file_picker_types: "image media",
-            file_picker_callback: (callback, value, meta) => new FileUploaderClient({ accept: meta.filetype }).handleFileUpload(callback),
-            plugins: "autolink lists link image autoresize fullscreen media table " +
-                "tinymcespellchecker codesample",
+            file_picker_callback: (callback, value, meta) => {
+                const accept = meta.filetype === "image" ? FileUploaderAccept.images : FileUploaderAccept.media;
+                const client = new FileUploaderClient({ accept: accept });
+                client.onComplete((event) => event.uploadedFile && callback(event.uploadedFile.url, { title: event.uploadedFile.name }));
+                client.handleFileUpload();
+            },
+            plugins: "autolink lists link image autoresize fullscreen media table tinymcespellchecker codesample",
             style_formats_merge: false,
             style_formats: [
                 { title: 'Heading 1', block: 'h2', attributes: { class: 'headline-medium' } },

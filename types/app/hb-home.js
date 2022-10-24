@@ -15,7 +15,7 @@ import { docTypes } from "../domain/Doc/docTypes";
  * The job of this element is to look the home page
  * document up in the database and append the correct element to the dom
  *
- * // jch: use the hb-system-admin-data to load the homePageRef
+ * // TODO: use the hb-system-admin-data to load the homePageRef
  * Basically, remove the local storage and extra logic from here
  */
 let HbHome = class HbHome extends LitElement {

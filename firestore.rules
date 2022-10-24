@@ -25,6 +25,13 @@ service cloud.firestore {
         if userHasRole("USER_ADMIN") || userHasRole("SITE_ADMIN") || hasOnly(['lastLogin'])
     }
 
+    match /users/{user}/files/{file} {
+        allow read;
+        allow create: if userHasRole("SITE_ADMIN") || userHasRole("AUTHOR") || userHasRole("USER_ADMIN")
+        allow update: if request.auth.uid == resource.data.ownerUid || userHasRole("SITE_ADMIN");
+        allow delete: if request.auth.uid == resource.data.ownerUid || userHasRole("SITE_ADMIN");
+    }
+
     match /system/app {
       allow read;
       allow create:
