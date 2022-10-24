@@ -6,7 +6,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 import { inject } from "../domain/DependencyContainer/decorators";
 import { ClientError } from "../domain/Errors";
-import { FileType, FileUploadCompletedEvent, FileUploadProgressEvent, UploadFilesRepoKey } from "../domain/interfaces/FileInterfaces";
+import { FileUploadType, FileUploadCompletedEvent, FileUploadProgressEvent, UploadFilesRepoKey } from "../domain/interfaces/FileInterfaces";
 import "../domain/Files/HbUploadFilesRepo";
 import { convertPictureToBase64Src, extractMediaTags } from "../domain/Files/extractMediaTags";
 import { UploadStatusPanel } from "./hb-upload-status-panel";
@@ -207,7 +207,7 @@ class UploadFileState {
         this._base64Src = this.setBase64Src(fileType);
     }
     setBase64Src(fileType) {
-        if (fileType === FileType.images) {
+        if (fileType === FileUploadType.images) {
             return URL.createObjectURL(this._file);
         }
         this.tryExtractMediaThumb();
@@ -280,8 +280,8 @@ class FileUpdatedEvent extends Event {
     constructor() {
         super(FileUpdatedEvent.eventType);
     }
-    static { this.eventType = "file-updated"; }
 }
+FileUpdatedEvent.eventType = "file-updated";
 /**
  * Used to communicate the overall status
  * of all uploads
@@ -320,8 +320,8 @@ export class CancelUploadEvent extends Event {
     constructor() {
         super(CancelUploadEvent.eventType, { bubbles: true, composed: true });
     }
-    static { this.eventType = "cancel-upload"; }
 }
+CancelUploadEvent.eventType = "cancel-upload";
 /**
  * DOM event for status-panel
  */
@@ -331,5 +331,5 @@ export class OverwriteFileEvent extends Event {
         this.fileIndex = fileIndex;
         this.allowOverwrite = allowOverwrite;
     }
-    static { this.eventType = "overwrite-file"; }
 }
+OverwriteFileEvent.eventType = "overwrite-file";

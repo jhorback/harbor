@@ -116,7 +116,8 @@ let AddDocumentDialog = class AddDocumentDialog extends LitElement {
         this.dispatchEvent(new DocumentAddedEvent(event.docModel));
         this.close();
     }
-    static { this.styles = [styles.types, styles.dialog, css `
+};
+AddDocumentDialog.styles = [styles.types, styles.dialog, css `
         :host {
             display: block;
             z-index:1;
@@ -135,8 +136,7 @@ let AddDocumentDialog = class AddDocumentDialog extends LitElement {
             flex-direction: column;
             gap: 5px;
         }
-  `]; }
-};
+  `];
 __decorate([
     property({ type: Boolean })
 ], AddDocumentDialog.prototype, "open", void 0);

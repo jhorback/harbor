@@ -118,7 +118,8 @@ let UploadStatusPanel = class UploadStatusPanel extends LitElement {
             this.parentElement?.removeChild(this);
         }, 1000);
     }
-    static { this.styles = [styles.types, styles.icons, css `
+};
+UploadStatusPanel.styles = [styles.types, styles.icons, css `
         :host {
             z-index: 2000;
             background-color: var(--md-sys-color-surface-variant);
@@ -203,8 +204,7 @@ let UploadStatusPanel = class UploadStatusPanel extends LitElement {
             display:flex;
             align-items: center;
         }
-    `]; }
-};
+    `];
 __decorate([
     property({ type: Boolean, reflect: true })
 ], UploadStatusPanel.prototype, "open", void 0);

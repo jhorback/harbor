@@ -1,6 +1,6 @@
 import { inject } from "../domain/DependencyContainer/decorators";
 import { ClientError } from "../domain/Errors";
-import { FileType, FileUploadCompletedEvent, FileUploadProgressEvent, IUploadedFile, IUploadFileOptions, IUploadFilesRepo, UploadFilesRepoKey } from "../domain/interfaces/FileInterfaces";
+import { FileUploadType, FileUploadCompletedEvent, FileUploadProgressEvent, IUploadedFile, IUploadFileOptions, IUploadFilesRepo, UploadFilesRepoKey } from "../domain/interfaces/FileInterfaces";
 import "../domain/Files/HbUploadFilesRepo";
 import { convertPictureToBase64Src, extractMediaTags } from "../domain/Files/extractMediaTags";
 import { UploadStatusPanel } from "./hb-upload-status-panel";
@@ -232,7 +232,7 @@ export class FileUploadError extends Error {
  * Used for tracking the progress of a single file
  */
 class UploadFileState {
-    constructor(uploadController:AbortController, file:File, fileType:FileType) {
+    constructor(uploadController:AbortController, file:File, fileType:FileUploadType) {
         this._uploadController = uploadController;
         this._file = file;
         this._fileController = new AbortController();
@@ -246,8 +246,8 @@ class UploadFileState {
         this._base64Src = this.setBase64Src(fileType)
     }
 
-    setBase64Src(fileType:FileType):string {
-        if (fileType === FileType.images) {
+    setBase64Src(fileType:FileUploadType):string {
+        if (fileType === FileUploadType.images) {
             return URL.createObjectURL(this._file);
         }
         this.tryExtractMediaThumb();

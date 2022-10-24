@@ -28,6 +28,8 @@
         mediaTags: IMediaTags
     */
 
+import { IMediaTagPicture, IMediaTags } from "../interfaces/FileInterfaces";
+
 export const extractMediaTags = async (file:File):Promise<IMediaTags> => {
 
     return new Promise(async (resolve, reject) => {
@@ -109,20 +111,7 @@ interface IJsMediaTags {
     }
 }
 
-export interface IMediaTags {
-    title:string,
-    artist:string,
-    album:string,
-    year:number,
-    track:number,
-    genre:string,
-    picture:IMediaTagPicture
-}
 
-export interface IMediaTagPicture {
-    format:string,
-    data:Array<number>
-}
 
 
 
