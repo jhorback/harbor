@@ -280,8 +280,8 @@ class FileUpdatedEvent extends Event {
     constructor() {
         super(FileUpdatedEvent.eventType);
     }
-    static { this.eventType = "file-updated"; }
 }
+FileUpdatedEvent.eventType = "file-updated";
 /**
  * Used to communicate the overall status
  * of all uploads
@@ -320,8 +320,8 @@ export class CancelUploadEvent extends Event {
     constructor() {
         super(CancelUploadEvent.eventType, { bubbles: true, composed: true });
     }
-    static { this.eventType = "cancel-upload"; }
 }
+CancelUploadEvent.eventType = "cancel-upload";
 /**
  * DOM event for status-panel
  */
@@ -331,5 +331,5 @@ export class OverwriteFileEvent extends Event {
         this.fileIndex = fileIndex;
         this.allowOverwrite = allowOverwrite;
     }
-    static { this.eventType = "overwrite-file"; }
 }
+OverwriteFileEvent.eventType = "overwrite-file";
