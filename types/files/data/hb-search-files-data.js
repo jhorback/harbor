@@ -4,25 +4,25 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-var SearchDocsData_1;
+var SearchFilesData_1;
 import { DataElement, StateChange } from "@domx/dataelement";
 import { customDataElement, dataProperty, event } from "@domx/dataelement/decorators";
 import { inject } from "../../domain/DependencyContainer/decorators";
-import { SearchDocsRepoKey } from "../../domain/interfaces/DocumentInterfaces";
-import "../../domain/Doc/HbSearchDocsRepo";
-export class SearchDocsEvent extends Event {
+import { SearchFilesRepoKey } from "../../domain/interfaces/FileInterfaces";
+import "../../domain/Files/HbSearchFilesRepo";
+export class SearchFilesEvent extends Event {
     constructor(options) {
-        super(SearchDocsEvent.eventType, { bubbles: true });
+        super(SearchFilesEvent.eventType, { bubbles: true });
         this.options = options;
     }
 }
-SearchDocsEvent.eventType = "search-docs";
-let SearchDocsData = SearchDocsData_1 = class SearchDocsData extends DataElement {
+SearchFilesEvent.eventType = "search-files";
+let SearchFilesData = SearchFilesData_1 = class SearchFilesData extends DataElement {
     constructor() {
         super(...arguments);
-        this.state = SearchDocsData_1.defaultState;
+        this.state = SearchFilesData_1.defaultState;
     }
-    searchDocs(event) {
+    searchFiles(event) {
         const options = event.options;
         StateChange.of(this)
             .next(setIsLoading(true))
@@ -30,36 +30,36 @@ let SearchDocsData = SearchDocsData_1 = class SearchDocsData extends DataElement
             .dispatch();
     }
 };
-SearchDocsData.defaultState = {
+SearchFilesData.defaultState = {
     list: [],
     isLoading: false,
     count: 0
 };
 __decorate([
     dataProperty()
-], SearchDocsData.prototype, "state", void 0);
+], SearchFilesData.prototype, "state", void 0);
 __decorate([
-    inject(SearchDocsRepoKey)
-], SearchDocsData.prototype, "searchDocsRepo", void 0);
+    inject(SearchFilesRepoKey)
+], SearchFilesData.prototype, "searchDocsRepo", void 0);
 __decorate([
-    event(SearchDocsEvent.eventType)
-], SearchDocsData.prototype, "searchDocs", null);
-SearchDocsData = SearchDocsData_1 = __decorate([
-    customDataElement("hb-search-docs-data", {
+    event(SearchFilesEvent.eventType)
+], SearchFilesData.prototype, "searchFiles", null);
+SearchFilesData = SearchFilesData_1 = __decorate([
+    customDataElement("hb-search-files-data", {
         eventsListenAt: "parent"
     })
-], SearchDocsData);
-export { SearchDocsData };
+], SearchFilesData);
+export { SearchFilesData };
 const searchDocuments = (repo, options) => async (stateChange) => {
-    const docs = await repo.searchDocs(options);
+    const files = await repo.searchFiles(options);
     stateChange
-        .next(updateDocsList(docs))
+        .next(updateFilesList(files))
         .next(setIsLoading(false))
         .dispatch();
 };
-const updateDocsList = (docs) => (state) => {
-    state.list = docs;
-    state.count = docs.length;
+const updateFilesList = (files) => (state) => {
+    state.list = files;
+    state.count = files.length;
 };
 const setIsLoading = (isLoading) => (state) => {
     state.isLoading = isLoading;

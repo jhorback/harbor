@@ -52,7 +52,7 @@ let ProfilePage = class ProfilePage extends LitElement {
             id="files-tab"
             label="Files"
             href="/profile/files"
-            ?hidden=${!isAuthorized(UserAction.uploadContent)}
+            ?hidden=${!isAuthorized(UserAction.uploadFiles)}
         ></hb-link-tab>
         <hb-link-tab
             id="users-tab"
@@ -75,7 +75,7 @@ let ProfilePage = class ProfilePage extends LitElement {
             @route-active=${() => this.selectTab("documents-tab")}
         ></domx-route>
     ` : html ``}
-    ${isAuthorized(UserAction.uploadContent) ? html `
+    ${isAuthorized(UserAction.uploadFiles) ? html `
         <domx-route
             pattern="/profile/files"
             element="hb-profile-files-tab"

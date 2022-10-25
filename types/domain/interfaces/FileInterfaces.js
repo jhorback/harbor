@@ -1,3 +1,4 @@
+export const SearchFilesRepoKey = Symbol("SEARCH_FILES_REPO");
 export var FileUploadType;
 (function (FileUploadType) {
     FileUploadType["images"] = "images";
