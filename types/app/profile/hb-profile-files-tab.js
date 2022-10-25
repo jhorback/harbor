@@ -4,43 +4,41 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
+import { linkProp } from "@domx/dataelement";
 import { html, css, LitElement } from "lit";
 import { customElement, property, query } from "lit/decorators.js";
-import { linkProp } from "@domx/linkprop";
+import { SearchFilesData, SearchFilesEvent } from "../../files/data/hb-search-files-data";
 import { styles } from "../../styles";
-import { SearchDocsData, SearchDocsEvent } from "../../doc/data/hb-search-docs-data";
-import "../../common/hb-horizontal-card";
 /**
- * @class ProfileDocsTab
+ * @class ProfileContentTab
  */
-let ProfileDocsTab = class ProfileDocsTab extends LitElement {
+let ProfileContentTab = class ProfileContentTab extends LitElement {
     constructor() {
         super(...arguments);
-        this.state = SearchDocsData.defaultState;
+        this.state = SearchFilesData.defaultState;
     }
     async connectedCallback() {
         super.connectedCallback();
         await this.updateComplete;
-        this.$dataEl.dispatchEvent(new SearchDocsEvent({}));
+        this.$dataEl.dispatchEvent(new SearchFilesEvent({}));
     }
     render() {
         return html `
-            <hb-search-docs-data
+            <hb-search-files-data
                 @state-changed=${linkProp(this, "state")}
-            ></hb-search-docs-data>
+            ></hb-search-files-data>
             ${this.state.isLoading || this.state.count !== 0 ? html `` : html `
-                <p>There are no documents</p>
+                <p>There are no files</p>
             `}
             <div class="list">
-            ${this.state.list.map(docModel => {
-            const thumb = docModel.toDocumentThumbnail();
+            ${this.state.list.map(fileModel => {
             return html `
-                    <hb-horizontal-card
-                        class="home-page-thumb"
-                        text=${thumb.title}
-                        description=${thumb.thumbDescription}
-                        media-url=${thumb.thumbUrl}
-                        media-href=${thumb.href}
+                    <hb-horizontal-card                        
+                        text=${fileModel.name}
+                        description=${fileModel.thumbDescription}
+                        media-url=${fileModel.thumbUrl}
+                        media-href=${fileModel.url}
+                        link-target="files"
                     ></hb-horizontal-card>
                 `;
         })}
@@ -48,7 +46,7 @@ let ProfileDocsTab = class ProfileDocsTab extends LitElement {
         `;
     }
 };
-ProfileDocsTab.styles = [styles.types, css `
+ProfileContentTab.styles = [styles.types, css `
         :host {
             display: block;
         }
@@ -61,11 +59,11 @@ ProfileDocsTab.styles = [styles.types, css `
     `];
 __decorate([
     property({ type: Object })
-], ProfileDocsTab.prototype, "state", void 0);
+], ProfileContentTab.prototype, "state", void 0);
 __decorate([
-    query("hb-search-docs-data")
-], ProfileDocsTab.prototype, "$dataEl", void 0);
-ProfileDocsTab = __decorate([
-    customElement('hb-profile-docs-tab')
-], ProfileDocsTab);
-export { ProfileDocsTab };
+    query("hb-search-files-data")
+], ProfileContentTab.prototype, "$dataEl", void 0);
+ProfileContentTab = __decorate([
+    customElement('hb-profile-files-tab')
+], ProfileContentTab);
+export { ProfileContentTab };

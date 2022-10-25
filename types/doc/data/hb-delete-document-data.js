@@ -15,14 +15,14 @@ export class DeleteDocumentEvent extends Event {
         super(DeleteDocumentEvent.eventType, { bubbles: true });
         this.uid = uid;
     }
-    static { this.eventType = "delete-document"; }
 }
+DeleteDocumentEvent.eventType = "delete-document";
 export class DocumentDeletedEvent extends Event {
     constructor() {
         super(DocumentDeletedEvent.eventType, { bubbles: true });
     }
-    static { this.eventType = "document-deleted"; }
 }
+DocumentDeletedEvent.eventType = "document-deleted";
 let DeleteDocumentData = class DeleteDocumentData extends DataElement {
     async deleteDocument(event) {
         StateChange.of(this)

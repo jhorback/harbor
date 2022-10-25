@@ -1,7 +1,6 @@
 import { getAnalytics } from "firebase/analytics";
 import { FbApp } from "./FbApp";
 export class GoogleAnalytics {
-    static { this._current = undefined; }
     static get current() {
         GoogleAnalytics.init();
         return GoogleAnalytics._current;
@@ -12,6 +11,7 @@ export class GoogleAnalytics {
         }
     }
 }
+GoogleAnalytics._current = undefined;
 // logEvent(FbApp._analytics, "login", {"asdf":"asdf"});
 // Analytics
 // https://firebase.google.com/docs/analytics/get-started?platform=web

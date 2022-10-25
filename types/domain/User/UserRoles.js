@@ -18,14 +18,14 @@ export var UserAction;
     UserAction["deleteDocuments"] = "DELETE_DOCUMENTS";
     /** allows user to delete any document */
     UserAction["deleteAnyDocument"] = "DELETE_ANY_DOCUMENT";
-    /** allows user to upload files and access to the profile content tab */
-    UserAction["uploadContent"] = "UPLOAD_CONTENT";
-    /** allows user to view all content */
-    UserAction["viewAllContent"] = "VIEW_ALL_CONTENT";
-    /** allows user to delete their own content */
-    UserAction["deleteContent"] = "DELETE_CONTENT";
-    /** allows user to delete any content */
-    UserAction["deleteAnyContent"] = "DELETE_ANY_CONTENT";
+    /** allows user to upload files and access to the profile files tab */
+    UserAction["uploadFiles"] = "UPLOAD_FILES";
+    /** allows user to view all files */
+    UserAction["viewAllFiles"] = "VIEW_ALL_FILES";
+    /** allows user to delete their own files */
+    UserAction["deleteFiles"] = "DELETE_FILES";
+    /** allows user to delete any file */
+    UserAction["deleteAnyFile"] = "DELETE_ANY_FILE";
     /** allows a user to view all user in the profile users tab */
     UserAction["viewUsers"] = "VIEW_USERS";
     /** allows a user to edit any users role */
@@ -53,20 +53,20 @@ const UserActionRoles = {
     [UserAction.deleteAnyDocument]: [
         UserRole.siteAdmin
     ],
-    [UserAction.uploadContent]: [
+    [UserAction.uploadFiles]: [
         UserRole.userAdmin,
         UserRole.author,
         UserRole.siteAdmin
     ],
-    [UserAction.viewAllContent]: [
+    [UserAction.viewAllFiles]: [
         UserRole.siteAdmin
     ],
-    [UserAction.deleteContent]: [
+    [UserAction.deleteFiles]: [
         UserRole.userAdmin,
         UserRole.author,
         UserRole.siteAdmin
     ],
-    [UserAction.deleteAnyContent]: [
+    [UserAction.deleteAnyFile]: [
         UserRole.siteAdmin
     ],
     [UserAction.viewUsers]: [

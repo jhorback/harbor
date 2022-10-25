@@ -43,7 +43,7 @@ export class SearchDocsData extends DataElement {
 
 
     @event(SearchDocsEvent.eventType)
-    addNewDocument(event:SearchDocsEvent) {
+    searchDocs(event:SearchDocsEvent) {
         const options = event.options;
         StateChange.of(this)
             .next(setIsLoading(true))

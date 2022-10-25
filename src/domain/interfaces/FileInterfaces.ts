@@ -1,3 +1,16 @@
+import { FileModel } from "../Files/FileModel";
+
+
+
+
+export const SearchFilesRepoKey:symbol = Symbol("SEARCH_FILES_REPO");
+export interface ISearchFilesRepo {
+    searchFiles(options:ISearchFilesOptions):Promise<Array<FileModel>>;
+}
+export interface ISearchFilesOptions {
+    text?:string;
+}
+
 
 
 

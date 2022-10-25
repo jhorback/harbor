@@ -15,6 +15,7 @@ let HorizontalCard = class HorizontalCard extends LitElement {
         super(...arguments);
         this.mediaUrl = "";
         this.mediaHref = "";
+        this.linkTarget = "";
         this.text = "";
         this.description = "";
     }
@@ -22,13 +23,13 @@ let HorizontalCard = class HorizontalCard extends LitElement {
         return html `
             <div class="horizontal-card" @click=${this.handleClick}>
                 <div class="text">
-                    <a href=${this.mediaHref}>
+                    <a href=${this.mediaHref} target=${this.linkTarget}>
                         <div class="title-medium readable">${this.text}</div>
                     </a>
                     <div class="body-medium readable">${this.description}</div>
                 </div>
                 <div class="media" ?hidden=${this.mediaUrl === ""}>
-                    <a href=${this.mediaHref}>
+                    <a href=${this.mediaHref} target=${this.linkTarget}>
                         <img src=${this.mediaUrl} @error=${this.onImageError}>
                     </a>
                 </div>
@@ -42,7 +43,8 @@ let HorizontalCard = class HorizontalCard extends LitElement {
         console.log(`hb-avatar image failed to load, falling back to use an icon`);
         this.mediaUrl = "";
     }
-    static { this.styles = [styles.icons, styles.types, css `
+};
+HorizontalCard.styles = [styles.icons, styles.types, css `
         :host {
             display: block;
         }
@@ -88,14 +90,16 @@ let HorizontalCard = class HorizontalCard extends LitElement {
             display: inline-block;
             border-radius:  0 8px 8px 0;
         }
-    `]; }
-};
+    `];
 __decorate([
     property({ type: String, attribute: "media-url" })
 ], HorizontalCard.prototype, "mediaUrl", void 0);
 __decorate([
     property({ type: String, attribute: "media-href" })
 ], HorizontalCard.prototype, "mediaHref", void 0);
+__decorate([
+    property({ type: String, attribute: "link-target" })
+], HorizontalCard.prototype, "linkTarget", void 0);
 __decorate([
     property({ type: String })
 ], HorizontalCard.prototype, "text", void 0);
