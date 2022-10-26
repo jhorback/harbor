@@ -139,13 +139,16 @@ export class HbContent extends LitElement {
             position: absolute;
             top:0;
             right: 0;
-            z-index: 10000;
+            z-index: 19;
             padding: 4px;
+            border: 1px solid var(--md-sys-color-outline);
+            border-radius: 0 12px;
+            border-width: 0 0 1px 1px;
+            background-color: var(--md-sys-color-surface-variant)
         }
         :host([doc-edit]:hover),
         :host([doc-edit][is-active]),
-        :host([content-edit]) {            
-            //background-color: var(--md-sys-color-surface-variant);
+        :host([content-edit]) {
             border-radius: var(--md-sys-shape-corner-medium);
             outline: 1px solid var(--md-sys-color-outline);
             margin: -1rem;
@@ -160,6 +163,7 @@ export class HbContent extends LitElement {
         .content-edit-tools {
             background: var(--md-sys-color-surface-variant);
             border-radius: 0 0 12px 12px;
+            // outline: 1px solid var(--md-sys-color-outline);        
             margin: -1rem;
             margin-top: 8px;
         }
@@ -169,26 +173,6 @@ export class HbContent extends LitElement {
 interface IIndexable {
     contentIndex?:number
 }
-
-/*
-// :host::before {
-        //     content: "";
-        //     background-color: var(--md-sys-color-surface-variant);
-        //     width: 100%;
-        //     height:100%;
-        //     border-radius: var(--md-sys-shape-corner-medium);
-        //     display: block;
-        //     position: absolute;
-        //     left:-20px;
-        //     top:-20px;
-        //     right: -20px;
-        //     bottom: -20px;
-        //     z-index: -1;
-        // }
-        // :host([doc-edit]:hover) {
-        //     background-color: var(--md-sys-color-surface-variant);
-        // }
-    */
 
 declare global {
     interface HTMLElementTagNameMap {
