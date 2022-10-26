@@ -14,6 +14,7 @@ import { AddDocumentDialog } from "../../hb-add-document-dialog";
 import { DeleteDocumentDialog } from "../../hb-delete-document-dialog";
 import "../../hb-delete-document-dialog";
 import "../../hb-doc-author";
+import { HbContent } from "../../contentTypes/hb-content";
 import {
     DocData,
     IDocDataState,
@@ -22,9 +23,28 @@ import {
     UpdateSubtitleEvent
 } from "../../data/hb-doc-data";
 import { sendFeedback } from "../../../layout/feedback";
-import { IContentType } from "../../../domain/interfaces/DocumentInterfaces";
 import { contentTypes } from "../../../domain/Doc/contentTypes";
 
+
+export class DocEditModeChangeEvent extends Event {
+    static eventType = "doc-edit-mode-change";
+    inEditMode:boolean;
+    constructor(inEditMode:boolean) {
+        super(DocEditModeChangeEvent.eventType, {bubbles: false});
+        this.inEditMode = inEditMode;
+    }
+}
+
+export class ContentActiveChangeEvent extends Event {
+    static eventType = "content-active-change";
+    activeContent:HbContent;
+    active:boolean;
+    constructor(activeContent:HbContent, active:boolean) {
+        super(ContentActiveChangeEvent.eventType, {bubbles: true, composed: true});
+        this.activeContent = activeContent;
+        this.active = active;
+    }
+}
 
 /**
  * 
@@ -85,18 +105,17 @@ export class HbDocPage extends LitElement {
                         </div>
                     `}
                 </div>
-                <div class="doc-content">
+                <div class="doc-content" @content-active-change=${this.contentActive}>
                     ${this.state.doc.content.map((state, index) => contentTypes.get(state.contentType).render({
                         index,
-                        state,
-                        inDocEditMode: this.inEditMode
+                        state
                     }))}
                 </div>
             </hb-page-layout>
         `;
     }
 
-    subtitleChange(event:ContentEditableChangeEvent) {
+    private subtitleChange(event:ContentEditableChangeEvent) {
         this.shadowRoot?.dispatchEvent(new UpdateSubtitleEvent(event.value));
     }
 
@@ -114,6 +133,7 @@ export class HbDocPage extends LitElement {
 
     editDocumentClicked() {
         this.inEditMode = true;
+        this.dispatchEditModeChange();
     }
 
     deleteDocumentClicked() {
@@ -123,6 +143,29 @@ export class HbDocPage extends LitElement {
     doneButtonClicked() {
         this.selectedEditTab = "";
         this.inEditMode = false;
+        this.closeActiveContent();
+        this.dispatchEditModeChange();
+    }
+
+    private dispatchEditModeChange() {
+        this.dispatchEvent(new DocEditModeChangeEvent(this.inEditMode));
+    }
+
+    private activeContent:HbContent|null = null;
+
+    private contentActive(event:ContentActiveChangeEvent) {
+        this.closeActiveContent();
+        if (event.active) {
+            this.activeContent = event.activeContent;
+            this.activeContent.isActive = true;
+        }   
+    }
+
+    private closeActiveContent() {
+        if(this.activeContent) {
+            this.activeContent.isActive = false;
+            this.activeContent.contentEdit = false;
+        }
     }
 
     static styles = [styles.types, styles.icons, css`
@@ -134,8 +177,7 @@ export class HbDocPage extends LitElement {
         }
         h1.headline-large {
             margin-bottom: 1rem;
-        }
-   
+        }   
 
         .edit-tabs {
             display: flex;

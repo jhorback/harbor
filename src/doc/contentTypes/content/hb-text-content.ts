@@ -7,7 +7,9 @@ import { TextContentData } from "../textContentType";
 import { HbApp } from "../../../domain/HbApp";
 import { FileUploaderAccept, FileUploaderClient } from "../../../files/FileUploaderClient";
 import { FileUploadCompletedEvent } from "../../../domain/interfaces/FileInterfaces";
-
+import "../hb-content";
+import { HbContent } from "../hb-content";
+import { ContentActiveChangeEvent } from "../../docTypes/pages/hb-doc-page";
 
 /**
  */
@@ -20,52 +22,44 @@ export class TextContent extends LitElement {
     @property({type:Number})
     index:number = -1;
 
-    @property({type:Boolean, attribute: "doc-edit"})
-    inDocEditMode:Boolean = false;
-
     @property({type: Object})
     state:TextContentData = TextContent.defaultState;
 
-    @state()
-    inEditMode = false;
+    @query("hb-content")
+    $hbContent!:HbContent;
 
     render() {
-        return this.inEditMode ? html`
-            <tinymce-editor
-                config="tinymceSettings.config"
-                on-Change="tinymceSettings.changeHandler"
-                @change=${this.tinymceChange}
-                api-key="g3l947xa1kp0eguyzlt3vwy92xiobi1mowojbtjllsw91xyt"
-                height="500"
-                menubar="false"
-                toolbar="undo redo | styles | bold italic underline strikethrough | align |
-                bullist numlist indent hr | link image media table | codesample  fullscreen"
-            >${this.state.text}</tinymce-editor>
-        ` : html`
-            <div @click=${this.textClicked}>
-                ${this.inDocEditMode && this.state.text === "" ? html`
+        return html`
+            <hb-content @content-active-change=${this.contentActive} ?is-empty=${!this.state.text}>
+                <div>${unsafeHTML(this.state.text)}</div>
+                <div slot="doc-edit-empty" @click=${this.textClicked}>
                     Click to enter text content
-                    ` :
-                    unsafeHTML(this.state.text)}
-            </div>
+                </div>
+                <div slot="content-edit">
+                    <tinymce-editor
+                        config="tinymceSettings.config"
+                        on-Change="tinymceSettings.changeHandler"
+                        @change=${this.tinymceChange}
+                        api-key="g3l947xa1kp0eguyzlt3vwy92xiobi1mowojbtjllsw91xyt"
+                        height="500"
+                        menubar="false"
+                        toolbar="undo redo | styles | bold italic underline strikethrough | align |
+                        bullist numlist indent hr | link image media table | codesample  fullscreen"
+                >${this.state.text}</tinymce-editor>
+                </div>
+            </hb-content>
         `;
     }
 
-    updated() {
-        if (!this.inDocEditMode) {
-            this.inEditMode = false;
-        }
-
-        if (this.inEditMode) {
+    contentActive(event:ContentActiveChangeEvent) {
+        if (event.active) {
             // @ts-ignore
             import("@tinymce/tinymce-webcomponent");
         }
     }
 
     textClicked() {
-        if (this.inDocEditMode) {
-            this.inEditMode = true;
-        }
+        this.$hbContent.edit();
     }
 
     tinymceChange(event:ChangeEvent) {
@@ -75,25 +69,7 @@ export class TextContent extends LitElement {
     static styles = [styles.types, styles.format, css`
         :host {
             display: block;
-            position: relative;
         }
-        // :host::before {
-        //     content: "";
-        //     background-color: var(--md-sys-color-surface-variant);
-        //     width: 100%;
-        //     height:100%;
-        //     border-radius: var(--md-sys-shape-corner-medium);
-        //     display: block;
-        //     position: absolute;
-        //     left:-20px;
-        //     top:-20px;
-        //     right: -20px;
-        //     bottom: -20px;
-        //     z-index: -1;
-        // }
-        // :host([doc-edit]:hover) {
-        //     background-color: var(--md-sys-color-surface-variant);
-        // }
   `]
 }
 

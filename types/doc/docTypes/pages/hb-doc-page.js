@@ -18,6 +18,21 @@ import "../../hb-doc-author";
 import { DocData, UpdateShowSubtitleEvent, UpdateShowTitleEvent, UpdateSubtitleEvent } from "../../data/hb-doc-data";
 import { sendFeedback } from "../../../layout/feedback";
 import { contentTypes } from "../../../domain/Doc/contentTypes";
+export class DocEditModeChangeEvent extends Event {
+    constructor(inEditMode) {
+        super(DocEditModeChangeEvent.eventType, { bubbles: false });
+        this.inEditMode = inEditMode;
+    }
+}
+DocEditModeChangeEvent.eventType = "doc-edit-mode-change";
+export class ContentActiveChangeEvent extends Event {
+    constructor(activeContent, active) {
+        super(ContentActiveChangeEvent.eventType, { bubbles: true, composed: true });
+        this.activeContent = activeContent;
+        this.active = active;
+    }
+}
+ContentActiveChangeEvent.eventType = "content-active-change";
 /**
  *
  */
@@ -28,6 +43,7 @@ let HbDocPage = class HbDocPage extends LitElement {
         this.state = DocData.defaultState;
         this.inEditMode = false;
         this.selectedEditTab = "";
+        this.activeContent = null;
     }
     get uid() { return `${this.docType}:${this.pid}`; }
     render() {
@@ -57,11 +73,10 @@ let HbDocPage = class HbDocPage extends LitElement {
                         </div>
                     `}
                 </div>
-                <div class="doc-content">
+                <div class="doc-content" @content-active-change=${this.contentActive}>
                     ${this.state.doc.content.map((state, index) => contentTypes.get(state.contentType).render({
             index,
-            state,
-            inDocEditMode: this.inEditMode
+            state
         }))}
                 </div>
             </hb-page-layout>
@@ -82,6 +97,7 @@ let HbDocPage = class HbDocPage extends LitElement {
     }
     editDocumentClicked() {
         this.inEditMode = true;
+        this.dispatchEditModeChange();
     }
     deleteDocumentClicked() {
         this.$deleteDocumentDialog.open = true;
@@ -89,6 +105,24 @@ let HbDocPage = class HbDocPage extends LitElement {
     doneButtonClicked() {
         this.selectedEditTab = "";
         this.inEditMode = false;
+        this.closeActiveContent();
+        this.dispatchEditModeChange();
+    }
+    dispatchEditModeChange() {
+        this.dispatchEvent(new DocEditModeChangeEvent(this.inEditMode));
+    }
+    contentActive(event) {
+        this.closeActiveContent();
+        if (event.active) {
+            this.activeContent = event.activeContent;
+            this.activeContent.isActive = true;
+        }
+    }
+    closeActiveContent() {
+        if (this.activeContent) {
+            this.activeContent.isActive = false;
+            this.activeContent.contentEdit = false;
+        }
     }
 };
 HbDocPage.styles = [styles.types, styles.icons, css `
@@ -100,8 +134,7 @@ HbDocPage.styles = [styles.types, styles.icons, css `
         }
         h1.headline-large {
             margin-bottom: 1rem;
-        }
-   
+        }   
 
         .edit-tabs {
             display: flex;

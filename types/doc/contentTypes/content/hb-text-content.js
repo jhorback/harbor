@@ -6,57 +6,52 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 var TextContent_1;
 import { html, css, LitElement } from "lit";
-import { customElement, property, state } from "lit/decorators.js";
+import { customElement, property, query } from "lit/decorators.js";
 import { unsafeHTML } from "lit/directives/unsafe-html.js";
 import { styles } from "../../../styles";
 import { UpdateDocContentEvent } from "../../data/hb-doc-data";
 import { TextContentData } from "../textContentType";
 import { HbApp } from "../../../domain/HbApp";
 import { FileUploaderAccept, FileUploaderClient } from "../../../files/FileUploaderClient";
+import "../hb-content";
 /**
  */
 let TextContent = TextContent_1 = class TextContent extends LitElement {
     constructor() {
         super(...arguments);
         this.index = -1;
-        this.inDocEditMode = false;
         this.state = TextContent_1.defaultState;
-        this.inEditMode = false;
     }
     render() {
-        return this.inEditMode ? html `
-            <tinymce-editor
-                config="tinymceSettings.config"
-                on-Change="tinymceSettings.changeHandler"
-                @change=${this.tinymceChange}
-                api-key="g3l947xa1kp0eguyzlt3vwy92xiobi1mowojbtjllsw91xyt"
-                height="500"
-                menubar="false"
-                toolbar="undo redo | styles | bold italic underline strikethrough | align |
-                bullist numlist indent hr | link image media table | codesample  fullscreen"
-            >${this.state.text}</tinymce-editor>
-        ` : html `
-            <div @click=${this.textClicked}>
-                ${this.inDocEditMode && this.state.text === "" ? html `
+        return html `
+            <hb-content @content-active-change=${this.contentActive} ?is-empty=${!this.state.text}>
+                <div>${unsafeHTML(this.state.text)}</div>
+                <div slot="doc-edit-empty" @click=${this.textClicked}>
                     Click to enter text content
-                    ` :
-            unsafeHTML(this.state.text)}
-            </div>
+                </div>
+                <div slot="content-edit">
+                    <tinymce-editor
+                        config="tinymceSettings.config"
+                        on-Change="tinymceSettings.changeHandler"
+                        @change=${this.tinymceChange}
+                        api-key="g3l947xa1kp0eguyzlt3vwy92xiobi1mowojbtjllsw91xyt"
+                        height="500"
+                        menubar="false"
+                        toolbar="undo redo | styles | bold italic underline strikethrough | align |
+                        bullist numlist indent hr | link image media table | codesample  fullscreen"
+                >${this.state.text}</tinymce-editor>
+                </div>
+            </hb-content>
         `;
     }
-    updated() {
-        if (!this.inDocEditMode) {
-            this.inEditMode = false;
-        }
-        if (this.inEditMode) {
+    contentActive(event) {
+        if (event.active) {
             // @ts-ignore
             import("@tinymce/tinymce-webcomponent");
         }
     }
     textClicked() {
-        if (this.inDocEditMode) {
-            this.inEditMode = true;
-        }
+        this.$hbContent.edit();
     }
     tinymceChange(event) {
         this.dispatchEvent(new UpdateDocContentEvent(this.index, TextContentData.of(event.value)));
@@ -66,39 +61,18 @@ TextContent.defaultState = new TextContentData();
 TextContent.styles = [styles.types, styles.format, css `
         :host {
             display: block;
-            position: relative;
         }
-        // :host::before {
-        //     content: "";
-        //     background-color: var(--md-sys-color-surface-variant);
-        //     width: 100%;
-        //     height:100%;
-        //     border-radius: var(--md-sys-shape-corner-medium);
-        //     display: block;
-        //     position: absolute;
-        //     left:-20px;
-        //     top:-20px;
-        //     right: -20px;
-        //     bottom: -20px;
-        //     z-index: -1;
-        // }
-        // :host([doc-edit]:hover) {
-        //     background-color: var(--md-sys-color-surface-variant);
-        // }
   `];
 __decorate([
     property({ type: String }),
     property({ type: Number })
 ], TextContent.prototype, "index", void 0);
 __decorate([
-    property({ type: Boolean, attribute: "doc-edit" })
-], TextContent.prototype, "inDocEditMode", void 0);
-__decorate([
     property({ type: Object })
 ], TextContent.prototype, "state", void 0);
 __decorate([
-    state()
-], TextContent.prototype, "inEditMode", void 0);
+    query("hb-content")
+], TextContent.prototype, "$hbContent", void 0);
 TextContent = TextContent_1 = __decorate([
     customElement('hb-text-content')
 ], TextContent);

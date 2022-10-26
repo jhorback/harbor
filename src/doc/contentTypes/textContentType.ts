@@ -21,7 +21,6 @@ const textContentType:IContentTypeDescriptor = {
         <hb-text-content
             index=${options.index}
             .state=${options.state}
-            ?doc-edit=${options.inDocEditMode}
         ></hb-text-content>
     `
 };

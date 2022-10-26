@@ -2,6 +2,11 @@ import { FileModel } from "../Files/FileModel";
 
 
 
+export const FindFileRepoKey:symbol = Symbol("FIND_FILE_REPO");
+export interface IFindFileRepo {
+    findFile(path:string):Promise<FileModel|null>;
+}
+
 
 export const SearchFilesRepoKey:symbol = Symbol("SEARCH_FILES_REPO");
 export interface ISearchFilesRepo {
