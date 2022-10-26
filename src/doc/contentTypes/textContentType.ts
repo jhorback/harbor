@@ -19,7 +19,7 @@ const textContentType:IContentTypeDescriptor = {
     description: "A rich text field",
     render: (options:IContentTypeRenderOptions) => html`
         <hb-text-content
-            index=${options.index}
+            content-index=${options.contentIndex}
             .state=${options.state}
         ></hb-text-content>
     `

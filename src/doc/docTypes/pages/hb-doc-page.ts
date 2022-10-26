@@ -63,7 +63,7 @@ export class HbDocPage extends LitElement {
     state:IDocDataState = DocData.defaultState;
 
     @state()
-    inEditMode = false;
+    inEditMode = true;
 
     @state()
     selectedEditTab:string = "";
@@ -85,6 +85,7 @@ export class HbDocPage extends LitElement {
             <hb-doc-data
                 uid=${this.uid}
                 @state-changed=${linkProp(this, "state")}
+                @request-update=${this.requestUpdate}
             ></hb-doc-data>     
             <hb-page-layout>
                 ${renderAppBarButtons(this, this.state)}
@@ -106,8 +107,8 @@ export class HbDocPage extends LitElement {
                     `}
                 </div>
                 <div class="doc-content" @content-active-change=${this.contentActive}>
-                    ${this.state.doc.content.map((state, index) => contentTypes.get(state.contentType).render({
-                        index,
+                    ${this.state.doc.content.map((state, contentIndex) => contentTypes.get(state.contentType).render({
+                        contentIndex,
                         state
                     }))}
                 </div>
@@ -217,7 +218,10 @@ export class HbDocPage extends LitElement {
         }
 
         .doc-content{
-            margin: 1rem 0;
+            display:flex;
+            flex-direction: column;
+            gap: 36px;
+            padding: 1rem 0;
         }
   `]
 }

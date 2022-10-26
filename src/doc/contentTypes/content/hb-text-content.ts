@@ -17,10 +17,8 @@ import { ContentActiveChangeEvent } from "../../docTypes/pages/hb-doc-page";
 export class TextContent extends LitElement {
     static defaultState = new TextContentData();
 
-    @property({type:String})
-
-    @property({type:Number})
-    index:number = -1;
+    @property({type:Number, attribute: "content-index"})
+    contentIndex:number = -1;
 
     @property({type: Object})
     state:TextContentData = TextContent.defaultState;
@@ -29,6 +27,7 @@ export class TextContent extends LitElement {
     $hbContent!:HbContent;
 
     render() {
+        console.log("in text", this.contentIndex);
         return html`
             <hb-content @content-active-change=${this.contentActive} ?is-empty=${!this.state.text}>
                 <div>${unsafeHTML(this.state.text)}</div>
@@ -63,7 +62,7 @@ export class TextContent extends LitElement {
     }
 
     tinymceChange(event:ChangeEvent) {
-        this.dispatchEvent(new UpdateDocContentEvent(this.index, TextContentData.of(event.value)));
+        this.dispatchEvent(new UpdateDocContentEvent(this.contentIndex, TextContentData.of(event.value)));
     }
 
     static styles = [styles.types, styles.format, css`

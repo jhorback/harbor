@@ -42,6 +42,14 @@ export class UpdateDocContentEvent extends Event {
     }
 }
 UpdateDocContentEvent.eventType = "update-doc-content";
+export class MoveDocContentEvent extends Event {
+    constructor(index, moveUp) {
+        super(MoveDocContentEvent.eventType, { bubbles: true, composed: true });
+        this.index = index;
+        this.moveUp = moveUp;
+    }
+}
+MoveDocContentEvent.eventType = "move-doc-content";
 let DocData = DocData_1 = class DocData extends DataElement {
     constructor() {
         super(...arguments);
@@ -91,6 +99,13 @@ let DocData = DocData_1 = class DocData extends DataElement {
             .tap(saveDoc(this.editDocRepo, this.state.doc))
             .dispatch();
     }
+    moveContent(event) {
+        StateChange.of(this)
+            .next(moveContent(event.index, event.moveUp))
+            .tap(saveDoc(this.editDocRepo, this.state.doc))
+            .dispatch()
+            .dispatchEvent(new Event("request-update"));
+    }
 };
 DocData.defaultState = {
     isLoaded: false,
@@ -122,6 +137,9 @@ __decorate([
 __decorate([
     event(UpdateDocContentEvent.eventType)
 ], DocData.prototype, "updateDocContent", null);
+__decorate([
+    event(MoveDocContentEvent.eventType)
+], DocData.prototype, "moveContent", null);
 DocData = DocData_1 = __decorate([
     customDataElement("hb-doc-data", {
         eventsListenAt: "parent",
@@ -135,6 +153,14 @@ const subscribeToDoc = (docData) => (doc) => {
         .next(updateUserCanEdit(doc))
         .next(updateUserCanAdd)
         .dispatch();
+};
+const moveContent = (index, moveUp) => (state) => {
+    const content = state.doc.content;
+    if ((moveUp && index === 0) || (!moveUp && index === content.length - 1)) {
+        return;
+    }
+    moveUp ? content.splice(index - 1, 0, content.splice(index, 1)[0]) :
+        content.splice(index + 1, 0, content.splice(index, 1)[0]);
 };
 const saveDoc = (editDocRepo, doc) => (stateChange) => {
     editDocRepo.saveDoc(doc);

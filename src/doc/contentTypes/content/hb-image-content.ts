@@ -11,8 +11,8 @@ import "../hb-content";
 export class ImageContent extends LitElement {
     static defaultState = new ImageContentDataState();
 
-    @property({type:Number})
-    index:number = -1;
+    @property({type:Number, attribute: "content-index"})
+    contentIndex:number = -1;
 
     @property({type: Object})
     state:ImageContentDataState = ImageContent.defaultState;
@@ -21,6 +21,7 @@ export class ImageContent extends LitElement {
     inEditMode = false;
 
     render() {
+        console.log("in image", this.contentIndex);
         return html`
             <hb-content ?is-empty=${!this.state.url}>                
                 <div>
@@ -34,7 +35,10 @@ export class ImageContent extends LitElement {
                 </div>
                 <div slot="content-edit">
                     ${this.renderImage(this.state.url || "/content/thumbs/files-thumb.svg")}
-                    CONTENT EDIT MODE
+                    
+                    <div class="edit-tools">
+                        IMAGE EDIT TOOLS
+                    </div>
                 </div>
             </hb-content>
         `;
@@ -71,6 +75,10 @@ export class ImageContent extends LitElement {
         }
         div[alignment=right] {
             text-align: right;
+        }
+        .edit-tools {
+            background: var(--md-sys-color-surface-variant);
+            border-radius: var(--md-sys-shape-corner-medium);
         }
   `]
 }

@@ -14,11 +14,12 @@ import "../hb-content";
 let ImageContent = ImageContent_1 = class ImageContent extends LitElement {
     constructor() {
         super(...arguments);
-        this.index = -1;
+        this.contentIndex = -1;
         this.state = ImageContent_1.defaultState;
         this.inEditMode = false;
     }
     render() {
+        console.log("in image", this.contentIndex);
         return html `
             <hb-content ?is-empty=${!this.state.url}>                
                 <div>
@@ -32,7 +33,10 @@ let ImageContent = ImageContent_1 = class ImageContent extends LitElement {
                 </div>
                 <div slot="content-edit">
                     ${this.renderImage(this.state.url || "/content/thumbs/files-thumb.svg")}
-                    CONTENT EDIT MODE
+                    
+                    <div class="edit-tools">
+                        IMAGE EDIT TOOLS
+                    </div>
                 </div>
             </hb-content>
         `;
@@ -70,10 +74,14 @@ ImageContent.styles = [css `
         div[alignment=right] {
             text-align: right;
         }
+        .edit-tools {
+            background: var(--md-sys-color-surface-variant);
+            border-radius: var(--md-sys-shape-corner-medium);
+        }
   `];
 __decorate([
-    property({ type: Number })
-], ImageContent.prototype, "index", void 0);
+    property({ type: Number, attribute: "content-index" })
+], ImageContent.prototype, "contentIndex", void 0);
 __decorate([
     property({ type: Object })
 ], ImageContent.prototype, "state", void 0);

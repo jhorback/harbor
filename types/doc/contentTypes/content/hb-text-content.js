@@ -19,10 +19,11 @@ import "../hb-content";
 let TextContent = TextContent_1 = class TextContent extends LitElement {
     constructor() {
         super(...arguments);
-        this.index = -1;
+        this.contentIndex = -1;
         this.state = TextContent_1.defaultState;
     }
     render() {
+        console.log("in text", this.contentIndex);
         return html `
             <hb-content @content-active-change=${this.contentActive} ?is-empty=${!this.state.text}>
                 <div>${unsafeHTML(this.state.text)}</div>
@@ -54,7 +55,7 @@ let TextContent = TextContent_1 = class TextContent extends LitElement {
         this.$hbContent.edit();
     }
     tinymceChange(event) {
-        this.dispatchEvent(new UpdateDocContentEvent(this.index, TextContentData.of(event.value)));
+        this.dispatchEvent(new UpdateDocContentEvent(this.contentIndex, TextContentData.of(event.value)));
     }
 };
 TextContent.defaultState = new TextContentData();
@@ -64,9 +65,8 @@ TextContent.styles = [styles.types, styles.format, css `
         }
   `];
 __decorate([
-    property({ type: String }),
-    property({ type: Number })
-], TextContent.prototype, "index", void 0);
+    property({ type: Number, attribute: "content-index" })
+], TextContent.prototype, "contentIndex", void 0);
 __decorate([
     property({ type: Object })
 ], TextContent.prototype, "state", void 0);

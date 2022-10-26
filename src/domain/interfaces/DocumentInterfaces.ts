@@ -35,7 +35,7 @@ export interface IContentTypeDescriptor {
 
 export interface IContentTypeRenderOptions {
     state:IContentType;
-    index:number;
+    contentIndex:number;
 }
 
 

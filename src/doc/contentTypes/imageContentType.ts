@@ -30,7 +30,7 @@ const imageContentType:IContentTypeDescriptor = {
     description: "An image in the format of jpg, gif, png, etc.",
     render: (options:IContentTypeRenderOptions) => html`
         <hb-image-content
-            index=${options.index}
+            content-index=${options.contentIndex}
             .state=${options.state}
         ></hb-image-content>
     `
