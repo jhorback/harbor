@@ -7,6 +7,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var ImageContent_1;
 import { html, css, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
+import { styles } from "../../../styles";
 import { ImageContentDataState } from "../imageContentType";
 import "../hb-content";
 /**
@@ -19,14 +20,26 @@ let ImageContent = ImageContent_1 = class ImageContent extends LitElement {
         this.inEditMode = false;
     }
     render() {
-        console.log("in image", this.contentIndex);
         return html `
             <hb-content ?is-empty=${!this.state.url}>                
                 <div>
                     ${this.renderImage(this.state.url)}
                 </div>
                 <div slot="edit-toolbar">
-                    IMAGE EDIT TOOLBAR
+                    <span
+                        class="icon-button icon-small"
+                        tab-index="0"
+                        @click=${this.searchClicked}
+                        title="Search for an image">
+                        search
+                    </span>
+                    <span
+                        class="icon-button icon-small"
+                        tab-index="0"
+                        @click=${this.uploadClicked}
+                        title="Upload an image">
+                        file_upload
+                    </span>
                 </div>
                 <div slot="doc-edit-empty">
                     ${this.renderImage("/content/thumbs/files-thumb.svg")}
@@ -34,9 +47,13 @@ let ImageContent = ImageContent_1 = class ImageContent extends LitElement {
                 <div slot="content-edit">
                     ${this.renderImage(this.state.url || "/content/thumbs/files-thumb.svg")}
                     
-                    <div class="edit-tools">
-                        IMAGE EDIT TOOLS
-                    </div>
+                    
+                </div>
+                <div slot="content-edit-tools">
+                    IMAGE EDIT TOOLS<br>
+                    And here are some<br>
+                    Taller tools<br>
+                    How does this display?
                 </div>
             </hb-content>
         `;
@@ -48,9 +65,15 @@ let ImageContent = ImageContent_1 = class ImageContent extends LitElement {
             </div>
         `;
     }
+    searchClicked() {
+        alert("Find image");
+    }
+    uploadClicked() {
+        alert("Upload image");
+    }
 };
 ImageContent.defaultState = new ImageContentDataState();
-ImageContent.styles = [css `
+ImageContent.styles = [styles.icons, css `
         :host {
             display: block;
             position: relative;
@@ -74,9 +97,8 @@ ImageContent.styles = [css `
         div[alignment=right] {
             text-align: right;
         }
-        .edit-tools {
-            background: var(--md-sys-color-surface-variant);
-            border-radius: var(--md-sys-shape-corner-medium);
+        div[slot="content-edit-tools"] {
+            padding: 8px;
         }
   `];
 __decorate([

@@ -79,7 +79,7 @@ export class HbContent extends LitElement {
                             <span
                                 class="icon-button icon-small"
                                 tab-index="0"
-                                title="Edit"
+                                title="Edit content"
                                 @click=${this.edit}>
                                 edit
                             </span>
@@ -90,6 +90,9 @@ export class HbContent extends LitElement {
                     <slot name="doc-edit-empty"></slot>
                 ` : this.contentEdit ? html`
                     <slot name="content-edit"></slot>
+                    <div class="content-edit-tools">
+                        <slot name="content-edit-tools"></slot>
+                    </div>
                 `: html`
                     <slot></slot>
                 `}
@@ -137,8 +140,6 @@ export class HbContent extends LitElement {
             top:0;
             right: 0;
             z-index: 10000;
-            // background-color: var(--md-sys-color-surface-variant);
-            // border-radius: var(--md-sys-shape-corner-medium);
             padding: 4px;
         }
         :host([doc-edit]:hover),
@@ -150,15 +151,18 @@ export class HbContent extends LitElement {
             margin: -1rem;
             padding: 1rem;
         }
-        // :host([content-edit]) {
-        //     outline: 0px solid transparent !important;
-        // }
         :host([doc-edit]:hover) .edit-toolbar,
         :host([doc-edit][is-active]) .edit-toolbar,
         :host([content-edit]) .edit-toolbar {
             display: flex;
             justify-content: end;
-        }        
+        }
+        .content-edit-tools {
+            background: var(--md-sys-color-surface-variant);
+            border-radius: 0 0 12px 12px;
+            margin: -1rem;
+            margin-top: 8px;
+        }
   `];
 }
 

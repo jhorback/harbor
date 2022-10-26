@@ -23,7 +23,6 @@ let TextContent = TextContent_1 = class TextContent extends LitElement {
         this.state = TextContent_1.defaultState;
     }
     render() {
-        console.log("in text", this.contentIndex);
         return html `
             <hb-content @content-active-change=${this.contentActive} ?is-empty=${!this.state.text}>
                 <div>${unsafeHTML(this.state.text)}</div>

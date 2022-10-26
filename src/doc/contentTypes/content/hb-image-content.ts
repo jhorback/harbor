@@ -21,14 +21,26 @@ export class ImageContent extends LitElement {
     inEditMode = false;
 
     render() {
-        console.log("in image", this.contentIndex);
         return html`
             <hb-content ?is-empty=${!this.state.url}>                
                 <div>
                     ${this.renderImage(this.state.url)}
                 </div>
                 <div slot="edit-toolbar">
-                    IMAGE EDIT TOOLBAR
+                    <span
+                        class="icon-button icon-small"
+                        tab-index="0"
+                        @click=${this.searchClicked}
+                        title="Search for an image">
+                        search
+                    </span>
+                    <span
+                        class="icon-button icon-small"
+                        tab-index="0"
+                        @click=${this.uploadClicked}
+                        title="Upload an image">
+                        file_upload
+                    </span>
                 </div>
                 <div slot="doc-edit-empty">
                     ${this.renderImage("/content/thumbs/files-thumb.svg")}
@@ -36,15 +48,19 @@ export class ImageContent extends LitElement {
                 <div slot="content-edit">
                     ${this.renderImage(this.state.url || "/content/thumbs/files-thumb.svg")}
                     
-                    <div class="edit-tools">
-                        IMAGE EDIT TOOLS
-                    </div>
+                    
+                </div>
+                <div slot="content-edit-tools">
+                    IMAGE EDIT TOOLS<br>
+                    And here are some<br>
+                    Taller tools<br>
+                    How does this display?
                 </div>
             </hb-content>
         `;
     }
 
-    renderImage(src:string|null) {
+    private renderImage(src:string|null) {
         return src === null ? html`` : html`
             <div size=${this.state.size} alignment=${this.state.alignment}>
                 <img src=${src}>
@@ -52,7 +68,15 @@ export class ImageContent extends LitElement {
         `;
     }
 
-    static styles = [css`
+    private searchClicked() {
+        alert("Find image");
+    }
+
+    private uploadClicked() {
+        alert("Upload image");
+    }
+
+    static styles = [styles.icons, css`
         :host {
             display: block;
             position: relative;
@@ -76,9 +100,8 @@ export class ImageContent extends LitElement {
         div[alignment=right] {
             text-align: right;
         }
-        .edit-tools {
-            background: var(--md-sys-color-surface-variant);
-            border-radius: var(--md-sys-shape-corner-medium);
+        div[slot="content-edit-tools"] {
+            padding: 8px;
         }
   `]
 }

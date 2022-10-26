@@ -27,7 +27,6 @@ export class TextContent extends LitElement {
     $hbContent!:HbContent;
 
     render() {
-        console.log("in text", this.contentIndex);
         return html`
             <hb-content @content-active-change=${this.contentActive} ?is-empty=${!this.state.text}>
                 <div>${unsafeHTML(this.state.text)}</div>
