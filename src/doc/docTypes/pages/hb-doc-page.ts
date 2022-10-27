@@ -35,6 +35,17 @@ export class DocEditModeChangeEvent extends Event {
     }
 }
 
+export class ContentEmptyEvent extends Event {
+    static eventType = "content-empty";
+    host:Element;
+    isEmpty:boolean;
+    constructor(host:Element, isEmpty:boolean) {
+        super(ContentEmptyEvent.eventType, {bubbles: true, composed:true});
+        this.host = host;
+        this.isEmpty = isEmpty;
+    }
+}
+
 export class ContentActiveChangeEvent extends Event {
     static eventType = "content-active-change";
     activeContent:HbContent;
@@ -106,7 +117,10 @@ export class HbDocPage extends LitElement {
                         </div>
                     `}
                 </div>
-                <div class="doc-content" @content-active-change=${this.contentActive}>
+                <div class="doc-content"
+                    @content-active-change=${this.contentActive}
+                    @content-empty=${this.contentEmpty}
+                >
                     ${this.state.doc.content.map((state, contentIndex) => contentTypes.get(state.contentType).render({
                         contentIndex,
                         state
@@ -118,6 +132,11 @@ export class HbDocPage extends LitElement {
 
     private subtitleChange(event:ContentEditableChangeEvent) {
         this.shadowRoot?.dispatchEvent(new UpdateSubtitleEvent(event.value));
+    }
+
+    private contentEmpty(event:ContentEmptyEvent) {
+        event.host.className = !this.inEditMode && event.isEmpty ?
+            "empty" : "";
     }
 
     addDocumentClicked() {
@@ -224,6 +243,9 @@ export class HbDocPage extends LitElement {
         }
         .doc-content > * {
             margin-bottom: 36px;
+        }
+        .doc-content > .empty {
+            margin-bottom: 0;
         }
   `]
 }

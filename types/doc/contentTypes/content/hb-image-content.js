@@ -18,7 +18,6 @@ let ImageContent = ImageContent_1 = class ImageContent extends LitElement {
         this.contentIndex = -1;
         this.state = ImageContent_1.defaultState;
         this.inEditMode = false;
-        this.isEmpty = false;
     }
     render() {
         return html `
@@ -115,9 +114,6 @@ __decorate([
 __decorate([
     query("hb-content")
 ], ImageContent.prototype, "$hbContent", void 0);
-__decorate([
-    property({ type: Boolean, attribute: "is-empty" })
-], ImageContent.prototype, "isEmpty", void 0);
 ImageContent = ImageContent_1 = __decorate([
     customElement('hb-image-content')
 ], ImageContent);

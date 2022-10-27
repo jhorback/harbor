@@ -25,6 +25,14 @@ export class DocEditModeChangeEvent extends Event {
     }
 }
 DocEditModeChangeEvent.eventType = "doc-edit-mode-change";
+export class ContentEmptyEvent extends Event {
+    constructor(host, isEmpty) {
+        super(ContentEmptyEvent.eventType, { bubbles: true, composed: true });
+        this.host = host;
+        this.isEmpty = isEmpty;
+    }
+}
+ContentEmptyEvent.eventType = "content-empty";
 export class ContentActiveChangeEvent extends Event {
     constructor(activeContent, active) {
         super(ContentActiveChangeEvent.eventType, { bubbles: true, composed: true });
@@ -74,7 +82,10 @@ let HbDocPage = class HbDocPage extends LitElement {
                         </div>
                     `}
                 </div>
-                <div class="doc-content" @content-active-change=${this.contentActive}>
+                <div class="doc-content"
+                    @content-active-change=${this.contentActive}
+                    @content-empty=${this.contentEmpty}
+                >
                     ${this.state.doc.content.map((state, contentIndex) => contentTypes.get(state.contentType).render({
             contentIndex,
             state
@@ -85,6 +96,10 @@ let HbDocPage = class HbDocPage extends LitElement {
     }
     subtitleChange(event) {
         this.shadowRoot?.dispatchEvent(new UpdateSubtitleEvent(event.value));
+    }
+    contentEmpty(event) {
+        event.host.className = !this.inEditMode && event.isEmpty ?
+            "empty" : "";
     }
     addDocumentClicked() {
         this.$addDocumentDialog.open = true;
@@ -181,6 +196,9 @@ HbDocPage.styles = [styles.types, styles.icons, css `
         }
         .doc-content > * {
             margin-bottom: 36px;
+        }
+        .doc-content > .empty {
+            margin-bottom: 0;
         }
   `];
 __decorate([

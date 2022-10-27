@@ -6,7 +6,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 import { html, css, LitElement } from "lit";
 import { customElement, property } from "lit/decorators.js";
-import { ContentActiveChangeEvent, DocEditModeChangeEvent } from "../docTypes/pages/hb-doc-page";
+import { ContentActiveChangeEvent, ContentEmptyEvent, DocEditModeChangeEvent } from "../docTypes/pages/hb-doc-page";
 import { styles } from "../../styles";
 import { MoveDocContentEvent } from "../data/hb-doc-data";
 /**
@@ -89,6 +89,11 @@ let HbContent = class HbContent extends LitElement {
                 `}
             </div>
         `;
+    }
+    updated() {
+        const index = this.$contentHost.contentIndex;
+        console.log("updated index", index, "is empty", this.isEmpty);
+        this.dispatchEvent(new ContentEmptyEvent(this.$contentHost, this.isEmpty));
     }
     contentClicked(event) {
         if (this.docEdit && !this.isActive) {

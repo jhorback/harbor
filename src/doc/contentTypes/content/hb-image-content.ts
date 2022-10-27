@@ -24,9 +24,6 @@ export class ImageContent extends LitElement {
     @query("hb-content")
     $hbContent!:HbContent;
 
-    @property({type:Boolean, attribute: "is-empty"})
-    isEmpty = false;
-
     render() {
         return html`
             <hb-content ?is-empty=${!this.state.url}>                
