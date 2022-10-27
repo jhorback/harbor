@@ -87,6 +87,7 @@ let HbDocPage = class HbDocPage extends LitElement {
                     @content-empty=${this.contentEmpty}
                 >
                     ${this.state.doc.content.map((state, contentIndex) => contentTypes.get(state.contentType).render({
+            docUid: this.uid,
             contentIndex,
             state
         }))}

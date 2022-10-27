@@ -20,6 +20,11 @@ export class ImageContentDataState {
         this.url = null;
         this.fileDbPath = null;
     }
+    toPlainObject() {
+        return {
+            ...this
+        };
+    }
 }
 const imageContentType = {
     type: "image",
@@ -27,6 +32,7 @@ const imageContentType = {
     description: "An image in the format of jpg, gif, png, etc.",
     render: (options) => html `
         <hb-image-content
+            .docUid=${options.docUid}
             .contentIndex=${options.contentIndex}
             .state=${options.state}
         ></hb-image-content>

@@ -102,7 +102,6 @@ export class HbContent extends LitElement {
 
     updated() {
         const index = (this.$contentHost as IIndexable).contentIndex;
-        console.log("updated index", index, "is empty", this.isEmpty);
         this.dispatchEvent(new ContentEmptyEvent(this.$contentHost, this.isEmpty));
     }
 

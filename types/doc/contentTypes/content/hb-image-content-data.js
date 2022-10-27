@@ -5,29 +5,62 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 var ImageContentData_1;
-import { DataElement } from "@domx/dataelement";
-import { customDataElement, dataProperty } from "@domx/dataelement/decorators";
+import { DataElement, StateChange } from "@domx/dataelement";
+import { customDataElement, dataProperty, event } from "@domx/dataelement/decorators";
 import { inject } from "../../../domain/DependencyContainer/decorators";
 import { FindFileRepoKey } from "../../../domain/interfaces/FileInterfaces";
+import { UpdateDocContentEvent } from "../../data/hb-doc-data";
 import { ImageContentDataState } from "../imageContentType";
+export class ImageSizeChangeEvent extends Event {
+    constructor(size) {
+        super(ImageSizeChangeEvent.eventType);
+        this.size = size;
+    }
+}
+ImageSizeChangeEvent.eventType = "image-size-change";
+export class ImageAlignmentChangeEvent extends Event {
+    constructor(alignment) {
+        super(ImageAlignmentChangeEvent.eventType);
+        this.alignment = alignment;
+    }
+}
+ImageAlignmentChangeEvent.eventType = "image-alignment-change";
 let ImageContentData = ImageContentData_1 = class ImageContentData extends DataElement {
     constructor() {
         super(...arguments);
         this.state = ImageContentData_1.defaultState;
     }
     get uid() { return this.getAttribute("uid") || ""; }
-    set uid(uid) { this.setAttribute("uid", uid); }
-    connectedCallback() {
-        super.connectedCallback();
+    get contentIndex() {
+        const index = this.getAttribute("content-index");
+        return index ? parseInt(index) : -1;
+    }
+    imageSizeChange(event) {
+        StateChange.of(this)
+            .next(updateImageSize(event.size))
+            .dispatch()
+            .dispatchEvent(new UpdateDocContentEvent(this.contentIndex, this.state));
+    }
+    imageAlignmentChange(event) {
+        StateChange.of(this)
+            .next(updateImageAlignment(event.alignment))
+            .dispatch()
+            .dispatchEvent(new UpdateDocContentEvent(this.contentIndex, this.state));
     }
 };
-ImageContentData.defaultState = new ImageContentDataState();
+ImageContentData.defaultState = new ImageContentDataState().toPlainObject();
 __decorate([
     dataProperty()
 ], ImageContentData.prototype, "state", void 0);
 __decorate([
     inject(FindFileRepoKey)
 ], ImageContentData.prototype, "findFileRepo", void 0);
+__decorate([
+    event(ImageSizeChangeEvent.eventType)
+], ImageContentData.prototype, "imageSizeChange", null);
+__decorate([
+    event(ImageAlignmentChangeEvent.eventType)
+], ImageContentData.prototype, "imageAlignmentChange", null);
 ImageContentData = ImageContentData_1 = __decorate([
     customDataElement("hb-image-content-data", {
         eventsListenAt: "self",
@@ -35,3 +68,9 @@ ImageContentData = ImageContentData_1 = __decorate([
     })
 ], ImageContentData);
 export { ImageContentData };
+const updateImageSize = (size) => (state) => {
+    state.size = size;
+};
+const updateImageAlignment = (alignment) => (state) => {
+    state.alignment = alignment;
+};

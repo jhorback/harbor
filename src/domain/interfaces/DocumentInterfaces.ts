@@ -34,8 +34,9 @@ export interface IContentTypeDescriptor {
 }
 
 export interface IContentTypeRenderOptions {
-    state:IContentType;
+    docUid:string,
     contentIndex:number;
+    state:IContentType;
 }
 
 

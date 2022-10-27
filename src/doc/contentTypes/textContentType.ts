@@ -19,6 +19,7 @@ const textContentType:IContentTypeDescriptor = {
     description: "A rich text field",
     render: (options:IContentTypeRenderOptions) => html`
         <hb-text-content
+            .docUid=${options.docUid}
             .contentIndex=${options.contentIndex}
             .state=${options.state}
         ></hb-text-content>

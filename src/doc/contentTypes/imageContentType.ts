@@ -1,6 +1,7 @@
 import { IContentType, IContentTypeDescriptor, IContentTypeRenderOptions } from "../../domain/interfaces/DocumentInterfaces";
 import { contentTypes } from "../../domain/Doc/contentTypes";
 import { html } from "lit-html";
+import { ImageContent } from "./content/hb-image-content";
 
 
 export enum ImageSize {
@@ -21,6 +22,11 @@ export class ImageContentDataState implements IContentType {
     alignment:ImageAlignment = ImageAlignment.left;
     url:string|null = null;
     fileDbPath:string|null = null;
+    toPlainObject():ImageContentDataState {
+        return {
+            ...this
+        } as ImageContentDataState;
+    }
 }
 
 
@@ -30,6 +36,7 @@ const imageContentType:IContentTypeDescriptor = {
     description: "An image in the format of jpg, gif, png, etc.",
     render: (options:IContentTypeRenderOptions) => html`
         <hb-image-content
+            .docUid=${options.docUid}
             .contentIndex=${options.contentIndex}
             .state=${options.state}
         ></hb-image-content>

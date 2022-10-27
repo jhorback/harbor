@@ -1,22 +1,26 @@
 import { html, css, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators.js";
 import { styles } from "../../../styles";
-import { ImageContentDataState } from "../imageContentType";
+import { ImageAlignment, ImageContentDataState, ImageSize } from "../imageContentType";
 import "../hb-content";
 import { HbContent } from "../hb-content";
+import { ImageAlignmentChangeEvent, ImageContentData, ImageSizeChangeEvent } from "./hb-image-content-data";
+import { linkProp } from "@domx/dataelement";
 
 
 /**
  */
 @customElement('hb-image-content')
 export class ImageContent extends LitElement {
-    static defaultState = new ImageContentDataState();
+
+    @property({type:String})
+    docUid:string = "";
 
     @property({type:Number})
     contentIndex:number = -1;
 
     @property({type: Object})
-    state:ImageContentDataState = ImageContent.defaultState;
+    state:ImageContentDataState = ImageContentData.defaultState;
 
     @state()
     inEditMode = false;
@@ -24,8 +28,16 @@ export class ImageContent extends LitElement {
     @query("hb-content")
     $hbContent!:HbContent;
 
+    @query("hb-image-content-data")
+    $dataEl!:ImageContentData;
+
     render() {
         return html`
+            <hb-image-content-data
+                uid=${`${this.docUid}:content:${this.contentIndex}`}
+                content-index=${this.contentIndex}
+                @state-change=${linkProp(this, "state")}
+            ></hb-image-content-data>
             <hb-content ?is-empty=${!this.state.url}>                
                 <div>
                     ${this.renderImage(this.state.url)}
@@ -53,10 +65,22 @@ export class ImageContent extends LitElement {
                     ${this.renderImage(this.state.url || "/content/thumbs/files-thumb.svg")}
                 </div>
                 <div slot="content-edit-tools">
-                    IMAGE EDIT TOOLS<br>
-                    And here are some<br>
-                    Taller tools<br>
-                    How does this display?
+                    <div>
+                        <label for="size">Size</label>
+                        <select id="size" .value=${this.state.size} @change=${this.sizeChanged}>
+                            <option value="small">Small</option>
+                            <option value="medium">Medium</option>
+                            <option value="large">Large</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="alignment">Alignment</label>
+                        <select id="alignment" .value=${this.state.alignment} @change=${this.alignmentChanged}>
+                            <option value="left">Left</option>
+                            <option value="center">Center</option>
+                            <option value="right">Right</option>
+                        </select>
+                    </div>
                 </div>
             </hb-content>
         `;
@@ -68,6 +92,16 @@ export class ImageContent extends LitElement {
                 <img src=${src}>
             </div>
         `;
+    }
+
+    private sizeChanged(event:Event) {
+        const size = (event.target as HTMLSelectElement).value as ImageSize;
+        this.$dataEl.dispatchEvent(new ImageSizeChangeEvent(size));
+    }
+
+    private alignmentChanged(event:Event) {
+        const alignment = (event.target as HTMLSelectElement).value as ImageAlignment;
+        this.$dataEl.dispatchEvent(new ImageAlignmentChangeEvent(alignment));
     }
 
     private clickedEmpty() {
@@ -108,6 +142,27 @@ export class ImageContent extends LitElement {
         }
         div[slot="content-edit-tools"] {
             padding: 8px;
+            display: flex;
+            gap: 36px;
+        }
+        div[slot="content-edit-tools"] > div {
+            flex-grow: 1;
+        }
+        div[slot="content-edit-tools"] > :first-child {
+            text-align: right;
+        }
+        label {
+            margin-right: 8px;
+        }
+        select {
+            display: inline-block;
+            min-width: 112px;
+            max-width: 280px;
+            height: 48px;
+            outline: none;
+            border: 1px solid var(--md-sys-color-outline);
+            border-radius: var(--md-sys-shape-corner-small);
+            padding: 0 12px;            
         }
   `]
 }
