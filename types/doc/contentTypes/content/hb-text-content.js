@@ -25,7 +25,7 @@ let TextContent = TextContent_1 = class TextContent extends LitElement {
     render() {
         return html `
             <hb-content @content-active-change=${this.contentActive} ?is-empty=${!this.state.text}>
-                <div>${unsafeHTML(this.state.text)}</div>
+                <div class="clearfix">${unsafeHTML(this.state.text)}</div>
                 <div slot="doc-edit-empty" @click=${this.textClicked}>
                     Click to enter text content
                 </div>
@@ -61,6 +61,11 @@ TextContent.defaultState = new TextContentData();
 TextContent.styles = [styles.types, styles.format, css `
         :host {
             display: block;
+        }
+        .clearfix::after {
+            content: "";
+            clear: both;
+            display: table;
         }
   `];
 __decorate([

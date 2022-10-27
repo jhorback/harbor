@@ -26,6 +26,7 @@ let ImageContent = class ImageContent extends LitElement {
             <hb-image-content-data
                 uid=${`${this.docUid}:content:${this.contentIndex}`}
                 content-index=${this.contentIndex}
+                .state=${this.state}
                 @state-change=${linkProp(this, "state")}
             ></hb-image-content-data>
             <hb-content ?is-empty=${!this.state.url}>                

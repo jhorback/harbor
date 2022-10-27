@@ -29,7 +29,7 @@ export class TextContent extends LitElement {
     render() {
         return html`
             <hb-content @content-active-change=${this.contentActive} ?is-empty=${!this.state.text}>
-                <div>${unsafeHTML(this.state.text)}</div>
+                <div class="clearfix">${unsafeHTML(this.state.text)}</div>
                 <div slot="doc-edit-empty" @click=${this.textClicked}>
                     Click to enter text content
                 </div>
@@ -67,6 +67,11 @@ export class TextContent extends LitElement {
     static styles = [styles.types, styles.format, css`
         :host {
             display: block;
+        }
+        .clearfix::after {
+            content: "";
+            clear: both;
+            display: table;
         }
   `]
 }

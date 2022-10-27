@@ -11,6 +11,7 @@ import { inject } from "../../../domain/DependencyContainer/decorators";
 import { FindFileRepoKey } from "../../../domain/interfaces/FileInterfaces";
 import { UpdateDocContentEvent } from "../../data/hb-doc-data";
 import { ImageContentDataState } from "../imageContentType";
+import "../../../domain/Files/HbFindFileRepo";
 export class ImageSizeChangeEvent extends Event {
     constructor(size) {
         super(ImageSizeChangeEvent.eventType);
@@ -41,6 +42,11 @@ let ImageContentData = ImageContentData_1 = class ImageContentData extends DataE
     get contentIndex() {
         const index = this.getAttribute("content-index");
         return index ? parseInt(index) : -1;
+    }
+    connectedCallback() {
+        super.connectedCallback();
+        StateChange.of(this)
+            .tap(syncWithDb(this, this.findFileRepo));
     }
     imageSizeChange(event) {
         StateChange.of(this)
@@ -84,6 +90,21 @@ ImageContentData = ImageContentData_1 = __decorate([
     })
 ], ImageContentData);
 export { ImageContentData };
+const syncWithDb = (dataEl, findFileRepo) => async (stateChange) => {
+    const state = stateChange.getState();
+    if (!state.fileDbPath) {
+        return;
+    }
+    const file = await findFileRepo.findFile(state.fileDbPath);
+    if (!file) {
+        return;
+    }
+    if (file.url !== state.url) {
+        stateChange.next(updateImageUrl(file.url))
+            .dispatch()
+            .dispatchEvent(new UpdateDocContentEvent(dataEl.contentIndex, dataEl.state));
+    }
+};
 const updateImageSize = (size) => (state) => {
     state.size = size;
 };
@@ -93,4 +114,7 @@ const updateImageAlignment = (alignment) => (state) => {
 const setImageContent = (file) => (state) => {
     state.fileDbPath = file.fileDbPath;
     state.url = file.url;
+};
+const updateImageUrl = (url) => (state) => {
+    state.url = url;
 };
