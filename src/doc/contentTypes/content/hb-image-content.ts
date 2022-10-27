@@ -1,8 +1,9 @@
 import { html, css, LitElement } from "lit";
-import { customElement, property, state } from "lit/decorators.js";
+import { customElement, property, query, state } from "lit/decorators.js";
 import { styles } from "../../../styles";
 import { ImageContentDataState } from "../imageContentType";
 import "../hb-content";
+import { HbContent } from "../hb-content";
 
 
 /**
@@ -11,7 +12,7 @@ import "../hb-content";
 export class ImageContent extends LitElement {
     static defaultState = new ImageContentDataState();
 
-    @property({type:Number, attribute: "content-index"})
+    @property({type:Number})
     contentIndex:number = -1;
 
     @property({type: Object})
@@ -19,6 +20,12 @@ export class ImageContent extends LitElement {
 
     @state()
     inEditMode = false;
+
+    @query("hb-content")
+    $hbContent!:HbContent;
+
+    @property({type:Boolean, attribute: "is-empty"})
+    isEmpty = false;
 
     render() {
         return html`
@@ -42,13 +49,11 @@ export class ImageContent extends LitElement {
                         file_upload
                     </span>
                 </div>
-                <div slot="doc-edit-empty">
+                <div slot="doc-edit-empty" @click=${this.clickedEmpty}>
                     ${this.renderImage("/content/thumbs/files-thumb.svg")}
                 </div>
                 <div slot="content-edit">
                     ${this.renderImage(this.state.url || "/content/thumbs/files-thumb.svg")}
-                    
-                    
                 </div>
                 <div slot="content-edit-tools">
                     IMAGE EDIT TOOLS<br>
@@ -61,11 +66,15 @@ export class ImageContent extends LitElement {
     }
 
     private renderImage(src:string|null) {
-        return src === null ? html`` : html`
+        return !src ? html`` : html`
             <div size=${this.state.size} alignment=${this.state.alignment}>
                 <img src=${src}>
             </div>
         `;
+    }
+
+    private clickedEmpty() {
+        this.$hbContent.edit();
     }
 
     private searchClicked() {

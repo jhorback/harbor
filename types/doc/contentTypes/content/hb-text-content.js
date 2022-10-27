@@ -64,7 +64,7 @@ TextContent.styles = [styles.types, styles.format, css `
         }
   `];
 __decorate([
-    property({ type: Number, attribute: "content-index" })
+    property({ type: Number })
 ], TextContent.prototype, "contentIndex", void 0);
 __decorate([
     property({ type: Object })

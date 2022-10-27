@@ -17,7 +17,7 @@ import { ContentActiveChangeEvent } from "../../docTypes/pages/hb-doc-page";
 export class TextContent extends LitElement {
     static defaultState = new TextContentData();
 
-    @property({type:Number, attribute: "content-index"})
+    @property({type:Number})
     contentIndex:number = -1;
 
     @property({type: Object})

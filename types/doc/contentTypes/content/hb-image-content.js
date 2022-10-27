@@ -6,7 +6,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 var ImageContent_1;
 import { html, css, LitElement } from "lit";
-import { customElement, property, state } from "lit/decorators.js";
+import { customElement, property, query, state } from "lit/decorators.js";
 import { styles } from "../../../styles";
 import { ImageContentDataState } from "../imageContentType";
 import "../hb-content";
@@ -18,6 +18,7 @@ let ImageContent = ImageContent_1 = class ImageContent extends LitElement {
         this.contentIndex = -1;
         this.state = ImageContent_1.defaultState;
         this.inEditMode = false;
+        this.isEmpty = false;
     }
     render() {
         return html `
@@ -41,13 +42,11 @@ let ImageContent = ImageContent_1 = class ImageContent extends LitElement {
                         file_upload
                     </span>
                 </div>
-                <div slot="doc-edit-empty">
+                <div slot="doc-edit-empty" @click=${this.clickedEmpty}>
                     ${this.renderImage("/content/thumbs/files-thumb.svg")}
                 </div>
                 <div slot="content-edit">
                     ${this.renderImage(this.state.url || "/content/thumbs/files-thumb.svg")}
-                    
-                    
                 </div>
                 <div slot="content-edit-tools">
                     IMAGE EDIT TOOLS<br>
@@ -59,11 +58,14 @@ let ImageContent = ImageContent_1 = class ImageContent extends LitElement {
         `;
     }
     renderImage(src) {
-        return src === null ? html `` : html `
+        return !src ? html `` : html `
             <div size=${this.state.size} alignment=${this.state.alignment}>
                 <img src=${src}>
             </div>
         `;
+    }
+    clickedEmpty() {
+        this.$hbContent.edit();
     }
     searchClicked() {
         alert("Find image");
@@ -102,7 +104,7 @@ ImageContent.styles = [styles.icons, css `
         }
   `];
 __decorate([
-    property({ type: Number, attribute: "content-index" })
+    property({ type: Number })
 ], ImageContent.prototype, "contentIndex", void 0);
 __decorate([
     property({ type: Object })
@@ -110,6 +112,12 @@ __decorate([
 __decorate([
     state()
 ], ImageContent.prototype, "inEditMode", void 0);
+__decorate([
+    query("hb-content")
+], ImageContent.prototype, "$hbContent", void 0);
+__decorate([
+    property({ type: Boolean, attribute: "is-empty" })
+], ImageContent.prototype, "isEmpty", void 0);
 ImageContent = ImageContent_1 = __decorate([
     customElement('hb-image-content')
 ], ImageContent);

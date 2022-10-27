@@ -41,7 +41,7 @@ let HbDocPage = class HbDocPage extends LitElement {
         super(...arguments);
         this.docType = docTypes.get(DocTypes.doc).type;
         this.state = DocData.defaultState;
-        this.inEditMode = true;
+        this.inEditMode = false;
         this.selectedEditTab = "";
         this.activeContent = null;
     }
@@ -177,8 +177,10 @@ HbDocPage.styles = [styles.types, styles.icons, css `
         .doc-content{
             display:flex;
             flex-direction: column;
-            gap: 36px;
             padding: 1rem 0;
+        }
+        .doc-content > * {
+            margin-bottom: 36px;
         }
   `];
 __decorate([

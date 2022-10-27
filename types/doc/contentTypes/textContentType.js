@@ -17,7 +17,7 @@ const textContentType = {
     description: "A rich text field",
     render: (options) => html `
         <hb-text-content
-            content-index=${options.contentIndex}
+            .contentIndex=${options.contentIndex}
             .state=${options.state}
         ></hb-text-content>
     `

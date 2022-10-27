@@ -63,7 +63,7 @@ export class HbDocPage extends LitElement {
     state:IDocDataState = DocData.defaultState;
 
     @state()
-    inEditMode = true;
+    inEditMode = false;
 
     @state()
     selectedEditTab:string = "";
@@ -220,8 +220,10 @@ export class HbDocPage extends LitElement {
         .doc-content{
             display:flex;
             flex-direction: column;
-            gap: 36px;
             padding: 1rem 0;
+        }
+        .doc-content > * {
+            margin-bottom: 36px;
         }
   `]
 }
