@@ -1,7 +1,6 @@
 import { IContentType, IContentTypeDescriptor, IContentTypeRenderOptions } from "../../domain/interfaces/DocumentInterfaces";
 import { contentTypes } from "../../domain/Doc/contentTypes";
 import { html } from "lit-html";
-import { ImageContent } from "./content/hb-image-content";
 
 
 export enum ImageSize {

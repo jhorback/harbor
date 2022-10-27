@@ -1,7 +1,7 @@
 import { DataElement, StateChange } from "@domx/dataelement";
 import { customDataElement, dataProperty, event } from "@domx/dataelement/decorators";
 import { inject } from "../../../domain/DependencyContainer/decorators";
-import { FindFileRepoKey, IFindFileRepo } from "../../../domain/interfaces/FileInterfaces";
+import { FindFileRepoKey, IFindFileRepo, IUploadedFile } from "../../../domain/interfaces/FileInterfaces";
 import { UpdateDocContentEvent } from "../../data/hb-doc-data";
 import { ImageAlignment, ImageContentDataState, ImageSize } from "../imageContentType";
 
@@ -21,6 +21,15 @@ export class ImageAlignmentChangeEvent extends Event {
     constructor(alignment:ImageAlignment) {
         super(ImageAlignmentChangeEvent.eventType);
         this.alignment = alignment;
+    }
+}
+
+export class ImageContentSelectedEvent extends Event {
+    static eventType = "image-content-selected";
+    file:IUploadedFile;
+    constructor(file:IUploadedFile) {
+        super(ImageContentSelectedEvent.eventType);
+        this.file = file;
     }
 }
 
@@ -59,6 +68,14 @@ export class ImageContentData extends DataElement {
             .dispatch()
             .dispatchEvent(new UpdateDocContentEvent(this.contentIndex, this.state))
     }
+
+    @event(ImageContentSelectedEvent.eventType)
+    imageContentSelected(event:ImageContentSelectedEvent) {
+        StateChange.of(this)
+            .next(setImageContent(event.file))
+            .dispatch()
+            .dispatchEvent(new UpdateDocContentEvent(this.contentIndex, this.state));
+    }
 }
 
 const updateImageSize = (size:ImageSize) => (state:ImageContentDataState) => {
@@ -67,4 +84,9 @@ const updateImageSize = (size:ImageSize) => (state:ImageContentDataState) => {
 
 const updateImageAlignment = (alignment:ImageAlignment) => (state:ImageContentDataState) => {
     state.alignment = alignment;
+};
+
+const setImageContent = (file:IUploadedFile) => (state:ImageContentDataState) => {
+    state.fileDbPath = file.fileDbPath;
+    state.url = file.url;
 };

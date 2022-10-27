@@ -142,11 +142,8 @@ export class FileUploaderClient {
     private dispatchCompletedEvent() {
         const uploadedFiles = new Array<IUploadedFile>();
         this.uploads.forEach(file => {
-            if (file.complete && file.error === null && file.fileUrl !== null) {
-                uploadedFiles.push({
-                    url: file.fileUrl,
-                    name: file.name
-                });
+            if (file.complete && file.error === null && file.uploadedFile !== null) {
+                uploadedFiles.push(file.uploadedFile);
             }
         });
         this.uploadController.signal.dispatchEvent(new FileUploadCompletedEvent(uploadedFiles));
@@ -198,12 +195,12 @@ export class FileUploaderClient {
             fileData.fileController.signal.addEventListener(FileUploadProgressEvent.eventType, (event:Event) => 
                 fileData.updateProgress(event as FileUploadProgressEvent));
             
-            const fileName = await this.filesRepo.uploadFileWithProgress(fileData.file, {
+            const uploadedFile = await this.filesRepo.uploadFileWithProgress(fileData.file, {
                 allowOverwrite,
                 signal: fileData.fileController.signal
             });
 
-            fileName ? fileData.setComplete(fileName) :
+            uploadedFile ? fileData.setComplete(uploadedFile) :
                 fileData.setCancelled();
 
         } catch (error:any) {
@@ -241,7 +238,6 @@ class UploadFileState {
         this._error = null;
         this._needsAllowOverwritePermission = false;
         this._complete = false;
-        this._fileUrl = null;
         this._cancelled = false;
         this._base64Src = this.setBase64Src(fileType)
     }
@@ -272,7 +268,7 @@ class UploadFileState {
     public get complete() { return this._complete; }
     public get cancelled() { return this._cancelled; }
     public get error() { return this._error; }
-    public get fileUrl() { return this._fileUrl; }
+    public get uploadedFile() { return this._uploadedFile; }
     public get base64Src() { return this._base64Src; }
     public get name() { return this._file.name }
 
@@ -286,7 +282,7 @@ class UploadFileState {
     private _complete:boolean;
     private _cancelled:boolean;
     private _error:Error|null;
-    private _fileUrl:string|null;
+    private _uploadedFile:IUploadedFile|null = null;
     private _base64Src:string;
 
     cancelUpload() {
@@ -312,8 +308,8 @@ class UploadFileState {
         this.dispatchUpdate();
     }
 
-    setComplete(fileUrl:string) {
-        this._fileUrl = fileUrl;
+    setComplete(uploadedFile:IUploadedFile) {
+        this._uploadedFile = uploadedFile;
         this._complete = true;
         this._bytesTransferred = this._totalBytes;
         this.dispatchUpdate();

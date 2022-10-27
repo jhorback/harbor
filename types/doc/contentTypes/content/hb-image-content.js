@@ -8,8 +8,9 @@ import { html, css, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators.js";
 import { styles } from "../../../styles";
 import "../hb-content";
-import { ImageAlignmentChangeEvent, ImageContentData, ImageSizeChangeEvent } from "./hb-image-content-data";
+import { ImageAlignmentChangeEvent, ImageContentData, ImageContentSelectedEvent, ImageSizeChangeEvent } from "./hb-image-content-data";
 import { linkProp } from "@domx/dataelement";
+import { FileUploaderAccept, FileUploaderClient } from "../../../files/FileUploaderClient";
 /**
  */
 let ImageContent = class ImageContent extends LitElement {
@@ -96,7 +97,11 @@ let ImageContent = class ImageContent extends LitElement {
         alert("Find image");
     }
     uploadClicked() {
-        alert("Upload image");
+        const uploader = new FileUploaderClient({ accept: FileUploaderAccept.images });
+        uploader.onComplete((event) => {
+            event.uploadedFile && this.$dataEl.dispatchEvent(new ImageContentSelectedEvent(event.uploadedFile));
+        });
+        uploader.handleFileUpload();
     }
 };
 ImageContent.styles = [styles.icons, css `

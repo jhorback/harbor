@@ -39,8 +39,8 @@ let HbUploadFilesRepo = class HbUploadFilesRepo {
         return new Promise((resolve, reject) => {
             uploadTask.on('state_changed', (snapshot) => options.signal?.dispatchEvent(new FileUploadProgressEvent(snapshot.bytesTransferred, snapshot.totalBytes)), (error) => error.code === "storage/canceled" ?
                 resolve(null) : reject(new ServerError("File Upload Error", error)), async () => {
-                const url = await this.addFileToDb(file, uploadTask.snapshot);
-                resolve(url);
+                const uploadedFile = await this.addFileToDb(file, uploadTask.snapshot);
+                resolve(uploadedFile);
             });
         });
     }
@@ -68,7 +68,11 @@ let HbUploadFilesRepo = class HbUploadFilesRepo {
         };
         const ref = doc(HbDb.current, `users/${this.currentUser.uid}/files`, file.name);
         await setDoc(ref, fileData);
-        return url;
+        return {
+            fileDbPath: ref.path,
+            name: file.name,
+            url
+        };
     }
     async resolveMediaTags(file) {
         try {

@@ -25,6 +25,13 @@ export class ImageAlignmentChangeEvent extends Event {
     }
 }
 ImageAlignmentChangeEvent.eventType = "image-alignment-change";
+export class ImageContentSelectedEvent extends Event {
+    constructor(file) {
+        super(ImageContentSelectedEvent.eventType);
+        this.file = file;
+    }
+}
+ImageContentSelectedEvent.eventType = "image-content-selected";
 let ImageContentData = ImageContentData_1 = class ImageContentData extends DataElement {
     constructor() {
         super(...arguments);
@@ -47,6 +54,12 @@ let ImageContentData = ImageContentData_1 = class ImageContentData extends DataE
             .dispatch()
             .dispatchEvent(new UpdateDocContentEvent(this.contentIndex, this.state));
     }
+    imageContentSelected(event) {
+        StateChange.of(this)
+            .next(setImageContent(event.file))
+            .dispatch()
+            .dispatchEvent(new UpdateDocContentEvent(this.contentIndex, this.state));
+    }
 };
 ImageContentData.defaultState = new ImageContentDataState().toPlainObject();
 __decorate([
@@ -61,6 +74,9 @@ __decorate([
 __decorate([
     event(ImageAlignmentChangeEvent.eventType)
 ], ImageContentData.prototype, "imageAlignmentChange", null);
+__decorate([
+    event(ImageContentSelectedEvent.eventType)
+], ImageContentData.prototype, "imageContentSelected", null);
 ImageContentData = ImageContentData_1 = __decorate([
     customDataElement("hb-image-content-data", {
         eventsListenAt: "self",
@@ -73,4 +89,8 @@ const updateImageSize = (size) => (state) => {
 };
 const updateImageAlignment = (alignment) => (state) => {
     state.alignment = alignment;
+};
+const setImageContent = (file) => (state) => {
+    state.fileDbPath = file.fileDbPath;
+    state.url = file.url;
 };

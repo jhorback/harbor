@@ -121,11 +121,8 @@ export class FileUploaderClient {
     dispatchCompletedEvent() {
         const uploadedFiles = new Array();
         this.uploads.forEach(file => {
-            if (file.complete && file.error === null && file.fileUrl !== null) {
-                uploadedFiles.push({
-                    url: file.fileUrl,
-                    name: file.name
-                });
+            if (file.complete && file.error === null && file.uploadedFile !== null) {
+                uploadedFiles.push(file.uploadedFile);
             }
         });
         this.uploadController.signal.dispatchEvent(new FileUploadCompletedEvent(uploadedFiles));
@@ -162,11 +159,11 @@ export class FileUploaderClient {
     async tryUpload(fileData, allowOverwrite) {
         try {
             fileData.fileController.signal.addEventListener(FileUploadProgressEvent.eventType, (event) => fileData.updateProgress(event));
-            const fileName = await this.filesRepo.uploadFileWithProgress(fileData.file, {
+            const uploadedFile = await this.filesRepo.uploadFileWithProgress(fileData.file, {
                 allowOverwrite,
                 signal: fileData.fileController.signal
             });
-            fileName ? fileData.setComplete(fileName) :
+            uploadedFile ? fileData.setComplete(uploadedFile) :
                 fileData.setCancelled();
         }
         catch (error) {
@@ -194,6 +191,7 @@ export class FileUploadError extends Error {
  */
 class UploadFileState {
     constructor(uploadController, file, fileType) {
+        this._uploadedFile = null;
         this._uploadController = uploadController;
         this._file = file;
         this._fileController = new AbortController();
@@ -202,7 +200,6 @@ class UploadFileState {
         this._error = null;
         this._needsAllowOverwritePermission = false;
         this._complete = false;
-        this._fileUrl = null;
         this._cancelled = false;
         this._base64Src = this.setBase64Src(fileType);
     }
@@ -231,7 +228,7 @@ class UploadFileState {
     get complete() { return this._complete; }
     get cancelled() { return this._cancelled; }
     get error() { return this._error; }
-    get fileUrl() { return this._fileUrl; }
+    get uploadedFile() { return this._uploadedFile; }
     get base64Src() { return this._base64Src; }
     get name() { return this._file.name; }
     cancelUpload() {
@@ -253,8 +250,8 @@ class UploadFileState {
         this._bytesTransferred = 0;
         this.dispatchUpdate();
     }
-    setComplete(fileUrl) {
-        this._fileUrl = fileUrl;
+    setComplete(uploadedFile) {
+        this._uploadedFile = uploadedFile;
         this._complete = true;
         this._bytesTransferred = this._totalBytes;
         this.dispatchUpdate();

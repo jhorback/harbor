@@ -4,8 +4,10 @@ import { styles } from "../../../styles";
 import { ImageAlignment, ImageContentDataState, ImageSize } from "../imageContentType";
 import "../hb-content";
 import { HbContent } from "../hb-content";
-import { ImageAlignmentChangeEvent, ImageContentData, ImageSizeChangeEvent } from "./hb-image-content-data";
+import { ImageAlignmentChangeEvent, ImageContentData, ImageContentSelectedEvent, ImageSizeChangeEvent } from "./hb-image-content-data";
 import { linkProp } from "@domx/dataelement";
+import { FileUploaderAccept, FileUploaderClient } from "../../../files/FileUploaderClient";
+import { FileUploadCompletedEvent } from "../../../domain/interfaces/FileInterfaces";
 
 
 /**
@@ -113,7 +115,11 @@ export class ImageContent extends LitElement {
     }
 
     private uploadClicked() {
-        alert("Upload image");
+        const uploader = new FileUploaderClient({accept: FileUploaderAccept.images});
+        uploader.onComplete((event:FileUploadCompletedEvent) => {
+            event.uploadedFile && this.$dataEl.dispatchEvent(new ImageContentSelectedEvent(event.uploadedFile));
+        });
+        uploader.handleFileUpload();
     }
 
     static styles = [styles.icons, css`
