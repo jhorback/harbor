@@ -17,9 +17,9 @@ const textContentType = {
     description: "A rich text field",
     render: (options) => html `
         <hb-text-content
-            index=${options.index}
+            .docUid=${options.docUid}
+            .contentIndex=${options.contentIndex}
             .state=${options.state}
-            ?doc-edit=${options.inDocEditMode}
         ></hb-text-content>
     `
 };

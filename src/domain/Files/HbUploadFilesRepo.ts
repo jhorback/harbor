@@ -5,7 +5,7 @@ import { ClientError, ServerError } from "../Errors";
 import { HbCurrentUser } from "../HbCurrentUser";
 import { HbDb } from "../HbDb";
 import { HbStorage } from "../HbStorage";
-import { FileUploadType, FileUploadProgressEvent, IFileData, IMediaTags, IUploadFileOptions, IUploadFilesRepo, UploadFilesRepoKey } from "../interfaces/FileInterfaces";
+import { FileUploadType, FileUploadProgressEvent, IFileData, IMediaTags, IUploadFileOptions, IUploadFilesRepo, UploadFilesRepoKey, IUploadedFile } from "../interfaces/FileInterfaces";
 import { convertPictureToBase64Src, extractMediaTags } from "./extractMediaTags";
 
 
@@ -31,7 +31,7 @@ export class HbUploadFilesRepo implements IUploadFilesRepo {
             this.supportedFileTypes.video.includes(ext) ? FileUploadType.video : FileUploadType.files;
     }
 
-    async uploadFileWithProgress(file:File, options:IUploadFileOptions):Promise<string|null> {
+    async uploadFileWithProgress(file:File, options:IUploadFileOptions):Promise<IUploadedFile|null> {
         const storagePath = this.getStoragePath(file.name);        
 
         await this.verifyOverwrite(options.allowOverwrite, storagePath);
@@ -50,8 +50,8 @@ export class HbUploadFilesRepo implements IUploadFilesRepo {
                 (error) => error.code === "storage/canceled" ?
                     resolve(null) : reject(new ServerError("File Upload Error", error)),
                 async () => {
-                    const url = await this.addFileToDb(file, uploadTask.snapshot);
-                    resolve(url);
+                    const uploadedFile = await this.addFileToDb(file, uploadTask.snapshot);
+                    resolve(uploadedFile);
                 }
             );
         });
@@ -60,7 +60,7 @@ export class HbUploadFilesRepo implements IUploadFilesRepo {
     /**
      * Resolves with the download url
      */
-    private async addFileToDb(file:File, snapshot:UploadTaskSnapshot):Promise<string> {
+    private async addFileToDb(file:File, snapshot:UploadTaskSnapshot):Promise<IUploadedFile> {
         const storagePath = snapshot.ref.fullPath;
 
         const [md, url, mediaTags] = await Promise.all([
@@ -85,7 +85,11 @@ export class HbUploadFilesRepo implements IUploadFilesRepo {
         
         const ref = doc(HbDb.current, `users/${this.currentUser.uid}/files`, file.name);
         await setDoc(ref, fileData);
-        return url;
+        return {
+            fileDbPath: ref.path,
+            name: file.name,
+            url
+        };
     }
 
     private async resolveMediaTags(file:File):Promise<IMediaTags|null> {

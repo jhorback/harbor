@@ -105,10 +105,9 @@ export class ContentEditable extends LitElement {
         }
 
         [contenteditable]:hover, [contenteditable]:focus {
-            background-color: var(--md-sys-color-surface-variant);
             border: 0;
             border-radius: var(--md-sys-shape-corner-medium);
-            outline:0;
+            outline: 1px solid var(--md-sys-color-outline);
             position: relative;
             top: -8px;
             left: -8px;

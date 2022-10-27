@@ -2,6 +2,11 @@ import { FileModel } from "../Files/FileModel";
 
 
 
+export const FindFileRepoKey:symbol = Symbol("FIND_FILE_REPO");
+export interface IFindFileRepo {
+    findFile(path:string):Promise<FileModel|null>;
+}
+
 
 export const SearchFilesRepoKey:symbol = Symbol("SEARCH_FILES_REPO");
 export interface ISearchFilesRepo {
@@ -35,16 +40,14 @@ export interface IUploadFilesRepo {
 
     /**
      * Uploads a file to storage and adds it to the database.
-     * It resolves with the url to access the uploaded file.
+     * It resolves with uploaded file data.
      * If it resolves with null, the operation was cancelled.
      * 
      * If the allowOverwrite option is false this method can throw
      * a ClientError which can be used to ask the user to overwrite
      * the file and try again.
-     * @param file 
-     * @param options 
      */
-    uploadFileWithProgress(file:File, options:IUploadFileOptions):Promise<string|null>
+    uploadFileWithProgress(file:File, options:IUploadFileOptions):Promise<IUploadedFile|null>
 }
 
 export interface IUploadFileOptions {
@@ -93,7 +96,8 @@ export class FileUploadCompletedEvent extends Event {
  */
 export interface IUploadedFile {
     url:string,
-    name:string
+    name:string,
+    fileDbPath:string
 }
 
 export interface IMediaTags {

@@ -18,6 +18,29 @@ import "../../hb-doc-author";
 import { DocData, UpdateShowSubtitleEvent, UpdateShowTitleEvent, UpdateSubtitleEvent } from "../../data/hb-doc-data";
 import { sendFeedback } from "../../../layout/feedback";
 import { contentTypes } from "../../../domain/Doc/contentTypes";
+export class DocEditModeChangeEvent extends Event {
+    constructor(inEditMode) {
+        super(DocEditModeChangeEvent.eventType, { bubbles: false });
+        this.inEditMode = inEditMode;
+    }
+}
+DocEditModeChangeEvent.eventType = "doc-edit-mode-change";
+export class ContentEmptyEvent extends Event {
+    constructor(host, isEmpty) {
+        super(ContentEmptyEvent.eventType, { bubbles: true, composed: true });
+        this.host = host;
+        this.isEmpty = isEmpty;
+    }
+}
+ContentEmptyEvent.eventType = "content-empty";
+export class ContentActiveChangeEvent extends Event {
+    constructor(activeContent, active) {
+        super(ContentActiveChangeEvent.eventType, { bubbles: true, composed: true });
+        this.activeContent = activeContent;
+        this.active = active;
+    }
+}
+ContentActiveChangeEvent.eventType = "content-active-change";
 /**
  *
  */
@@ -28,6 +51,7 @@ let HbDocPage = class HbDocPage extends LitElement {
         this.state = DocData.defaultState;
         this.inEditMode = false;
         this.selectedEditTab = "";
+        this.activeContent = null;
     }
     get uid() { return `${this.docType}:${this.pid}`; }
     render() {
@@ -37,6 +61,7 @@ let HbDocPage = class HbDocPage extends LitElement {
             <hb-doc-data
                 uid=${this.uid}
                 @state-changed=${linkProp(this, "state")}
+                @request-update=${this.requestUpdate}
             ></hb-doc-data>     
             <hb-page-layout>
                 ${renderAppBarButtons(this, this.state)}
@@ -57,11 +82,14 @@ let HbDocPage = class HbDocPage extends LitElement {
                         </div>
                     `}
                 </div>
-                <div class="doc-content">
-                    ${this.state.doc.content.map((state, index) => contentTypes.get(state.contentType).render({
-            index,
-            state,
-            inDocEditMode: this.inEditMode
+                <div class="doc-content"
+                    @content-active-change=${this.contentActive}
+                    @content-empty=${this.contentEmpty}
+                >
+                    ${this.state.doc.content.map((state, contentIndex) => contentTypes.get(state.contentType).render({
+            docUid: this.uid,
+            contentIndex,
+            state
         }))}
                 </div>
             </hb-page-layout>
@@ -69,6 +97,10 @@ let HbDocPage = class HbDocPage extends LitElement {
     }
     subtitleChange(event) {
         this.shadowRoot?.dispatchEvent(new UpdateSubtitleEvent(event.value));
+    }
+    contentEmpty(event) {
+        event.host.className = !this.inEditMode && event.isEmpty ?
+            "empty" : "";
     }
     addDocumentClicked() {
         this.$addDocumentDialog.open = true;
@@ -82,6 +114,7 @@ let HbDocPage = class HbDocPage extends LitElement {
     }
     editDocumentClicked() {
         this.inEditMode = true;
+        this.dispatchEditModeChange();
     }
     deleteDocumentClicked() {
         this.$deleteDocumentDialog.open = true;
@@ -89,6 +122,24 @@ let HbDocPage = class HbDocPage extends LitElement {
     doneButtonClicked() {
         this.selectedEditTab = "";
         this.inEditMode = false;
+        this.closeActiveContent();
+        this.dispatchEditModeChange();
+    }
+    dispatchEditModeChange() {
+        this.dispatchEvent(new DocEditModeChangeEvent(this.inEditMode));
+    }
+    contentActive(event) {
+        this.closeActiveContent();
+        if (event.active) {
+            this.activeContent = event.activeContent;
+            this.activeContent.isActive = true;
+        }
+    }
+    closeActiveContent() {
+        if (this.activeContent) {
+            this.activeContent.isActive = false;
+            this.activeContent.contentEdit = false;
+        }
     }
 };
 HbDocPage.styles = [styles.types, styles.icons, css `
@@ -100,8 +151,7 @@ HbDocPage.styles = [styles.types, styles.icons, css `
         }
         h1.headline-large {
             margin-bottom: 1rem;
-        }
-   
+        }   
 
         .edit-tabs {
             display: flex;
@@ -141,7 +191,15 @@ HbDocPage.styles = [styles.types, styles.icons, css `
         }
 
         .doc-content{
-            margin: 1rem 0;
+            display:flex;
+            flex-direction: column;
+            padding: 1rem 0;
+        }
+        .doc-content > * {
+            margin-bottom: 36px;
+        }
+        .doc-content > .empty {
+            margin-bottom: 0;
         }
   `];
 __decorate([
