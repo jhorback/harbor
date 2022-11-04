@@ -21,16 +21,3 @@ export class FileUploadProgressEvent extends Event {
     }
 }
 FileUploadProgressEvent.eventType = "file-upload-progress";
-/**
- * This is used internally on the {@link FileUploaderClient}
- * on the uploadController signal to listen for when all files have
- * finished uploading.
- */
-export class FileUploadCompletedEvent extends Event {
-    constructor(uploadedFiles) {
-        super(FileUploadCompletedEvent.eventType);
-        this.uploadedFiles = uploadedFiles;
-        this.uploadedFile = uploadedFiles[0];
-    }
-}
-FileUploadCompletedEvent.eventType = "file-upload-complete";

@@ -6,8 +6,7 @@ import "../hb-content";
 import { HbContent } from "../hb-content";
 import { ImageAlignmentChangeEvent, ImageContentData, ImageContentSelectedEvent, ImageSizeChangeEvent } from "./hb-image-content-data";
 import { linkProp } from "@domx/dataelement";
-import { FileUploaderAccept, FileUploaderClient } from "../../../files/FileUploaderClient";
-import { FileUploadCompletedEvent } from "../../../domain/interfaces/FileInterfaces";
+import { FileUploadCompleteEvent, FileUploadPanel, FileUploaderAccept } from "../../../files/hb-file-upload-panel";
 
 
 /**
@@ -116,11 +115,12 @@ export class ImageContent extends LitElement {
     }
 
     private uploadClicked() {
-        const uploader = new FileUploaderClient({accept: FileUploaderAccept.images});
-        uploader.onComplete((event:FileUploadCompletedEvent) => {
-            event.uploadedFile && this.$dataEl.dispatchEvent(new ImageContentSelectedEvent(event.uploadedFile));
+        FileUploadPanel.openFileSelector({
+            accept: FileUploaderAccept.images,
+            onUploadComplete: (event:FileUploadCompleteEvent) => {
+                event.uploadedFile && this.$dataEl.dispatchEvent(new ImageContentSelectedEvent(event.uploadedFile));
+            }
         });
-        uploader.handleFileUpload();
     }
 
     static styles = [styles.icons, css`
