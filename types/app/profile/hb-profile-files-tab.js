@@ -39,6 +39,7 @@ let ProfileContentTab = class ProfileContentTab extends LitElement {
                         media-url=${fileModel.thumbUrl}
                         media-href=${fileModel.url}
                         link-target="files"
+                        
                     ></hb-horizontal-card>
                 `;
         })}

@@ -12,8 +12,8 @@ import { styles } from "../../../styles";
 import { UpdateDocContentEvent } from "../../data/hb-doc-data";
 import { TextContentData } from "../textContentType";
 import { HbApp } from "../../../domain/HbApp";
-import { FileUploaderAccept, FileUploaderClient } from "../../../files/FileUploaderClient";
 import "../hb-content";
+import { FileUploaderAccept, FileUploadPanel } from "../../../files/hb-file-upload-panel";
 /**
  */
 let TextContent = TextContent_1 = class TextContent extends LitElement {
@@ -96,12 +96,14 @@ if (!window.tinymceSettings) {
             image_title: true,
             file_picker_types: "image media",
             file_picker_callback: (callback, value, meta) => {
-                const accept = meta.filetype === "image" ? FileUploaderAccept.images : FileUploaderAccept.media;
-                const client = new FileUploaderClient({ accept: accept });
-                client.onComplete((event) => event.uploadedFile && callback(event.uploadedFile.url, { title: event.uploadedFile.name }));
-                client.handleFileUpload();
+                FileUploadPanel.openFileSelector({
+                    accept: meta.filetype === "image" ? FileUploaderAccept.images : FileUploaderAccept.media,
+                    onUploadComplete: (event) => {
+                        event.uploadedFile && callback(event.uploadedFile.url, { title: event.uploadedFile.name });
+                    }
+                });
             },
-            plugins: "autolink lists link image autoresize fullscreen media table tinymcespellchecker codesample",
+            plugins: "autolink lists link image autoresize fullscreen media table codesample",
             style_formats_merge: false,
             style_formats: [
                 { title: 'Heading 1', block: 'h2', attributes: { class: 'headline-medium' } },

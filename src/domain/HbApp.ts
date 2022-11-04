@@ -2,6 +2,7 @@ import {
     applyImmerToStateChange,
     applyDataElementRdtLogging
 } from "@domx/dataelement/middleware";
+import { connectRdtLogger } from "@domx/statecontroller";
 import { Router } from "@domx/router";
 import { GoogleAnalytics } from "../domain/GoogleAnalytics";
 import { sendFeedback } from "../layout/feedback";
@@ -40,6 +41,7 @@ export class HbApp {
         handleApplicationErrors();
         applyImmerToStateChange();
         applyDataElementRdtLogging();
+        connectRdtLogger("HARBOR-APP");
         updateHtmlTheme();
         if (!this.isStorybook) {
             GoogleAnalytics.init();

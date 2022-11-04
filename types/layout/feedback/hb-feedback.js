@@ -110,6 +110,7 @@ Feedback.styles = [styles.types, styles.colors, css `
 
             transition: bottom 350ms;
             bottom: -5.5rem;
+            z-index: 10000;
         }
         :host([open]) {
             bottom: 1rem;

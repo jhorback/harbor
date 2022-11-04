@@ -50,6 +50,7 @@ export interface IUploadFilesRepo {
     uploadFileWithProgress(file:File, options:IUploadFileOptions):Promise<IUploadedFile|null>
 }
 
+
 export interface IUploadFileOptions {
     allowOverwrite: boolean;
     /**
@@ -74,21 +75,10 @@ export class FileUploadProgressEvent extends Event {
     }
 }
 
-/**
- * This is used internally on the {@link FileUploaderClient}
- * on the uploadController signal to listen for when all files have
- * finished uploading.
- */
-export class FileUploadCompletedEvent extends Event {
-    static eventType = "file-upload-complete";
-    uploadedFile:IUploadedFile|null;
-    uploadedFiles:Array<IUploadedFile>;
-    constructor(uploadedFiles:Array<IUploadedFile>) {
-        super(FileUploadCompletedEvent.eventType);
-        this.uploadedFiles = uploadedFiles;
-        this.uploadedFile = uploadedFiles[0];
-    }
-}
+
+
+
+
 
 /**
  * The result of a file upload

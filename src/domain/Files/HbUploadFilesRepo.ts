@@ -2,7 +2,7 @@ import { doc, setDoc } from "firebase/firestore";
 import { getDownloadURL, getMetadata, ref, uploadBytesResumable, UploadTaskSnapshot } from "firebase/storage";
 import { provides } from "../DependencyContainer/decorators";
 import { ClientError, ServerError } from "../Errors";
-import { HbCurrentUser } from "../HbCurrentUser";
+import { authorize, HbCurrentUser, UserAction } from "../HbCurrentUser";
 import { HbDb } from "../HbDb";
 import { HbStorage } from "../HbStorage";
 import { FileUploadType, FileUploadProgressEvent, IFileData, IMediaTags, IUploadFileOptions, IUploadFilesRepo, UploadFilesRepoKey, IUploadedFile } from "../interfaces/FileInterfaces";
@@ -31,6 +31,7 @@ export class HbUploadFilesRepo implements IUploadFilesRepo {
             this.supportedFileTypes.video.includes(ext) ? FileUploadType.video : FileUploadType.files;
     }
 
+    @authorize(UserAction.uploadFiles)
     async uploadFileWithProgress(file:File, options:IUploadFileOptions):Promise<IUploadedFile|null> {
         const storagePath = this.getStoragePath(file.name);        
 
