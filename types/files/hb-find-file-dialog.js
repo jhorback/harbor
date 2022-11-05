@@ -12,6 +12,7 @@ import "../common/hb-horizontal-card";
 import "../common/hb-text-input";
 import { SearchFilesController, SearchFilesEvent } from "./SearchFilesController";
 import { debounce } from "../common/debounce";
+import { FileType } from "../domain/interfaces/FileInterfaces";
 export class FileSelectedEvent extends Event {
     constructor(file) {
         super(FileSelectedEvent.eventType);
@@ -25,6 +26,7 @@ FileSelectedEvent.eventType = "file-selected";
 let FindFileDialog = class FindFileDialog extends LitElement {
     constructor() {
         super(...arguments);
+        this.fileType = FileType.files;
         this.open = false;
         this.selectedIndex = null;
         this.searchFiles = new SearchFilesController(this);
@@ -41,13 +43,13 @@ let FindFileDialog = class FindFileDialog extends LitElement {
         return html `
             <dialog>
                 
-                <h1 class="headline-small">Find File</h1>
+                <h1 class="headline-small">${this.dialogTitle}</h1>
 
                     <hb-text-input
                         autofocus
                         placeholder="Enter search text"
                         value=${this.searchText}
-                        error-text=${this.hasNoResults() ? "There were no files found" : ""}
+                        error-text=${this.hasNoResults() ? this.noResultsMessage : ""}
                         @hb-text-input-change=${debounce(this.textInputChange)}
                     ></hb-text-input>
 
@@ -86,6 +88,22 @@ let FindFileDialog = class FindFileDialog extends LitElement {
             </dialog>
         `;
     }
+    get dialogTitle() {
+        return {
+            [FileType.audio]: "Find Audio",
+            [FileType.video]: "Find Video",
+            [FileType.image]: "Find Image",
+            [FileType.files]: "Find File"
+        }[this.fileType];
+    }
+    get noResultsMessage() {
+        return {
+            [FileType.audio]: "There were no audio files found",
+            [FileType.video]: "There were no videos found",
+            [FileType.image]: "There were no images found",
+            [FileType.files]: "There were no files found"
+        }[this.fileType];
+    }
     hasNoResults() {
         const state = this.searchFiles.state;
         return this.searchText.length > 0 && state.isLoading === false && state.count === 0;
@@ -108,7 +126,8 @@ let FindFileDialog = class FindFileDialog extends LitElement {
     textInputChange(event) {
         this.searchText = event.value;
         this.dispatchEvent(new SearchFilesEvent({
-            text: this.searchText
+            text: this.searchText,
+            type: this.fileType
         }));
     }
     selectButtonClicked() {
@@ -137,6 +156,9 @@ FindFileDialog.styles = [styles.types, styles.dialog, css `
             gap: 5px;
         }
   `];
+__decorate([
+    property({ type: String, attribute: "file-type" })
+], FindFileDialog.prototype, "fileType", void 0);
 __decorate([
     property({ type: Boolean })
 ], FindFileDialog.prototype, "open", void 0);

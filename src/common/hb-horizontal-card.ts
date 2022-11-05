@@ -25,8 +25,8 @@ export class HorizontalCard extends LitElement {
     @property({type: String})
     description = "";
 
-    @property({type: Boolean})
-    selected = false; // jch - storybook
+    @property({type: Boolean, reflect: true })
+    selected = false;
 
     render() {
         return html`
@@ -55,7 +55,6 @@ export class HorizontalCard extends LitElement {
     }
 
     handleClick(event:Event) {
-        // jch - make sure storybook shows this event
         this.dispatchEvent(new Event("hb-horizontal-card-click", {bubbles: true, composed: false}));
     }
 

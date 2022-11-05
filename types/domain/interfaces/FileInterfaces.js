@@ -2,7 +2,7 @@ export const FindFileRepoKey = Symbol("FIND_FILE_REPO");
 export const SearchFilesRepoKey = Symbol("SEARCH_FILES_REPO");
 export var FileType;
 (function (FileType) {
-    FileType["images"] = "images";
+    FileType["image"] = "image";
     FileType["audio"] = "audio";
     FileType["video"] = "video";
     FileType["files"] = "files";

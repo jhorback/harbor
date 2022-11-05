@@ -81,7 +81,7 @@ export class FileUploadController extends StateController {
         // set the accept attribute
         const acceptArray = new Array();
         if (accept === FileUploaderAccept.images) {
-            acceptArray.push(...this.filesRepo.supportedFileTypes.images);
+            acceptArray.push(...this.filesRepo.supportedFileTypes.image);
         }
         else if (accept === FileUploaderAccept.audio) {
             acceptArray.push(...this.filesRepo.supportedFileTypes.audio);
@@ -248,7 +248,7 @@ class FileState {
         this._base64Src = this.setBase64Src(fileType);
     }
     setBase64Src(fileType) {
-        if (fileType === FileType.images) {
+        if (fileType === FileType.image) {
             return URL.createObjectURL(this._file);
         }
         this.tryExtractMediaThumb();

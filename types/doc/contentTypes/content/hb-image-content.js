@@ -12,6 +12,7 @@ import { ImageAlignmentChangeEvent, ImageContentData, ImageContentSelectedEvent,
 import { linkProp } from "@domx/dataelement";
 import { FileUploaderAccept } from "../../../files/hb-file-upload-panel";
 import "../../../files/hb-find-file-dialog";
+import { FileType } from "../../../domain/interfaces/FileInterfaces";
 /**
  */
 let ImageContent = class ImageContent extends LitElement {
@@ -60,6 +61,7 @@ let ImageContent = class ImageContent extends LitElement {
                         @file-upload-complete=${this.fileUploadComplete}
                     ></hb-file-upload-panel>
                     <hb-find-file-dialog
+                        file-type=${FileType.image}
                         @file-selected=${this.fileSelected}
                     ></hb-find-file-dialog>
                 </div>

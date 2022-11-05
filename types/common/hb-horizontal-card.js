@@ -18,7 +18,7 @@ let HorizontalCard = class HorizontalCard extends LitElement {
         this.linkTarget = "";
         this.text = "";
         this.description = "";
-        this.selected = false; // jch - storybook
+        this.selected = false;
     }
     render() {
         return html `
@@ -46,7 +46,6 @@ let HorizontalCard = class HorizontalCard extends LitElement {
         `;
     }
     handleClick(event) {
-        // jch - make sure storybook shows this event
         this.dispatchEvent(new Event("hb-horizontal-card-click", { bubbles: true, composed: false }));
     }
     onImageError(event) {
@@ -123,7 +122,7 @@ __decorate([
     property({ type: String })
 ], HorizontalCard.prototype, "description", void 0);
 __decorate([
-    property({ type: Boolean })
+    property({ type: Boolean, reflect: true })
 ], HorizontalCard.prototype, "selected", void 0);
 HorizontalCard = __decorate([
     customElement('hb-horizontal-card')

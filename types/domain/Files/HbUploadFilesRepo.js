@@ -16,7 +16,7 @@ import { convertPictureToBase64Src, extractMediaTags } from "./extractMediaTags"
 let HbUploadFilesRepo = class HbUploadFilesRepo {
     constructor() {
         this.supportedFileTypes = {
-            images: ["avif", "gif", "jpeg", "jpg", "png", "svg", "webp"],
+            image: ["avif", "gif", "jpeg", "jpg", "png", "svg", "webp"],
             audio: ["aac", "aiff", "m4a", "mp3", "oga", "pcm", "wav"],
             video: ["avi", "m4v", "mp4", "mpeg", "mpg", "webm", "wmv"]
         };
@@ -24,7 +24,7 @@ let HbUploadFilesRepo = class HbUploadFilesRepo {
     }
     getFileTypeFromExtension(fileName) {
         const ext = (fileName.split('.').pop() || "").toLowerCase();
-        return this.supportedFileTypes.images.includes(ext) ? FileType.images :
+        return this.supportedFileTypes.image.includes(ext) ? FileType.image :
             this.supportedFileTypes.audio.includes(ext) ? FileType.audio :
                 this.supportedFileTypes.video.includes(ext) ? FileType.video : FileType.files;
     }
