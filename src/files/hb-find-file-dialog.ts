@@ -8,6 +8,7 @@ import { TextInputChangeEvent } from "../common/hb-text-input";
 import { SearchFilesController, SearchFilesEvent } from "./SearchFilesController";
 import { debounce } from "../common/debounce";
 import { FileModel } from "../domain/Files/FileModel";
+import { FileType } from "../domain/interfaces/FileInterfaces";
 
 
 export class FileSelectedEvent extends Event {
@@ -25,6 +26,9 @@ export class FileSelectedEvent extends Event {
  */
 @customElement('hb-find-file-dialog')
 export class FindFileDialog extends LitElement {
+
+    @property({type: String, attribute: "file-type"})
+    fileType:FileType = FileType.files;
 
     @property({type:Boolean})
     open = false;
@@ -52,13 +56,13 @@ export class FindFileDialog extends LitElement {
         return html`
             <dialog>
                 
-                <h1 class="headline-small">Find File</h1>
+                <h1 class="headline-small">${this.dialogTitle}</h1>
 
                     <hb-text-input
                         autofocus
                         placeholder="Enter search text"
                         value=${this.searchText}
-                        error-text=${this.hasNoResults() ? "There were no files found" : ""}
+                        error-text=${this.hasNoResults() ? this.noResultsMessage : ""}
                         @hb-text-input-change=${debounce(this.textInputChange)}
                     ></hb-text-input>
 
@@ -98,6 +102,24 @@ export class FindFileDialog extends LitElement {
         `
     }
 
+    get dialogTitle() {
+        return {
+            [FileType.audio]: "Find Audio",
+            [FileType.video]: "Find Video",
+            [FileType.image]: "Find Image",
+            [FileType.files]: "Find File"
+        }[this.fileType];
+    }
+
+    get noResultsMessage() {
+        return {
+            [FileType.audio]: "There were no audio files found",
+            [FileType.video]: "There were no videos found",
+            [FileType.image]: "There were no images found",
+            [FileType.files]: "There were no files found"
+        }[this.fileType];
+    }
+
     hasNoResults() {
         const state = this.searchFiles.state;
         return this.searchText.length > 0 && state.isLoading === false && state.count === 0;
@@ -125,7 +147,8 @@ export class FindFileDialog extends LitElement {
     private textInputChange(event:TextInputChangeEvent) {
         this.searchText = event.value;
         this.dispatchEvent(new SearchFilesEvent({
-            text: this.searchText
+            text: this.searchText,
+            type: this.fileType
         }));
     }
 

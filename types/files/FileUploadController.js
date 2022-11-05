@@ -6,7 +6,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 import { inject } from "../domain/DependencyContainer/decorators";
 import { ClientError } from "../domain/Errors";
-import { FileUploadType, FileUploadProgressEvent, UploadFilesRepoKey } from "../domain/interfaces/FileInterfaces";
+import { FileType, FileUploadProgressEvent, UploadFilesRepoKey } from "../domain/interfaces/FileInterfaces";
 import "../domain/Files/HbUploadFilesRepo";
 import { convertPictureToBase64Src, extractMediaTags } from "../domain/Files/extractMediaTags";
 import { StateController, stateProperty, hostEvent } from "@domx/statecontroller";
@@ -248,7 +248,7 @@ class FileState {
         this._base64Src = this.setBase64Src(fileType);
     }
     setBase64Src(fileType) {
-        if (fileType === FileUploadType.images) {
+        if (fileType === FileType.images) {
             return URL.createObjectURL(this._file);
         }
         this.tryExtractMediaThumb();

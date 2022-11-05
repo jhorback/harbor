@@ -1,6 +1,6 @@
 import { inject } from "../domain/DependencyContainer/decorators";
 import { ClientError } from "../domain/Errors";
-import { FileUploadType, FileUploadProgressEvent, IUploadedFile, IUploadFilesRepo, UploadFilesRepoKey } from "../domain/interfaces/FileInterfaces";
+import { FileType, FileUploadProgressEvent, IUploadedFile, IUploadFilesRepo, UploadFilesRepoKey } from "../domain/interfaces/FileInterfaces";
 import "../domain/Files/HbUploadFilesRepo";
 import { convertPictureToBase64Src, extractMediaTags } from "../domain/Files/extractMediaTags";
 import { StateController, stateProperty, hostEvent } from "@domx/statecontroller";
@@ -100,7 +100,7 @@ export class FileUploadController extends StateController {
          // set the accept attribute
          const acceptArray = new Array();
          if (accept === FileUploaderAccept.images) {
-             acceptArray.push(...this.filesRepo.supportedFileTypes.images);
+             acceptArray.push(...this.filesRepo.supportedFileTypes.image);
          } else if (accept === FileUploaderAccept.audio) {
              acceptArray.push(...this.filesRepo.supportedFileTypes.audio);
          } else if (accept === FileUploaderAccept.video) {
@@ -271,7 +271,7 @@ export class FileUploadError extends Error {
  * Used for tracking the progress of a single file
  */
 class FileState {
-    constructor(fileUpdatedEventBus:EventTarget, file:File, fileType:FileUploadType) {
+    constructor(fileUpdatedEventBus:EventTarget, file:File, fileType:FileType) {
         this.fileUpdatedEventBus = fileUpdatedEventBus;
         this._file = file;
         this._fileController = new AbortController();
@@ -284,8 +284,8 @@ class FileState {
         this._base64Src = this.setBase64Src(fileType)
     }
 
-    setBase64Src(fileType:FileUploadType):string {
-        if (fileType === FileUploadType.images) {
+    setBase64Src(fileType:FileType):string {
+        if (fileType === FileType.image) {
             return URL.createObjectURL(this._file);
         }
         this.tryExtractMediaThumb();

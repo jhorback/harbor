@@ -9,6 +9,7 @@ import { linkProp } from "@domx/dataelement";
 import { FileUploadCompleteEvent, FileUploadPanel, FileUploaderAccept } from "../../../files/hb-file-upload-panel";
 import "../../../files/hb-find-file-dialog";
 import { FileSelectedEvent, FindFileDialog } from "../../../files/hb-find-file-dialog";
+import { FileType } from "../../../domain/interfaces/FileInterfaces";
 
 /**
  */
@@ -77,6 +78,7 @@ export class ImageContent extends LitElement {
                         @file-upload-complete=${this.fileUploadComplete}
                     ></hb-file-upload-panel>
                     <hb-find-file-dialog
+                        file-type=${FileType.image}
                         @file-selected=${this.fileSelected}
                     ></hb-find-file-dialog>
                 </div>

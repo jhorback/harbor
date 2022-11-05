@@ -1,3 +1,4 @@
+import { FileUploaderAccept } from "../../files/hb-file-upload-panel";
 import { FileModel } from "../Files/FileModel";
 
 
@@ -14,13 +15,14 @@ export interface ISearchFilesRepo {
 }
 export interface ISearchFilesOptions {
     text?:string;
+    type?:FileType
 }
 
 
 
 
-export enum FileUploadType {
-    images = "images",
+export enum FileType {
+    image = "image",
     audio = "audio",
     video = "video",
     files = "files",
@@ -31,12 +33,12 @@ export const UploadFilesRepoKey:symbol = Symbol("UPLOAD_FILES_REPO");
 
 export interface IUploadFilesRepo {
     supportedFileTypes: {
-        images: Array<string>,
+        image: Array<string>,
         audio: Array<string>,
         video: Array<string>
     };
 
-    getFileTypeFromExtension(fileName:string):FileUploadType;
+    getFileTypeFromExtension(fileName:string):FileType;
 
     /**
      * Uploads a file to storage and adds it to the database.

@@ -11,7 +11,7 @@ import { ClientError, ServerError } from "../Errors";
 import { authorize, HbCurrentUser, UserAction } from "../HbCurrentUser";
 import { HbDb } from "../HbDb";
 import { HbStorage } from "../HbStorage";
-import { FileUploadType, FileUploadProgressEvent, UploadFilesRepoKey } from "../interfaces/FileInterfaces";
+import { FileType, FileUploadProgressEvent, UploadFilesRepoKey } from "../interfaces/FileInterfaces";
 import { convertPictureToBase64Src, extractMediaTags } from "./extractMediaTags";
 let HbUploadFilesRepo = class HbUploadFilesRepo {
     constructor() {
@@ -24,9 +24,9 @@ let HbUploadFilesRepo = class HbUploadFilesRepo {
     }
     getFileTypeFromExtension(fileName) {
         const ext = (fileName.split('.').pop() || "").toLowerCase();
-        return this.supportedFileTypes.images.includes(ext) ? FileUploadType.images :
-            this.supportedFileTypes.audio.includes(ext) ? FileUploadType.audio :
-                this.supportedFileTypes.video.includes(ext) ? FileUploadType.video : FileUploadType.files;
+        return this.supportedFileTypes.images.includes(ext) ? FileType.images :
+            this.supportedFileTypes.audio.includes(ext) ? FileType.audio :
+                this.supportedFileTypes.video.includes(ext) ? FileType.video : FileType.files;
     }
     async uploadFileWithProgress(file, options) {
         const storagePath = this.getStoragePath(file.name);
