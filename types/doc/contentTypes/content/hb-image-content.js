@@ -121,7 +121,7 @@ let ImageContent = class ImageContent extends LitElement {
         event.uploadedFile && this.$dataEl.dispatchEvent(new ImageContentSelectedEvent(event.uploadedFile));
     }
 };
-ImageContent.styles = [styles.icons, css `
+ImageContent.styles = [styles.icons, styles.form, css `
         :host {
             display: block;
             position: relative;
@@ -158,16 +158,6 @@ ImageContent.styles = [styles.icons, css `
         }
         label {
             margin-right: 8px;
-        }
-        select {
-            display: inline-block;
-            min-width: 112px;
-            max-width: 280px;
-            height: 48px;
-            outline: none;
-            border: 1px solid var(--md-sys-color-outline);
-            border-radius: var(--md-sys-shape-corner-small);
-            padding: 0 12px;            
         }
   `];
 __decorate([
