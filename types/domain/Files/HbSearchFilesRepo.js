@@ -9,7 +9,7 @@ import { provides } from "../DependencyContainer/decorators";
 import { HbApp } from "../HbApp";
 import { HbDb } from "../HbDb";
 import { HbCurrentUser, UserAction } from "../HbCurrentUser";
-import { SearchFilesRepoKey } from "../interfaces/FileInterfaces";
+import { FileType, SearchFilesRepoKey } from "../interfaces/FileInterfaces";
 import { FileModel } from "./FileModel";
 let SearchFilesRepo = class SearchFilesRepo {
     async searchFiles(options) {
@@ -20,8 +20,13 @@ let SearchFilesRepo = class SearchFilesRepo {
         if (currentUser.authorize(UserAction.viewAllFiles) === false) {
             queryArgs.push(where('ownerUid', '==', currentUser.uid));
         }
-        // order by last updated
-        queryArgs.push(orderBy("updated", "desc"));
+        if (options.type !== undefined && options.type !== FileType.files) {
+            queryArgs.push(where("type", ">=", options.type));
+        }
+        else {
+            // order by last updated
+            queryArgs.push(orderBy("updated", "desc"));
+        }
         // query
         const q = query.call(query, collectionGroup(HbDb.current, "files"), ...queryArgs)
             .withConverter(FileModel);

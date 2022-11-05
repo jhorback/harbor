@@ -8,15 +8,15 @@ import { doc, setDoc } from "firebase/firestore";
 import { getDownloadURL, getMetadata, ref, uploadBytesResumable } from "firebase/storage";
 import { provides } from "../DependencyContainer/decorators";
 import { ClientError, ServerError } from "../Errors";
-import { HbCurrentUser } from "../HbCurrentUser";
+import { authorize, HbCurrentUser, UserAction } from "../HbCurrentUser";
 import { HbDb } from "../HbDb";
 import { HbStorage } from "../HbStorage";
-import { FileUploadType, FileUploadProgressEvent, UploadFilesRepoKey } from "../interfaces/FileInterfaces";
+import { FileType, FileUploadProgressEvent, UploadFilesRepoKey } from "../interfaces/FileInterfaces";
 import { convertPictureToBase64Src, extractMediaTags } from "./extractMediaTags";
 let HbUploadFilesRepo = class HbUploadFilesRepo {
     constructor() {
         this.supportedFileTypes = {
-            images: ["avif", "gif", "jpeg", "jpg", "png", "svg", "webp"],
+            image: ["avif", "gif", "jpeg", "jpg", "png", "svg", "webp"],
             audio: ["aac", "aiff", "m4a", "mp3", "oga", "pcm", "wav"],
             video: ["avi", "m4v", "mp4", "mpeg", "mpg", "webm", "wmv"]
         };
@@ -24,9 +24,9 @@ let HbUploadFilesRepo = class HbUploadFilesRepo {
     }
     getFileTypeFromExtension(fileName) {
         const ext = (fileName.split('.').pop() || "").toLowerCase();
-        return this.supportedFileTypes.images.includes(ext) ? FileUploadType.images :
-            this.supportedFileTypes.audio.includes(ext) ? FileUploadType.audio :
-                this.supportedFileTypes.video.includes(ext) ? FileUploadType.video : FileUploadType.files;
+        return this.supportedFileTypes.image.includes(ext) ? FileType.image :
+            this.supportedFileTypes.audio.includes(ext) ? FileType.audio :
+                this.supportedFileTypes.video.includes(ext) ? FileType.video : FileType.files;
     }
     async uploadFileWithProgress(file, options) {
         const storagePath = this.getStoragePath(file.name);
@@ -48,7 +48,7 @@ let HbUploadFilesRepo = class HbUploadFilesRepo {
      * Resolves with the download url
      */
     async addFileToDb(file, snapshot) {
-        const storagePath = snapshot.ref.fullPath;
+        const storagePath = `users/${this.currentUser.uid}/files/${file.name}`;
         const [md, url, mediaTags] = await Promise.all([
             getMetadata(snapshot.ref),
             getDownloadURL(snapshot.ref),
@@ -66,7 +66,7 @@ let HbUploadFilesRepo = class HbUploadFilesRepo {
             updated: md.updated,
             mediaTags
         };
-        const ref = doc(HbDb.current, `users/${this.currentUser.uid}/files`, file.name);
+        const ref = doc(HbDb.current, storagePath);
         await setDoc(ref, fileData);
         return {
             fileDbPath: ref.path,
@@ -109,6 +109,9 @@ let HbUploadFilesRepo = class HbUploadFilesRepo {
         return `users/${this.currentUser.uid}/${fileName}`;
     }
 };
+__decorate([
+    authorize(UserAction.uploadFiles)
+], HbUploadFilesRepo.prototype, "uploadFileWithProgress", null);
 HbUploadFilesRepo = __decorate([
     provides(UploadFilesRepoKey)
 ], HbUploadFilesRepo);

@@ -4,6 +4,7 @@ import { HbApp } from "../HbApp";
 import { HbDb } from "../HbDb";
 import { HbCurrentUser, UserAction } from "../HbCurrentUser";
 import {
+    FileType,
     IFileData,
     ISearchFilesOptions,
     ISearchFilesRepo,
@@ -24,10 +25,15 @@ class SearchFilesRepo implements ISearchFilesRepo {
         if (currentUser.authorize(UserAction.viewAllFiles) === false) {
             queryArgs.push(where('ownerUid', '==', currentUser.uid));
         }
-       
 
-        // order by last updated
-        queryArgs.push(orderBy("updated", "desc"));
+        if (options.type !== undefined && options.type !== FileType.files) {
+            queryArgs.push(where("type", ">=", options.type));
+        } else {
+            // order by last updated
+            queryArgs.push(orderBy("updated", "desc"));
+        }
+
+        
         
 
 

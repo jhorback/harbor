@@ -1,12 +1,12 @@
 export const FindFileRepoKey = Symbol("FIND_FILE_REPO");
 export const SearchFilesRepoKey = Symbol("SEARCH_FILES_REPO");
-export var FileUploadType;
-(function (FileUploadType) {
-    FileUploadType["images"] = "images";
-    FileUploadType["audio"] = "audio";
-    FileUploadType["video"] = "video";
-    FileUploadType["files"] = "files";
-})(FileUploadType || (FileUploadType = {}));
+export var FileType;
+(function (FileType) {
+    FileType["image"] = "image";
+    FileType["audio"] = "audio";
+    FileType["video"] = "video";
+    FileType["files"] = "files";
+})(FileType || (FileType = {}));
 ;
 export const UploadFilesRepoKey = Symbol("UPLOAD_FILES_REPO");
 /**

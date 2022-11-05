@@ -20,6 +20,14 @@ export default {
         }
     }
 };
+class MockStateChangeEvent extends Event {
+    constructor(state) {
+        super(MockStateChangeEvent.eventType);
+        this.state = state;
+    }
+}
+MockStateChangeEvent.eventType = "mock-state-change";
+;
 class MockFileUploadController extends FileUploadController {
     openFileSelector() {
         console.log("MockFileUploadController: openFileSelector called.");
@@ -86,17 +94,9 @@ const createElement = () => {
         panel = Panel.openFileSelector({
             accept: FileUploaderAccept.images
         });
-        panel.showPanel();
     }
+    panel.showPanel();
 };
-class MockStateChangeEvent extends Event {
-    constructor(state) {
-        super(MockStateChangeEvent.eventType);
-        this.state = state;
-    }
-}
-MockStateChangeEvent.eventType = "mock-state-change";
-;
 const clickedButton = (name) => {
     return (event) => {
         createElement();
@@ -105,6 +105,10 @@ const clickedButton = (name) => {
 };
 const closeElement = (event) => {
     panel?.close();
+    setTimeout(() => {
+        panel?.parentElement?.removeChild(panel);
+        panel = null;
+    }, 1000);
 };
 // @ts-ignore 
 const Template = (args) => FileUploadPanelTemplate(args);

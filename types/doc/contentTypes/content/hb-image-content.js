@@ -10,7 +10,9 @@ import { styles } from "../../../styles";
 import "../hb-content";
 import { ImageAlignmentChangeEvent, ImageContentData, ImageContentSelectedEvent, ImageSizeChangeEvent } from "./hb-image-content-data";
 import { linkProp } from "@domx/dataelement";
-import { FileUploadPanel, FileUploaderAccept } from "../../../files/hb-file-upload-panel";
+import { FileUploaderAccept } from "../../../files/hb-file-upload-panel";
+import "../../../files/hb-find-file-dialog";
+import { FileType } from "../../../domain/interfaces/FileInterfaces";
 /**
  */
 let ImageContent = class ImageContent extends LitElement {
@@ -54,6 +56,14 @@ let ImageContent = class ImageContent extends LitElement {
                 </div>
                 <div slot="content-edit">
                     ${this.renderImage(this.state.url || "/content/thumbs/files-thumb.svg")}
+                    <hb-file-upload-panel
+                        accept=${FileUploaderAccept.images}
+                        @file-upload-complete=${this.fileUploadComplete}
+                    ></hb-file-upload-panel>
+                    <hb-find-file-dialog
+                        file-type=${FileType.image}
+                        @file-selected=${this.fileSelected}
+                    ></hb-find-file-dialog>
                 </div>
                 <div slot="content-edit-tools">
                     <div>
@@ -95,30 +105,35 @@ let ImageContent = class ImageContent extends LitElement {
         this.$hbContent.edit();
     }
     searchClicked() {
-        alert("Find image");
+        this.$findFileDlg.open = true;
+    }
+    fileSelected(event) {
+        this.$dataEl.dispatchEvent(new ImageContentSelectedEvent({
+            url: event.file.url,
+            name: event.file.name,
+            fileDbPath: event.file.storagePath
+        }));
     }
     uploadClicked() {
-        FileUploadPanel.openFileSelector({
-            accept: FileUploaderAccept.images,
-            onUploadComplete: (event) => {
-                event.uploadedFile && this.$dataEl.dispatchEvent(new ImageContentSelectedEvent(event.uploadedFile));
-            }
-        });
+        this.$fileUploadPanel.openFileSelector();
+    }
+    fileUploadComplete(event) {
+        event.uploadedFile && this.$dataEl.dispatchEvent(new ImageContentSelectedEvent(event.uploadedFile));
     }
 };
-ImageContent.styles = [styles.icons, css `
+ImageContent.styles = [styles.icons, styles.form, css `
         :host {
             display: block;
             position: relative;
         }
         div[size=small] img {
-            width: 100px;
+            width: 250px;
         }
         div[size=medium] img {
-            width: 300px;
+            width: 500px;
         }
         div[size=large] img {
-            width: 600px;
+            width: 1000px;
             max-width: 100%;
         }
         div[alignment=left] {
@@ -144,16 +159,6 @@ ImageContent.styles = [styles.icons, css `
         label {
             margin-right: 8px;
         }
-        select {
-            display: inline-block;
-            min-width: 112px;
-            max-width: 280px;
-            height: 48px;
-            outline: none;
-            border: 1px solid var(--md-sys-color-outline);
-            border-radius: var(--md-sys-shape-corner-small);
-            padding: 0 12px;            
-        }
   `];
 __decorate([
     property({ type: String })
@@ -170,6 +175,12 @@ __decorate([
 __decorate([
     query("hb-content")
 ], ImageContent.prototype, "$hbContent", void 0);
+__decorate([
+    query("hb-file-upload-panel")
+], ImageContent.prototype, "$fileUploadPanel", void 0);
+__decorate([
+    query("hb-find-file-dialog")
+], ImageContent.prototype, "$findFileDlg", void 0);
 __decorate([
     query("hb-image-content-data")
 ], ImageContent.prototype, "$dataEl", void 0);

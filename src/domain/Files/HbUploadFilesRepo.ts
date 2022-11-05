@@ -5,7 +5,7 @@ import { ClientError, ServerError } from "../Errors";
 import { authorize, HbCurrentUser, UserAction } from "../HbCurrentUser";
 import { HbDb } from "../HbDb";
 import { HbStorage } from "../HbStorage";
-import { FileUploadType, FileUploadProgressEvent, IFileData, IMediaTags, IUploadFileOptions, IUploadFilesRepo, UploadFilesRepoKey, IUploadedFile } from "../interfaces/FileInterfaces";
+import { FileType, FileUploadProgressEvent, IFileData, IMediaTags, IUploadFileOptions, IUploadFilesRepo, UploadFilesRepoKey, IUploadedFile } from "../interfaces/FileInterfaces";
 import { convertPictureToBase64Src, extractMediaTags } from "./extractMediaTags";
 
 
@@ -19,16 +19,16 @@ export class HbUploadFilesRepo implements IUploadFilesRepo {
     }
 
     supportedFileTypes = {
-        images: ["avif", "gif", "jpeg", "jpg", "png", "svg", "webp"],
+        image: ["avif", "gif", "jpeg", "jpg", "png", "svg", "webp"],
         audio: ["aac", "aiff", "m4a", "mp3", "oga", "pcm", "wav"],
         video: ["avi", "m4v", "mp4",  "mpeg", "mpg", "webm", "wmv"]
     };
 
-    getFileTypeFromExtension(fileName:string):FileUploadType {
+    getFileTypeFromExtension(fileName:string):FileType {
         const ext = (fileName.split('.').pop() || "").toLowerCase();
-        return this.supportedFileTypes.images.includes(ext) ? FileUploadType.images :
-            this.supportedFileTypes.audio.includes(ext) ? FileUploadType.audio :
-            this.supportedFileTypes.video.includes(ext) ? FileUploadType.video : FileUploadType.files;
+        return this.supportedFileTypes.image.includes(ext) ? FileType.image :
+            this.supportedFileTypes.audio.includes(ext) ? FileType.audio :
+            this.supportedFileTypes.video.includes(ext) ? FileType.video : FileType.files;
     }
 
     @authorize(UserAction.uploadFiles)
@@ -62,7 +62,7 @@ export class HbUploadFilesRepo implements IUploadFilesRepo {
      * Resolves with the download url
      */
     private async addFileToDb(file:File, snapshot:UploadTaskSnapshot):Promise<IUploadedFile> {
-        const storagePath = snapshot.ref.fullPath;
+        const storagePath = `users/${this.currentUser.uid}/files/${file.name}`;
 
         const [md, url, mediaTags] = await Promise.all([
             getMetadata(snapshot.ref),
@@ -84,7 +84,7 @@ export class HbUploadFilesRepo implements IUploadFilesRepo {
         };
 
         
-        const ref = doc(HbDb.current, `users/${this.currentUser.uid}/files`, file.name);
+        const ref = doc(HbDb.current, storagePath);
         await setDoc(ref, fileData);
         return {
             fileDbPath: ref.path,
