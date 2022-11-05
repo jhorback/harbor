@@ -48,7 +48,7 @@ let HbUploadFilesRepo = class HbUploadFilesRepo {
      * Resolves with the download url
      */
     async addFileToDb(file, snapshot) {
-        const storagePath = snapshot.ref.fullPath;
+        const storagePath = `users/${this.currentUser.uid}/files/${file.name}`;
         const [md, url, mediaTags] = await Promise.all([
             getMetadata(snapshot.ref),
             getDownloadURL(snapshot.ref),
@@ -66,7 +66,7 @@ let HbUploadFilesRepo = class HbUploadFilesRepo {
             updated: md.updated,
             mediaTags
         };
-        const ref = doc(HbDb.current, `users/${this.currentUser.uid}/files`, file.name);
+        const ref = doc(HbDb.current, storagePath);
         await setDoc(ref, fileData);
         return {
             fileDbPath: ref.path,

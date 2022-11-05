@@ -62,7 +62,7 @@ export class HbUploadFilesRepo implements IUploadFilesRepo {
      * Resolves with the download url
      */
     private async addFileToDb(file:File, snapshot:UploadTaskSnapshot):Promise<IUploadedFile> {
-        const storagePath = snapshot.ref.fullPath;
+        const storagePath = `users/${this.currentUser.uid}/files/${file.name}`;
 
         const [md, url, mediaTags] = await Promise.all([
             getMetadata(snapshot.ref),
@@ -84,7 +84,7 @@ export class HbUploadFilesRepo implements IUploadFilesRepo {
         };
 
         
-        const ref = doc(HbDb.current, `users/${this.currentUser.uid}/files`, file.name);
+        const ref = doc(HbDb.current, storagePath);
         await setDoc(ref, fileData);
         return {
             fileDbPath: ref.path,
