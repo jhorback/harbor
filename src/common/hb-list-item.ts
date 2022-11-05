@@ -66,7 +66,8 @@ export class ListItem extends LitElement {
             border: 1px solid;
         }
         .list-item[selected] {
-            border: 1px solid;
+            border: 1px solid var(--md-sys-color-on-background);
+            background-color: var(--md-sys-color-background);
         }
         .select-icon {
             align-self: flex-start;

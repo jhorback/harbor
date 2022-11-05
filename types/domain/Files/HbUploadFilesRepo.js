@@ -8,7 +8,7 @@ import { doc, setDoc } from "firebase/firestore";
 import { getDownloadURL, getMetadata, ref, uploadBytesResumable } from "firebase/storage";
 import { provides } from "../DependencyContainer/decorators";
 import { ClientError, ServerError } from "../Errors";
-import { HbCurrentUser } from "../HbCurrentUser";
+import { authorize, HbCurrentUser, UserAction } from "../HbCurrentUser";
 import { HbDb } from "../HbDb";
 import { HbStorage } from "../HbStorage";
 import { FileUploadType, FileUploadProgressEvent, UploadFilesRepoKey } from "../interfaces/FileInterfaces";
@@ -109,6 +109,9 @@ let HbUploadFilesRepo = class HbUploadFilesRepo {
         return `users/${this.currentUser.uid}/${fileName}`;
     }
 };
+__decorate([
+    authorize(UserAction.uploadFiles)
+], HbUploadFilesRepo.prototype, "uploadFileWithProgress", null);
 HbUploadFilesRepo = __decorate([
     provides(UploadFilesRepoKey)
 ], HbUploadFilesRepo);

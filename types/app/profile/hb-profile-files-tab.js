@@ -4,10 +4,10 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-import { linkProp } from "@domx/dataelement";
 import { html, css, LitElement } from "lit";
-import { customElement, property, query } from "lit/decorators.js";
-import { SearchFilesData, SearchFilesEvent } from "../../files/data/hb-search-files-data";
+import { customElement } from "lit/decorators.js";
+import { SearchFilesController, SearchFilesEvent } from "../../files/SearchFilesController";
+import "../../domain/Files/HbSearchFilesRepo";
 import { styles } from "../../styles";
 /**
  * @class ProfileContentTab
@@ -15,23 +15,21 @@ import { styles } from "../../styles";
 let ProfileContentTab = class ProfileContentTab extends LitElement {
     constructor() {
         super(...arguments);
-        this.state = SearchFilesData.defaultState;
+        this.searchFiles = new SearchFilesController(this);
     }
     async connectedCallback() {
         super.connectedCallback();
         await this.updateComplete;
-        this.$dataEl.dispatchEvent(new SearchFilesEvent({}));
+        this.dispatchEvent(new SearchFilesEvent({}));
     }
     render() {
+        const state = this.searchFiles.state;
         return html `
-            <hb-search-files-data
-                @state-changed=${linkProp(this, "state")}
-            ></hb-search-files-data>
-            ${this.state.isLoading || this.state.count !== 0 ? html `` : html `
+            ${state.isLoading || state.count !== 0 ? html `` : html `
                 <p>There are no files</p>
             `}
             <div class="list">
-            ${this.state.list.map(fileModel => {
+            ${state.list.map(fileModel => {
             return html `
                     <hb-horizontal-card                        
                         text=${fileModel.name}
@@ -58,12 +56,6 @@ ProfileContentTab.styles = [styles.types, css `
             row-gap: 16px;
         }
     `];
-__decorate([
-    property({ type: Object })
-], ProfileContentTab.prototype, "state", void 0);
-__decorate([
-    query("hb-search-files-data")
-], ProfileContentTab.prototype, "$dataEl", void 0);
 ProfileContentTab = __decorate([
     customElement('hb-profile-files-tab')
 ], ProfileContentTab);

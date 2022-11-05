@@ -1,7 +1,7 @@
-import { linkProp } from "@domx/dataelement";
 import { html, css, LitElement } from "lit";
-import { customElement, property, query } from "lit/decorators.js";
-import { ISearchFilesState, SearchFilesData, SearchFilesEvent } from "../../files/data/hb-search-files-data";
+import { customElement } from "lit/decorators.js";
+import { SearchFilesController, SearchFilesEvent } from "../../files/SearchFilesController";
+import "../../domain/Files/HbSearchFilesRepo";
 import { styles } from "../../styles";
 
 
@@ -11,28 +11,22 @@ import { styles } from "../../styles";
 @customElement('hb-profile-files-tab')
 export class ProfileContentTab extends LitElement {
 
-    @property({type: Object})
-    state:ISearchFilesState = SearchFilesData.defaultState;
-
-    @query("hb-search-files-data")
-    $dataEl!:SearchFilesData;
+    searchFiles:SearchFilesController = new SearchFilesController(this);
 
     async connectedCallback() {
         super.connectedCallback();
         await this.updateComplete;
-        this.$dataEl.dispatchEvent(new SearchFilesEvent({}));
+        this.dispatchEvent(new SearchFilesEvent({}));
     }
 
     render() {
+        const state = this.searchFiles.state;
         return html`
-            <hb-search-files-data
-                @state-changed=${linkProp(this, "state")}
-            ></hb-search-files-data>
-            ${this.state.isLoading || this.state.count !== 0 ? html`` : html`
+            ${state.isLoading || state.count !== 0 ? html`` : html`
                 <p>There are no files</p>
             `}
             <div class="list">
-            ${this.state.list.map(fileModel => {                
+            ${state.list.map(fileModel => {                
                 return html`
                     <hb-horizontal-card                        
                         text=${fileModel.name}
