@@ -9,6 +9,7 @@ import { FileUploadPanel as Panel, FileUploaderAccept } from "./hb-file-upload-p
 import { extractMediaTags, convertPictureToBase64Src, convertPictureToFile } from "../domain/Files/extractMediaTags";
 import { CancelUploadEvent, FileUploadController, FileUploadError, OverwriteFileEvent } from './FileUploadController';
 import { hostEvent } from '@domx/statecontroller';
+import { resizeImageFile } from '../domain/Files/resizeImageFile';
 export default {
     title: 'App/File Upload Panel',
     component: "hb-file-upload-panel",
@@ -61,33 +62,63 @@ const FileUploadPanelTemplate = () => html `
     <button @click=${clickedButton("complete")}>Complete</button>
     <button @click=${clickedButton("doneWithSkipped")}>Complete With Skipped</button>
     <button @click=${closeElement}>Close</button>
-    <h2>extractMediaTags Test</h2>
-    <p>Use jsmediatags to pull out meta data</p>
-    <input type="file" @change=${onInputChange}>
+    
+    <div>
+        <h2>extractMediaTags Test</h2>
+        <p>Use jsmediatags to pull out meta data</p>
+        <input type="file" @change=${MediaTagTest.onInputChange}>
+    </div>
+    
+    <div>
+        <h2>Image Re-sizer Test</h2>
+        <input type="file" @change=${ImageSizerTest.onInputChange}>
+        <div>
+            <h3>Resized Image</h3>
+            <div id="resized-ctr"></div>
+        </div>
+    </div>
 `;
-const onInputChange = async (event) => {
-    //@ts-ignore
-    const file = event.target.files[0];
-    try {
-        const tags = await extractMediaTags(file);
-        addMessageDiv("Parsed tags", tags);
-        var img = document.createElement("img");
-        img.src = convertPictureToBase64Src(tags.picture);
-        document.body.appendChild(img);
-        img = document.createElement("img");
-        img.src = URL.createObjectURL(convertPictureToFile("name", tags.picture.data));
-        document.body.appendChild(img);
+class ImageSizerTest {
+    static async onInputChange(event) {
+        //@ts-ignore
+        const file = event.target.files[0];
+        const resizedFile = await resizeImageFile(file, 200, "-thumb");
+        const img = document.createElement("img");
+        img.src = URL.createObjectURL(resizedFile.file);
+        const ctr = document.getElementById("resized-ctr");
+        ctr.innerHTML = "";
+        ctr.appendChild(img);
+        MediaTagTest.addMessageDiv("Resized Image Dimensions", {
+            ...resizedFile,
+            fileName: resizedFile.file.name
+        });
     }
-    catch (error) {
-        addMessageDiv("Caught error", error);
+}
+class MediaTagTest {
+    static async onInputChange(event) {
+        //@ts-ignore
+        const file = event.target.files[0];
+        try {
+            const tags = await extractMediaTags(file);
+            MediaTagTest.addMessageDiv("Parsed tags", tags);
+            var img = document.createElement("img");
+            img.src = convertPictureToBase64Src(tags.picture);
+            document.body.appendChild(img);
+            img = document.createElement("img");
+            img.src = URL.createObjectURL(convertPictureToFile("name", tags.picture.data));
+            document.body.appendChild(img);
+        }
+        catch (error) {
+            MediaTagTest.addMessageDiv("Caught error", error);
+        }
     }
-};
-const addMessageDiv = (message, data) => {
-    const div = document.createElement("div");
-    div.innerText = `${message}: ${JSON.stringify(data)}`;
-    console.log(message, data);
-    document.body.appendChild(div);
-};
+    static addMessageDiv(message, data) {
+        const div = document.createElement("div");
+        div.innerText = `${message}: ${JSON.stringify(data)}`;
+        console.log(message, data);
+        document.body.appendChild(div);
+    }
+}
 let panel = null;
 const createElement = () => {
     if (!panel || !panel.parentElement) {
