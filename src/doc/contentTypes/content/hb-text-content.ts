@@ -41,7 +41,7 @@ export class TextContent extends LitElement {
                         height="500"
                         menubar="false"
                         toolbar="undo redo | styles | bold italic underline strikethrough | align |
-                        bullist numlist indent hr | link image media table | codesample  fullscreen"
+                        bullist numlist indent hr | harborSearch harborUpload | link image media table | codesample  fullscreen"
                 >${this.state.text}</tinymce-editor>
                 </div>
             </hb-content>
@@ -91,6 +91,10 @@ if (!window.tinymceSettings) {
             image_title: true,
             file_picker_types: "image media",
             file_picker_callback: (callback:FileUploadCallback, value:string, meta:IFilePickerMetaFields) => {
+                const dlg = document.createElement("dialog");
+                document.body.appendChild(dlg);
+                dlg.showModal();
+                return;
                 FileUploadPanel.openFileSelector({
                     accept: meta.filetype === "image" ? FileUploaderAccept.images : FileUploaderAccept.media,
                     onUploadComplete: (event:FileUploadCompleteEvent) => {
@@ -98,6 +102,58 @@ if (!window.tinymceSettings) {
                     }
                 })
             },
+            setup: (editor:any) => {
+
+                editor.ui.registry.addButton("harborSearch", {
+                    icon: "search",
+                    tooltip: 'Search for page, images, audio, or video',
+                    onAction: (api:any) => {
+                        alert("search")
+                        /**
+                         * * -> search - need text-content-selector-dialog
+                         *    create static method like upload content
+                         *    option for type: link, media
+                         *    if not set, the dialog should provide an option
+                         *    then show either the find doc or find file dialog
+                         * 
+                         * if content selection is <a> or <video> can use this to
+                         * seed the selector dialog which would not show the link / media selection
+                         */
+                    }
+                });
+                
+                editor.ui.registry.addButton("harborUpload", {
+                    icon: "upload",
+                    tooltip: 'Upload images, audio, or video',
+                    onAction: (api:any) => {
+                        // debugger;
+                        editor.selection.getContent(); // this is the selection that will be replaced
+                        editor.insertContent("woo hoo");
+                        /**
+                         * if image, can parse out alt and title text
+                         * NEED NEW DIALOG? How to go to search vs add?
+                         * - in dialog - show image / thumbnail
+                         * - show two buttons for search vs upload
+                         * - upload will upload and fill out the dialog
+                         * - search will hide the current dialog, show the search dialog
+                         * - when a selection is made the first dialog will re-appear
+                         * 
+                         * ONLY DO IMAGE AND LINK AT THIS TIME
+                         * WAIT TO DO MEDIA?
+                         * 
+                         * HERE----
+                         * ADD TWO BUTTONS: SEARCH | UPLOAD
+                         * -> upload only uploads images at this point
+                         *    make sure that the fileModel has optional width/height 
+                         *    make a ticket for upload media (after picture/files are done)
+                         
+                         * 
+                         */
+                    }
+                });
+                
+            },
+            
             plugins: "autolink lists link image autoresize fullscreen media table codesample",
             style_formats_merge: false,
             style_formats: [               
