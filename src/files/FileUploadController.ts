@@ -5,6 +5,7 @@ import "../domain/Files/HbUploadFilesRepo";
 import { convertPictureToBase64Src, extractMediaTags } from "../domain/Files/extractMediaTags";
 import { StateController, stateProperty, hostEvent } from "@domx/statecontroller";
 import { FileUploadPanel, FileUploaderAccept, FileUploadCompleteEvent } from "./hb-file-upload-panel";
+import { resizeImageFile } from "../domain/Files/resizeImageFile";
 
 
 
@@ -170,10 +171,12 @@ export class FileUploadController extends StateController {
         this.uploads.forEach(file => file.cancelUpload());
     }
 
-    private onFileInputChange(event:Event) {
+    private async onFileInputChange(event:Event) {
+        
+        const filesToUpload = await this.getFilesForUpload(this.fileInput.files as FileList);
 
         // try upload on all files from the file input
-        Array.from(this.fileInput.files as FileList).forEach(file => {
+        filesToUpload.forEach(file => {
             const fileData = new FileState(this.fileUpdatedEventBus, file,
                 this.filesRepo.getFileTypeFromExtension(file.name));
             this.uploads.push(fileData);
@@ -182,6 +185,29 @@ export class FileUploadController extends StateController {
 
         // show the panel
         this.host.showPanel();
+    }
+
+    /**
+     * Takes the files to upload and resizes any images to their max size
+     * before uploading.
+     */
+    private async getFilesForUpload(files:FileList):Promise<Array<File>> {
+        const promises = Array.from(files).map((file):Promise<File> => {           
+            const fileType = this.filesRepo.getFileTypeFromExtension(file.name);
+            if (fileType === FileType.image) {
+                return new Promise<File>(async (resolve, reject) => {
+                    try {
+                        const resizeFile = await resizeImageFile(file, this.filesRepo.MAX_UPLOAD_SIZE);
+                        resolve(resizeFile.resizeNeeded === true ? resizeFile.file : file);
+                    } catch (e) {
+                        console.error("Error resizing image", e);
+                        resolve(file);
+                    }
+                });
+            }
+            return Promise.resolve<File>(file);
+        });
+        return await Promise.all(promises);
     }
 
     private async tryUpload(fileData:FileState, allowOverwrite:boolean) {
@@ -295,7 +321,9 @@ class FileState {
     async tryExtractMediaThumb() {
         try {
             const tags = await extractMediaTags(this._file);
-            this._base64Src = convertPictureToBase64Src(tags.picture);
+            if (tags.picture !== undefined) {
+                this._base64Src = convertPictureToBase64Src(tags.picture);
+            }
             this.dispatchUpdate();
         } catch(e) {
             console.log("Unable to pull media tags", e);

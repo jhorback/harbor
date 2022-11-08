@@ -1,12 +1,13 @@
 import { doc, setDoc } from "firebase/firestore";
-import { getDownloadURL, getMetadata, ref, uploadBytesResumable, UploadTaskSnapshot } from "firebase/storage";
+import { getDownloadURL, getMetadata, ref, uploadBytes, uploadBytesResumable, UploadTaskSnapshot } from "firebase/storage";
 import { provides } from "../DependencyContainer/decorators";
 import { ClientError, ServerError } from "../Errors";
 import { authorize, HbCurrentUser, UserAction } from "../HbCurrentUser";
 import { HbDb } from "../HbDb";
 import { HbStorage } from "../HbStorage";
 import { FileType, FileUploadProgressEvent, IFileData, IMediaTags, IUploadFileOptions, IUploadFilesRepo, UploadFilesRepoKey, IUploadedFile } from "../interfaces/FileInterfaces";
-import { convertPictureToBase64Src, extractMediaTags } from "./extractMediaTags";
+import { convertPictureToBase64Src, convertPictureToFile, extractMediaTags } from "./extractMediaTags";
+import { resizeImageFile } from "./resizeImageFile";
 
 
 
@@ -17,6 +18,10 @@ export class HbUploadFilesRepo implements IUploadFilesRepo {
     constructor() {
         this.currentUser = new HbCurrentUser();
     }
+
+    MAX_UPLOAD_SIZE = 1280;
+
+    MAX_THUMB_SIZE = 250;
 
     supportedFileTypes = {
         image: ["avif", "gif", "jpeg", "jpg", "png", "svg", "webp"],
@@ -59,10 +64,10 @@ export class HbUploadFilesRepo implements IUploadFilesRepo {
     }
 
     /**
-     * Resolves with the download url
+     * Resolves with the uploaded file information
      */
     private async addFileToDb(file:File, snapshot:UploadTaskSnapshot):Promise<IUploadedFile> {
-        const storagePath = `users/${this.currentUser.uid}/files/${file.name}`;
+        const dbStoragePath = `files/${file.name}`;
 
         const [md, url, mediaTags] = await Promise.all([
             getMetadata(snapshot.ref),
@@ -70,25 +75,83 @@ export class HbUploadFilesRepo implements IUploadFilesRepo {
             this.resolveMediaTags(file)
         ]);
 
-        const thumbUrl = mediaTags ? convertPictureToBase64Src(mediaTags.picture) : url;
+        // generate the picture for media files
+        const pictureData = await this.storePicture(file, mediaTags);
+
+        // generate the thumbnail
+        const thumbData = await this.storeThumb(file, pictureData);
+
+        // remove the binary picture data before storing
+        delete mediaTags?.picture; 
+
         const fileData:IFileData = {
             name: md.name,
-            ownerUid: this.currentUser.uid!,
-            storagePath,
+            uploaderUid: this.currentUser.uid!,
+            storagePath: dbStoragePath,
             url,
-            thumbUrl,
+            pictureUrl: pictureData?.url || null,
+            thumbUrl: thumbData?.url,
             size: md.size,
             type: md.contentType,
+            width: thumbData?.width,
+            height: thumbData?.height,
             updated: md.updated,
             mediaTags
         };
 
         
-        const ref = doc(HbDb.current, storagePath);
+        const ref = doc(HbDb.current, dbStoragePath);
         await setDoc(ref, fileData);
         return {
             fileDbPath: ref.path,
             name: file.name,
+            url,
+            thumbUrl: fileData.thumbUrl
+        };
+    }
+
+    private async storePicture(file:File, mediaTags:IMediaTags|null):Promise<IImageData|null> {
+        if (mediaTags === null || mediaTags.picture === undefined) {
+            return null;
+        }
+
+        const pictureFile = convertPictureToFile(file.name, mediaTags.picture);
+        const resizedPictureFile = await resizeImageFile(pictureFile, this.MAX_UPLOAD_SIZE, " PICTURE");
+        const storagePath = this.getStoragePath(resizedPictureFile.file.name);
+        const storageRef = ref(HbStorage.current, storagePath);
+        const snapshot = await uploadBytes(storageRef, resizedPictureFile.file)
+        const url = await getDownloadURL(snapshot.ref);
+        return {
+            url,
+            width: resizedPictureFile.resizedWidth,
+            height: resizedPictureFile.resizedHeight,
+            file: resizedPictureFile.file
+        };
+    }
+
+    /**
+     * Generates a thumb image and stores it using pictureData or the file if an image.
+     * Otherwise returns null
+     */
+    private async storeThumb(file:File, pictureData:IImageData|null):Promise<IImageData|null> {
+        const awaitThumb = pictureData ? resizeImageFile(pictureData.file, this.MAX_THUMB_SIZE, " THUMB") :
+            this.getFileTypeFromExtension(file.name) === FileType.image ? 
+                resizeImageFile(file, this.MAX_THUMB_SIZE, " THUMB") : null;
+
+        const thumb = await awaitThumb;
+        if (thumb === null) {
+            return null;
+        }
+
+        const storagePath = this.getStoragePath(thumb.file.name);
+        const storageRef = ref(HbStorage.current, storagePath);
+        const snapshot = await uploadBytes(storageRef, thumb.file)
+        const url = await getDownloadURL(snapshot.ref);
+
+        return {
+            file: thumb.file,
+            width: thumb.originalWidth,
+            height: thumb.originalHeight,
             url
         };
     }
@@ -126,8 +189,16 @@ export class HbUploadFilesRepo implements IUploadFilesRepo {
     }
 
     private getStoragePath(fileName:string) { 
-        return `users/${this.currentUser.uid}/${fileName}`;
+        return `files/${fileName}`;
     }
+}
+
+
+interface IImageData {
+    url: string,
+    width: number,
+    height: number,
+    file: File
 }
 
 

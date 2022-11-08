@@ -1,10 +1,12 @@
-import { DataElement, StateChange } from "@domx/dataelement";
-import { customDataElement, dataProperty, event } from "@domx/dataelement/decorators";
+import { hostEvent, Product, StateController, stateProperty } from "@domx/statecontroller";
 import { inject } from "../../../domain/DependencyContainer/decorators";
 import { FindFileRepoKey, IFindFileRepo, IUploadedFile } from "../../../domain/interfaces/FileInterfaces";
 import { UpdateDocContentEvent } from "../../data/hb-doc-data";
 import { ImageAlignment, ImageContentDataState, ImageSize } from "../imageContentType";
+import { ImageContent } from "./hb-image-content";
 import "../../../domain/Files/HbFindFileRepo";
+import { FileModel } from "../../../domain/Files/FileModel";
+
 
 
 export class ImageSizeChangeEvent extends Event {
@@ -35,58 +37,58 @@ export class ImageContentSelectedEvent extends Event {
 }
 
 
-@customDataElement("hb-image-content-data", {
-    eventsListenAt: "self",
-    stateIdProperty: "uid"
-})
-export class ImageContentData extends DataElement {
-    static defaultState:ImageContentDataState = new ImageContentDataState().toPlainObject();
+export class ImageContentController extends StateController {
 
-    get uid():string { return this.getAttribute("uid") || ""; }
-    get contentIndex():number {
-        const index = this.getAttribute("content-index");
-        return index ? parseInt(index) : -1;
+    @stateProperty()
+    state:ImageContentDataState = new ImageContentDataState();
+
+    host:ImageContent;
+
+    constructor(host:ImageContent) {
+        super(host);
+        this.host = host;
     }
-    
-    @dataProperty()
-    state = ImageContentData.defaultState;
+
+    hostConnected() {
+        super.hostConnected();
+        this.state = this.host.data;
+        Product.of<ImageContentDataState>(this, "state")
+            .tap(syncWithDb(this, this.findFileRepo));
+    }
 
     @inject<IFindFileRepo>(FindFileRepoKey)
     private findFileRepo!:IFindFileRepo;
 
-    connectedCallback() {
-        super.connectedCallback();
-        StateChange.of(this)
-            .tap(syncWithDb(this, this.findFileRepo));
-    }
-
-    @event(ImageSizeChangeEvent.eventType)
+    @hostEvent(ImageSizeChangeEvent)
     imageSizeChange(event:ImageSizeChangeEvent) {
-        StateChange.of(this)
+        Product.of<ImageContentDataState>(this, "state")
             .next(updateImageSize(event.size))
-            .dispatch()
-            .dispatchEvent(new UpdateDocContentEvent(this.contentIndex, this.state))
+            .requestUpdate(event)
+            .dispatchHostEvent(new UpdateDocContentEvent(this.host.contentIndex, this.state))
     }
 
-    @event(ImageAlignmentChangeEvent.eventType)
+    @hostEvent(ImageAlignmentChangeEvent)
     imageAlignmentChange(event:ImageAlignmentChangeEvent) {
-        StateChange.of(this)
+        Product.of<ImageContentDataState>(this, "state")
             .next(updateImageAlignment(event.alignment))
-            .dispatch()
-            .dispatchEvent(new UpdateDocContentEvent(this.contentIndex, this.state))
+            .requestUpdate(event)
+            .dispatchHostEvent(new UpdateDocContentEvent(this.host.contentIndex, this.state))
     }
 
-    @event(ImageContentSelectedEvent.eventType)
+    @hostEvent(ImageContentSelectedEvent)
     imageContentSelected(event:ImageContentSelectedEvent) {
-        StateChange.of(this)
+        Product.of<ImageContentDataState>(this, "state")
             .next(setImageContent(event.file))
-            .dispatch()
-            .dispatchEvent(new UpdateDocContentEvent(this.contentIndex, this.state));
+            .requestUpdate(event)
+            .dispatchHostEvent(new UpdateDocContentEvent(this.host.contentIndex, this.state));
     }
+
 }
 
-const syncWithDb = (dataEl:ImageContentData, findFileRepo:IFindFileRepo) => async (stateChange:StateChange) => {
-    const state = stateChange.getState() as ImageContentDataState;
+
+const syncWithDb = (controller:ImageContentController, findFileRepo:IFindFileRepo) => async (product:Product<ImageContentDataState>) => {
+    const state = product.getState() as ImageContentDataState;
+
     if (!state.fileDbPath) {
         return;
     }
@@ -96,10 +98,10 @@ const syncWithDb = (dataEl:ImageContentData, findFileRepo:IFindFileRepo) => asyn
         return;
     }
 
-    if (file.url !== state.url) {
-        stateChange.next(updateImageUrl(file.url))
-            .dispatch()
-            .dispatchEvent(new UpdateDocContentEvent(dataEl.contentIndex, dataEl.state));
+    if (file.url !== state.url || file.thumbUrl !== state.thumbUrl) {
+        product.next(updateImageUrl(file))
+            .requestUpdate("ImageContentController.syncWithDb")
+            .dispatchHostEvent(new UpdateDocContentEvent(controller.host.contentIndex, product.getState()));
     }
 };
 
@@ -115,8 +117,10 @@ const updateImageAlignment = (alignment:ImageAlignment) => (state:ImageContentDa
 const setImageContent = (file:IUploadedFile) => (state:ImageContentDataState) => {
     state.fileDbPath = file.fileDbPath;
     state.url = file.url;
+    state.thumbUrl = file.thumbUrl || null;
 };
 
-const updateImageUrl = (url:string)=> (state:ImageContentDataState) => {
-    state.url = url;
+const updateImageUrl = (file:FileModel)=> (state:ImageContentDataState) => {
+    state.url = file.url;
+    state.thumbUrl = file.thumbUrl;
 };

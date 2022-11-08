@@ -4,7 +4,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-import { query, where, getDocs, orderBy, collectionGroup } from "firebase/firestore";
+import { query, collection, where, getDocs, orderBy } from "firebase/firestore";
 import { provides } from "../DependencyContainer/decorators";
 import { HbApp } from "../HbApp";
 import { HbDb } from "../HbDb";
@@ -18,7 +18,7 @@ let SearchFilesRepo = class SearchFilesRepo {
         const queryArgs = [];
         // authorize which documents
         if (currentUser.authorize(UserAction.viewAllFiles) === false) {
-            queryArgs.push(where('ownerUid', '==', currentUser.uid));
+            queryArgs.push(where('uploaderUid', '==', currentUser.uid));
         }
         if (options.type !== undefined && options.type !== FileType.files) {
             queryArgs.push(where("type", ">=", options.type));
@@ -28,7 +28,7 @@ let SearchFilesRepo = class SearchFilesRepo {
             queryArgs.push(orderBy("updated", "desc"));
         }
         // query
-        const q = query.call(query, collectionGroup(HbDb.current, "files"), ...queryArgs)
+        const q = query.call(query, collection(HbDb.current, "files"), ...queryArgs)
             .withConverter(FileModel);
         const snapshot = await getDocs(q);
         const docs = snapshot.docs.map((doc) => doc.data());

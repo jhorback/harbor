@@ -5,14 +5,14 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 import { html, css, LitElement } from "lit";
-import { customElement, property, query, state } from "lit/decorators.js";
+import { customElement, property, query } from "lit/decorators.js";
 import { styles } from "../../../styles";
+import { ImageSize } from "../imageContentType";
 import "../hb-content";
-import { ImageAlignmentChangeEvent, ImageContentData, ImageContentSelectedEvent, ImageSizeChangeEvent } from "./hb-image-content-data";
-import { linkProp } from "@domx/dataelement";
 import { FileUploaderAccept } from "../../../files/hb-file-upload-panel";
 import "../../../files/hb-find-file-dialog";
 import { FileType } from "../../../domain/interfaces/FileInterfaces";
+import { ImageAlignmentChangeEvent, ImageContentController, ImageContentSelectedEvent, ImageSizeChangeEvent } from "./ImageContentController";
 /**
  */
 let ImageContent = class ImageContent extends LitElement {
@@ -20,20 +20,15 @@ let ImageContent = class ImageContent extends LitElement {
         super(...arguments);
         this.docUid = "";
         this.contentIndex = -1;
-        this.state = ImageContentData.defaultState;
-        this.inEditMode = false;
+        this.imageContent = new ImageContentController(this);
     }
+    get stateId() { return `${this.docUid}:content:${this.contentIndex}`; }
     render() {
+        const state = this.imageContent.state;
         return html `
-            <hb-image-content-data
-                uid=${`${this.docUid}:content:${this.contentIndex}`}
-                content-index=${this.contentIndex}
-                .state=${this.state}
-                @state-change=${linkProp(this, "state")}
-            ></hb-image-content-data>
-            <hb-content ?is-empty=${!this.state.url}>                
+            <hb-content ?is-empty=${!state.url}>                
                 <div>
-                    ${this.renderImage(this.state.url)}
+                    ${this.renderImage(this.getImageSrcPerSize())}
                 </div>
                 <div slot="edit-toolbar">
                     <span
@@ -55,7 +50,7 @@ let ImageContent = class ImageContent extends LitElement {
                     ${this.renderImage("/content/thumbs/files-thumb.svg")}
                 </div>
                 <div slot="content-edit">
-                    ${this.renderImage(this.state.url || "/content/thumbs/files-thumb.svg")}
+                    ${this.renderImage(state.url || "/content/thumbs/files-thumb.svg")}
                     <hb-file-upload-panel
                         accept=${FileUploaderAccept.images}
                         @file-upload-complete=${this.fileUploadComplete}
@@ -68,7 +63,7 @@ let ImageContent = class ImageContent extends LitElement {
                 <div slot="content-edit-tools">
                     <div>
                         <label for="size">Size</label>
-                        <select id="size" .value=${this.state.size} @change=${this.sizeChanged}>
+                        <select id="size" .value=${state.size} @change=${this.sizeChanged}>
                             <option value="small">Small</option>
                             <option value="medium">Medium</option>
                             <option value="large">Large</option>
@@ -76,7 +71,7 @@ let ImageContent = class ImageContent extends LitElement {
                     </div>
                     <div>
                         <label for="alignment">Alignment</label>
-                        <select id="alignment" .value=${this.state.alignment} @change=${this.alignmentChanged}>
+                        <select id="alignment" .value=${state.alignment} @change=${this.alignmentChanged}>
                             <option value="left">Left</option>
                             <option value="center">Center</option>
                             <option value="right">Right</option>
@@ -86,20 +81,27 @@ let ImageContent = class ImageContent extends LitElement {
             </hb-content>
         `;
     }
+    getImageSrcPerSize() {
+        const state = this.imageContent.state;
+        return state.size === ImageSize.small ?
+            state.thumbUrl ? state.thumbUrl :
+                state.url : state.url;
+    }
     renderImage(src) {
+        const { state } = this.imageContent;
         return !src ? html `` : html `
-            <div size=${this.state.size} alignment=${this.state.alignment}>
+            <div size=${state.size} alignment=${state.alignment}>
                 <img src=${src}>
             </div>
         `;
     }
     sizeChanged(event) {
         const size = event.target.value;
-        this.$dataEl.dispatchEvent(new ImageSizeChangeEvent(size));
+        this.dispatchEvent(new ImageSizeChangeEvent(size));
     }
     alignmentChanged(event) {
         const alignment = event.target.value;
-        this.$dataEl.dispatchEvent(new ImageAlignmentChangeEvent(alignment));
+        this.dispatchEvent(new ImageAlignmentChangeEvent(alignment));
     }
     clickedEmpty() {
         this.$hbContent.edit();
@@ -108,7 +110,7 @@ let ImageContent = class ImageContent extends LitElement {
         this.$findFileDlg.open = true;
     }
     fileSelected(event) {
-        this.$dataEl.dispatchEvent(new ImageContentSelectedEvent({
+        this.dispatchEvent(new ImageContentSelectedEvent({
             url: event.file.url,
             name: event.file.name,
             fileDbPath: event.file.storagePath
@@ -118,7 +120,7 @@ let ImageContent = class ImageContent extends LitElement {
         this.$fileUploadPanel.openFileSelector();
     }
     fileUploadComplete(event) {
-        event.uploadedFile && this.$dataEl.dispatchEvent(new ImageContentSelectedEvent(event.uploadedFile));
+        event.uploadedFile && this.dispatchEvent(new ImageContentSelectedEvent(event.uploadedFile));
     }
 };
 ImageContent.styles = [styles.icons, styles.form, css `
@@ -168,10 +170,7 @@ __decorate([
 ], ImageContent.prototype, "contentIndex", void 0);
 __decorate([
     property({ type: Object })
-], ImageContent.prototype, "state", void 0);
-__decorate([
-    state()
-], ImageContent.prototype, "inEditMode", void 0);
+], ImageContent.prototype, "data", void 0);
 __decorate([
     query("hb-content")
 ], ImageContent.prototype, "$hbContent", void 0);
@@ -181,9 +180,6 @@ __decorate([
 __decorate([
     query("hb-find-file-dialog")
 ], ImageContent.prototype, "$findFileDlg", void 0);
-__decorate([
-    query("hb-image-content-data")
-], ImageContent.prototype, "$dataEl", void 0);
 ImageContent = __decorate([
     customElement('hb-image-content')
 ], ImageContent);

@@ -20,15 +20,15 @@ export class TextContent extends LitElement {
     contentIndex:number = -1;
 
     @property({type: Object})
-    state:TextContentData = TextContent.defaultState;
+    data:TextContentData = TextContent.defaultState;
 
     @query("hb-content")
     $hbContent!:HbContent;
 
     render() {
         return html`
-            <hb-content @content-active-change=${this.contentActive} ?is-empty=${!this.state.text}>
-                <div class="clearfix">${unsafeHTML(this.state.text)}</div>
+            <hb-content @content-active-change=${this.contentActive} ?is-empty=${!this.data.text}>
+                <div class="clearfix">${unsafeHTML(this.data.text)}</div>
                 <div slot="doc-edit-empty" @click=${this.textClicked}>
                     Click to enter text content
                 </div>
@@ -41,8 +41,8 @@ export class TextContent extends LitElement {
                         height="500"
                         menubar="false"
                         toolbar="undo redo | styles | bold italic underline strikethrough | align |
-                        bullist numlist indent hr | harborSearch harborUpload | link image media table | codesample  fullscreen"
-                >${this.state.text}</tinymce-editor>
+                        bullist numlist indent hr | link image media table | codesample  fullscreen"
+                >${this.data.text}</tinymce-editor>
                 </div>
             </hb-content>
         `;

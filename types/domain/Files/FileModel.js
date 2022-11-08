@@ -1,10 +1,11 @@
 export class FileModel {
     constructor() {
         this.name = "";
-        this.ownerUid = "";
+        this.uploaderUid = "";
         this.storagePath = "";
         this.url = "";
         this.thumbUrl = "";
+        this.pictureUrl = "";
         this.size = 0;
         this.updated = "";
         this.mediaTags = null;
@@ -18,12 +19,15 @@ export class FileModel {
     static toFirestore(file) {
         return {
             name: file.name,
-            ownerUid: file.ownerUid,
+            uploaderUid: file.uploaderUid,
             storagePath: file.storagePath,
             url: file.url,
             thumbUrl: file.thumbUrl,
+            pictureUrl: file.pictureUrl,
             size: file.size,
             type: file.type,
+            width: file.width,
+            height: file.height,
             updated: file.updated,
             mediaTags: file.mediaTags
         };
