@@ -90,15 +90,11 @@ HorizontalCard.styles = [styles.icons, styles.types, css `
         [hidden] {
             display: none;
         }
-        .media { 
+        .media,.media #thumbnail { 
             width: 80px;
             height: 80px;
-            overflow: hidden;
-            background-size: cover;
         }
         .media #thumbnail {
-            width: 80px;
-            height: 80px;
             overflow: hidden;
             background-size: cover;
         }

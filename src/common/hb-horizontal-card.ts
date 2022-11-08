@@ -99,15 +99,11 @@ export class HorizontalCard extends LitElement {
         [hidden] {
             display: none;
         }
-        .media { 
+        .media,.media #thumbnail { 
             width: 80px;
             height: 80px;
-            overflow: hidden;
-            background-size: cover;
         }
         .media #thumbnail {
-            width: 80px;
-            height: 80px;
             overflow: hidden;
             background-size: cover;
         }
