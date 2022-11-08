@@ -38,13 +38,14 @@ let AddDocumentData = AddDocumentData_1 = class AddDocumentData extends DataElem
         super(...arguments);
         this.state = AddDocumentData_1.defaultState;
     }
+    static get defaultState() { return { docTypes: docTypes.all() }; }
+    ;
     addNewDocument(event) {
         const options = event.options;
         StateChange.of(this)
             .tap(addNewDocument(this.addDocRepo, options));
     }
 };
-AddDocumentData.defaultState = { docTypes: docTypes.all() };
 __decorate([
     dataProperty()
 ], AddDocumentData.prototype, "state", void 0);

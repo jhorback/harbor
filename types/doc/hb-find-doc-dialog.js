@@ -45,13 +45,13 @@ let FindDocDialog = class FindDocDialog extends LitElement {
             ></hb-search-docs-data>
             <dialog>
                 
-                <h1 class="headline-small">Find Document</h1>
+                <h1 class="headline-small">Find Page</h1>
 
                     <hb-text-input
                         autofocus
                         placeholder="Enter search text"
                         value=${this.searchText}
-                        error-text=${this.hasNoResults() ? "There were no documents found" : ""}
+                        error-text=${this.hasNoResults() ? "There were no pages found" : ""}
                         @hb-text-input-change=${debounce(this.textInputChange)}
                     ></hb-text-input>
 
@@ -79,7 +79,7 @@ let FindDocDialog = class FindDocDialog extends LitElement {
                     ></hb-button>
                     <hb-button
                         text-button
-                        label="Select Document"
+                        label="Select Page"
                         ?disabled=${this.iSelectButtonDisabled()}
                         @click=${this.selectButtonClicked}
                     ></hb-button>

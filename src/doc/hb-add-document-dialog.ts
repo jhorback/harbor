@@ -55,10 +55,10 @@ export class AddDocumentDialog extends LitElement {
             ></hb-add-document-data>
             <dialog>
                 
-                <h1 class="headline-small">Add New Document</h1>
+                <h1 class="headline-small">Add New Page</h1>
 
                 <div class="field">            
-                    <div class="label-large">Document type</div>
+                    <div class="label-large">Page type</div>
                     <div class="list">
                         ${this.state.docTypes.map((docType, index) => html`
                             <hb-list-item
@@ -73,9 +73,9 @@ export class AddDocumentDialog extends LitElement {
                 </div>
                 <hr>
                 <div class="field">
-                    <div class="label-large">Document name</div>
+                    <div class="label-large">Page name</div>
                     <hb-text-input
-                        placeholder="Enter the document title"
+                        placeholder="Enter the page title"
                         value=${this.newDocTitle}
                         error-text=${this.addDocumentError}
                         @hb-text-input-change=${this.textInputChange}
@@ -89,7 +89,7 @@ export class AddDocumentDialog extends LitElement {
                     ></hb-button>
                     <hb-button
                         text-button
-                        label="Add Document"
+                        label="Add Page"
                         ?disabled=${!this.addButtonEnabled}
                         @click=${this.addButtonClicked}
                     ></hb-button>
