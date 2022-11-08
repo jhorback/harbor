@@ -17,7 +17,8 @@ export enum FileUploaderAccept {
     images = "images",
     audio = "audio",
     video = "video",
-    media = "media"
+    media = "media",
+    all = "all"
 }
 
 /**

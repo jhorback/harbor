@@ -9,7 +9,14 @@ interface IResizedFile {
     resizeNeeded? :boolean;
 }
 
-
+/**
+ * Resizes the image file with a new name if larger than the max size,
+ * otherwise, returns the original file.
+ * @param file the image file to resize
+ * @param maxSize the maximum width/height of the file
+ * @param nameQualifier optional text to add to the name before the extension; e.g. name<qualifier>.ext
+ * @returns {Promise<IResizedFile>}
+ */
 export const resizeImageFile = async (file:File, maxSize:number, nameQualifier?:string):Promise<IResizedFile> => {
     const image = document.createElement("img");
     await waitOnImageLoad(image, URL.createObjectURL(file));

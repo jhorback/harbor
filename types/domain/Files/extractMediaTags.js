@@ -68,7 +68,7 @@ const loadScript = () => {
         }
     });
 };
-export const convertPictureToFile = (originalFilename, picture) => new File([new Blob([new Uint8Array(picture.data)])], getFileName(originalFilename, picture.format));
+export const convertPictureToFile = (originalFilename, picture) => new File([new Blob([new Uint8Array(picture.data)])], getFileName(originalFilename, picture.format), { type: picture.format });
 const getFileName = (fileName, format) => {
     const fileNameParts = fileName.split(".");
     const formatParts = format.split("/");

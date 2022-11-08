@@ -14,6 +14,7 @@ import { TextContentData } from "../textContentType";
 import { HbApp } from "../../../domain/HbApp";
 import "../hb-content";
 import { FileUploaderAccept, FileUploadPanel } from "../../../files/hb-file-upload-panel";
+import { FileType } from "../../../domain/interfaces/FileInterfaces";
 /**
  */
 let TextContent = TextContent_1 = class TextContent extends LitElement {
@@ -38,7 +39,7 @@ let TextContent = TextContent_1 = class TextContent extends LitElement {
                         height="500"
                         menubar="false"
                         toolbar="undo redo | styles | bold italic underline strikethrough | align |
-                        bullist numlist indent hr | link image media table | codesample  fullscreen"
+                        bullist numlist indent hr | harborSearch harborUpload | link image media table | codesample  fullscreen"
                 >${this.data.text}</tinymce-editor>
                 </div>
             </hb-content>
@@ -94,12 +95,75 @@ if (!window.tinymceSettings) {
             text_patterns: true,
             automatic_uploads: true,
             image_title: true,
-            file_picker_types: "image media",
-            file_picker_callback: (callback, value, meta) => {
-                FileUploadPanel.openFileSelector({
-                    accept: meta.filetype === "image" ? FileUploaderAccept.images : FileUploaderAccept.media,
-                    onUploadComplete: (event) => {
-                        event.uploadedFile && callback(event.uploadedFile.url, { title: event.uploadedFile.name });
+            // file_picker_types: "image media",
+            // file_picker_callback: (callback:FileUploadCallback, value:string, meta:IFilePickerMetaFields) => {                
+            //     FileUploadPanel.openFileSelector({
+            //         accept: meta.filetype === "image" ? FileUploaderAccept.images : FileUploaderAccept.media,
+            //         onUploadComplete: (event:FileUploadCompleteEvent) => {
+            //             event.uploadedFile && callback(event.uploadedFile.url, {title:event.uploadedFile.name});
+            //         }
+            //     })
+            // },
+            setup: (editor) => {
+                editor.ui.registry.addButton("harborSearch", {
+                    icon: "search",
+                    tooltip: 'Search for page, images, audio, or video',
+                    onAction: (api) => {
+                        alert("search");
+                        /**
+                         * * -> search - need text-content-selector-dialog
+                         *    create static method like upload content
+                         *    option for type: link, media
+                         *    if not set, the dialog should provide an option
+                         *    then show either the find doc or find file dialog
+                         *
+                         * if content selection is <a> or <video> can use this to
+                         * seed the selector dialog which would not show the link / media selection
+                         */
+                    }
+                });
+                editor.ui.registry.addButton("harborUpload", {
+                    icon: "upload",
+                    tooltip: 'Upload images, audio, or video',
+                    onAction: (api) => {
+                        // EXAMPLES;
+                        // const selection = editor.selection.getContent(); // this is the selection that will be replaced
+                        // editor.insertContent("woo hoo");
+                        // editor.insertContent('<a href="https://www.google.com">GOOGLE</a>');
+                        // editor.selection.getNode().tagName === "A" === "IMG"
+                        const selectedNode = editor.selection.getNode();
+                        const selectedTag = selectedNode.tagName;
+                        const accept = selectedTag === "IMG" ? FileUploaderAccept.images :
+                            selectedTag === "VIDEO" ? FileUploaderAccept.media :
+                                FileUploaderAccept.all;
+                        FileUploadPanel.openFileSelector({
+                            accept,
+                            onUploadComplete: (event) => {
+                                if (!event.uploadedFile) {
+                                    return;
+                                }
+                                const upload = event.uploadedFile;
+                                const fileType = upload.type?.indexOf("image") === 0 ? FileType.image :
+                                    upload.type?.indexOf("audio") === 0 ? FileType.audio :
+                                        upload.type?.indexOf("video") === 0 ? FileType.video : FileType.files;
+                                let content = "";
+                                if (fileType === FileType.image) {
+                                    content = `<img src="${upload.url}" title="${upload.name}" alt="${upload.name}">`;
+                                }
+                                else if (fileType === FileType.audio || fileType === FileType.video) {
+                                    content = `
+<video controls poster="${upload.pictureUrl || ""}" width="${upload.width || (fileType === FileType.audio ? 300 : "")}" height="${upload.height || (fileType === FileType.audio ? 50 : "")}">
+    <source src="${upload.url}" type="${upload.type}">
+</video>
+`;
+                                }
+                                else {
+                                    content = `<a href="${upload.url}" target="_blank" title="${upload.name}">${upload.name}</a>`;
+                                }
+                                editor.selection.select(selectedNode);
+                                editor.insertContent(content);
+                            }
+                        });
                     }
                 });
             },
