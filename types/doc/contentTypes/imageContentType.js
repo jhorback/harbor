@@ -34,7 +34,7 @@ const imageContentType = {
         <hb-image-content
             .docUid=${options.docUid}
             .contentIndex=${options.contentIndex}
-            .state=${options.state}
+            .data=${options.data}
         ></hb-image-content>
     `
 };

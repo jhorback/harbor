@@ -2,11 +2,10 @@ import { DataElement, StateChange } from "@domx/dataelement";
 import { customDataElement, dataProperty, event } from "@domx/dataelement/decorators";
 import { inject } from "../../domain/DependencyContainer/decorators";
 import { DocModel } from "../../domain/Doc/DocModel";
-import { EditDocRepoKey, IContentType, IContentTypeRenderOptions, IEditDocRepo, IUnsubscribe } from "../../domain/interfaces/DocumentInterfaces";
+import { EditDocRepoKey, IContentType, IEditDocRepo, IUnsubscribe } from "../../domain/interfaces/DocumentInterfaces";
 import { UserAction, HbCurrentUser } from "../../domain/HbCurrentUser";
 import "../../domain/Doc/HbEditDocRepo";
 import { HbCurrentUserChangedEvent } from "../../domain/HbAuth";
-import { State } from "@storybook/api";
 
 
 export interface IDocDataState {

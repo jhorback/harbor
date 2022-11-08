@@ -75,6 +75,8 @@ export class HbUploadFilesRepo implements IUploadFilesRepo {
             this.resolveMediaTags(file)
         ]);
 
+        debugger;
+
         // generate the picture for media files
         const pictureData = await this.storePicture(file, mediaTags);
 
@@ -89,7 +91,7 @@ export class HbUploadFilesRepo implements IUploadFilesRepo {
             uploaderUid: this.currentUser.uid!,
             storagePath: dbStoragePath,
             url,
-            pictureUrl: pictureData?.url,
+            pictureUrl: pictureData?.url || null,
             thumbUrl: thumbData?.url,
             size: md.size,
             type: md.contentType,

@@ -1,20 +1,21 @@
 import { html, css, LitElement } from "lit";
-import { customElement, property, query, state } from "lit/decorators.js";
+import { customElement, property, query } from "lit/decorators.js";
 import { styles } from "../../../styles";
 import { ImageAlignment, ImageContentDataState, ImageSize } from "../imageContentType";
 import "../hb-content";
 import { HbContent } from "../hb-content";
-import { ImageAlignmentChangeEvent, ImageContentData, ImageContentSelectedEvent, ImageSizeChangeEvent } from "./hb-image-content-data";
-import { linkProp } from "@domx/dataelement";
 import { FileUploadCompleteEvent, FileUploadPanel, FileUploaderAccept } from "../../../files/hb-file-upload-panel";
 import "../../../files/hb-find-file-dialog";
 import { FileSelectedEvent, FindFileDialog } from "../../../files/hb-find-file-dialog";
 import { FileType } from "../../../domain/interfaces/FileInterfaces";
+import { ImageAlignmentChangeEvent, ImageContentController, ImageContentSelectedEvent, ImageSizeChangeEvent } from "./ImageContentController";
 
 /**
  */
 @customElement('hb-image-content')
 export class ImageContent extends LitElement {
+
+    get stateId() { return `${this.docUid}:content:${this.contentIndex}`; }
 
     @property({type:String})
     docUid:string = "";
@@ -23,10 +24,9 @@ export class ImageContent extends LitElement {
     contentIndex:number = -1;
 
     @property({type: Object})
-    state:ImageContentDataState = ImageContentData.defaultState;
+    data!:ImageContentDataState;    
 
-    @state()
-    inEditMode = false;
+    imageContent = new ImageContentController(this);
 
     @query("hb-content")
     $hbContent!:HbContent;
@@ -37,20 +37,12 @@ export class ImageContent extends LitElement {
     @query("hb-find-file-dialog")
     $findFileDlg!:FindFileDialog;
 
-    @query("hb-image-content-data")
-    $dataEl!:ImageContentData;
-
     render() {
+        const state = this.imageContent.state;
         return html`
-            <hb-image-content-data
-                uid=${`${this.docUid}:content:${this.contentIndex}`}
-                content-index=${this.contentIndex}
-                .state=${this.state}
-                @state-change=${linkProp(this, "state")}
-            ></hb-image-content-data>
-            <hb-content ?is-empty=${!this.state.url}>                
+            <hb-content ?is-empty=${!state.url}>                
                 <div>
-                    ${this.renderImage(this.state.url)}
+                    ${this.renderImage(state.url)}
                 </div>
                 <div slot="edit-toolbar">
                     <span
@@ -72,7 +64,7 @@ export class ImageContent extends LitElement {
                     ${this.renderImage("/content/thumbs/files-thumb.svg")}
                 </div>
                 <div slot="content-edit">
-                    ${this.renderImage(this.state.url || "/content/thumbs/files-thumb.svg")}
+                    ${this.renderImage(state.url || "/content/thumbs/files-thumb.svg")}
                     <hb-file-upload-panel
                         accept=${FileUploaderAccept.images}
                         @file-upload-complete=${this.fileUploadComplete}
@@ -85,7 +77,7 @@ export class ImageContent extends LitElement {
                 <div slot="content-edit-tools">
                     <div>
                         <label for="size">Size</label>
-                        <select id="size" .value=${this.state.size} @change=${this.sizeChanged}>
+                        <select id="size" .value=${state.size} @change=${this.sizeChanged}>
                             <option value="small">Small</option>
                             <option value="medium">Medium</option>
                             <option value="large">Large</option>
@@ -93,7 +85,7 @@ export class ImageContent extends LitElement {
                     </div>
                     <div>
                         <label for="alignment">Alignment</label>
-                        <select id="alignment" .value=${this.state.alignment} @change=${this.alignmentChanged}>
+                        <select id="alignment" .value=${state.alignment} @change=${this.alignmentChanged}>
                             <option value="left">Left</option>
                             <option value="center">Center</option>
                             <option value="right">Right</option>
@@ -105,8 +97,9 @@ export class ImageContent extends LitElement {
     }
 
     private renderImage(src:string|null) {
+        const {state} = this.imageContent;
         return !src ? html`` : html`
-            <div size=${this.state.size} alignment=${this.state.alignment}>
+            <div size=${state.size} alignment=${state.alignment}>
                 <img src=${src}>
             </div>
         `;
@@ -114,12 +107,12 @@ export class ImageContent extends LitElement {
 
     private sizeChanged(event:Event) {
         const size = (event.target as HTMLSelectElement).value as ImageSize;
-        this.$dataEl.dispatchEvent(new ImageSizeChangeEvent(size));
+        this.dispatchEvent(new ImageSizeChangeEvent(size));
     }
 
     private alignmentChanged(event:Event) {
         const alignment = (event.target as HTMLSelectElement).value as ImageAlignment;
-        this.$dataEl.dispatchEvent(new ImageAlignmentChangeEvent(alignment));
+        this.dispatchEvent(new ImageAlignmentChangeEvent(alignment));
     }
 
     private clickedEmpty() {
@@ -131,7 +124,7 @@ export class ImageContent extends LitElement {
     }
 
     private fileSelected(event:FileSelectedEvent) {
-        this.$dataEl.dispatchEvent(new ImageContentSelectedEvent({
+        this.dispatchEvent(new ImageContentSelectedEvent({
             url: event.file.url,
             name: event.file.name,
             fileDbPath: event.file.storagePath
@@ -143,7 +136,7 @@ export class ImageContent extends LitElement {
     }
 
     private fileUploadComplete(event:FileUploadCompleteEvent) {
-        event.uploadedFile && this.$dataEl.dispatchEvent(new ImageContentSelectedEvent(event.uploadedFile));
+        event.uploadedFile && this.dispatchEvent(new ImageContentSelectedEvent(event.uploadedFile));
     }
 
     static styles = [styles.icons, styles.form, css`
