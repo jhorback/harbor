@@ -68,5 +68,11 @@ const loadScript = () => {
         }
     });
 };
-export const convertPictureToFile = (name, pictureData) => new File([new Blob([new Uint8Array(pictureData)])], name);
+export const convertPictureToFile = (originalFilename, picture) => new File([new Blob([new Uint8Array(picture.data)])], getFileName(originalFilename, picture.format));
+const getFileName = (fileName, format) => {
+    const fileNameParts = fileName.split(".");
+    const formatParts = format.split("/");
+    const ext = formatParts[formatParts.length - 1];
+    return `${fileNameParts[0]}.${ext}`;
+};
 export const convertPictureToBase64Src = (picture) => `data:${picture.format};base64,${window.btoa(picture.data.reduce((base64String, data) => base64String + String.fromCharCode(data), ""))}`;

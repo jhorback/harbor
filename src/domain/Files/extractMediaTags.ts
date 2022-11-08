@@ -77,8 +77,16 @@ const loadScript = ():Promise<void> => {
 };
 
 
-export const convertPictureToFile = (name:string, pictureData:Array<number>) => 
-    new File([new Blob([new Uint8Array(pictureData)])], name)
+export const convertPictureToFile = (originalFilename:string, picture:IMediaTagPicture) => 
+    new File([new Blob([new Uint8Array(picture.data)])], getFileName(originalFilename, picture.format));
+
+
+const getFileName = (fileName:string, format:string) => {
+    const fileNameParts = fileName.split(".");
+    const formatParts = format.split("/");
+    const ext = formatParts[formatParts.length - 1];
+    return `${fileNameParts[0]}.${ext}`;
+};
 
 
 export const convertPictureToBase64Src = (picture:IMediaTagPicture) => 

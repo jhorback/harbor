@@ -32,6 +32,9 @@ export enum FileType {
 export const UploadFilesRepoKey:symbol = Symbol("UPLOAD_FILES_REPO");
 
 export interface IUploadFilesRepo {
+    MAX_UPLOAD_SIZE: number;
+    MAX_THUMB_SIZE: number;
+
     supportedFileTypes: {
         image: Array<string>,
         audio: Array<string>,
@@ -99,7 +102,7 @@ export interface IMediaTags {
     year:number,
     track:number,
     genre:string,
-    picture:IMediaTagPicture
+    picture?:IMediaTagPicture
 }
 
 export interface IMediaTagPicture {
@@ -113,13 +116,19 @@ export interface IMediaTagPicture {
  */
 export interface IFileData {
     name:string;
-    ownerUid:string;
+    uploaderUid:string;
     storagePath:string;
     url:string;
-    /** Can be a url to storage or a base64 string */
-    thumbUrl:string;
+    /** Url for thumbnail size display <= 250px */
+    thumbUrl?:string;
+    /** For media types this is the picture/photo to represent the media */
+    pictureUrl?:string;
     size: number;
     type?: string;
+    /** width of the full image or thumbnail */
+    width?: number;
+    /** height of the full image or thumbnail */
+    height?: number;
     updated: string;
     mediaTags: IMediaTags|null
 }
