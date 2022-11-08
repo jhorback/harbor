@@ -134,7 +134,12 @@ export class ImageContent extends LitElement {
         this.dispatchEvent(new ImageContentSelectedEvent({
             url: event.file.url,
             name: event.file.name,
-            fileDbPath: event.file.storagePath
+            fileDbPath: event.file.storagePath,
+            height: event.file.height||null,
+            pictureUrl: event.file.pictureUrl,
+            thumbUrl: event.file.thumbUrl,
+            type: event.file.type || null,
+            width: event.file.width || null
         }));
     }
 

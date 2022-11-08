@@ -11,9 +11,9 @@ export class FileModel implements IFileData {
     thumbUrl: string = "";
     pictureUrl: string = "";
     size: number = 0;
-    type?: string | undefined;
-    width?: number | undefined;
-    height?: number | undefined;
+    type: string | null = null;
+    width: number | null = null;
+    height: number | null = null;
     updated: string = "";
     mediaTags: IMediaTags | null = null;
 

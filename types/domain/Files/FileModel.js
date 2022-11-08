@@ -7,6 +7,9 @@ export class FileModel {
         this.thumbUrl = "";
         this.pictureUrl = "";
         this.size = 0;
+        this.type = null;
+        this.width = null;
+        this.height = null;
         this.updated = "";
         this.mediaTags = null;
     }

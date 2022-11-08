@@ -94,6 +94,9 @@ export class FileUploadController extends StateController {
             acceptArray.push(...this.filesRepo.supportedFileTypes.audio);
             acceptArray.push(...this.filesRepo.supportedFileTypes.video);
         }
+        else if (accept === FileUploaderAccept.all) {
+            // accept all
+        }
         else {
             throw new Error(`Invalid FileUploaderAccept value:${accept}`);
         }

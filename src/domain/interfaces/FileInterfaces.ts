@@ -91,9 +91,13 @@ export class FileUploadProgressEvent extends Event {
  */
 export interface IUploadedFile {
     url:string,
-    thumbUrl?:string,
+    thumbUrl:string|null,
+    pictureUrl:string|null,
+    type:string|null,
     name:string,
-    fileDbPath:string
+    fileDbPath:string,
+    width:number|null,
+    height:number|null
 }
 
 export interface IMediaTags {
@@ -121,15 +125,15 @@ export interface IFileData {
     storagePath:string;
     url:string;
     /** Url for thumbnail size display <= 250px */
-    thumbUrl?:string;
+    thumbUrl:string|null;
     /** For media types this is the picture/photo to represent the media */
     pictureUrl:string|null;
     size: number;
-    type?: string;
+    type: string|null;
     /** width of the full image or thumbnail */
-    width?: number;
+    width: number|null;
     /** height of the full image or thumbnail */
-    height?: number;
+    height: number|null;
     updated: string;
     mediaTags: IMediaTags|null
 }
