@@ -9,6 +9,7 @@ import { inject } from "../../../domain/DependencyContainer/decorators";
 import { FindFileRepoKey } from "../../../domain/interfaces/FileInterfaces";
 import { UpdateDocContentEvent } from "../../data/hb-doc-data";
 import { ImageContentDataState } from "../imageContentType";
+import "../../../domain/Files/HbFindFileRepo";
 export class ImageSizeChangeEvent extends Event {
     constructor(size) {
         super(ImageSizeChangeEvent.eventType);
@@ -46,19 +47,19 @@ export class ImageContentController extends StateController {
         Product.of(this, "state")
             .next(updateImageSize(event.size))
             .requestUpdate(event)
-            .dispatchHostEvent(new UpdateDocContentEvent(this.contentIndex, this.state));
+            .dispatchHostEvent(new UpdateDocContentEvent(this.host.contentIndex, this.state));
     }
     imageAlignmentChange(event) {
         Product.of(this, "state")
             .next(updateImageAlignment(event.alignment))
             .requestUpdate(event)
-            .dispatchHostEvent(new UpdateDocContentEvent(this.contentIndex, this.state));
+            .dispatchHostEvent(new UpdateDocContentEvent(this.host.contentIndex, this.state));
     }
     imageContentSelected(event) {
         Product.of(this, "state")
             .next(setImageContent(event.file))
             .requestUpdate(event)
-            .dispatchHostEvent(new UpdateDocContentEvent(this.contentIndex, this.state));
+            .dispatchHostEvent(new UpdateDocContentEvent(this.host.contentIndex, this.state));
     }
 }
 __decorate([
@@ -85,8 +86,8 @@ const syncWithDb = (controller, findFileRepo) => async (product) => {
     if (!file) {
         return;
     }
-    if (file.url !== state.url) {
-        product.next(updateImageUrl(file.url))
+    if (file.url !== state.url || file.thumbUrl !== state.thumbUrl) {
+        product.next(updateImageUrl(file))
             .requestUpdate("ImageContentController.syncWithDb")
             .dispatchHostEvent(new UpdateDocContentEvent(controller.host.contentIndex, product.getState()));
     }
@@ -100,7 +101,9 @@ const updateImageAlignment = (alignment) => (state) => {
 const setImageContent = (file) => (state) => {
     state.fileDbPath = file.fileDbPath;
     state.url = file.url;
+    state.thumbUrl = file.thumbUrl || null;
 };
-const updateImageUrl = (url) => (state) => {
-    state.url = url;
+const updateImageUrl = (file) => (state) => {
+    state.url = file.url;
+    state.thumbUrl = file.thumbUrl;
 };

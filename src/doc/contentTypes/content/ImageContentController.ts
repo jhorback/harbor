@@ -4,6 +4,8 @@ import { FindFileRepoKey, IFindFileRepo, IUploadedFile } from "../../../domain/i
 import { UpdateDocContentEvent } from "../../data/hb-doc-data";
 import { ImageAlignment, ImageContentDataState, ImageSize } from "../imageContentType";
 import { ImageContent } from "./hb-image-content";
+import "../../../domain/Files/HbFindFileRepo";
+import { FileModel } from "../../../domain/Files/FileModel";
 
 
 
@@ -62,7 +64,7 @@ export class ImageContentController extends StateController {
         Product.of<ImageContentDataState>(this, "state")
             .next(updateImageSize(event.size))
             .requestUpdate(event)
-            .dispatchHostEvent(new UpdateDocContentEvent(this.contentIndex, this.state))
+            .dispatchHostEvent(new UpdateDocContentEvent(this.host.contentIndex, this.state))
     }
 
     @hostEvent(ImageAlignmentChangeEvent)
@@ -70,7 +72,7 @@ export class ImageContentController extends StateController {
         Product.of<ImageContentDataState>(this, "state")
             .next(updateImageAlignment(event.alignment))
             .requestUpdate(event)
-            .dispatchHostEvent(new UpdateDocContentEvent(this.contentIndex, this.state))
+            .dispatchHostEvent(new UpdateDocContentEvent(this.host.contentIndex, this.state))
     }
 
     @hostEvent(ImageContentSelectedEvent)
@@ -78,7 +80,7 @@ export class ImageContentController extends StateController {
         Product.of<ImageContentDataState>(this, "state")
             .next(setImageContent(event.file))
             .requestUpdate(event)
-            .dispatchHostEvent(new UpdateDocContentEvent(this.contentIndex, this.state));
+            .dispatchHostEvent(new UpdateDocContentEvent(this.host.contentIndex, this.state));
     }
 
 }
@@ -86,6 +88,7 @@ export class ImageContentController extends StateController {
 
 const syncWithDb = (controller:ImageContentController, findFileRepo:IFindFileRepo) => async (product:Product<ImageContentDataState>) => {
     const state = product.getState() as ImageContentDataState;
+
     if (!state.fileDbPath) {
         return;
     }
@@ -95,8 +98,8 @@ const syncWithDb = (controller:ImageContentController, findFileRepo:IFindFileRep
         return;
     }
 
-    if (file.url !== state.url) {
-        product.next(updateImageUrl(file.url))
+    if (file.url !== state.url || file.thumbUrl !== state.thumbUrl) {
+        product.next(updateImageUrl(file))
             .requestUpdate("ImageContentController.syncWithDb")
             .dispatchHostEvent(new UpdateDocContentEvent(controller.host.contentIndex, product.getState()));
     }
@@ -114,8 +117,10 @@ const updateImageAlignment = (alignment:ImageAlignment) => (state:ImageContentDa
 const setImageContent = (file:IUploadedFile) => (state:ImageContentDataState) => {
     state.fileDbPath = file.fileDbPath;
     state.url = file.url;
+    state.thumbUrl = file.thumbUrl || null;
 };
 
-const updateImageUrl = (url:string)=> (state:ImageContentDataState) => {
-    state.url = url;
+const updateImageUrl = (file:FileModel)=> (state:ImageContentDataState) => {
+    state.url = file.url;
+    state.thumbUrl = file.thumbUrl;
 };

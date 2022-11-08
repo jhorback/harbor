@@ -48,6 +48,9 @@ export class UpdateDocContentEvent extends Event {
     state:IContentType;
     constructor(index:number, state:IContentType) {
         super(UpdateDocContentEvent.eventType, {bubbles:true, composed:true});
+        if (!(index > -1)) {
+            throw new Error("index must be 0 or greater");
+        }
         this.index = index;
         this.state = state;
     }

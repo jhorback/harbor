@@ -91,6 +91,7 @@ export class FileUploadProgressEvent extends Event {
  */
 export interface IUploadedFile {
     url:string,
+    thumbUrl?:string,
     name:string,
     fileDbPath:string
 }

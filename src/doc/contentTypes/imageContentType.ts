@@ -20,6 +20,7 @@ export class ImageContentDataState implements IContentType {
     size:ImageSize = ImageSize.small;
     alignment:ImageAlignment = ImageAlignment.left;
     url:string|null = null;
+    thumbUrl:string|null = null;
     fileDbPath:string|null = null;
     toPlainObject():ImageContentDataState {
         return {

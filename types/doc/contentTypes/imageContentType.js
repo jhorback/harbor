@@ -18,6 +18,7 @@ export class ImageContentDataState {
         this.size = ImageSize.small;
         this.alignment = ImageAlignment.left;
         this.url = null;
+        this.thumbUrl = null;
         this.fileDbPath = null;
     }
     toPlainObject() {

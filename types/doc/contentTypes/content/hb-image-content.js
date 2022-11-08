@@ -7,6 +7,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 import { html, css, LitElement } from "lit";
 import { customElement, property, query } from "lit/decorators.js";
 import { styles } from "../../../styles";
+import { ImageSize } from "../imageContentType";
 import "../hb-content";
 import { FileUploaderAccept } from "../../../files/hb-file-upload-panel";
 import "../../../files/hb-find-file-dialog";
@@ -27,7 +28,7 @@ let ImageContent = class ImageContent extends LitElement {
         return html `
             <hb-content ?is-empty=${!state.url}>                
                 <div>
-                    ${this.renderImage(state.url)}
+                    ${this.renderImage(this.getImageSrcPerSize())}
                 </div>
                 <div slot="edit-toolbar">
                     <span
@@ -79,6 +80,12 @@ let ImageContent = class ImageContent extends LitElement {
                 </div>
             </hb-content>
         `;
+    }
+    getImageSrcPerSize() {
+        const state = this.imageContent.state;
+        return state.size === ImageSize.small ?
+            state.thumbUrl ? state.thumbUrl :
+                state.url : state.url;
     }
     renderImage(src) {
         const { state } = this.imageContent;

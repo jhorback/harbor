@@ -42,7 +42,7 @@ export class ImageContent extends LitElement {
         return html`
             <hb-content ?is-empty=${!state.url}>                
                 <div>
-                    ${this.renderImage(state.url)}
+                    ${this.renderImage(this.getImageSrcPerSize())}
                 </div>
                 <div slot="edit-toolbar">
                     <span
@@ -94,6 +94,13 @@ export class ImageContent extends LitElement {
                 </div>
             </hb-content>
         `;
+    }
+
+    private getImageSrcPerSize() {
+        const state = this.imageContent.state;
+        return state.size === ImageSize.small ?
+            state.thumbUrl ? state.thumbUrl :
+                state.url : state.url;
     }
 
     private renderImage(src:string|null) {

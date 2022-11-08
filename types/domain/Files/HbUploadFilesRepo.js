@@ -57,7 +57,6 @@ let HbUploadFilesRepo = class HbUploadFilesRepo {
             getDownloadURL(snapshot.ref),
             this.resolveMediaTags(file)
         ]);
-        debugger;
         // generate the picture for media files
         const pictureData = await this.storePicture(file, mediaTags);
         // generate the thumbnail
@@ -83,7 +82,8 @@ let HbUploadFilesRepo = class HbUploadFilesRepo {
         return {
             fileDbPath: ref.path,
             name: file.name,
-            url
+            url,
+            thumbUrl: fileData.thumbUrl
         };
     }
     async storePicture(file, mediaTags) {
