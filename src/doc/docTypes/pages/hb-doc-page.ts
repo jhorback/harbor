@@ -121,10 +121,10 @@ export class HbDocPage extends LitElement {
                     @content-active-change=${this.contentActive}
                     @content-empty=${this.contentEmpty}
                 >
-                    ${this.state.doc.content.map((state, contentIndex) => contentTypes.get(state.contentType).render({
+                    ${this.state.doc.content.map((data, contentIndex) => contentTypes.get(data.contentType).render({
                         docUid: this.uid,
                         contentIndex,
-                        state
+                        data
                     }))}
                 </div>
             </hb-page-layout>

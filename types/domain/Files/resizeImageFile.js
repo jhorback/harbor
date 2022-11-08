@@ -2,19 +2,23 @@ export const resizeImageFile = async (file, maxSize, nameQualifier) => {
     const image = document.createElement("img");
     await waitOnImageLoad(image, URL.createObjectURL(file));
     const dim = getResizedImageDimensions(maxSize, image);
-    const canvas = document.createElement("canvas");
-    canvas.setAttribute("width", dim.width.toString());
-    canvas.setAttribute("height", dim.height.toString());
-    const ctx = canvas.getContext("2d");
-    ctx.drawImage(image, 0, 0, dim.width, dim.height);
-    const dataUrl = canvas.toDataURL(file.type);
-    const fileName = getFileNameWithQualifier(file.name, nameQualifier);
+    if (dim.resizeNeeded === true) {
+        const canvas = document.createElement("canvas");
+        canvas.setAttribute("width", dim.width.toString());
+        canvas.setAttribute("height", dim.height.toString());
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(image, 0, 0, dim.width, dim.height);
+        const dataUrl = canvas.toDataURL(file.type);
+        const fileName = getFileNameWithQualifier(file.name, nameQualifier);
+        file = dataURLtoFile(dataUrl, fileName);
+    }
     return {
         originalWidth: image.width,
         originalHeight: image.height,
         resizedWidth: dim.width,
         resizedHeight: dim.height,
-        file: dataURLtoFile(dataUrl, fileName)
+        resizeNeeded: dim.resizeNeeded,
+        file
     };
 };
 const getFileNameWithQualifier = (name, qualifier) => {
@@ -24,8 +28,7 @@ const getFileNameWithQualifier = (name, qualifier) => {
     const fileNameParts = name.split(".");
     const base = fileNameParts[0];
     const ext = fileNameParts[1];
-    return ext ? `${fileNameParts[0]}${qualifier || ""}.${fileNameParts[1]}` :
-        `${fileNameParts[0]}${qualifier || ""}`;
+    return ext ? `${base}${qualifier || ""}.${ext}` : `${base}${qualifier || ""}`;
 };
 const waitOnImageLoad = (image, src) => {
     const promise = new Promise((resolve, reject) => {
@@ -37,19 +40,22 @@ const waitOnImageLoad = (image, src) => {
 };
 const getResizedImageDimensions = (max, image) => {
     let { width, height } = image;
+    let resizeNeeded = false;
     if (width > height) {
         if (width > max) {
             height = Math.round(height * (max / width));
             width = max;
+            resizeNeeded = true;
         }
     }
     else {
         if (height > max) {
             width = Math.round(width * (max / height));
             height = max;
+            resizeNeeded = true;
         }
     }
-    return { width, height };
+    return { width, height, resizeNeeded };
 };
 const dataURLtoFile = (dataUrl, fileName) => {
     const arr = dataUrl.split(',');

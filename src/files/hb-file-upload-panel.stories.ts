@@ -5,6 +5,7 @@ import { extractMediaTags, convertPictureToBase64Src, convertPictureToFile } fro
 import { CancelUploadEvent, FileUploadController, FileUploadError, FileUploadState, OverwriteFileEvent } from './FileUploadController';
 import { hostEvent } from '@domx/statecontroller';
 import { resizeImageFile } from '../domain/Files/resizeImageFile';
+import { TextInput } from '../common/hb-text-input';
 
 export default {
     title: 'App/File Upload Panel',
@@ -76,6 +77,7 @@ const FileUploadPanelTemplate = () => html`
         <input type="file" @change=${ImageSizerTest.onInputChange}>
         <div>
             <h3>Resized Image</h3>
+            <div><input type="text" value="1280" id="max-size" style="width:100px; line-height:1.2rem; margin-bottom:12px"></div>
             <div id="resized-ctr"></div>
         </div>
     </div>
@@ -85,8 +87,9 @@ const FileUploadPanelTemplate = () => html`
 class ImageSizerTest {
     static async onInputChange(event:Event) {
         //@ts-ignore
-        const file = event.target.files[0];       
-        const resizedFile = await resizeImageFile(file, 200, "-thumb");
+        const file = event.target.files[0];
+        const size = (document.getElementById("max-size") as TextInput).value;    
+        const resizedFile = await resizeImageFile(file, parseInt(size), " THUMB");
         
         const img = document.createElement("img");
         img.src = URL.createObjectURL(resizedFile.file);
@@ -109,13 +112,20 @@ class MediaTagTest {
     
         try {
             const tags = await extractMediaTags(file);
-            MediaTagTest.addMessageDiv("Parsed tags", tags);
+            
             var img = document.createElement("img");
+            if (!tags.picture) {
+                throw new Error("Picture data does not exist");
+            }
             img.src = convertPictureToBase64Src(tags.picture);
-           
             document.body.appendChild(img);
+
             img = document.createElement("img");
-            img.src = URL.createObjectURL(convertPictureToFile("name", tags.picture.data));
+            const pictureFile = convertPictureToFile(file.name, tags.picture);
+            img.src = URL.createObjectURL(pictureFile);
+            img.setAttribute("title", pictureFile.name);
+            delete tags.picture;
+            MediaTagTest.addMessageDiv("Parsed tags", tags);
             document.body.appendChild(img);
         } catch(error) {
             MediaTagTest.addMessageDiv("Caught error", error);
@@ -124,7 +134,7 @@ class MediaTagTest {
 
     static addMessageDiv(message:string, data:any){
         const div = document.createElement("div");
-        div.innerText = `${message}: ${JSON.stringify(data)}`;
+        div.innerHTML = `${message}: <pre>${JSON.stringify(data)}</pre>`;
         console.log(message, data);
         document.body.appendChild(div);
     }

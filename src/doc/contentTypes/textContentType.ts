@@ -21,7 +21,7 @@ const textContentType:IContentTypeDescriptor = {
         <hb-text-content
             .docUid=${options.docUid}
             .contentIndex=${options.contentIndex}
-            .state=${options.state}
+            .data=${options.data}
         ></hb-text-content>
     `
 };

@@ -20,12 +20,12 @@ let TextContent = TextContent_1 = class TextContent extends LitElement {
     constructor() {
         super(...arguments);
         this.contentIndex = -1;
-        this.state = TextContent_1.defaultState;
+        this.data = TextContent_1.defaultState;
     }
     render() {
         return html `
-            <hb-content @content-active-change=${this.contentActive} ?is-empty=${!this.state.text}>
-                <div class="clearfix">${unsafeHTML(this.state.text)}</div>
+            <hb-content @content-active-change=${this.contentActive} ?is-empty=${!this.data.text}>
+                <div class="clearfix">${unsafeHTML(this.data.text)}</div>
                 <div slot="doc-edit-empty" @click=${this.textClicked}>
                     Click to enter text content
                 </div>
@@ -39,7 +39,7 @@ let TextContent = TextContent_1 = class TextContent extends LitElement {
                         menubar="false"
                         toolbar="undo redo | styles | bold italic underline strikethrough | align |
                         bullist numlist indent hr | link image media table | codesample  fullscreen"
-                >${this.state.text}</tinymce-editor>
+                >${this.data.text}</tinymce-editor>
                 </div>
             </hb-content>
         `;
@@ -73,7 +73,7 @@ __decorate([
 ], TextContent.prototype, "contentIndex", void 0);
 __decorate([
     property({ type: Object })
-], TextContent.prototype, "state", void 0);
+], TextContent.prototype, "data", void 0);
 __decorate([
     query("hb-content")
 ], TextContent.prototype, "$hbContent", void 0);

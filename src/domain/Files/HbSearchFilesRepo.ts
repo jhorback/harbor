@@ -23,7 +23,7 @@ class SearchFilesRepo implements ISearchFilesRepo {
         
         // authorize which documents
         if (currentUser.authorize(UserAction.viewAllFiles) === false) {
-            queryArgs.push(where('ownerUid', '==', currentUser.uid));
+            queryArgs.push(where('uploaderUid', '==', currentUser.uid));
         }
 
         if (options.type !== undefined && options.type !== FileType.files) {
@@ -33,12 +33,9 @@ class SearchFilesRepo implements ISearchFilesRepo {
             queryArgs.push(orderBy("updated", "desc"));
         }
 
-        
-        
-
 
         // query
-        const q = query.call(query, collectionGroup(HbDb.current, "files"), ...queryArgs)
+        const q = query.call(query, collection(HbDb.current, "files"), ...queryArgs)
             .withConverter(FileModel);
         const snapshot = await getDocs(q);
         const docs = snapshot.docs.map((doc:QueryDocumentSnapshot<FileModel>) => doc.data());

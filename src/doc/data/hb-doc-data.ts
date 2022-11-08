@@ -2,11 +2,10 @@ import { DataElement, StateChange } from "@domx/dataelement";
 import { customDataElement, dataProperty, event } from "@domx/dataelement/decorators";
 import { inject } from "../../domain/DependencyContainer/decorators";
 import { DocModel } from "../../domain/Doc/DocModel";
-import { EditDocRepoKey, IContentType, IContentTypeRenderOptions, IEditDocRepo, IUnsubscribe } from "../../domain/interfaces/DocumentInterfaces";
+import { EditDocRepoKey, IContentType, IEditDocRepo, IUnsubscribe } from "../../domain/interfaces/DocumentInterfaces";
 import { UserAction, HbCurrentUser } from "../../domain/HbCurrentUser";
 import "../../domain/Doc/HbEditDocRepo";
 import { HbCurrentUserChangedEvent } from "../../domain/HbAuth";
-import { State } from "@storybook/api";
 
 
 export interface IDocDataState {
@@ -49,6 +48,9 @@ export class UpdateDocContentEvent extends Event {
     state:IContentType;
     constructor(index:number, state:IContentType) {
         super(UpdateDocContentEvent.eventType, {bubbles:true, composed:true});
+        if (!(index > -1)) {
+            throw new Error("index must be 0 or greater");
+        }
         this.index = index;
         this.state = state;
     }

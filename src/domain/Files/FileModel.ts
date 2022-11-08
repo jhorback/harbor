@@ -5,12 +5,15 @@ import { IFileData, IMediaTags } from "../interfaces/FileInterfaces";
 
 export class FileModel implements IFileData {
     name: string = "";
-    ownerUid: string = "";
+    uploaderUid: string = "";
     storagePath: string = "";
     url: string = "";
     thumbUrl: string = "";
+    pictureUrl: string = "";
     size: number = 0;
     type?: string | undefined;
+    width?: number | undefined;
+    height?: number | undefined;
     updated: string = "";
     mediaTags: IMediaTags | null = null;
 
@@ -25,12 +28,15 @@ export class FileModel implements IFileData {
     static toFirestore(file:FileModel):IFileData {
         return {
             name: file.name,
-            ownerUid: file.ownerUid,
+            uploaderUid: file.uploaderUid,
             storagePath: file.storagePath,
             url: file.url,
             thumbUrl: file.thumbUrl,
+            pictureUrl: file.pictureUrl,
             size: file.size,
             type: file.type,
+            width: file.width,
+            height: file.height,
             updated: file.updated,
             mediaTags: file.mediaTags
         };

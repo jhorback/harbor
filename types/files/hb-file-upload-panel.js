@@ -84,7 +84,7 @@ let FileUploadPanel = FileUploadPanel_1 = class FileUploadPanel extends LitEleme
                 ${!state.isComplete ? html `
                     <div class="image-container">
                         ${state.highlightFileSrc ? html `
-                            <img src=${state.highlightFileSrc}>                    
+                            <div id="thumbnail" style="background-image: url(${state.highlightFileSrc})"></div>
                         ` : html ``}
                     </div>
                 ` : state.skippedFiles.length > 0 ? html `
@@ -199,11 +199,15 @@ FileUploadPanel.styles = [styles.types, styles.icons, css `
         .container {
             display: flex;
         }
-        .image-container, .image-container img {
+        .image-container, .image-container #thumbnail {
             background-color: #d9d9d9;
             border-radius: 8px 0 0 8px;
             width: 100px;
             height: 100px;
+        }
+        .image-container #thumbnail {
+            overflow: hidden;
+            background-size: cover;
         }
 
         .text-container {

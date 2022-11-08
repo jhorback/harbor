@@ -44,10 +44,10 @@ export class HorizontalCard extends LitElement {
                 <div class="media" ?hidden=${this.mediaUrl === ""}>
                     ${this.mediaHref ? html`
                         <a href=${this.mediaHref} target=${this.linkTarget}>
-                            <img src=${this.mediaUrl} @error=${this.onImageError}>
+                            <div id="thumbnail" style="background-image: url(${this.mediaUrl})"></div>
                         </a>
                     ` : html`
-                        <img src=${this.mediaUrl} @error=${this.onImageError}>
+                        <div id="thumbnail" style="background-image: url(${this.mediaUrl})"></div>
                     `}                    
                 </div>
             </div>
@@ -57,11 +57,6 @@ export class HorizontalCard extends LitElement {
     handleClick(event:Event) {
         this.dispatchEvent(new Event("hb-horizontal-card-click", {bubbles: true, composed: false}));
     }
-
-    private onImageError(event:Event) {
-        console.log(`hb-avatar image failed to load, falling back to use an icon`);
-        this.mediaUrl = "";
-      }
 
     static styles = [styles.icons, styles.types, css`
         :host {
@@ -104,16 +99,13 @@ export class HorizontalCard extends LitElement {
         [hidden] {
             display: none;
         }
-        .media { 
+        .media,.media #thumbnail { 
             width: 80px;
             height: 80px;
         }
-        .media img {
-            width: 80px;
-            height: 80px;
-            vertical-align: middle;
-            display: inline-block;
-            border-radius:  0 8px 8px 0;
+        .media #thumbnail {
+            overflow: hidden;
+            background-size: cover;
         }
     `]
 }
