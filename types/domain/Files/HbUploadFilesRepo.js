@@ -29,7 +29,7 @@ let HbUploadFilesRepo = class HbUploadFilesRepo {
         const ext = (fileName.split('.').pop() || "").toLowerCase();
         return this.supportedFileTypes.image.includes(ext) ? FileType.image :
             this.supportedFileTypes.audio.includes(ext) ? FileType.audio :
-                this.supportedFileTypes.video.includes(ext) ? FileType.video : FileType.files;
+                this.supportedFileTypes.video.includes(ext) ? FileType.video : FileType.file;
     }
     async uploadFileWithProgress(file, options) {
         const storagePath = this.getStoragePath(file.name);

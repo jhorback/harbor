@@ -15,6 +15,7 @@ import { HbApp } from "../../../domain/HbApp";
 import "../hb-content";
 import { FileUploaderAccept, FileUploadPanel } from "../../../files/hb-file-upload-panel";
 import { FileType } from "../../../domain/interfaces/FileInterfaces";
+import { TextContentSelectorDialog, TextContentSelectorType } from "./hb-text-content-selector-dialog";
 /**
  */
 let TextContent = TextContent_1 = class TextContent extends LitElement {
@@ -93,75 +94,45 @@ if (!window.tinymceSettings) {
             content_style: "body { margin-top: 1rem; margin-left: 4px; }",
             toolbar_sticky: true,
             text_patterns: true,
-            automatic_uploads: true,
             image_title: true,
-            // file_picker_types: "image media",
-            // file_picker_callback: (callback:FileUploadCallback, value:string, meta:IFilePickerMetaFields) => {                
-            //     FileUploadPanel.openFileSelector({
-            //         accept: meta.filetype === "image" ? FileUploaderAccept.images : FileUploaderAccept.media,
-            //         onUploadComplete: (event:FileUploadCompleteEvent) => {
-            //             event.uploadedFile && callback(event.uploadedFile.url, {title:event.uploadedFile.name});
-            //         }
-            //     })
-            // },
             setup: (editor) => {
                 editor.ui.registry.addButton("harborSearch", {
                     icon: "search",
                     tooltip: 'Search for page, images, audio, or video',
                     onAction: (api) => {
-                        alert("search");
-                        /**
-                         * * -> search - need text-content-selector-dialog
-                         *    create static method like upload content
-                         *    option for type: link, media
-                         *    if not set, the dialog should provide an option
-                         *    then show either the find doc or find file dialog
-                         *
-                         * if content selection is <a> or <video> can use this to
-                         * seed the selector dialog which would not show the link / media selection
-                         */
+                        const selectedNode = editor.selection.getNode();
+                        const type = selectedNode.dataset.mcePDataType || selectedNode.dataset.type || null;
+                        const selType = type === "image" ? TextContentSelectorType.image :
+                            type === "audio" ? TextContentSelectorType.audio :
+                                type === "video" ? TextContentSelectorType.video :
+                                    type === "file" ? TextContentSelectorType.file :
+                                        type === "page" ? TextContentSelectorType.page :
+                                            TextContentSelectorType.any;
+                        TextContentSelectorDialog.openContentSelector({
+                            type: selType,
+                            onDocumentSelected: (event) => {
+                                alert("doc sel");
+                                // add link
+                            },
+                            onFileSelected: (event) => {
+                                insertFile(selectedNode, editor, { ...event.file, fileDbPath: "" });
+                            }
+                        });
                     }
                 });
                 editor.ui.registry.addButton("harborUpload", {
                     icon: "upload",
                     tooltip: 'Upload images, audio, or video',
                     onAction: (api) => {
-                        // EXAMPLES;
-                        // const selection = editor.selection.getContent(); // this is the selection that will be replaced
-                        // editor.insertContent("woo hoo");
-                        // editor.insertContent('<a href="https://www.google.com">GOOGLE</a>');
-                        // editor.selection.getNode().tagName === "A" === "IMG"
                         const selectedNode = editor.selection.getNode();
                         const selectedTag = selectedNode.tagName;
                         const accept = selectedTag === "IMG" ? FileUploaderAccept.images :
-                            selectedTag === "VIDEO" ? FileUploaderAccept.media :
-                                FileUploaderAccept.all;
+                            (selectedTag === "VIDEO" || selectedNode.querySelector("video") !== null) ?
+                                FileUploaderAccept.media : FileUploaderAccept.all;
                         FileUploadPanel.openFileSelector({
                             accept,
                             onUploadComplete: (event) => {
-                                if (!event.uploadedFile) {
-                                    return;
-                                }
-                                const upload = event.uploadedFile;
-                                const fileType = upload.type?.indexOf("image") === 0 ? FileType.image :
-                                    upload.type?.indexOf("audio") === 0 ? FileType.audio :
-                                        upload.type?.indexOf("video") === 0 ? FileType.video : FileType.files;
-                                let content = "";
-                                if (fileType === FileType.image) {
-                                    content = `<img src="${upload.url}" title="${upload.name}" alt="${upload.name}">`;
-                                }
-                                else if (fileType === FileType.audio || fileType === FileType.video) {
-                                    content = `
-<video controls poster="${upload.pictureUrl || ""}" width="${upload.width || (fileType === FileType.audio ? 300 : "")}" height="${upload.height || (fileType === FileType.audio ? 50 : "")}">
-    <source src="${upload.url}" type="${upload.type}">
-</video>
-`;
-                                }
-                                else {
-                                    content = `<a href="${upload.url}" target="_blank" title="${upload.name}">${upload.name}</a>`;
-                                }
-                                editor.selection.select(selectedNode);
-                                editor.insertContent(content);
+                                event.uploadedFile && insertFile(selectedNode, editor, event.uploadedFile);
                             }
                         });
                     }
@@ -182,6 +153,29 @@ if (!window.tinymceSettings) {
         }
     };
 }
+const insertFile = (selectedNode, editor, file) => {
+    const fileType = file.type?.indexOf("image") === 0 ? FileType.image :
+        file.type?.indexOf("audio") === 0 ? FileType.audio :
+            file.type?.indexOf("video") === 0 ? FileType.video : FileType.file;
+    let content = "";
+    if (fileType === FileType.image) {
+        content = `<img src="${file.url}" title="${file.name}" alt="${file.name}" data-type="image">`;
+    }
+    else if (fileType === FileType.audio || fileType === FileType.video) {
+        content = `<video controls poster="${file.pictureUrl || ""}"
+            width="${file.width || (fileType === FileType.audio ? 300 : "")}"
+            height="${file.height || (fileType === FileType.audio ? 50 : "")}"
+            data-type="${fileType}">
+                <source src="${file.url}" type="${file.type}">
+            </video>
+            `;
+    }
+    else {
+        content = `<a href="${file.url}" target="_blank" title="${file.name}" data-type="file">${file.name}</a>`;
+    }
+    editor.selection.select(selectedNode);
+    editor.insertContent(content);
+};
 ;
 class ChangeEvent extends Event {
     constructor(value) {

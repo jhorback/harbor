@@ -4,15 +4,15 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-import { html, css, LitElement } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators.js";
-import { styles } from "../styles";
+import { debounce } from "../common/debounce";
 import "../common/hb-button";
 import "../common/hb-horizontal-card";
 import "../common/hb-text-input";
-import { SearchFilesController, SearchFilesEvent } from "./SearchFilesController";
-import { debounce } from "../common/debounce";
 import { FileType } from "../domain/interfaces/FileInterfaces";
+import { styles } from "../styles";
+import { SearchFilesController, SearchFilesEvent } from "./SearchFilesController";
 export class FileSelectedEvent extends Event {
     constructor(file) {
         super(FileSelectedEvent.eventType);
@@ -26,7 +26,7 @@ FileSelectedEvent.eventType = "file-selected";
 let FindFileDialog = class FindFileDialog extends LitElement {
     constructor() {
         super(...arguments);
-        this.fileType = FileType.files;
+        this.fileType = FileType.file;
         this.open = false;
         this.selectedIndex = null;
         this.searchFiles = new SearchFilesController(this);
@@ -41,15 +41,15 @@ let FindFileDialog = class FindFileDialog extends LitElement {
         const selectButtonEnabled = this.selectedIndex !== null
             && state.list[this.selectedIndex];
         return html `
-            <dialog>
+            <dialog @cancel=${this.close}>
                 
-                <h1 class="headline-small">${this.dialogTitle}</h1>
+                <h1 class="headline-small">${this.getDialogTitle(this.fileType)}</h1>
 
                     <hb-text-input
                         autofocus
                         placeholder="Enter search text"
                         value=${this.searchText}
-                        error-text=${this.hasNoResults() ? this.noResultsMessage : ""}
+                        error-text=${this.hasNoResults() ? this.getNoResultsMessage(this.fileType) : ""}
                         @hb-text-input-change=${debounce(this.textInputChange)}
                     ></hb-text-input>
 
@@ -88,21 +88,21 @@ let FindFileDialog = class FindFileDialog extends LitElement {
             </dialog>
         `;
     }
-    get dialogTitle() {
+    getDialogTitle(fileType) {
         return {
             [FileType.audio]: "Find Audio",
             [FileType.video]: "Find Video",
             [FileType.image]: "Find Image",
-            [FileType.files]: "Find File"
-        }[this.fileType];
+            [FileType.file]: "Find File"
+        }[fileType];
     }
-    get noResultsMessage() {
+    getNoResultsMessage(fileType) {
         return {
             [FileType.audio]: "There were no audio files found",
             [FileType.video]: "There were no videos found",
             [FileType.image]: "There were no images found",
-            [FileType.files]: "There were no files found"
-        }[this.fileType];
+            [FileType.file]: "There were no files found"
+        }[fileType];
     }
     hasNoResults() {
         const state = this.searchFiles.state;
@@ -119,6 +119,7 @@ let FindFileDialog = class FindFileDialog extends LitElement {
     close() {
         this.reset();
         this.open = false;
+        this.dispatchEvent(new Event("cancel"));
     }
     isSelected(index) {
         return index === this.selectedIndex;

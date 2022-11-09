@@ -32,6 +32,13 @@ export class SearchFilesController extends StateController {
     @inject<ISearchFilesRepo>(SearchFilesRepoKey)
     private searchDocsRepo!:ISearchFilesRepo;
 
+    hostConnected() {
+        super.hostConnected();
+        Product.of<ISearchFilesState>(this, "state")
+            .next(updateFilesList([]))
+            .requestUpdate("SearchFilesController.hostConnected");
+    }
+
     @hostEvent(SearchFilesEvent)
     searchFiles(event:SearchFilesEvent) {
         const options = event.options;

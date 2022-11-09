@@ -23,6 +23,12 @@ export class SearchFilesController extends StateController {
             count: 0
         };
     }
+    hostConnected() {
+        super.hostConnected();
+        Product.of(this, "state")
+            .next(updateFilesList([]))
+            .requestUpdate("SearchFilesController.hostConnected");
+    }
     searchFiles(event) {
         const options = event.options;
         Product.of(this, "state")

@@ -20,12 +20,11 @@ export interface ISearchFilesOptions {
 
 
 
-
 export enum FileType {
     image = "image",
     audio = "audio",
     video = "video",
-    files = "files",
+    file = "file",
 };
 
 

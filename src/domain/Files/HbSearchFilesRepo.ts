@@ -1,12 +1,10 @@
-import { query, collection, where, getDocs, QueryDocumentSnapshot, orderBy, QueryConstraint, collectionGroup } from "firebase/firestore";
+import { collection, getDocs, orderBy, query, QueryConstraint, QueryDocumentSnapshot, where } from "firebase/firestore";
 import { provides } from "../DependencyContainer/decorators";
 import { HbApp } from "../HbApp";
-import { HbDb } from "../HbDb";
 import { HbCurrentUser, UserAction } from "../HbCurrentUser";
+import { HbDb } from "../HbDb";
 import {
-    FileType,
-    IFileData,
-    ISearchFilesOptions,
+    FileType, ISearchFilesOptions,
     ISearchFilesRepo,
     SearchFilesRepoKey
 } from "../interfaces/FileInterfaces";
@@ -26,8 +24,9 @@ class SearchFilesRepo implements ISearchFilesRepo {
             queryArgs.push(where('uploaderUid', '==', currentUser.uid));
         }
 
-        if (options.type !== undefined && options.type !== FileType.files) {
+        if (options.type !== undefined && options.type !== FileType.file) {
             queryArgs.push(where("type", ">=", options.type));
+            queryArgs.push(where("type", "<=", options.type+"~"));
         } else {
             // order by last updated
             queryArgs.push(orderBy("updated", "desc"));
