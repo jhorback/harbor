@@ -6,7 +6,7 @@ import { FileType, IUploadedFile } from "../../../domain/interfaces/FileInterfac
 import { FileUploadCompleteEvent, FileUploaderAccept, FileUploadPanel } from "../../../files/hb-file-upload-panel";
 import { FileSelectedEvent } from "../../../files/hb-find-file-dialog";
 import { styles } from "../../../styles";
-import { UpdateDocContentEvent } from "../../data/hb-doc-data";
+import { DocThumbEvent, UpdateDocContentEvent } from "../../data/hb-doc-data";
 import { ContentActiveChangeEvent } from "../../docTypes/pages/hb-doc-page";
 import { DocumentSelectedEvent } from "../../hb-find-doc-dialog";
 import "../hb-content";
@@ -167,6 +167,13 @@ const insertFile = (selectedNode:any, editor:any, file:IUploadedFile) => {
     const fileType = file.type?.indexOf("image") === 0 ? FileType.image :
     file.type?.indexOf("audio") === 0 ? FileType.audio :
     file.type?.indexOf("video") === 0 ? FileType.video : FileType.file;
+
+    // tell the document we may have some thumbs
+    const thumbs:Array<string> = [];
+    file.thumbUrl && thumbs.push(file.thumbUrl);
+    file.pictureUrl && thumbs.push(file.pictureUrl);
+    thumbs.length > 0 && editor.getContainer().dispatchEvent(new DocThumbEvent(thumbs));
+
 
     let content = "";
     if (fileType === FileType.image) {

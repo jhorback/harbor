@@ -12,7 +12,7 @@ import { HbApp } from "../../../domain/HbApp";
 import { FileType } from "../../../domain/interfaces/FileInterfaces";
 import { FileUploaderAccept, FileUploadPanel } from "../../../files/hb-file-upload-panel";
 import { styles } from "../../../styles";
-import { UpdateDocContentEvent } from "../../data/hb-doc-data";
+import { DocThumbEvent, UpdateDocContentEvent } from "../../data/hb-doc-data";
 import "../hb-content";
 import { TextContentData } from "../textContentType";
 import { TextContentSelectorDialog, TextContentSelectorType } from "./hb-text-content-selector-dialog";
@@ -161,6 +161,11 @@ const insertFile = (selectedNode, editor, file) => {
     const fileType = file.type?.indexOf("image") === 0 ? FileType.image :
         file.type?.indexOf("audio") === 0 ? FileType.audio :
             file.type?.indexOf("video") === 0 ? FileType.video : FileType.file;
+    // tell the document we may have some thumbs
+    const thumbs = [];
+    file.thumbUrl && thumbs.push(file.thumbUrl);
+    file.pictureUrl && thumbs.push(file.pictureUrl);
+    thumbs.length > 0 && editor.getContainer().dispatchEvent(new DocThumbEvent(thumbs));
     let content = "";
     if (fileType === FileType.image) {
         content = `<img src="${file.url}" title="${file.name}" alt="${file.name}" data-type="image">`;

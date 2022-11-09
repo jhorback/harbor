@@ -64,6 +64,7 @@ export interface IDocData {
     subtitle: string|null;
     showSubtitle: boolean;
     thumbUrl: string|null;
+    thumbUrls:Array<string>;
     thumbDescription: string|null;
     useSubtitleAsThumbDescription: boolean;
     dateCreated: Date|Timestamp;

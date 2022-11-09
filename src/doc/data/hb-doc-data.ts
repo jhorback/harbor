@@ -6,6 +6,7 @@ import { EditDocRepoKey, IContentType, IEditDocRepo, IUnsubscribe } from "../../
 import { UserAction, HbCurrentUser } from "../../domain/HbCurrentUser";
 import "../../domain/Doc/HbEditDocRepo";
 import { HbCurrentUserChangedEvent } from "../../domain/HbAuth";
+import { docTypes } from "../../domain/Doc/docTypes";
 
 
 export interface IDocDataState {
@@ -64,6 +65,15 @@ export class MoveDocContentEvent extends Event {
         super(MoveDocContentEvent.eventType, {bubbles:true, composed:true});
         this.index = index;
         this.moveUp = moveUp;
+    }
+}
+
+export class DocThumbEvent extends Event {
+    static eventType = "doc-thumb";
+    thumbs:Array<string>;
+    constructor(thumbs:Array<string>) {
+        super(DocThumbEvent.eventType, {bubbles:true, composed:true});
+        this.thumbs = thumbs;
     }
 }
 
@@ -155,8 +165,15 @@ export class DocData extends DataElement {
         StateChange.of(this)
             .next(moveContent(event.index, event.moveUp))
             .tap(saveDoc(this.editDocRepo, this.state.doc))
-            .dispatch()
-            .dispatchEvent(new Event("request-update"));
+            .dispatch();
+    }
+
+    @event(DocThumbEvent.eventType)
+    private docThumb(event:DocThumbEvent) {
+        StateChange.of(this)
+            .next(updateThumbs(event.thumbs))
+            .tap(saveDoc(this.editDocRepo, this.state.doc))
+            .dispatch();
     }
 }
 
@@ -222,3 +239,17 @@ const updateDocContent = (index:number, data:IContentType) => (state:IDocDataSta
     state.doc.content[index] = data;
 };
 
+
+const updateThumbs = (thumbs:Array<string>) => (state:IDocDataState) => { 
+    state.doc.thumbUrls.push(...thumbs);
+
+    debugger;
+    // using set makes sure they are unique
+    const thumbUrls = [... new Set(state.doc.thumbUrls)];
+    state.doc.thumbUrls = thumbUrls;
+
+    // set the thumb if it is the default
+    if (state.doc.thumbUrls[0] && state.doc.thumbUrl === docTypes.get(state.doc.docType).defaultThumbUrl) {
+        state.doc.thumbUrl = state.doc.thumbUrls[0];
+    }
+};
