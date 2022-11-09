@@ -75,10 +75,10 @@ export class HbDocPage extends LitElement {
     state:IDocDataState = DocData.defaultState;
 
     @state()
-    inEditMode = true;
+    inEditMode = false;
 
     @state()
-    selectedEditTab:string = "thumbnail";
+    selectedEditTab:string = "";
 
     @query("hb-doc-data")
     $hbDocData!:DocData;

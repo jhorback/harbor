@@ -50,8 +50,8 @@ let HbDocPage = class HbDocPage extends LitElement {
         super(...arguments);
         this.docType = docTypes.get(DocTypes.doc).type;
         this.state = DocData.defaultState;
-        this.inEditMode = true;
-        this.selectedEditTab = "thumbnail";
+        this.inEditMode = false;
+        this.selectedEditTab = "";
         this.activeContent = null;
     }
     get uid() { return `${this.docType}:${this.pid}`; }

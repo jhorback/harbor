@@ -2,11 +2,11 @@ import { DataElement, StateChange } from "@domx/dataelement";
 import { customDataElement, dataProperty, event } from "@domx/dataelement/decorators";
 import { inject } from "../../domain/DependencyContainer/decorators";
 import { DocModel } from "../../domain/Doc/DocModel";
-import { EditDocRepoKey, IContentType, IEditDocRepo, IUnsubscribe } from "../../domain/interfaces/DocumentInterfaces";
-import { UserAction, HbCurrentUser } from "../../domain/HbCurrentUser";
+import { docTypes } from "../../domain/Doc/docTypes";
 import "../../domain/Doc/HbEditDocRepo";
 import { HbCurrentUserChangedEvent } from "../../domain/HbAuth";
-import { docTypes } from "../../domain/Doc/docTypes";
+import { HbCurrentUser, UserAction } from "../../domain/HbCurrentUser";
+import { EditDocRepoKey, IContentType, IEditDocRepo, IUnsubscribe } from "../../domain/interfaces/DocumentInterfaces";
 
 
 export interface IDocDataState {
@@ -268,7 +268,7 @@ const setThumb = (index?:number) => (state:IDocDataState) => {
 const updateThumbs = (thumbs?:Array<string>) => (state:IDocDataState) => { 
     if (!thumbs) { return; }
 
-    state.doc.thumbUrls.push(...thumbs);
+    state.doc.thumbUrls.unshift(...thumbs);
 
     // using set makes sure they are unique
     const thumbUrls = [... new Set(state.doc.thumbUrls)];

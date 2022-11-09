@@ -5,10 +5,11 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 import { css, html, LitElement } from "lit";
-import { customElement, property, state } from "lit/decorators.js";
+import { customElement, property, query, state } from "lit/decorators.js";
+import "../common/hb-button";
+import { FileType } from "../domain/interfaces/FileInterfaces";
 import { styles } from "../styles";
 import { DocThumbChangeEvent } from "./data/hb-doc-data";
-import "../common/hb-button";
 /**
  *
  */
@@ -22,19 +23,24 @@ let DocThumbSettingsTab = class DocThumbSettingsTab extends LitElement {
         return html `
             <div class="container">
                 <div class="thumb-ctr">
+                    <div class="label-medium">Current thumb</div>
                     <div class="thumb" style="background-image: url(${doc.thumbUrl})"></div>
                 </div>
-                <div class="subtitle">
+                <div class="subtitle body-medium">
+                    <div class="label-medium">Subtitle</div>
                     ${doc.subtitle}
                 </div>
-                <div class="thumbs">
-                    ${doc.thumbUrls.map((thumb, index) => html `
-                        <div class="thumb-ctr" @click=${() => this.selectThumb(index)} thumb-index=${index}>
-                            <div class="thumb" style="background-image: url(${thumb})"></div>
-                            <img src=${thumb} @error=${() => this.onImageError(index)}>
-                        </div>
-                    `)}
-                </div>
+                <div class="thumbs-ctr">
+                    <div class="label-medium">Available thumbs</div>
+                    <div class="thumbs">
+                        ${doc.thumbUrls.map((thumb, index) => html `
+                            <div class="thumb-ctr" @click=${() => this.selectThumb(index)} thumb-index=${index}>
+                                <div class="thumb" style="background-image: url(${thumb})"></div>
+                                <img src=${thumb} @error=${() => this.onImageError(index)}>
+                            </div>
+                        `)}                       
+                    </div>
+                </div>                
                 <div class="buttons">
                     ${this.selectedThumbIndex === null ? html `
                         <hb-button label="Find Image" text-button @click=${this.findThumb}></hb-button>
@@ -43,7 +49,11 @@ let DocThumbSettingsTab = class DocThumbSettingsTab extends LitElement {
                         <hb-button label="Remove" text-button @click=${this.removeThumb}></hb-button>
                     `}
                 </div>
-            </div>            
+            </div>
+            <hb-find-file-dialog
+                file-type=${FileType.image}
+                @file-selected=${this.fileSelected}
+            ></hb-find-file-dialog>    
         `;
     }
     selectThumb(index) {
@@ -60,7 +70,7 @@ let DocThumbSettingsTab = class DocThumbSettingsTab extends LitElement {
         this.dispatchEvent(new DocThumbChangeEvent({ removeIndex: index }));
     }
     findThumb() {
-        this.dispatchEvent(new DocThumbChangeEvent({ thumbs: ["https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg"] }));
+        this.$findFileDlg.open = true;
     }
     setThumb() {
         this.selectedThumbIndex !== null &&
@@ -71,6 +81,9 @@ let DocThumbSettingsTab = class DocThumbSettingsTab extends LitElement {
             this.dispatchEvent(new DocThumbChangeEvent({ removeIndex: this.selectedThumbIndex }));
         this.selectedThumbIndex = null;
     }
+    fileSelected(event) {
+        this.dispatchEvent(new DocThumbChangeEvent({ thumbs: [event.file.thumbUrl] }));
+    }
 };
 DocThumbSettingsTab.styles = [styles.types, styles.dialog, css `
         :host {
@@ -80,12 +93,16 @@ DocThumbSettingsTab.styles = [styles.types, styles.dialog, css `
             display: flex;
             gap: 12px;
         }
+        .label-medium {
+            margin-bottom: 8px;
+            opacity: 0.7;
+        }
         .container > .thumb-ctr, .subtitle { 
             padding: 5px 0;
         }
         .thumb-ctr, .thumb-ctr .thumb {             
-            width: 80px;
-            height: 80px;
+            width: 100px;
+            height: 100px;
             border-radius:  var(--md-sys-shape-corner-small);
         }
         .thumb-ctr, .thumb-ctr .thumb {
@@ -95,8 +112,10 @@ DocThumbSettingsTab.styles = [styles.types, styles.dialog, css `
         .subtitle {
             max-width: 200px;
         }
-        .thumbs {
+        .thumbs-ctr {
             flex-grow: 1;
+        }
+        .thumbs {            
             max-height: 125px;
             overflow-y: auto;
             overflow-x: clip;
@@ -138,6 +157,9 @@ __decorate([
 __decorate([
     state()
 ], DocThumbSettingsTab.prototype, "selectedThumbIndex", void 0);
+__decorate([
+    query("hb-find-file-dialog")
+], DocThumbSettingsTab.prototype, "$findFileDlg", void 0);
 DocThumbSettingsTab = __decorate([
     customElement('hb-doc-thumb-settings-tab')
 ], DocThumbSettingsTab);
