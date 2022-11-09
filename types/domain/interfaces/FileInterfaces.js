@@ -5,7 +5,7 @@ export var FileType;
     FileType["image"] = "image";
     FileType["audio"] = "audio";
     FileType["video"] = "video";
-    FileType["files"] = "files";
+    FileType["file"] = "file";
 })(FileType || (FileType = {}));
 ;
 export const UploadFilesRepoKey = Symbol("UPLOAD_FILES_REPO");

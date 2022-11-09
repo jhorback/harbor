@@ -1,14 +1,14 @@
-import { html, css, LitElement } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators.js";
-import { styles } from "../styles";
+import { debounce } from "../common/debounce";
 import "../common/hb-button";
 import "../common/hb-horizontal-card";
 import "../common/hb-text-input";
 import { TextInputChangeEvent } from "../common/hb-text-input";
-import { SearchFilesController, SearchFilesEvent } from "./SearchFilesController";
-import { debounce } from "../common/debounce";
 import { FileModel } from "../domain/Files/FileModel";
 import { FileType } from "../domain/interfaces/FileInterfaces";
+import { styles } from "../styles";
+import { SearchFilesController, SearchFilesEvent } from "./SearchFilesController";
 
 
 export class FileSelectedEvent extends Event {
@@ -28,7 +28,7 @@ export class FileSelectedEvent extends Event {
 export class FindFileDialog extends LitElement {
 
     @property({type: String, attribute: "file-type"})
-    fileType:FileType = FileType.files;
+    fileType:FileType = FileType.file;
 
     @property({type:Boolean})
     open = false;
@@ -54,15 +54,15 @@ export class FindFileDialog extends LitElement {
             && state.list[this.selectedIndex];
 
         return html`
-            <dialog>
+            <dialog @cancel=${this.close}>
                 
-                <h1 class="headline-small">${this.dialogTitle}</h1>
+                <h1 class="headline-small">${this.getDialogTitle(this.fileType)}</h1>
 
                     <hb-text-input
                         autofocus
                         placeholder="Enter search text"
                         value=${this.searchText}
-                        error-text=${this.hasNoResults() ? this.noResultsMessage : ""}
+                        error-text=${this.hasNoResults() ? this.getNoResultsMessage(this.fileType) : ""}
                         @hb-text-input-change=${debounce(this.textInputChange)}
                     ></hb-text-input>
 
@@ -102,22 +102,22 @@ export class FindFileDialog extends LitElement {
         `
     }
 
-    get dialogTitle() {
+    getDialogTitle(fileType:FileType) {
         return {
             [FileType.audio]: "Find Audio",
             [FileType.video]: "Find Video",
             [FileType.image]: "Find Image",
-            [FileType.files]: "Find File"
-        }[this.fileType];
+            [FileType.file]: "Find File"
+        }[fileType];
     }
 
-    get noResultsMessage() {
+    getNoResultsMessage(fileType:FileType) {
         return {
             [FileType.audio]: "There were no audio files found",
             [FileType.video]: "There were no videos found",
             [FileType.image]: "There were no images found",
-            [FileType.files]: "There were no files found"
-        }[this.fileType];
+            [FileType.file]: "There were no files found"
+        }[fileType];
     }
 
     hasNoResults() {
@@ -138,6 +138,7 @@ export class FindFileDialog extends LitElement {
     close() {
         this.reset();
         this.open = false;
+        this.dispatchEvent(new Event("cancel"));
     }
 
     private isSelected(index:number) {

@@ -1,6 +1,6 @@
 
 
-import { css } from 'lit-element';
+import { css } from 'lit';
 
 
 /**

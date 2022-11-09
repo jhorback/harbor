@@ -33,7 +33,7 @@ export class HbUploadFilesRepo implements IUploadFilesRepo {
         const ext = (fileName.split('.').pop() || "").toLowerCase();
         return this.supportedFileTypes.image.includes(ext) ? FileType.image :
             this.supportedFileTypes.audio.includes(ext) ? FileType.audio :
-            this.supportedFileTypes.video.includes(ext) ? FileType.video : FileType.files;
+            this.supportedFileTypes.video.includes(ext) ? FileType.video : FileType.file;
     }
 
     @authorize(UserAction.uploadFiles)
@@ -79,7 +79,7 @@ export class HbUploadFilesRepo implements IUploadFilesRepo {
         const pictureData = await this.storePicture(file, mediaTags);
 
         // generate the thumbnail
-        const thumbData = await this.storeThumb(file, pictureData);
+        const thumbData = await this.storeThumb(url, file, pictureData);
 
         // remove the binary picture data before storing
         delete mediaTags?.picture; 
@@ -88,13 +88,13 @@ export class HbUploadFilesRepo implements IUploadFilesRepo {
             name: md.name,
             uploaderUid: this.currentUser.uid!,
             storagePath: dbStoragePath,
+            type: md.contentType || null,
+            size: md.size,
             url,
             pictureUrl: pictureData?.url || null,
-            thumbUrl: thumbData?.url,
-            size: md.size,
-            type: md.contentType,
-            width: thumbData?.width,
-            height: thumbData?.height,
+            thumbUrl: thumbData?.url || null,
+            width: thumbData?.width || null,
+            height: thumbData?.height || null,
             updated: md.updated,
             mediaTags
         };
@@ -106,7 +106,11 @@ export class HbUploadFilesRepo implements IUploadFilesRepo {
             fileDbPath: ref.path,
             name: file.name,
             url,
-            thumbUrl: fileData.thumbUrl
+            thumbUrl: fileData.thumbUrl,
+            pictureUrl: fileData.pictureUrl,
+            type: fileData.type,
+            width: fileData.width,
+            height: fileData.height
         };
     }
 
@@ -115,8 +119,8 @@ export class HbUploadFilesRepo implements IUploadFilesRepo {
             return null;
         }
 
-        const pictureFile = convertPictureToFile(file.name, mediaTags.picture);
-        const resizedPictureFile = await resizeImageFile(pictureFile, this.MAX_UPLOAD_SIZE, " PICTURE");
+        const pictureFile = convertPictureToFile(file.name, mediaTags.picture, ".picture");
+        const resizedPictureFile = await resizeImageFile(pictureFile, this.MAX_UPLOAD_SIZE);
         const storagePath = this.getStoragePath(resizedPictureFile.file.name);
         const storageRef = ref(HbStorage.current, storagePath);
         const snapshot = await uploadBytes(storageRef, resizedPictureFile.file)
@@ -133,16 +137,32 @@ export class HbUploadFilesRepo implements IUploadFilesRepo {
      * Generates a thumb image and stores it using pictureData or the file if an image.
      * Otherwise returns null
      */
-    private async storeThumb(file:File, pictureData:IImageData|null):Promise<IImageData|null> {
-        const awaitThumb = pictureData ? resizeImageFile(pictureData.file, this.MAX_THUMB_SIZE, " THUMB") :
+    private async storeThumb(fileUrl:string, file:File, pictureData:IImageData|null):Promise<IImageData|null> {
+        const awaitThumb = pictureData ? resizeImageFile(pictureData.file, this.MAX_THUMB_SIZE, ".thumb") :
             this.getFileTypeFromExtension(file.name) === FileType.image ? 
-                resizeImageFile(file, this.MAX_THUMB_SIZE, " THUMB") : null;
+                resizeImageFile(file, this.MAX_THUMB_SIZE, ".thumb") : null;
 
         const thumb = await awaitThumb;
+
+        // we don't have a thumb (non image or media)
         if (thumb === null) {
             return null;
+
+        // picture is same as thumb (not resized)
+        } else if (pictureData && thumb.file === pictureData.file) {
+            return pictureData;
+
+        // file is the same as thumb (not resized)
+        } else if (file === thumb.file) {
+            return {
+                file,
+                width: thumb.originalWidth,
+                height: thumb.originalHeight,
+                url: fileUrl
+            };
         }
 
+        // store resized thumb
         const storagePath = this.getStoragePath(thumb.file.name);
         const storageRef = ref(HbStorage.current, storagePath);
         const snapshot = await uploadBytes(storageRef, thumb.file)
@@ -195,7 +215,7 @@ export class HbUploadFilesRepo implements IUploadFilesRepo {
 
 
 interface IImageData {
-    url: string,
+    url: string|null,
     width: number,
     height: number,
     file: File

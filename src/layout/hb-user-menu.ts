@@ -41,8 +41,8 @@ export class UserMenu extends LitElement {
     set open(value) {
         const oldVal = this._open;
         this._open = value;
-        this.requestUpdate("open", oldVal);        
-        this._updateDocumentListener();
+        //this.requestUpdate("open", oldVal);        
+        //this._updateDocumentListener();
     }
 
     async _updateDocumentListener() {

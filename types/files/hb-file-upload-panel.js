@@ -17,6 +17,7 @@ export var FileUploaderAccept;
     FileUploaderAccept["audio"] = "audio";
     FileUploaderAccept["video"] = "video";
     FileUploaderAccept["media"] = "media";
+    FileUploaderAccept["all"] = "all";
 })(FileUploaderAccept || (FileUploaderAccept = {}));
 /**
  * Dispatched on the element when files have finished uploading.

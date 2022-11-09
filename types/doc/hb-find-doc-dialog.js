@@ -4,20 +4,21 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-import { html, css, LitElement } from "lit";
+import { linkProp } from "@domx/linkprop";
+import { css, html, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators.js";
-import { styles } from "../styles";
-import "./data/hb-search-docs-data";
+import { debounce } from "../common/debounce";
 import "../common/hb-button";
 import "../common/hb-list-item";
 import "../common/hb-text-input";
-import { linkProp } from "@domx/linkprop";
+import { styles } from "../styles";
+import "./data/hb-search-docs-data";
 import { SearchDocsData, SearchDocsEvent } from "./data/hb-search-docs-data";
-import { debounce } from "../common/debounce";
 export class DocumentSelectedEvent extends Event {
-    constructor(documentReference) {
+    constructor(docModel) {
         super(DocumentSelectedEvent.eventType);
-        this.documentReference = documentReference;
+        this.docModel = docModel;
+        this.documentReference = docModel.toDocumentReference();
     }
 }
 DocumentSelectedEvent.eventType = "document-selected";
@@ -43,15 +44,15 @@ let FindDocDialog = class FindDocDialog extends LitElement {
             <hb-search-docs-data
                 @state-changed=${linkProp(this, "state")}
             ></hb-search-docs-data>
-            <dialog>
+            <dialog @cancel=${this.close}>
                 
-                <h1 class="headline-small">Find Document</h1>
+                <h1 class="headline-small">Find Page</h1>
 
                     <hb-text-input
                         autofocus
                         placeholder="Enter search text"
                         value=${this.searchText}
-                        error-text=${this.hasNoResults() ? "There were no documents found" : ""}
+                        error-text=${this.hasNoResults() ? "There were no pages found" : ""}
                         @hb-text-input-change=${debounce(this.textInputChange)}
                     ></hb-text-input>
 
@@ -79,7 +80,7 @@ let FindDocDialog = class FindDocDialog extends LitElement {
                     ></hb-button>
                     <hb-button
                         text-button
-                        label="Select Document"
+                        label="Select Page"
                         ?disabled=${this.iSelectButtonDisabled()}
                         @click=${this.selectButtonClicked}
                     ></hb-button>
@@ -101,6 +102,7 @@ let FindDocDialog = class FindDocDialog extends LitElement {
     close() {
         this.reset();
         this.open = false;
+        this.dispatchEvent(new Event("cancel"));
     }
     isSelected(index) {
         return index === this.selectedIndex;
@@ -115,7 +117,7 @@ let FindDocDialog = class FindDocDialog extends LitElement {
         if (this.selectedIndex === null) {
             return;
         }
-        this.dispatchEvent(new DocumentSelectedEvent(this.state.list[this.selectedIndex].toDocumentReference()));
+        this.dispatchEvent(new DocumentSelectedEvent(this.state.list[this.selectedIndex]));
         this.close();
     }
 };

@@ -1,4 +1,4 @@
-import { css } from 'lit-element';
+import { css } from 'lit';
 /**
  * Base form styles that do not
  * need first class components
