@@ -46,7 +46,7 @@ export class AddDocumentErrorEvent extends Event {
     eventsListenAt: "parent"
 })
 export class AddDocumentData extends DataElement {
-    static defaultState:IAddDocumentState = {docTypes:docTypes.all()};
+    static get defaultState():IAddDocumentState { return {docTypes: docTypes.all() }; };
     
     @dataProperty()
     state:IAddDocumentState = AddDocumentData.defaultState;

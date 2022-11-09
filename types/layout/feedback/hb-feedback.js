@@ -12,8 +12,8 @@ export class SystemFeedbackEvent extends Event {
         super(SystemFeedbackEvent.eventType);
         this.feedbackOptions = feedbackOptions;
     }
-    static { this.eventType = "system-feedback"; }
 }
+SystemFeedbackEvent.eventType = "system-feedback";
 /**
  * @class Feedback
  */
@@ -93,7 +93,8 @@ let Feedback = class Feedback extends LitElement {
     linkClicked() {
         this.open = false;
     }
-    static { this.styles = [styles.types, styles.colors, css `
+};
+Feedback.styles = [styles.types, styles.colors, css `
         :host {
             background-color: var(--md-sys-color-inverse-surface);
             color: var(--md-sys-color-inverse-on-surface);
@@ -109,6 +110,7 @@ let Feedback = class Feedback extends LitElement {
 
             transition: bottom 350ms;
             bottom: -5.5rem;
+            z-index: 10000;
         }
         :host([open]) {
             bottom: 1rem;
@@ -143,8 +145,7 @@ let Feedback = class Feedback extends LitElement {
         a:focus, button:focus {
             outline: none;
         }
-    `]; }
-};
+    `];
 __decorate([
     property({ type: Boolean, reflect: true })
 ], Feedback.prototype, "open", void 0);

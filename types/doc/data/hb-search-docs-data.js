@@ -15,25 +15,25 @@ export class SearchDocsEvent extends Event {
         super(SearchDocsEvent.eventType, { bubbles: true });
         this.options = options;
     }
-    static { this.eventType = "search-docs"; }
 }
+SearchDocsEvent.eventType = "search-docs";
 let SearchDocsData = SearchDocsData_1 = class SearchDocsData extends DataElement {
     constructor() {
         super(...arguments);
         this.state = SearchDocsData_1.defaultState;
     }
-    static { this.defaultState = {
-        list: [],
-        isLoading: false,
-        count: 0
-    }; }
-    addNewDocument(event) {
+    searchDocs(event) {
         const options = event.options;
         StateChange.of(this)
             .next(setIsLoading(true))
             .tap(searchDocuments(this.searchDocsRepo, options))
             .dispatch();
     }
+};
+SearchDocsData.defaultState = {
+    list: [],
+    isLoading: false,
+    count: 0
 };
 __decorate([
     dataProperty()
@@ -43,7 +43,7 @@ __decorate([
 ], SearchDocsData.prototype, "searchDocsRepo", void 0);
 __decorate([
     event(SearchDocsEvent.eventType)
-], SearchDocsData.prototype, "addNewDocument", null);
+], SearchDocsData.prototype, "searchDocs", null);
 SearchDocsData = SearchDocsData_1 = __decorate([
     customDataElement("hb-search-docs-data", {
         eventsListenAt: "parent"

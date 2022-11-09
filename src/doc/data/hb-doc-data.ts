@@ -2,7 +2,7 @@ import { DataElement, StateChange } from "@domx/dataelement";
 import { customDataElement, dataProperty, event } from "@domx/dataelement/decorators";
 import { inject } from "../../domain/DependencyContainer/decorators";
 import { DocModel } from "../../domain/Doc/DocModel";
-import { EditDocRepoKey, IContentType, IContentTypeRenderOptions, IEditDocRepo, IUnsubscribe } from "../../domain/interfaces/DocumentInterfaces";
+import { EditDocRepoKey, IContentType, IEditDocRepo, IUnsubscribe } from "../../domain/interfaces/DocumentInterfaces";
 import { UserAction, HbCurrentUser } from "../../domain/HbCurrentUser";
 import "../../domain/Doc/HbEditDocRepo";
 import { HbCurrentUserChangedEvent } from "../../domain/HbAuth";
@@ -48,8 +48,22 @@ export class UpdateDocContentEvent extends Event {
     state:IContentType;
     constructor(index:number, state:IContentType) {
         super(UpdateDocContentEvent.eventType, {bubbles:true, composed:true});
+        if (!(index > -1)) {
+            throw new Error("index must be 0 or greater");
+        }
         this.index = index;
         this.state = state;
+    }
+}
+
+export class MoveDocContentEvent extends Event {
+    static eventType = "move-doc-content";
+    index:number;
+    moveUp:boolean;
+    constructor(index:number, moveUp:boolean) {
+        super(MoveDocContentEvent.eventType, {bubbles:true, composed:true});
+        this.index = index;
+        this.moveUp = moveUp;
     }
 }
 
@@ -135,6 +149,15 @@ export class DocData extends DataElement {
             .tap(saveDoc(this.editDocRepo, this.state.doc))
             .dispatch();
     }
+
+    @event(MoveDocContentEvent.eventType)
+    private moveContent(event:MoveDocContentEvent) {
+        StateChange.of(this)
+            .next(moveContent(event.index, event.moveUp))
+            .tap(saveDoc(this.editDocRepo, this.state.doc))
+            .dispatch()
+            .dispatchEvent(new Event("request-update"));
+    }
 }
 
 
@@ -145,6 +168,18 @@ const subscribeToDoc = (docData:DocData) => (doc:DocModel) => {
         .next(updateUserCanAdd)
         .dispatch();
 };
+
+const moveContent = (index:number, moveUp:boolean) => (state:IDocDataState) => {
+    const content = state.doc.content;
+
+    if ((moveUp && index === 0) || (!moveUp && index === content.length -1)) {
+        return;
+    }
+
+    moveUp ? content.splice(index - 1, 0, content.splice(index, 1)[0]) :
+        content.splice(index + 1, 0, content.splice(index, 1)[0]);
+};
+
 
 const saveDoc = (editDocRepo:IEditDocRepo, doc:DocModel) => (stateChange:StateChange) => {
     editDocRepo.saveDoc(doc);

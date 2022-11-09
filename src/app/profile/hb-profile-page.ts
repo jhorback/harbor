@@ -11,7 +11,7 @@ import "../../common/tabs/hb-link-tab";
 import "../../common/tabs/hb-tab-bar";
 import "@domx/router/domx-route";
 import "./hb-profile-docs-tab";
-import "./hb-profile-content-tab";
+import "./hb-profile-files-tab";
 import "./hb-profile-users-tab";
 import "./hb-profile-admin-tab";
 
@@ -50,10 +50,10 @@ export class ProfilePage extends LitElement {
             ?hidden=${!isAuthorized(UserAction.authorDocuments)}
         ></hb-link-tab>
         <hb-link-tab
-            id="content-tab"
-            label="Content"
-            href="/profile/content"
-            ?hidden=${!isAuthorized(UserAction.uploadContent)}
+            id="files-tab"
+            label="Files"
+            href="/profile/files"
+            ?hidden=${!isAuthorized(UserAction.uploadFiles)}
         ></hb-link-tab>
         <hb-link-tab
             id="users-tab"
@@ -76,12 +76,12 @@ export class ProfilePage extends LitElement {
             @route-active=${() => this.selectTab("documents-tab")}
         ></domx-route>
     ` : html``}
-    ${isAuthorized(UserAction.uploadContent) ? html`
+    ${isAuthorized(UserAction.uploadFiles) ? html`
         <domx-route
-            pattern="/profile/content"
-            element="hb-profile-content-tab"
+            pattern="/profile/files"
+            element="hb-profile-files-tab"
             append-to="#tab-content-container"
-            @route-active=${() => this.selectTab("content-tab")}
+            @route-active=${() => this.selectTab("files-tab")}
         ></domx-route>
     ` : html``}
     ${isAuthorized(UserAction.viewUsers) ? html`

@@ -40,7 +40,8 @@ let ListItem = class ListItem extends LitElement {
     handleClick(event) {
         this.dispatchEvent(new Event("hb-list-item-click", { bubbles: true, composed: false }));
     }
-    static { this.styles = [styles.icons, styles.types, css `
+};
+ListItem.styles = [styles.icons, styles.types, css `
         :host {
             display: block;
         }
@@ -59,7 +60,8 @@ let ListItem = class ListItem extends LitElement {
             border: 1px solid;
         }
         .list-item[selected] {
-            border: 1px solid;
+            border: 1px solid var(--md-sys-color-on-background);
+            background-color: var(--md-sys-color-background);
         }
         .select-icon {
             align-self: flex-start;
@@ -76,8 +78,7 @@ let ListItem = class ListItem extends LitElement {
         .select-icon .icon-small {
             padding: 0px 4px;
         }
-    `]; }
-};
+    `];
 __decorate([
     property({ type: String })
 ], ListItem.prototype, "icon", void 0);

@@ -1,38 +1,59 @@
+import { FileUploaderAccept } from "../../files/hb-file-upload-panel";
+import { FileModel } from "../Files/FileModel";
 
 
 
-export enum FileUploadType {
-    images = "images",
+export const FindFileRepoKey:symbol = Symbol("FIND_FILE_REPO");
+export interface IFindFileRepo {
+    findFile(path:string):Promise<FileModel|null>;
+}
+
+
+export const SearchFilesRepoKey:symbol = Symbol("SEARCH_FILES_REPO");
+export interface ISearchFilesRepo {
+    searchFiles(options:ISearchFilesOptions):Promise<Array<FileModel>>;
+}
+export interface ISearchFilesOptions {
+    text?:string;
+    type?:FileType
+}
+
+
+
+export enum FileType {
+    image = "image",
     audio = "audio",
     video = "video",
-    files = "files",
+    file = "file",
 };
 
 
 export const UploadFilesRepoKey:symbol = Symbol("UPLOAD_FILES_REPO");
 
 export interface IUploadFilesRepo {
+    MAX_UPLOAD_SIZE: number;
+    MAX_THUMB_SIZE: number;
+
     supportedFileTypes: {
-        images: Array<string>,
+        image: Array<string>,
         audio: Array<string>,
         video: Array<string>
     };
 
-    getFileTypeFromExtension(fileName:string):FileUploadType;
+    getFileTypeFromExtension(fileName:string):FileType;
 
     /**
      * Uploads a file to storage and adds it to the database.
-     * It resolves with the url to access the uploaded file.
+     * It resolves with uploaded file data.
      * If it resolves with null, the operation was cancelled.
      * 
      * If the allowOverwrite option is false this method can throw
      * a ClientError which can be used to ask the user to overwrite
      * the file and try again.
-     * @param file 
-     * @param options 
      */
-    uploadFileWithProgress(file:File, options:IUploadFileOptions):Promise<string|null>
+    uploadFileWithProgress(file:File, options:IUploadFileOptions):Promise<IUploadedFile|null>
 }
+
 
 export interface IUploadFileOptions {
     allowOverwrite: boolean;
@@ -58,21 +79,10 @@ export class FileUploadProgressEvent extends Event {
     }
 }
 
-/**
- * This is used internally on the {@link FileUploaderClient}
- * on the uploadController signal to listen for when all files have
- * finished uploading.
- */
-export class FileUploadCompletedEvent extends Event {
-    static eventType = "file-upload-complete";
-    uploadedFile:IUploadedFile|null;
-    uploadedFiles:Array<IUploadedFile>;
-    constructor(uploadedFiles:Array<IUploadedFile>) {
-        super(FileUploadCompletedEvent.eventType);
-        this.uploadedFiles = uploadedFiles;
-        this.uploadedFile = uploadedFiles[0];
-    }
-}
+
+
+
+
 
 /**
  * The result of a file upload
@@ -80,7 +90,13 @@ export class FileUploadCompletedEvent extends Event {
  */
 export interface IUploadedFile {
     url:string,
-    name:string
+    thumbUrl:string|null,
+    pictureUrl:string|null,
+    type:string|null,
+    name:string,
+    fileDbPath:string,
+    width:number|null,
+    height:number|null
 }
 
 export interface IMediaTags {
@@ -90,7 +106,7 @@ export interface IMediaTags {
     year:number,
     track:number,
     genre:string,
-    picture:IMediaTagPicture
+    picture?:IMediaTagPicture
 }
 
 export interface IMediaTagPicture {
@@ -104,13 +120,19 @@ export interface IMediaTagPicture {
  */
 export interface IFileData {
     name:string;
-    ownerUid:string;
+    uploaderUid:string;
     storagePath:string;
     url:string;
-    /** Can be a url to storage or a base64 string */
-    thumbUrl:string;
+    /** Url for thumbnail size display <= 250px */
+    thumbUrl:string|null;
+    /** For media types this is the picture/photo to represent the media */
+    pictureUrl:string|null;
     size: number;
-    type?: string;
+    type: string|null;
+    /** width of the full image or thumbnail */
+    width: number|null;
+    /** height of the full image or thumbnail */
+    height: number|null;
     updated: string;
     mediaTags: IMediaTags|null
 }

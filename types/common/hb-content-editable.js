@@ -12,8 +12,8 @@ export class ContentEditableChangeEvent extends Event {
         super(ContentEditableChangeEvent.eventType, { bubbles: true, composed: true });
         this.value = value;
     }
-    static { this.eventType = "change"; }
 }
+ContentEditableChangeEvent.eventType = "change";
 /**
  * @class Switch
  * @fires hb-switch
@@ -81,7 +81,8 @@ let ContentEditable = class ContentEditable extends LitElement {
         this.$div.innerText = this.value;
         this.dispatchEvent(new ContentEditableChangeEvent(value));
     }
-    static { this.styles = [css `
+};
+ContentEditable.styles = [css `
         :host {
             display: block;
         }
@@ -91,10 +92,9 @@ let ContentEditable = class ContentEditable extends LitElement {
         }
 
         [contenteditable]:hover, [contenteditable]:focus {
-            background-color: var(--md-sys-color-surface-variant);
             border: 0;
             border-radius: var(--md-sys-shape-corner-medium);
-            outline:0;
+            outline: 1px solid var(--md-sys-color-outline);
             position: relative;
             top: -8px;
             left: -8px;
@@ -106,8 +106,7 @@ let ContentEditable = class ContentEditable extends LitElement {
         .placeholder {
             opacity: 0.38;
         }  
-    `]; }
-};
+    `];
 __decorate([
     property({ type: String })
 ], ContentEditable.prototype, "value", void 0);

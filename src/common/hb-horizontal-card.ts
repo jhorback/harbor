@@ -16,26 +16,39 @@ export class HorizontalCard extends LitElement {
     @property({type: String, attribute: "media-href"})
     mediaHref = "";
 
+    @property({type: String, attribute: "link-target"})
+    linkTarget = "";
+
     @property({type: String})
     text = "";
 
     @property({type: String})
     description = "";
 
+    @property({type: Boolean, reflect: true })
+    selected = false;
 
     render() {
         return html`
-            <div class="horizontal-card" @click=${this.handleClick}>
+            <div class="horizontal-card" @click=${this.handleClick} ?selected=${this.selected}>
                 <div class="text">
-                    <a href=${this.mediaHref}>
-                        <div class="title-medium readable">${this.text}</div>
-                    </a>
-                    <div class="body-medium readable">${this.description}</div>
+                    ${this.mediaHref ? html`
+                        <a href=${this.mediaHref} target=${this.linkTarget}>
+                            <div class="title-medium readable" title=${this.text}>${this.text}</div>
+                        </a>
+                    ` : html`
+                        <div class="title-medium readable" title=${this.text}>${this.text}</div>
+                    `}                    
+                    <div class="body-medium readable" title=${this.description}>${this.description}</div>
                 </div>
                 <div class="media" ?hidden=${this.mediaUrl === ""}>
-                    <a href=${this.mediaHref}>
-                        <img src=${this.mediaUrl} @error=${this.onImageError}>
-                    </a>
+                    ${this.mediaHref ? html`
+                        <a href=${this.mediaHref} target=${this.linkTarget}>
+                            <div id="thumbnail" style="background-image: url(${this.mediaUrl})"></div>
+                        </a>
+                    ` : html`
+                        <div id="thumbnail" style="background-image: url(${this.mediaUrl})"></div>
+                    `}                    
                 </div>
             </div>
         `;
@@ -44,11 +57,6 @@ export class HorizontalCard extends LitElement {
     handleClick(event:Event) {
         this.dispatchEvent(new Event("hb-horizontal-card-click", {bubbles: true, composed: false}));
     }
-
-    private onImageError(event:Event) {
-        console.log(`hb-avatar image failed to load, falling back to use an icon`);
-        this.mediaUrl = "";
-      }
 
     static styles = [styles.icons, styles.types, css`
         :host {
@@ -59,11 +67,16 @@ export class HorizontalCard extends LitElement {
             display: flex;
             user-select: none;
             border-radius:  var(--md-sys-shape-corner-small);
+            border: 1px solid transparent;
             padding: 0 0 0 10px;
             align-items: center;
             cursor: default;
             gap: 5px;
             background-color: var(--md-sys-color-surface-variant);
+        }
+        .horizontal-card[selected] {
+            border: 1px solid var(--md-sys-color-on-background);
+            background-color: var(--md-sys-color-background);
         }
         .text {
             flex-grow: 1;
@@ -73,7 +86,8 @@ export class HorizontalCard extends LitElement {
 
         }
         .title-medium {
-            line-height: 2rem;
+            max-height: 2.5rem;
+            overflow: clip;
         }
         .body-medium {
             max-height: 34px;
@@ -85,16 +99,13 @@ export class HorizontalCard extends LitElement {
         [hidden] {
             display: none;
         }
-        .media { 
+        .media,.media #thumbnail { 
             width: 80px;
             height: 80px;
         }
-        .media img {
-            width: 80px;
-            height: 80px;
-            vertical-align: middle;
-            display: inline-block;
-            border-radius:  0 8px 8px 0;
+        .media #thumbnail {
+            overflow: hidden;
+            background-size: cover;
         }
     `]
 }

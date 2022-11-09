@@ -1,4 +1,4 @@
-import { css } from 'lit-element';
+import { css } from 'lit';
 export const dialogStyles = css `
 dialog {
     z-index:1;

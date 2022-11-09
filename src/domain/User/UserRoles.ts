@@ -23,14 +23,14 @@ export enum UserAction {
     deleteDocuments =       "DELETE_DOCUMENTS",
     /** allows user to delete any document */
     deleteAnyDocument =     "DELETE_ANY_DOCUMENT",
-    /** allows user to upload files and access to the profile content tab */
-    uploadContent =         "UPLOAD_CONTENT",
-    /** allows user to view all content */
-    viewAllContent =        "VIEW_ALL_CONTENT",
-    /** allows user to delete their own content */
-    deleteContent =         "DELETE_CONTENT",
-    /** allows user to delete any content */
-    deleteAnyContent =      "DELETE_ANY_CONTENT",
+    /** allows user to upload files and access to the profile files tab */
+    uploadFiles =           "UPLOAD_FILES",
+    /** allows user to view all files */
+    viewAllFiles =          "VIEW_ALL_FILES",
+    /** allows user to delete their own files */
+    deleteFiles =           "DELETE_FILES",
+    /** allows user to delete any file */
+    deleteAnyFile =         "DELETE_ANY_FILE",
     /** allows a user to view all user in the profile users tab */
     viewUsers =             "VIEW_USERS",
     /** allows a user to edit any users role */
@@ -61,20 +61,20 @@ const UserActionRoles:{[key:string]: Array<UserRole>} = {
     [UserAction.deleteAnyDocument]: [
         UserRole.siteAdmin
     ],
-    [UserAction.uploadContent]: [
+    [UserAction.uploadFiles]: [
         UserRole.userAdmin,
         UserRole.author,
         UserRole.siteAdmin
     ],
-    [UserAction.viewAllContent]: [
+    [UserAction.viewAllFiles]: [
         UserRole.siteAdmin
     ],
-    [UserAction.deleteContent]: [
+    [UserAction.deleteFiles]: [
         UserRole.userAdmin,
         UserRole.author,
         UserRole.siteAdmin
     ],
-    [UserAction.deleteAnyContent]: [
+    [UserAction.deleteAnyFile]: [
         UserRole.siteAdmin
     ],
     [UserAction.viewUsers]: [

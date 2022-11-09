@@ -1,4 +1,4 @@
-import { css } from 'lit-element';
+import { css } from 'lit';
 export const typeStylesDisplayLarge = css `
     margin: 0;
     font-family: var(--md-sys-typescale-display-large-font-family-name);

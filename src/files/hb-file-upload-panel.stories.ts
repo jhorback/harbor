@@ -1,17 +1,16 @@
 import { Story, Meta } from '@storybook/web-components';
 import { html } from 'lit-html';
-import { FileUploadError, FileUploadStatusData } from './FileUploaderClient';
-import {UploadStatusPanel as Panel } from "./hb-upload-status-panel";
+import { FileUploadPanel as Panel, FileUploaderAccept } from "./hb-file-upload-panel";
 import { extractMediaTags, convertPictureToBase64Src, convertPictureToFile } from "../domain/Files/extractMediaTags";
+import { CancelUploadEvent, FileUploadController, FileUploadError, FileUploadState, OverwriteFileEvent } from './FileUploadController';
+import { hostEvent } from '@domx/statecontroller';
+import { resizeImageFile } from '../domain/Files/resizeImageFile';
+import { TextInput } from '../common/hb-text-input';
 
 export default {
-    title: 'App/Upload Status Panel',
-    component: "hb-upload-status-panel",
-    argTypes: {     
-        state: {
-            control: { type: 'object' }
-        }
-    },
+    title: 'App/File Upload Panel',
+    component: "hb-file-upload-panel",
+    argTypes: { },
     parameters: {
         options: { showPanel: true },
         actions: {
@@ -21,12 +20,44 @@ export default {
 } as Meta;
 
 
-export interface UploadStatusPanelProps {
-    state:FileUploadStatusData;
+class MockStateChangeEvent extends Event {
+    static eventType = "mock-state-change";
+    state:FileUploadState;
+    constructor(state:FileUploadState) {
+        super(MockStateChangeEvent.eventType);
+        this.state = state;
+    }
+};
+
+class MockFileUploadController extends FileUploadController {
+    openFileSelector() {
+        console.log("MockFileUploadController: openFileSelector called.")
+    }
+    
+    @hostEvent(OverwriteFileEvent)
+    overwriteFile(event:OverwriteFileEvent) {
+        alert("MockFileUploadController: Overwrite file")
+    }
+
+    @hostEvent(CancelUploadEvent)
+    cancelUpload(event:CancelUploadEvent) {
+        alert("MockFileUploadController: Cancel upload")
+    }
+
+    @hostEvent(MockStateChangeEvent)
+    mockStateChange(event: MockStateChangeEvent) {
+        this.state = event.state;
+        this.requestUpdate(event);
+    }
 }
 
+
+Panel.fileUploaderType = MockFileUploadController;
+
+
+
  
-const UploadStatusPanelTemplate = ({state}: UploadStatusPanelProps) => html`
+const FileUploadPanelTemplate = () => html`
     <button @click=${createElement}>Open</button>
     <button @click=${clickedButton("uploading1")}>Uploading 1</button>
     <button @click=${clickedButton("uploading2")}>Uploading 2</button>
@@ -34,77 +65,126 @@ const UploadStatusPanelTemplate = ({state}: UploadStatusPanelProps) => html`
     <button @click=${clickedButton("complete")}>Complete</button>
     <button @click=${clickedButton("doneWithSkipped")}>Complete With Skipped</button>
     <button @click=${closeElement}>Close</button>
-    <h2>extractMediaTags Test</h2>
-    <p>Use jsmediatags to pull out meta data</p>
-    <input type="file" @change=${onInputChange}>
+    
+    <div>
+        <h2>extractMediaTags Test</h2>
+        <p>Use jsmediatags to pull out meta data</p>
+        <input type="file" @change=${MediaTagTest.onInputChange}>
+    </div>
+    
+    <div>
+        <h2>Image Re-sizer Test</h2>
+        <input type="file" @change=${ImageSizerTest.onInputChange}>
+        <div>
+            <h3>Resized Image</h3>
+            <div><input type="text" value="1280" id="max-size" style="width:100px; line-height:1.2rem; margin-bottom:12px"></div>
+            <div id="resized-ctr"></div>
+        </div>
+    </div>
 `;
 
 
-
-const onInputChange = async (event:Event) => {
-    //@ts-ignore
-    const file = event.target.files[0];
-
-    try {
-        const tags = await extractMediaTags(file);
-        addMessageDiv("Parsed tags", tags);
-        var img = document.createElement("img");
-        img.src = convertPictureToBase64Src(tags.picture);
-       
-        document.body.appendChild(img);
-        img = document.createElement("img");
-        img.src = URL.createObjectURL(convertPictureToFile("name", tags.picture.data));
-        document.body.appendChild(img);
-    } catch(error) {
-        addMessageDiv("Caught error", error);
+class ImageSizerTest {
+    static async onInputChange(event:Event) {
+        //@ts-ignore
+        const file = event.target.files[0];
+        const size = (document.getElementById("max-size") as TextInput).value;    
+        const resizedFile = await resizeImageFile(file, parseInt(size), " THUMB");
+        
+        const img = document.createElement("img");
+        img.src = URL.createObjectURL(resizedFile.file);
+        const ctr = document.getElementById("resized-ctr")!;
+        ctr.innerHTML = "";
+        ctr.appendChild(img);
+        MediaTagTest.addMessageDiv("Resized Image Dimensions", {
+            ...resizedFile,
+            fileName: resizedFile.file.name
+        });
     }
-};
-
-const addMessageDiv = (message:string, data:any) => {
-    const div = document.createElement("div");
-    div.innerText = `${message}: ${JSON.stringify(data)}`;
-    console.log(message, data);
-    document.body.appendChild(div);
 }
 
 
 
+class MediaTagTest {
+    static async onInputChange(event:Event) {
+        //@ts-ignore
+        const file = event.target.files[0];
+    
+        try {
+            const tags = await extractMediaTags(file);
+            
+            var img = document.createElement("img");
+            if (!tags.picture) {
+                throw new Error("Picture data does not exist");
+            }
+            img.src = convertPictureToBase64Src(tags.picture);
+            document.body.appendChild(img);
 
-const clickedButton = (name:string) => {    
-    return (event:Event) => {
-        createElement();
-        const el = document.querySelector("hb-upload-status-panel")!;
-        el.state = getState(name);
-    };
-};
+            img = document.createElement("img");
+            const pictureFile = convertPictureToFile(file.name, tags.picture);
+            img.src = URL.createObjectURL(pictureFile);
+            img.setAttribute("title", pictureFile.name);
+            delete tags.picture;
+            MediaTagTest.addMessageDiv("Parsed tags", tags);
+            document.body.appendChild(img);
+        } catch(error) {
+            MediaTagTest.addMessageDiv("Caught error", error);
+        }
+    }
+
+    static addMessageDiv(message:string, data:any){
+        const div = document.createElement("div");
+        div.innerHTML = `${message}: <pre>${JSON.stringify(data)}</pre>`;
+        console.log(message, data);
+        document.body.appendChild(div);
+    }
+}
+
+
 
 
 let panel:Panel|null = null;
 
 const createElement = () => {
     if (!panel || !panel.parentElement) {
-        panel = Panel.open();
-        // moving so storybook captures the events
-        document.querySelector("#root-inner")?.appendChild(panel);
+        panel = Panel.openFileSelector({
+            accept: FileUploaderAccept.images
+        });               
     }
+    panel.showPanel();
+};
+
+
+const clickedButton = (name:string) => {        
+    return (event:Event) => {
+        createElement();
+        panel?.dispatchEvent(new MockStateChangeEvent(getState(name)));
+    };
 };
 
 const closeElement = (event:Event) => {
-    panel && panel.close();
-    panel = null;
+    panel?.close();
+    setTimeout(() => {        
+        panel?.parentElement?.removeChild(panel);
+        panel = null;
+    }, 1000);
+    
 };
+
+export interface FileUploadPanelProps {}
+
 
 // @ts-ignore 
-const Template: Story<Partial<UploadStatusPanelProps>> = (args:UploadStatusPanelProps) => UploadStatusPanelTemplate(args);
+const Template: Story<Partial<FileUploadPanelProps>> = (args:FileUploadPanelProps) => FileUploadPanelTemplate(args);
 
 
-export const UploadStatusPanel = Template.bind({});
-UploadStatusPanel.args = {
-    state: getState("uploading1")
-};
+export const FileUploadPanel = Template.bind({});
+FileUploadPanel.args = {};
 
 
-function getState(name:string):FileUploadStatusData {
+
+
+function getState(name:string):FileUploadState {
     if (name === "uploading2") {
         return {
             uploadFileTypes: "images",

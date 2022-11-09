@@ -69,7 +69,8 @@ let DeleteDocumentDialog = class DeleteDocumentDialog extends LitElement {
         this.dispatchEvent(new DocumentDeletedEvent());
         this.close();
     }
-    static { this.styles = [styles.types, styles.dialog, styles.icons, css `
+};
+DeleteDocumentDialog.styles = [styles.types, styles.dialog, styles.icons, css `
         :host {
             display: block;
             z-index:1;
@@ -83,8 +84,7 @@ let DeleteDocumentDialog = class DeleteDocumentDialog extends LitElement {
         .center {
             text-align: center;
         }
-  `]; }
-};
+  `];
 __decorate([
     property({ type: Boolean })
 ], DeleteDocumentDialog.prototype, "open", void 0);

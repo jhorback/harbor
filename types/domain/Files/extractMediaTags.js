@@ -26,6 +26,12 @@
         updated
         mediaTags: IMediaTags
     */
+/**
+ * Extracts media tags from a media file
+ * @param file the media file
+ * @returns {Promise<IMediaTags>}
+ * @throws error if the file cannot be parsed
+ */
 export const extractMediaTags = async (file) => {
     return new Promise(async (resolve, reject) => {
         try {
@@ -68,5 +74,24 @@ const loadScript = () => {
         }
     });
 };
-export const convertPictureToFile = (name, pictureData) => new File([new Blob([new Uint8Array(pictureData)])], name);
+/**
+ * Returns a File object with the same name as the
+ * original file but with the file extension of the picture format.
+ * @param originalFilename used to generate the new file name
+ * @param picture the picture data from the media tags
+ * @param nameQualifier? Optional string to prepend to the extension; e.g. name<qualifier>.jpg
+ * @returns {File}
+ */
+export const convertPictureToFile = (originalFilename, picture, nameQualifier) => new File([new Blob([new Uint8Array(picture.data)])], getFileName(originalFilename, picture.format, nameQualifier), { type: picture.format });
+const getFileName = (fileName, format, nameQualifier) => {
+    const fileNameParts = fileName.split(".");
+    const formatParts = format.split("/");
+    const ext = formatParts[formatParts.length - 1];
+    return `${fileNameParts[0]}${nameQualifier || ""}.${ext}`;
+};
+/**
+ * Converts the picture to a base 64 string to be used with an img src.
+ * @param picture the picture data from the media tags
+ * @returns {String}
+ */
 export const convertPictureToBase64Src = (picture) => `data:${picture.format};base64,${window.btoa(picture.data.reduce((base64String, data) => base64String + String.fromCharCode(data), ""))}`;

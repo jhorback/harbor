@@ -11,3 +11,4 @@ import "./docTypes/pages/hb-doc-page";
 import "./contentTypes/textContentType";
 import "./contentTypes/imageContentType";
 import "./contentTypes/content/hb-text-content";
+import "./contentTypes/content/hb-image-content";
