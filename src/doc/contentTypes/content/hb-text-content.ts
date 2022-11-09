@@ -1,18 +1,18 @@
-import { html, css, LitElement, render } from "lit";
-import { customElement, property, query, state } from "lit/decorators.js";
+import { css, html, LitElement } from "lit";
+import { customElement, property, query } from "lit/decorators.js";
 import { unsafeHTML } from "lit/directives/unsafe-html.js";
+import { HbApp } from "../../../domain/HbApp";
+import { FileType, IUploadedFile } from "../../../domain/interfaces/FileInterfaces";
+import { FileUploadCompleteEvent, FileUploaderAccept, FileUploadPanel } from "../../../files/hb-file-upload-panel";
+import { FileSelectedEvent } from "../../../files/hb-find-file-dialog";
 import { styles } from "../../../styles";
 import { UpdateDocContentEvent } from "../../data/hb-doc-data";
-import { TextContentData } from "../textContentType";
-import { HbApp } from "../../../domain/HbApp";
+import { ContentActiveChangeEvent } from "../../docTypes/pages/hb-doc-page";
+import { DocumentSelectedEvent } from "../../hb-find-doc-dialog";
 import "../hb-content";
 import { HbContent } from "../hb-content";
-import { ContentActiveChangeEvent } from "../../docTypes/pages/hb-doc-page";
-import { FileUploaderAccept, FileUploadPanel, FileUploadCompleteEvent } from "../../../files/hb-file-upload-panel";
-import { FileType, IUploadedFile } from "../../../domain/interfaces/FileInterfaces";
+import { TextContentData } from "../textContentType";
 import { TextContentSelectorDialog, TextContentSelectorType } from "./hb-text-content-selector-dialog";
-import { DocumentSelectedEvent } from "../../hb-find-doc-dialog";
-import { FileSelectedEvent } from "../../../files/hb-find-file-dialog";
 
 /**
  */
@@ -97,50 +97,13 @@ if (!window.tinymceSettings) {
                 editor.ui.registry.addButton("harborSearch", {
                     icon: "search",
                     tooltip: 'Search for page, images, audio, or video',
-                    onAction: (api:any) => {
-
-                        const selectedNode = editor.selection.getNode();
-                        const type = selectedNode.dataset.mcePDataType || selectedNode.dataset.type || null;
-                        const selType = type === "image" ? TextContentSelectorType.image :
-                            type === "audio" ? TextContentSelectorType.audio :
-                            type === "video" ? TextContentSelectorType.video :
-                            type === "file" ? TextContentSelectorType.file :
-                            type === "page" ? TextContentSelectorType.page :
-                            TextContentSelectorType.any;                     
-                        
-                        TextContentSelectorDialog.openContentSelector({
-                            type: selType,
-                            onDocumentSelected: (event:DocumentSelectedEvent) => {
-                                const thumb = event.docModel.toDocumentThumbnail();
-                                const content = `<a href="${thumb.href}" title="${thumb.title}" data-type="page">${thumb.title}</a>`;
-                                editor.selection.select(selectedNode);
-                                editor.insertContent(content);
-                            },
-                            onFileSelected: (event:FileSelectedEvent) => {
-                                insertFile(selectedNode, editor, {...event.file, fileDbPath:""});
-                            }
-                        });
-                    }
+                    onAction: onHarborSearch(editor)
                 });
                 
                 editor.ui.registry.addButton("harborUpload", {
                     icon: "upload",
                     tooltip: 'Upload images, audio, or video',
-                    onAction: (api:any) => {
-                       
-                        const selectedNode = editor.selection.getNode();
-                        const selectedTag = selectedNode.tagName;
-                        const accept = selectedTag === "IMG" ? FileUploaderAccept.images :
-                            (selectedTag === "VIDEO" || selectedNode.querySelector("video") !== null) ?
-                                FileUploaderAccept.media : FileUploaderAccept.all; 
-
-                        FileUploadPanel.openFileSelector({
-                            accept,
-                            onUploadComplete: (event:FileUploadCompleteEvent) => {
-                                event.uploadedFile && insertFile(selectedNode, editor, event.uploadedFile);
-                            }
-                        });                       
-                    }
+                    onAction: onHarborUpload(editor)
                 });   
             },
             
@@ -159,6 +122,46 @@ if (!window.tinymceSettings) {
         }  
     } 
 }
+
+
+const onHarborSearch = (editor:any) => () => {
+    const selectedNode = editor.selection.getNode();
+    const type = selectedNode.dataset.mcePDataType || selectedNode.dataset.type || null;
+    const selType = type === "image" ? TextContentSelectorType.image :
+        type === "audio" ? TextContentSelectorType.audio :
+        type === "video" ? TextContentSelectorType.video :
+        type === "file" ? TextContentSelectorType.file :
+        type === "page" ? TextContentSelectorType.page :
+        TextContentSelectorType.any;                     
+    
+    TextContentSelectorDialog.openContentSelector({
+        type: selType,
+        onDocumentSelected: (event:DocumentSelectedEvent) => {
+            const thumb = event.docModel.toDocumentThumbnail();
+            const content = `<a href="${thumb.href}" title="${thumb.title}" data-type="page">${thumb.title}</a>`;
+            editor.selection.select(selectedNode);
+            editor.insertContent(content);
+        },
+        onFileSelected: (event:FileSelectedEvent) => {
+            insertFile(selectedNode, editor, {...event.file, fileDbPath:""});
+        }
+    });
+};
+
+const onHarborUpload = (editor:any) => () => {
+    const selectedNode = editor.selection.getNode();
+    const selectedTag = selectedNode.tagName;
+    const accept = selectedTag === "IMG" ? FileUploaderAccept.images :
+        (selectedTag === "VIDEO" || selectedNode.querySelector("video") !== null) ?
+            FileUploaderAccept.media : FileUploaderAccept.all; 
+
+    FileUploadPanel.openFileSelector({
+        accept,
+        onUploadComplete: (event:FileUploadCompleteEvent) => {
+            event.uploadedFile && insertFile(selectedNode, editor, event.uploadedFile);
+        }
+    });
+};
 
 const insertFile = (selectedNode:any, editor:any, file:IUploadedFile) => {
     const fileType = file.type?.indexOf("image") === 0 ? FileType.image :
@@ -183,12 +186,7 @@ const insertFile = (selectedNode:any, editor:any, file:IUploadedFile) => {
     editor.insertContent(content);
 }
 
-type FileUploadCallback = (fileName:string, meta:{ title: string }) => void;
 
-
-interface IFilePickerMetaFields {
-    filetype: string;
-}
 
 interface ITinyMceChangeEvent {
     target: {

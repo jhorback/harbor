@@ -5,16 +5,16 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 var TextContent_1;
-import { html, css, LitElement } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property, query } from "lit/decorators.js";
 import { unsafeHTML } from "lit/directives/unsafe-html.js";
+import { HbApp } from "../../../domain/HbApp";
+import { FileType } from "../../../domain/interfaces/FileInterfaces";
+import { FileUploaderAccept, FileUploadPanel } from "../../../files/hb-file-upload-panel";
 import { styles } from "../../../styles";
 import { UpdateDocContentEvent } from "../../data/hb-doc-data";
-import { TextContentData } from "../textContentType";
-import { HbApp } from "../../../domain/HbApp";
 import "../hb-content";
-import { FileUploaderAccept, FileUploadPanel } from "../../../files/hb-file-upload-panel";
-import { FileType } from "../../../domain/interfaces/FileInterfaces";
+import { TextContentData } from "../textContentType";
 import { TextContentSelectorDialog, TextContentSelectorType } from "./hb-text-content-selector-dialog";
 /**
  */
@@ -93,49 +93,18 @@ if (!window.tinymceSettings) {
             body_class: `material-theme ${HbApp.theme}-theme`,
             content_style: "body { margin-top: 1rem; margin-left: 4px; }",
             toolbar_sticky: true,
-            text_patterns: true,
             image_title: true,
+            convert_urls: false,
             setup: (editor) => {
                 editor.ui.registry.addButton("harborSearch", {
                     icon: "search",
                     tooltip: 'Search for page, images, audio, or video',
-                    onAction: (api) => {
-                        const selectedNode = editor.selection.getNode();
-                        const type = selectedNode.dataset.mcePDataType || selectedNode.dataset.type || null;
-                        const selType = type === "image" ? TextContentSelectorType.image :
-                            type === "audio" ? TextContentSelectorType.audio :
-                                type === "video" ? TextContentSelectorType.video :
-                                    type === "file" ? TextContentSelectorType.file :
-                                        type === "page" ? TextContentSelectorType.page :
-                                            TextContentSelectorType.any;
-                        TextContentSelectorDialog.openContentSelector({
-                            type: selType,
-                            onDocumentSelected: (event) => {
-                                alert("doc sel");
-                                // add link
-                            },
-                            onFileSelected: (event) => {
-                                insertFile(selectedNode, editor, { ...event.file, fileDbPath: "" });
-                            }
-                        });
-                    }
+                    onAction: onHarborSearch(editor)
                 });
                 editor.ui.registry.addButton("harborUpload", {
                     icon: "upload",
                     tooltip: 'Upload images, audio, or video',
-                    onAction: (api) => {
-                        const selectedNode = editor.selection.getNode();
-                        const selectedTag = selectedNode.tagName;
-                        const accept = selectedTag === "IMG" ? FileUploaderAccept.images :
-                            (selectedTag === "VIDEO" || selectedNode.querySelector("video") !== null) ?
-                                FileUploaderAccept.media : FileUploaderAccept.all;
-                        FileUploadPanel.openFileSelector({
-                            accept,
-                            onUploadComplete: (event) => {
-                                event.uploadedFile && insertFile(selectedNode, editor, event.uploadedFile);
-                            }
-                        });
-                    }
+                    onAction: onHarborUpload(editor)
                 });
             },
             plugins: "autolink lists link image autoresize fullscreen media table codesample",
@@ -153,6 +122,41 @@ if (!window.tinymceSettings) {
         }
     };
 }
+const onHarborSearch = (editor) => () => {
+    const selectedNode = editor.selection.getNode();
+    const type = selectedNode.dataset.mcePDataType || selectedNode.dataset.type || null;
+    const selType = type === "image" ? TextContentSelectorType.image :
+        type === "audio" ? TextContentSelectorType.audio :
+            type === "video" ? TextContentSelectorType.video :
+                type === "file" ? TextContentSelectorType.file :
+                    type === "page" ? TextContentSelectorType.page :
+                        TextContentSelectorType.any;
+    TextContentSelectorDialog.openContentSelector({
+        type: selType,
+        onDocumentSelected: (event) => {
+            const thumb = event.docModel.toDocumentThumbnail();
+            const content = `<a href="${thumb.href}" title="${thumb.title}" data-type="page">${thumb.title}</a>`;
+            editor.selection.select(selectedNode);
+            editor.insertContent(content);
+        },
+        onFileSelected: (event) => {
+            insertFile(selectedNode, editor, { ...event.file, fileDbPath: "" });
+        }
+    });
+};
+const onHarborUpload = (editor) => () => {
+    const selectedNode = editor.selection.getNode();
+    const selectedTag = selectedNode.tagName;
+    const accept = selectedTag === "IMG" ? FileUploaderAccept.images :
+        (selectedTag === "VIDEO" || selectedNode.querySelector("video") !== null) ?
+            FileUploaderAccept.media : FileUploaderAccept.all;
+    FileUploadPanel.openFileSelector({
+        accept,
+        onUploadComplete: (event) => {
+            event.uploadedFile && insertFile(selectedNode, editor, event.uploadedFile);
+        }
+    });
+};
 const insertFile = (selectedNode, editor, file) => {
     const fileType = file.type?.indexOf("image") === 0 ? FileType.image :
         file.type?.indexOf("audio") === 0 ? FileType.audio :

@@ -1,4 +1,4 @@
-import { css } from 'lit-element';
+import { css } from 'lit';
 /*
  * From material-theme builder colors.module.css
  */

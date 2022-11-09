@@ -1,4 +1,4 @@
-import { css } from 'lit-element';
+import { css } from 'lit';
 /**
  * See https://fonts.google.com/icons for icons.
  *
