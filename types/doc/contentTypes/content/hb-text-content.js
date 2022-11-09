@@ -56,7 +56,18 @@ let TextContent = TextContent_1 = class TextContent extends LitElement {
         this.$hbContent.edit();
     }
     tinymceChange(event) {
+        this.checkForThumbs(event.value);
         this.dispatchEvent(new UpdateDocContentEvent(this.contentIndex, TextContentData.of(event.value)));
+    }
+    checkForThumbs(html) {
+        const ctr = document.createElement("div");
+        ctr.innerHTML = html;
+        const images = ctr.querySelectorAll("img");
+        const thumbs = Array.from(images).filter(el => el.dataset.type === undefined).map(el => el.src);
+        const posters = ctr.querySelectorAll("[poster]");
+        thumbs.push(...Array.from(posters).filter(el => el.dataset.type === undefined &&
+            el.getAttribute("poster") !== "").map(el => el.getAttribute("poster")));
+        thumbs.length > 0 && this.dispatchEvent(new DocThumbEvent(thumbs));
     }
 };
 TextContent.defaultState = new TextContentData();

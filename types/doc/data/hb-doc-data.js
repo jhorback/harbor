@@ -213,7 +213,6 @@ const updateDocContent = (index, data) => (state) => {
 };
 const updateThumbs = (thumbs) => (state) => {
     state.doc.thumbUrls.push(...thumbs);
-    debugger;
     // using set makes sure they are unique
     const thumbUrls = [...new Set(state.doc.thumbUrls)];
     state.doc.thumbUrls = thumbUrls;

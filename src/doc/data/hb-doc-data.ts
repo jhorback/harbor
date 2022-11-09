@@ -243,7 +243,6 @@ const updateDocContent = (index:number, data:IContentType) => (state:IDocDataSta
 const updateThumbs = (thumbs:Array<string>) => (state:IDocDataState) => { 
     state.doc.thumbUrls.push(...thumbs);
 
-    debugger;
     // using set makes sure they are unique
     const thumbUrls = [... new Set(state.doc.thumbUrls)];
     state.doc.thumbUrls = thumbUrls;

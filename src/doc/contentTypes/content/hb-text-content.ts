@@ -63,8 +63,20 @@ export class TextContent extends LitElement {
         this.$hbContent.edit();
     }
 
-    tinymceChange(event:ChangeEvent) {
+    tinymceChange(event:ChangeEvent) {        
+        this.checkForThumbs(event.value);
         this.dispatchEvent(new UpdateDocContentEvent(this.contentIndex, TextContentData.of(event.value)));
+    }
+
+    private checkForThumbs(html:string) {
+        const ctr = document.createElement("div");
+        ctr.innerHTML = html;
+        const images = ctr.querySelectorAll("img");
+        const thumbs = Array.from(images).filter(el => el.dataset.type === undefined).map(el => el.src);
+        const posters = ctr.querySelectorAll("[poster]") as NodeListOf<HTMLElement>;
+        thumbs.push(...Array.from(posters).filter(el => el.dataset.type === undefined &&
+                el.getAttribute("poster") !== "").map(el => el.getAttribute("poster") as string));
+        thumbs.length > 0 && this.dispatchEvent(new DocThumbEvent(thumbs));
     }
 
     static styles = [styles.types, styles.format, css`
