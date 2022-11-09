@@ -1,20 +1,18 @@
-import { html, css, LitElement } from "lit";
-import { customElement, property, query, state } from "lit/decorators.js";
-import { styles } from "../../../styles";
-import { DocTypes, docTypes } from "../../../domain/Doc/docTypes";
 import { linkProp } from "@domx/dataelement";
-import "../../../layout/hb-page-layout";
+import { css, html, LitElement } from "lit";
+import { customElement, property, query, state } from "lit/decorators.js";
 import "../../../common/hb-button";
-import "../../../common/hb-switch";
-import { SwitchChangeEvent } from "../../../common/hb-switch";
 import "../../../common/hb-content-editable";
 import { ContentEditableChangeEvent } from "../../../common/hb-content-editable";
-import { DocumentAddedEvent } from "../../data/hb-add-document-data";
-import { AddDocumentDialog } from "../../hb-add-document-dialog";
-import { DeleteDocumentDialog } from "../../hb-delete-document-dialog";
-import "../../hb-delete-document-dialog";
-import "../../hb-doc-author";
+import "../../../common/hb-switch";
+import { SwitchChangeEvent } from "../../../common/hb-switch";
+import { contentTypes } from "../../../domain/Doc/contentTypes";
+import { DocTypes, docTypes } from "../../../domain/Doc/docTypes";
+import { sendFeedback } from "../../../layout/feedback";
+import "../../../layout/hb-page-layout";
+import { styles } from "../../../styles";
 import { HbContent } from "../../contentTypes/hb-content";
+import { DocumentAddedEvent } from "../../data/hb-add-document-data";
 import {
     DocData,
     IDocDataState,
@@ -22,8 +20,11 @@ import {
     UpdateShowTitleEvent,
     UpdateSubtitleEvent
 } from "../../data/hb-doc-data";
-import { sendFeedback } from "../../../layout/feedback";
-import { contentTypes } from "../../../domain/Doc/contentTypes";
+import { AddDocumentDialog } from "../../hb-add-document-dialog";
+import "../../hb-delete-document-dialog";
+import { DeleteDocumentDialog } from "../../hb-delete-document-dialog";
+import "../../hb-doc-author";
+import "../../hb-doc-thumb-settings-tab";
 
 
 export class DocEditModeChangeEvent extends Event {
@@ -367,11 +368,7 @@ const showSubtitleClicked = (page:HbDocPage) => (event:SwitchChangeEvent) =>
 const renderEditThumbnailTabContent = (page:HbDocPage, state:IDocDataState) => {
     return html`
         <div class="edit-tab-content">
-            <pre style="margin:0;">
-                Set thumb
-                Thumb description
-                Image
-                Use subtitle as thumb description</pre>
+            <hb-doc-thumb-settings-tab .state=${state}></hb-doc-thumb-settings-tab>
         </div>
     `;
 };

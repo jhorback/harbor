@@ -49,6 +49,9 @@ pre {
     padding: 0.5rem;
     overflow: auto;
 }
+img {
+    max-width: 100%;
+}
 `;
 /**
  * Would need to add prism to get full code syntax highlighting

@@ -39,6 +39,7 @@ export class DocModel implements IDocData {
     subtitle:string|null = null;
     showSubtitle = true;
     thumbUrl = "";
+    thumbUrls:Array<string> = new Array();
     thumbDescription = null;
     useSubtitleAsThumbDescription = true;
     dateCreated = new Date();
@@ -97,6 +98,7 @@ export class DocModel implements IDocData {
             subtitle: doc.subtitle,
             showSubtitle: doc.showSubtitle,
             thumbUrl: doc.thumbUrl,
+            thumbUrls: doc.thumbUrls,
             thumbDescription: doc.thumbDescription,
             useSubtitleAsThumbDescription: doc.useSubtitleAsThumbDescription,
             dateCreated: Timestamp.fromDate(doc.dateCreated ?? new Date()),

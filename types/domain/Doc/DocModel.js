@@ -16,6 +16,7 @@ export class DocModel {
         this.subtitle = null;
         this.showSubtitle = true;
         this.thumbUrl = "";
+        this.thumbUrls = new Array();
         this.thumbDescription = null;
         this.useSubtitleAsThumbDescription = true;
         this.dateCreated = new Date();
@@ -86,6 +87,7 @@ export class DocModel {
             subtitle: doc.subtitle,
             showSubtitle: doc.showSubtitle,
             thumbUrl: doc.thumbUrl,
+            thumbUrls: doc.thumbUrls,
             thumbDescription: doc.thumbDescription,
             useSubtitleAsThumbDescription: doc.useSubtitleAsThumbDescription,
             dateCreated: Timestamp.fromDate(doc.dateCreated ?? new Date()),

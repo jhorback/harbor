@@ -2,10 +2,11 @@ import { DataElement, StateChange } from "@domx/dataelement";
 import { customDataElement, dataProperty, event } from "@domx/dataelement/decorators";
 import { inject } from "../../domain/DependencyContainer/decorators";
 import { DocModel } from "../../domain/Doc/DocModel";
-import { EditDocRepoKey, IContentType, IEditDocRepo, IUnsubscribe } from "../../domain/interfaces/DocumentInterfaces";
-import { UserAction, HbCurrentUser } from "../../domain/HbCurrentUser";
+import { docTypes } from "../../domain/Doc/docTypes";
 import "../../domain/Doc/HbEditDocRepo";
 import { HbCurrentUserChangedEvent } from "../../domain/HbAuth";
+import { HbCurrentUser, UserAction } from "../../domain/HbCurrentUser";
+import { EditDocRepoKey, IContentType, IEditDocRepo, IUnsubscribe } from "../../domain/interfaces/DocumentInterfaces";
 
 
 export interface IDocDataState {
@@ -64,6 +65,25 @@ export class MoveDocContentEvent extends Event {
         super(MoveDocContentEvent.eventType, {bubbles:true, composed:true});
         this.index = index;
         this.moveUp = moveUp;
+    }
+}
+
+interface DocThumbChangeEventOptions {
+    removeIndex?:number;
+    setIndex?:number;
+    thumbs?:Array<string>;
+}
+
+export class DocThumbChangeEvent extends Event {
+    static eventType = "doc-thumb-change";
+    removeIndex?:number;
+    setIndex?:number;
+    thumbs?:Array<string>;
+    constructor(options:DocThumbChangeEventOptions) {
+        super(DocThumbChangeEvent.eventType, {bubbles:true, composed:true});
+        this.thumbs = options.thumbs;
+        this.setIndex = options.setIndex;
+        this.removeIndex = options.removeIndex;
     }
 }
 
@@ -155,8 +175,17 @@ export class DocData extends DataElement {
         StateChange.of(this)
             .next(moveContent(event.index, event.moveUp))
             .tap(saveDoc(this.editDocRepo, this.state.doc))
-            .dispatch()
-            .dispatchEvent(new Event("request-update"));
+            .dispatch();
+    }
+
+    @event(DocThumbChangeEvent.eventType)
+    private docThumb(event:DocThumbChangeEvent) {
+        StateChange.of(this)
+            .next(updateThumbs(event.thumbs))
+            .next(setThumb(event.setIndex))
+            .next(removeThumb(event.removeIndex))
+            .tap(saveDoc(this.editDocRepo, this.state.doc))
+            .dispatch();
     }
 }
 
@@ -222,3 +251,31 @@ const updateDocContent = (index:number, data:IContentType) => (state:IDocDataSta
     state.doc.content[index] = data;
 };
 
+
+const removeThumb = (index?:number) => (state:IDocDataState) => {
+    if (index === undefined) { return; }
+
+    state.doc.thumbUrls.splice(index, 1);
+};
+
+const setThumb = (index?:number) => (state:IDocDataState) => {
+    if (index === undefined) { return; }
+
+    state.doc.thumbUrl = state.doc.thumbUrls[index];
+};
+
+
+const updateThumbs = (thumbs?:Array<string>) => (state:IDocDataState) => { 
+    if (!thumbs) { return; }
+
+    state.doc.thumbUrls.unshift(...thumbs);
+
+    // using set makes sure they are unique
+    const thumbUrls = [... new Set(state.doc.thumbUrls)];
+    state.doc.thumbUrls = thumbUrls;
+
+    // set the thumb if it is the default
+    if (state.doc.thumbUrls[0] && state.doc.thumbUrl === docTypes.get(state.doc.docType).defaultThumbUrl) {
+        state.doc.thumbUrl = state.doc.thumbUrls[0];
+    }
+};
