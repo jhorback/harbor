@@ -15,22 +15,22 @@ export class ImageSizeChangeEvent extends Event {
         super(ImageSizeChangeEvent.eventType);
         this.size = size;
     }
+    static { this.eventType = "image-size-change"; }
 }
-ImageSizeChangeEvent.eventType = "image-size-change";
 export class ImageAlignmentChangeEvent extends Event {
     constructor(alignment) {
         super(ImageAlignmentChangeEvent.eventType);
         this.alignment = alignment;
     }
+    static { this.eventType = "image-alignment-change"; }
 }
-ImageAlignmentChangeEvent.eventType = "image-alignment-change";
 export class ImageContentSelectedEvent extends Event {
     constructor(file) {
         super(ImageContentSelectedEvent.eventType);
         this.file = file;
     }
+    static { this.eventType = "image-content-selected"; }
 }
-ImageContentSelectedEvent.eventType = "image-content-selected";
 export class ImageContentController extends StateController {
     constructor(host) {
         super(host);

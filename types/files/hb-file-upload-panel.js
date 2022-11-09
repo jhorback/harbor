@@ -28,8 +28,8 @@ export class FileUploadCompleteEvent extends Event {
         this.uploadedFiles = uploadedFiles;
         this.uploadedFile = uploadedFiles[0];
     }
+    static { this.eventType = "file-upload-complete"; }
 }
-FileUploadCompleteEvent.eventType = "file-upload-complete";
 /**
  * Opens a file selector to upload files.
  *
@@ -49,6 +49,8 @@ let FileUploadPanel = FileUploadPanel_1 = class FileUploadPanel extends LitEleme
         this.open = false;
         this.viewSkipped = false;
     }
+    // Stores the panel element (singleton)
+    static { this.panel = null; }
     /**
      * Helper method to create the upload panel and add it to the DOM
      * @param options
@@ -63,6 +65,8 @@ let FileUploadPanel = FileUploadPanel_1 = class FileUploadPanel extends LitEleme
         panel.openFileSelector();
         return panel;
     }
+    /** seem for mocking */
+    static { this.fileUploaderType = FileUploadController; }
     openFileSelector() {
         if (FileUploadPanel_1.panel !== null) {
             sendFeedback({ message: "There is a file upload already in progress" });
@@ -166,12 +170,7 @@ let FileUploadPanel = FileUploadPanel_1 = class FileUploadPanel extends LitEleme
         this.open = false;
         FileUploadPanel_1.panel = null;
     }
-};
-// Stores the panel element (singleton)
-FileUploadPanel.panel = null;
-/** seem for mocking */
-FileUploadPanel.fileUploaderType = FileUploadController;
-FileUploadPanel.styles = [styles.types, styles.icons, css `
+    static { this.styles = [styles.types, styles.icons, css `
         :host {
             z-index: 2000;
             background-color: var(--md-sys-color-surface-variant);
@@ -260,7 +259,8 @@ FileUploadPanel.styles = [styles.types, styles.icons, css `
             display:flex;
             align-items: center;
         }
-    `];
+    `]; }
+};
 __decorate([
     property({ type: String })
 ], FileUploadPanel.prototype, "accept", void 0);

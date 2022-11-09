@@ -12,8 +12,8 @@ export class SearchFilesEvent extends Event {
         super(SearchFilesEvent.eventType, { bubbles: true });
         this.options = options;
     }
+    static { this.eventType = "search-files"; }
 }
-SearchFilesEvent.eventType = "search-files";
 export class SearchFilesController extends StateController {
     constructor() {
         super(...arguments);
