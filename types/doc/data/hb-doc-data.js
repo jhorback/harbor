@@ -13,6 +13,7 @@ import { EditDocRepoKey } from "../../domain/interfaces/DocumentInterfaces";
 import { UserAction, HbCurrentUser } from "../../domain/HbCurrentUser";
 import "../../domain/Doc/HbEditDocRepo";
 import { HbCurrentUserChangedEvent } from "../../domain/HbAuth";
+import { docTypes } from "../../domain/Doc/docTypes";
 export class UpdateShowTitleEvent extends Event {
     constructor(showTitle) {
         super(UpdateShowTitleEvent.eventType);
@@ -53,6 +54,13 @@ export class MoveDocContentEvent extends Event {
     }
 }
 MoveDocContentEvent.eventType = "move-doc-content";
+export class DocThumbEvent extends Event {
+    constructor(thumbs) {
+        super(DocThumbEvent.eventType, { bubbles: true, composed: true });
+        this.thumbs = thumbs;
+    }
+}
+DocThumbEvent.eventType = "doc-thumb";
 let DocData = DocData_1 = class DocData extends DataElement {
     constructor() {
         super(...arguments);
@@ -106,8 +114,13 @@ let DocData = DocData_1 = class DocData extends DataElement {
         StateChange.of(this)
             .next(moveContent(event.index, event.moveUp))
             .tap(saveDoc(this.editDocRepo, this.state.doc))
-            .dispatch()
-            .dispatchEvent(new Event("request-update"));
+            .dispatch();
+    }
+    docThumb(event) {
+        StateChange.of(this)
+            .next(updateThumbs(event.thumbs))
+            .tap(saveDoc(this.editDocRepo, this.state.doc))
+            .dispatch();
     }
 };
 DocData.defaultState = {
@@ -143,6 +156,9 @@ __decorate([
 __decorate([
     event(MoveDocContentEvent.eventType)
 ], DocData.prototype, "moveContent", null);
+__decorate([
+    event(DocThumbEvent.eventType)
+], DocData.prototype, "docThumb", null);
 DocData = DocData_1 = __decorate([
     customDataElement("hb-doc-data", {
         eventsListenAt: "parent",
@@ -194,4 +210,15 @@ const updateSubtitle = (subtitle) => (state) => {
 };
 const updateDocContent = (index, data) => (state) => {
     state.doc.content[index] = data;
+};
+const updateThumbs = (thumbs) => (state) => {
+    state.doc.thumbUrls.push(...thumbs);
+    debugger;
+    // using set makes sure they are unique
+    const thumbUrls = [...new Set(state.doc.thumbUrls)];
+    state.doc.thumbUrls = thumbUrls;
+    // set the thumb if it is the default
+    if (state.doc.thumbUrls[0] && state.doc.thumbUrl === docTypes.get(state.doc.docType).defaultThumbUrl) {
+        state.doc.thumbUrl = state.doc.thumbUrls[0];
+    }
 };
