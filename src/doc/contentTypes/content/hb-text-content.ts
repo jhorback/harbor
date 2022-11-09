@@ -6,7 +6,7 @@ import { FileType, IUploadedFile } from "../../../domain/interfaces/FileInterfac
 import { FileUploadCompleteEvent, FileUploaderAccept, FileUploadPanel } from "../../../files/hb-file-upload-panel";
 import { FileSelectedEvent } from "../../../files/hb-find-file-dialog";
 import { styles } from "../../../styles";
-import { DocThumbEvent, UpdateDocContentEvent } from "../../data/hb-doc-data";
+import { DocThumbChangeEvent, UpdateDocContentEvent } from "../../data/hb-doc-data";
 import { ContentActiveChangeEvent } from "../../docTypes/pages/hb-doc-page";
 import { DocumentSelectedEvent } from "../../hb-find-doc-dialog";
 import "../hb-content";
@@ -76,7 +76,7 @@ export class TextContent extends LitElement {
         const posters = ctr.querySelectorAll("[poster]") as NodeListOf<HTMLElement>;
         thumbs.push(...Array.from(posters).filter(el => el.dataset.type === undefined &&
                 el.getAttribute("poster") !== "").map(el => el.getAttribute("poster") as string));
-        thumbs.length > 0 && this.dispatchEvent(new DocThumbEvent(thumbs));
+        thumbs.length > 0 && this.dispatchEvent(new DocThumbChangeEvent({thumbs}));
     }
 
     static styles = [styles.types, styles.format, css`
@@ -184,7 +184,7 @@ const insertFile = (selectedNode:any, editor:any, file:IUploadedFile) => {
     const thumbs:Array<string> = [];
     file.thumbUrl && thumbs.push(file.thumbUrl);
     file.pictureUrl && thumbs.push(file.pictureUrl);
-    thumbs.length > 0 && editor.getContainer().dispatchEvent(new DocThumbEvent(thumbs));
+    thumbs.length > 0 && editor.getContainer().dispatchEvent(new DocThumbChangeEvent({thumbs}));
 
 
     let content = "";

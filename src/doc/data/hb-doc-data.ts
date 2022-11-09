@@ -68,12 +68,22 @@ export class MoveDocContentEvent extends Event {
     }
 }
 
-export class DocThumbEvent extends Event {
-    static eventType = "doc-thumb";
-    thumbs:Array<string>;
-    constructor(thumbs:Array<string>) {
-        super(DocThumbEvent.eventType, {bubbles:true, composed:true});
-        this.thumbs = thumbs;
+interface DocThumbChangeEventOptions {
+    removeIndex?:number;
+    setIndex?:number;
+    thumbs?:Array<string>;
+}
+
+export class DocThumbChangeEvent extends Event {
+    static eventType = "doc-thumb-change";
+    removeIndex?:number;
+    setIndex?:number;
+    thumbs?:Array<string>;
+    constructor(options:DocThumbChangeEventOptions) {
+        super(DocThumbChangeEvent.eventType, {bubbles:true, composed:true});
+        this.thumbs = options.thumbs;
+        this.setIndex = options.setIndex;
+        this.removeIndex = options.removeIndex;
     }
 }
 
@@ -168,10 +178,12 @@ export class DocData extends DataElement {
             .dispatch();
     }
 
-    @event(DocThumbEvent.eventType)
-    private docThumb(event:DocThumbEvent) {
+    @event(DocThumbChangeEvent.eventType)
+    private docThumb(event:DocThumbChangeEvent) {
         StateChange.of(this)
             .next(updateThumbs(event.thumbs))
+            .next(setThumb(event.setIndex))
+            .next(removeThumb(event.removeIndex))
             .tap(saveDoc(this.editDocRepo, this.state.doc))
             .dispatch();
     }
@@ -240,7 +252,22 @@ const updateDocContent = (index:number, data:IContentType) => (state:IDocDataSta
 };
 
 
-const updateThumbs = (thumbs:Array<string>) => (state:IDocDataState) => { 
+const removeThumb = (index?:number) => (state:IDocDataState) => {
+    if (index === undefined) { return; }
+
+    state.doc.thumbUrls.splice(index, 1);
+};
+
+const setThumb = (index?:number) => (state:IDocDataState) => {
+    if (index === undefined) { return; }
+
+    state.doc.thumbUrl = state.doc.thumbUrls[index];
+};
+
+
+const updateThumbs = (thumbs?:Array<string>) => (state:IDocDataState) => { 
+    if (!thumbs) { return; }
+
     state.doc.thumbUrls.push(...thumbs);
 
     // using set makes sure they are unique
