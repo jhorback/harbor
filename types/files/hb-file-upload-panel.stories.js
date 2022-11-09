@@ -26,8 +26,8 @@ class MockStateChangeEvent extends Event {
         super(MockStateChangeEvent.eventType);
         this.state = state;
     }
-    static { this.eventType = "mock-state-change"; }
 }
+MockStateChangeEvent.eventType = "mock-state-change";
 ;
 class MockFileUploadController extends FileUploadController {
     openFileSelector() {

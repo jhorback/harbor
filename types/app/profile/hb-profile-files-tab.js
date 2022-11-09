@@ -44,7 +44,8 @@ let ProfileContentTab = class ProfileContentTab extends LitElement {
             </div>
         `;
     }
-    static { this.styles = [styles.types, css `
+};
+ProfileContentTab.styles = [styles.types, css `
         :host {
             display: block;
         }
@@ -54,8 +55,7 @@ let ProfileContentTab = class ProfileContentTab extends LitElement {
             column-gap: 16px;
             row-gap: 16px;
         }
-    `]; }
-};
+    `];
 ProfileContentTab = __decorate([
     customElement('hb-profile-files-tab')
 ], ProfileContentTab);

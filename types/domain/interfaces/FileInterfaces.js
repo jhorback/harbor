@@ -19,5 +19,5 @@ export class FileUploadProgressEvent extends Event {
         this.bytesTransferred = bytesTransferred;
         this.totalBytes = totalBytes;
     }
-    static { this.eventType = "file-upload-progress"; }
 }
+FileUploadProgressEvent.eventType = "file-upload-progress";

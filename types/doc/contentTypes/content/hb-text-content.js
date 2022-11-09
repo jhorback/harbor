@@ -24,7 +24,6 @@ let TextContent = TextContent_1 = class TextContent extends LitElement {
         this.contentIndex = -1;
         this.data = TextContent_1.defaultState;
     }
-    static { this.defaultState = new TextContentData(); }
     render() {
         return html `
             <hb-content @content-active-change=${this.contentActive} ?is-empty=${!this.data.text}>
@@ -59,7 +58,9 @@ let TextContent = TextContent_1 = class TextContent extends LitElement {
     tinymceChange(event) {
         this.dispatchEvent(new UpdateDocContentEvent(this.contentIndex, TextContentData.of(event.value)));
     }
-    static { this.styles = [styles.types, styles.format, css `
+};
+TextContent.defaultState = new TextContentData();
+TextContent.styles = [styles.types, styles.format, css `
         :host {
             display: block;
         }
@@ -68,8 +69,7 @@ let TextContent = TextContent_1 = class TextContent extends LitElement {
             clear: both;
             display: table;
         }
-  `]; }
-};
+  `];
 __decorate([
     property({ type: Number })
 ], TextContent.prototype, "contentIndex", void 0);
@@ -186,5 +186,5 @@ class ChangeEvent extends Event {
         super(ChangeEvent.eventType, { bubbles: true, composed: true });
         this.value = value;
     }
-    static { this.eventType = "change"; }
 }
+ChangeEvent.eventType = "change";

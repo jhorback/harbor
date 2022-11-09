@@ -20,8 +20,8 @@ export class DocumentSelectedEvent extends Event {
         this.docModel = docModel;
         this.documentReference = docModel.toDocumentReference();
     }
-    static { this.eventType = "document-selected"; }
 }
+DocumentSelectedEvent.eventType = "document-selected";
 /**
  * @fires {@link DocumentSelectedEvent}
  */
@@ -120,7 +120,8 @@ let FindDocDialog = class FindDocDialog extends LitElement {
         this.dispatchEvent(new DocumentSelectedEvent(this.state.list[this.selectedIndex]));
         this.close();
     }
-    static { this.styles = [styles.types, styles.dialog, css `
+};
+FindDocDialog.styles = [styles.types, styles.dialog, css `
         :host {
             display: block;
             z-index:1;
@@ -137,8 +138,7 @@ let FindDocDialog = class FindDocDialog extends LitElement {
             flex-direction: column;
             gap: 5px;
         }
-  `]; }
-};
+  `];
 __decorate([
     property({ type: Boolean })
 ], FindDocDialog.prototype, "open", void 0);

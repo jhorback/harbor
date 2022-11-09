@@ -23,24 +23,24 @@ export class DocEditModeChangeEvent extends Event {
         super(DocEditModeChangeEvent.eventType, { bubbles: false });
         this.inEditMode = inEditMode;
     }
-    static { this.eventType = "doc-edit-mode-change"; }
 }
+DocEditModeChangeEvent.eventType = "doc-edit-mode-change";
 export class ContentEmptyEvent extends Event {
     constructor(host, isEmpty) {
         super(ContentEmptyEvent.eventType, { bubbles: true, composed: true });
         this.host = host;
         this.isEmpty = isEmpty;
     }
-    static { this.eventType = "content-empty"; }
 }
+ContentEmptyEvent.eventType = "content-empty";
 export class ContentActiveChangeEvent extends Event {
     constructor(activeContent, active) {
         super(ContentActiveChangeEvent.eventType, { bubbles: true, composed: true });
         this.activeContent = activeContent;
         this.active = active;
     }
-    static { this.eventType = "content-active-change"; }
 }
+ContentActiveChangeEvent.eventType = "content-active-change";
 /**
  *
  */
@@ -141,7 +141,8 @@ let HbDocPage = class HbDocPage extends LitElement {
             this.activeContent.contentEdit = false;
         }
     }
-    static { this.styles = [styles.types, styles.icons, css `
+};
+HbDocPage.styles = [styles.types, styles.icons, css `
         :host {
             display: block;
         }
@@ -200,8 +201,7 @@ let HbDocPage = class HbDocPage extends LitElement {
         .doc-content > .empty {
             margin-bottom: 0;
         }
-  `]; }
-};
+  `];
 __decorate([
     property({ type: String })
 ], HbDocPage.prototype, "pid", void 0);

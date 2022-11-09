@@ -47,8 +47,8 @@ export class CancelUploadEvent extends Event {
     constructor() {
         super(CancelUploadEvent.eventType);
     }
-    static { this.eventType = "cancel-upload"; }
 }
+CancelUploadEvent.eventType = "cancel-upload";
 /** Host event to allow overwriting a file */
 export class OverwriteFileEvent extends Event {
     constructor(fileIndex, allowOverwrite) {
@@ -56,8 +56,8 @@ export class OverwriteFileEvent extends Event {
         this.fileIndex = fileIndex;
         this.allowOverwrite = allowOverwrite;
     }
-    static { this.eventType = "overwrite-file"; }
 }
+OverwriteFileEvent.eventType = "overwrite-file";
 /**
  */
 export class FileUploadController extends StateController {
@@ -351,5 +351,5 @@ class FileUpdatedEvent extends Event {
     constructor() {
         super(FileUpdatedEvent.eventType);
     }
-    static { this.eventType = "file-updated"; }
 }
+FileUpdatedEvent.eventType = "file-updated";

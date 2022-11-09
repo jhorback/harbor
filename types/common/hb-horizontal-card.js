@@ -48,7 +48,8 @@ let HorizontalCard = class HorizontalCard extends LitElement {
     handleClick(event) {
         this.dispatchEvent(new Event("hb-horizontal-card-click", { bubbles: true, composed: false }));
     }
-    static { this.styles = [styles.icons, styles.types, css `
+};
+HorizontalCard.styles = [styles.icons, styles.types, css `
         :host {
             display: block;
         }
@@ -97,8 +98,7 @@ let HorizontalCard = class HorizontalCard extends LitElement {
             overflow: hidden;
             background-size: cover;
         }
-    `]; }
-};
+    `];
 __decorate([
     property({ type: String, attribute: "media-url" })
 ], HorizontalCard.prototype, "mediaUrl", void 0);

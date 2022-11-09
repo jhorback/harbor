@@ -18,8 +18,8 @@ export class FileSelectedEvent extends Event {
         super(FileSelectedEvent.eventType);
         this.file = file;
     }
-    static { this.eventType = "file-selected"; }
 }
+FileSelectedEvent.eventType = "file-selected";
 /**
  * @fires {@link FileSelectedEvent}
  */
@@ -138,7 +138,8 @@ let FindFileDialog = class FindFileDialog extends LitElement {
         this.dispatchEvent(new FileSelectedEvent(this.searchFiles.state.list[this.selectedIndex]));
         this.close();
     }
-    static { this.styles = [styles.types, styles.dialog, css `
+};
+FindFileDialog.styles = [styles.types, styles.dialog, css `
         :host {
             display: block;
             z-index:1;
@@ -155,8 +156,7 @@ let FindFileDialog = class FindFileDialog extends LitElement {
             flex-direction: column;
             gap: 5px;
         }
-  `]; }
-};
+  `];
 __decorate([
     property({ type: String, attribute: "file-type" })
 ], FindFileDialog.prototype, "fileType", void 0);

@@ -23,12 +23,6 @@ let UserMenu = class UserMenu extends LitElement {
         this.currentUser = CurrentUserData.defaultCurrentUser;
         this.hbAppInfo = CurrentUserData.defaultHbAppInfo;
     }
-    static { this.defaultState = {
-        displayName: "John Horback",
-        email: "jhorback@gmail.com",
-        photoURL: "content/avatars/user1.png",
-        appVersion: "v0.1.0"
-    }; }
     get open() {
         return this._open;
     }
@@ -80,7 +74,14 @@ let UserMenu = class UserMenu extends LitElement {
     handleSignOutClick() {
         this.dispatchEvent(new SignOutEvent());
     }
-    static { this.styles = [typeStyles, css `
+};
+UserMenu.defaultState = {
+    displayName: "John Horback",
+    email: "jhorback@gmail.com",
+    photoURL: "content/avatars/user1.png",
+    appVersion: "v0.1.0"
+};
+UserMenu.styles = [typeStyles, css `
         :host {
             display: block;
             position: absolute;
@@ -131,8 +132,7 @@ let UserMenu = class UserMenu extends LitElement {
             outline: none;
             background-color: var(--hb-sys-color-surface-tint4);
         }
-    `]; }
-};
+    `];
 __decorate([
     property({ type: Boolean, reflect: true })
 ], UserMenu.prototype, "open", null);

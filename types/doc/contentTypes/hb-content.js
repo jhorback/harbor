@@ -117,7 +117,8 @@ let HbContent = class HbContent extends LitElement {
         this.dispatchEvent(new ContentActiveChangeEvent(this, false));
         event.stopImmediatePropagation();
     }
-    static { this.styles = [styles.icons, css `
+};
+HbContent.styles = [styles.icons, css `
         :host {
             display: block;
             position: relative;       
@@ -156,8 +157,7 @@ let HbContent = class HbContent extends LitElement {
             margin: -1rem;
             margin-top: 8px;
         }
-  `]; }
-};
+  `];
 __decorate([
     property({ type: Boolean, attribute: "is-empty" })
 ], HbContent.prototype, "isEmpty", void 0);

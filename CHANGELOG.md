@@ -5,6 +5,22 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+
+## [0.5.0] - 2022-11-09
+### Added
+- User Files
+- Content Component Wrapper
+- Image content component
+- StateController implementation
+- Find File Dialog
+- Thumb and picture generation
+### Updated
+- Text Content search and upload refactor
+- Image re-sizer
+- File architecture
+
+
+
 ## [0.4.0] - 2022-10-24
 ### Added
 - File uploads to storage and database entries
