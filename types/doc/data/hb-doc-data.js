@@ -9,11 +9,11 @@ import { DataElement, StateChange } from "@domx/dataelement";
 import { customDataElement, dataProperty, event } from "@domx/dataelement/decorators";
 import { inject } from "../../domain/DependencyContainer/decorators";
 import { DocModel } from "../../domain/Doc/DocModel";
-import { EditDocRepoKey } from "../../domain/interfaces/DocumentInterfaces";
-import { UserAction, HbCurrentUser } from "../../domain/HbCurrentUser";
+import { docTypes } from "../../domain/Doc/docTypes";
 import "../../domain/Doc/HbEditDocRepo";
 import { HbCurrentUserChangedEvent } from "../../domain/HbAuth";
-import { docTypes } from "../../domain/Doc/docTypes";
+import { HbCurrentUser, UserAction } from "../../domain/HbCurrentUser";
+import { EditDocRepoKey } from "../../domain/interfaces/DocumentInterfaces";
 export class UpdateShowTitleEvent extends Event {
     constructor(showTitle) {
         super(UpdateShowTitleEvent.eventType);
@@ -54,13 +54,15 @@ export class MoveDocContentEvent extends Event {
     }
 }
 MoveDocContentEvent.eventType = "move-doc-content";
-export class DocThumbEvent extends Event {
-    constructor(thumbs) {
-        super(DocThumbEvent.eventType, { bubbles: true, composed: true });
-        this.thumbs = thumbs;
+export class DocThumbChangeEvent extends Event {
+    constructor(options) {
+        super(DocThumbChangeEvent.eventType, { bubbles: true, composed: true });
+        this.thumbs = options.thumbs;
+        this.setIndex = options.setIndex;
+        this.removeIndex = options.removeIndex;
     }
 }
-DocThumbEvent.eventType = "doc-thumb";
+DocThumbChangeEvent.eventType = "doc-thumb-change";
 let DocData = DocData_1 = class DocData extends DataElement {
     constructor() {
         super(...arguments);
@@ -119,6 +121,8 @@ let DocData = DocData_1 = class DocData extends DataElement {
     docThumb(event) {
         StateChange.of(this)
             .next(updateThumbs(event.thumbs))
+            .next(setThumb(event.setIndex))
+            .next(removeThumb(event.removeIndex))
             .tap(saveDoc(this.editDocRepo, this.state.doc))
             .dispatch();
     }
@@ -157,7 +161,7 @@ __decorate([
     event(MoveDocContentEvent.eventType)
 ], DocData.prototype, "moveContent", null);
 __decorate([
-    event(DocThumbEvent.eventType)
+    event(DocThumbChangeEvent.eventType)
 ], DocData.prototype, "docThumb", null);
 DocData = DocData_1 = __decorate([
     customDataElement("hb-doc-data", {
@@ -211,9 +215,23 @@ const updateSubtitle = (subtitle) => (state) => {
 const updateDocContent = (index, data) => (state) => {
     state.doc.content[index] = data;
 };
+const removeThumb = (index) => (state) => {
+    if (index === undefined) {
+        return;
+    }
+    state.doc.thumbUrls.splice(index, 1);
+};
+const setThumb = (index) => (state) => {
+    if (index === undefined) {
+        return;
+    }
+    state.doc.thumbUrl = state.doc.thumbUrls[index];
+};
 const updateThumbs = (thumbs) => (state) => {
-    state.doc.thumbUrls.push(...thumbs);
-    debugger;
+    if (!thumbs) {
+        return;
+    }
+    state.doc.thumbUrls.unshift(...thumbs);
     // using set makes sure they are unique
     const thumbUrls = [...new Set(state.doc.thumbUrls)];
     state.doc.thumbUrls = thumbUrls;

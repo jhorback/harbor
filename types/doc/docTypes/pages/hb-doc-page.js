@@ -4,20 +4,21 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-import { html, css, LitElement } from "lit";
-import { customElement, property, query, state } from "lit/decorators.js";
-import { styles } from "../../../styles";
-import { DocTypes, docTypes } from "../../../domain/Doc/docTypes";
 import { linkProp } from "@domx/dataelement";
-import "../../../layout/hb-page-layout";
+import { css, html, LitElement } from "lit";
+import { customElement, property, query, state } from "lit/decorators.js";
 import "../../../common/hb-button";
-import "../../../common/hb-switch";
 import "../../../common/hb-content-editable";
+import "../../../common/hb-switch";
+import { contentTypes } from "../../../domain/Doc/contentTypes";
+import { DocTypes, docTypes } from "../../../domain/Doc/docTypes";
+import { sendFeedback } from "../../../layout/feedback";
+import "../../../layout/hb-page-layout";
+import { styles } from "../../../styles";
+import { DocData, UpdateShowSubtitleEvent, UpdateShowTitleEvent, UpdateSubtitleEvent } from "../../data/hb-doc-data";
 import "../../hb-delete-document-dialog";
 import "../../hb-doc-author";
-import { DocData, UpdateShowSubtitleEvent, UpdateShowTitleEvent, UpdateSubtitleEvent } from "../../data/hb-doc-data";
-import { sendFeedback } from "../../../layout/feedback";
-import { contentTypes } from "../../../domain/Doc/contentTypes";
+import "../../hb-doc-thumb-settings-tab";
 export class DocEditModeChangeEvent extends Event {
     constructor(inEditMode) {
         super(DocEditModeChangeEvent.eventType, { bubbles: false });
@@ -329,11 +330,7 @@ const showSubtitleClicked = (page) => (event) => page.shadowRoot?.dispatchEvent(
 const renderEditThumbnailTabContent = (page, state) => {
     return html `
         <div class="edit-tab-content">
-            <pre style="margin:0;">
-                Set thumb
-                Thumb description
-                Image
-                Use subtitle as thumb description</pre>
+            <hb-doc-thumb-settings-tab .state=${state}></hb-doc-thumb-settings-tab>
         </div>
     `;
 };

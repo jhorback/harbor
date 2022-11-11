@@ -1,7 +1,7 @@
 {
   "name": "harbor",
   "private": true,
-  "version": "0.5.0",
+  "version": "0.6.0",
   "type": "module",
   "files": [
     "dist",
@@ -25,7 +25,7 @@
     "@domx/router": "1.0.1",
     "@storybook/web-components": "6.5.13",
     "@tinymce/tinymce-webcomponent": "2.0.1",
-    "firebase": "9.13.0",
+    "firebase": "9.14.0",
     "lit": "2.4.1"
   },
   "devDependencies": {
