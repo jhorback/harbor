@@ -79,6 +79,13 @@ export class HbContent extends LitElement {
                             <span
                                 class="icon-button icon-small"
                                 tab-index="0"
+                                title="Delete content"
+                                @click=${this.delete}>
+                                delete
+                            </span>
+                            <span
+                                class="icon-button icon-small"
+                                tab-index="0"
                                 title="Edit content"
                                 @click=${this.edit}>
                                 edit
@@ -126,6 +133,13 @@ export class HbContent extends LitElement {
     edit() {
         this.dispatchEvent(new ContentActiveChangeEvent(this, true));
         this.contentEdit = true;
+    }
+
+    delete() {
+        if (!confirm("Are you sure you want to delete this content?")) {
+            return;
+        }
+        alert("delete");
     }
 
     done(event:Event) {
