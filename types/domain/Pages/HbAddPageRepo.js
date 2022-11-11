@@ -12,6 +12,7 @@ import { authorize, HbCurrentUser, UserAction } from "../HbCurrentUser";
 import { HbDb } from "../HbDb";
 import { AddPageRepoKey } from "../interfaces/PageInterfaces";
 import { FindPageRepo } from "./FindPageRepo";
+KeyboardEvent;
 import { PageModel } from "./PageModel";
 let AddPageRepo = class AddPageRepo {
     constructor() {

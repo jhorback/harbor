@@ -46,7 +46,7 @@ export class HarborApp extends LitElement {
                 append-to="#hb-app"
             ></domx-route>
             <domx-route
-                pattern="/about"
+                pattern="/app/about"
                 element="hb-about-page"          
                 append-to="#hb-app"
             ></domx-route>
