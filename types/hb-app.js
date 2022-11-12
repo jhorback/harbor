@@ -52,15 +52,21 @@ let HarborApp = class HarborApp extends LitElement {
                 element="hb-about-page"          
                 append-to="#hb-app"
             ></domx-route>
-            <domx-route-not-found
-                element="hb-route-not-found-page"
-                append-to="#hb-app"
-            ></domx-route-not-found>
             <domx-route
                 pattern="/not-found"
-                element="hb-route-not-found-page"          
+                element="hb-route-not-found-page"
                 append-to="#hb-app"
             ></domx-route>
+            <!-- <domx-route
+                pattern="(/*pathname)"
+                element="hb-page"
+                append-to="#hb-app"
+            ></domx-route> -->
+            <domx-route-not-found
+                element="hb-page-renderer"
+                append-to="#hb-app"
+            ></domx-route-not-found>
+            
             ${docTypes.all().map(type => html `
                 <domx-route
                 pattern=${`${type.route}/:pid`}

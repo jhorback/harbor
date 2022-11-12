@@ -30,6 +30,12 @@ class AddPageRepo implements IAddPageRepo {
     }
 
     async pageExists(pathname:string): Promise<boolean> {
+
+        // reserved routes
+        if (pathname.indexOf("/app") === 0 || pathname.indexOf("/profile") === 0) {
+            return true;
+        }
+
         const existingPage = await this.findPageRepo.findPageByPathname(pathname);
         return existingPage ? true : false;
     }
