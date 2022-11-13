@@ -1,13 +1,11 @@
-import { linkProp } from "@domx/linkprop";
 import { css, html, LitElement } from "lit";
-import { customElement, query, state } from "lit/decorators.js";
-import { TextInputChangeEvent } from "../../common/hb-text-input";
-import { styles } from "../../styles";
+import { customElement, query } from "lit/decorators.js";
 import "../../common/hb-button";
 import "../../common/hb-list-item";
 import "../../common/hb-text-input";
-import { AddNewPageEvent, AddPageController, AddPageOptionsChangedEvent } from "./AddPageController";
-import { PageAddedEvent } from "./AddPageController";
+import { TextInputChangeEvent } from "../../common/hb-text-input";
+import { styles } from "../../styles";
+import { AddNewPageEvent, AddPageController, PageAddedEvent, PagePathnameChangedEvent, PageTemplateChangedEvent, PageTitleChangedEvent, ValidateNewPageOptionsEvent } from "./AddPageController";
 
 
 
@@ -22,20 +20,12 @@ export class AddPageDialog extends LitElement {
 
     addPage:AddPageController = new AddPageController(this);
 
-    @state()
-    selectedIndex = 0;
-
-    @state()
-    addButtonEnabled = false;
-
     render() {
         const state = this.addPage.state;
         return html`
             <dialog @cancel=${this.close}>
                 
                 <h1 class="headline-small">Add New Page</h1>
-
-                <div>${state.pageIsValidMessage}</div>
 
                 <div class="field">            
                     <div class="label-large">Page type</div>
@@ -45,13 +35,12 @@ export class AddPageDialog extends LitElement {
                                 icon=${template.icon}
                                 text=${template.name}
                                 description=${template.description}
-                                ?selected=${this.isSelected(index)}                                    
-                                @hb-list-item-click=${() => this.selectedIndex = index}
+                                ?selected=${state.pageTemplateIndex === index}                                    
+                                @hb-list-item-click=${() => this.pageTemplateClicked(index)}
                             ></hb-list-item>
                         `)}
                     </div>
                 </div>
-                <hr>
                 <div class="field">
                     <div class="label-large">Page name</div>
                     <hb-text-input
@@ -65,14 +54,20 @@ export class AddPageDialog extends LitElement {
                     <hb-text-input
                         placeholder="Enter the page URL"
                         value=${state.pathname}
-                        error-text=${state.addPageError}
+                        error-text=${state.pagePathnameError}
                         @hb-text-input-change=${this.pathnameInputChange}
                     ></hb-text-input>
-                    <hb-button
-                        text-button
-                        label="Check"
-                        @click=${this.validateButtonClicked}
-                    ></hb-button>
+                    <div class="check-btn-ctr">
+                        <hb-button
+                            text-button
+                            label="Check URL"
+                            ?disabled=${!state.canAdd}
+                            @click=${this.validateButtonClicked}
+                        ></hb-button>
+                    </div>
+                    ${state.pageIsValidMessage ? html`
+                        <div class="valid-message label-large">${state.pageIsValidMessage}</div>      
+                    ` : html``}
                 </div>
                 <div class="dialog-buttons">
                     <hb-button
@@ -83,7 +78,7 @@ export class AddPageDialog extends LitElement {
                     <hb-button
                         text-button
                         label="Add Page"
-                        ?disabled=${!this.addButtonEnabled}
+                        ?disabled=${!state.canAdd}
                         @click=${this.addButtonClicked}
                     ></hb-button>
                 </div>                
@@ -101,57 +96,33 @@ export class AddPageDialog extends LitElement {
     }
 
     private reset() {
-        this.addButtonEnabled = false;
-        this.selectedIndex = 0;
-        this.dispatchEvent(new AddPageOptionsChangedEvent({
-            pageTemplate: "",
-            title:"",
-            pathname: ""
-        }, false));
+        this.dispatchEvent(new PageTitleChangedEvent(""));
     }
 
-    private isSelected(index:number) {
-        return index === this.selectedIndex;
+    private pageTemplateClicked(index:number) {
+        this.dispatchEvent(new PageTemplateChangedEvent(index));
     }
 
     private titleInputChange(event:TextInputChangeEvent) {
-        this.dispatchEvent(new AddPageOptionsChangedEvent({
-            pageTemplate: "",
-            pathname: "",
-            title: event.value
-        }, false));
-
+        this.dispatchEvent(new PageTitleChangedEvent(event.value));
         if (this.addPage.state.canAdd && event.enterKey) {
             this.addButtonClicked();
         }
     }
 
     private pathnameInputChange(event:TextInputChangeEvent) {
-        this.dispatchEvent(new AddPageOptionsChangedEvent({
-            pageTemplate: "",
-            pathname: event.value,
-            title: ""
-        }, false));
-
+        this.dispatchEvent(new PagePathnameChangedEvent(event.value));
         if (this.addPage.state.canAdd && event.enterKey) {
             this.addButtonClicked();
         }
     }
 
     private validateButtonClicked() {
-        this.dispatchEvent(new AddPageOptionsChangedEvent({
-            pageTemplate: this.addPage.state.pageTemplates[this.selectedIndex].key,
-            title: this.addPage.state.title,
-            pathname: this.addPage.state.pathname
-        }, true));
+        this.dispatchEvent(new ValidateNewPageOptionsEvent());
     }
 
     private addButtonClicked() {
-        this.dispatchEvent(new AddNewPageEvent({
-            pageTemplate: this.addPage.state.pageTemplates[this.selectedIndex].key,
-            title: this.addPage.state.title,
-            pathname: this.addPage.state.pathname
-        }));
+        this.dispatchEvent(new AddNewPageEvent());
     }
 
     static styles = [styles.types, styles.dialog, css`
@@ -160,19 +131,32 @@ export class AddPageDialog extends LitElement {
             z-index:1;
         }
 
-        .field {
-            margin: 1rem 0;
-            padding: 1rem 0;
-            display: flex;
-            flex-direction: column;
-            gap: 1.5rem;
-        }
-
         .list {
             display: flex;
             flex-direction: column;
             gap: 5px;
+            margin-bottom: 20px;
         }
+
+        .field {
+            margin-bottom: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .valid-message {
+            margin-top: 12px;
+            background-color: var(--md-sys-color-surface);
+            padding: 12px;
+            border: 1px solid var(--md-sys-color-outline);
+            border-radius: var(--md-sys-shape-corner-small);
+        }
+
+        .check-btn-ctr {
+            text-align: right;
+        }
+        
   `]
 }
 

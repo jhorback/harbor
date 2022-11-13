@@ -93,6 +93,7 @@ let HbPage = class HbPage extends LitElement {
         this.$addPageDlg.showModal();
     }
     pageAdded(event) {
+        this.$addPageDlg.close();
         sendFeedback({
             message: "The page was added",
             actionText: "View",

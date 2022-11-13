@@ -118,6 +118,7 @@ export class HbPage extends LitElement {
     }
 
     pageAdded(event:PageAddedEvent) {
+        this.$addPageDlg.close();
         sendFeedback({
             message: "The page was added",
             actionText: "View",

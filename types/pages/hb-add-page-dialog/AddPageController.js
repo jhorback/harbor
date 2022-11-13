@@ -4,32 +4,43 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-import { hostEvent, StateController, stateProperty } from "@domx/statecontroller";
+import { hostEvent, Product, StateController, stateProperty } from "@domx/statecontroller";
+import { inject } from "../../domain/DependencyContainer/decorators";
 import { ClientError } from "../../domain/Errors";
+import { AddPageRepoKey } from "../../domain/interfaces/PageInterfaces";
+import "../../domain/Pages/HbAddPageRepo";
+import { PageModel } from "../../domain/Pages/PageModel";
 import { pageTemplates } from "../../domain/Pages/pageTemplates";
-/**
- * Dispatch when any of the options change.
- * Set validate to true to validate
- * the page can be added (i.e. with unique url).
- * Setting the title to an empty string will reset the state.
- */
-export class AddPageOptionsChangedEvent extends Event {
-    constructor(options, validate) {
-        super(AddPageOptionsChangedEvent.eventType);
-        this.options = options;
-        this.validate = validate;
+export class PageTemplateChangedEvent extends Event {
+    constructor(index) {
+        super(PageTemplateChangedEvent.eventType);
+        this.index = index;
     }
 }
-AddPageOptionsChangedEvent.eventType = "add-page-options-changed";
-/**
- * Attempts to add the page.
- * If successful, the {@link PageAddedEvent} will
- * be dispatched on the host element.
- */
+PageTemplateChangedEvent.eventType = "page-template-changed";
+export class PageTitleChangedEvent extends Event {
+    constructor(title) {
+        super(PageTitleChangedEvent.eventType);
+        this.title = title;
+    }
+}
+PageTitleChangedEvent.eventType = "page-title-changed";
+export class PagePathnameChangedEvent extends Event {
+    constructor(pathname) {
+        super(PagePathnameChangedEvent.eventType);
+        this.pathname = pathname;
+    }
+}
+PagePathnameChangedEvent.eventType = "page-pathname-changed";
+export class ValidateNewPageOptionsEvent extends Event {
+    constructor() {
+        super(ValidateNewPageOptionsEvent.eventType);
+    }
+}
+ValidateNewPageOptionsEvent.eventType = "validate-new-page-options";
 export class AddNewPageEvent extends Event {
-    constructor(options) {
-        super(AddNewPageEvent.eventType, { bubbles: true });
-        this.options = options;
+    constructor() {
+        super(AddNewPageEvent.eventType);
     }
 }
 AddNewPageEvent.eventType = "add-new-page";
@@ -48,38 +59,84 @@ export class AddPageController extends StateController {
         super(...arguments);
         this.state = {
             pageTemplates: pageTemplates.all(),
-            addPageError: null,
+            pagePathnameError: null,
             pageIsValidMessage: "",
-            pageTemplate: "",
+            pageTemplateIndex: 0,
             title: "",
             pathname: "",
             canAdd: false
         };
     }
-    addPageOptionsChanged(event) {
-        // if "" reset error
-        // otherwise do a name check
-        // this.newPageTitle = event.value;
-        // this.addButtonEnabled = this.newPageTitle.length > 2;
-        event.options;
-        event.validate;
+    pageTemplateChanged(event) {
+        Product.of(this)
+            .next(setTemplateIndex(event.index))
+            .requestUpdate(event);
+    }
+    pageTitleChanged(event) {
+        Product.of(this)
+            .next(clearPageIsValidMessage)
+            .next(clearPagePathnameError)
+            .next(setPageTitle(event.title))
+            .next(setPagePathnameBasedOnTitle)
+            .requestUpdate(event);
+    }
+    pagePathnameChanged(event) {
+        Product.of(this)
+            .next(clearPageIsValidMessage)
+            .next(clearPagePathnameError)
+            .next(setPagePathname(event.pathname))
+            .requestUpdate(event);
+    }
+    validateNewPageOptions(event) {
+        Product.of(this)
+            .tap(validateNewPageOptions(this.addPageRepo));
     }
     addNewPage(event) {
+        Product.of(this)
+            .tap(addNewPage(this.addPageRepo));
     }
 }
+__decorate([
+    inject(AddPageRepoKey)
+], AddPageController.prototype, "addPageRepo", void 0);
 __decorate([
     stateProperty()
 ], AddPageController.prototype, "state", void 0);
 __decorate([
-    hostEvent(AddPageOptionsChangedEvent)
-], AddPageController.prototype, "addPageOptionsChanged", null);
+    hostEvent(PageTemplateChangedEvent)
+], AddPageController.prototype, "pageTemplateChanged", null);
+__decorate([
+    hostEvent(PageTitleChangedEvent)
+], AddPageController.prototype, "pageTitleChanged", null);
+__decorate([
+    hostEvent(PagePathnameChangedEvent)
+], AddPageController.prototype, "pagePathnameChanged", null);
+__decorate([
+    hostEvent(ValidateNewPageOptionsEvent)
+], AddPageController.prototype, "validateNewPageOptions", null);
 __decorate([
     hostEvent(AddNewPageEvent)
 ], AddPageController.prototype, "addNewPage", null);
-const addNewPage = (repo, options) => async (product) => {
+const validateNewPageOptions = (repo) => async (product) => {
+    const state = product.getState();
+    const exists = await repo.pageExists(state.pathname);
+    const message = exists ? "The page already exists, please select a different url" :
+        "The page does not exist, you're good to go!";
+    const error = exists ? "Url exists" : "";
+    product
+        .next(setAddPageError(error))
+        .next(setPageIsValidMessage(message))
+        .requestUpdate("HbAddPageRepo.validateNewPageOptions");
+};
+const addNewPage = (repo) => async (product) => {
     let pageModel;
     try {
-        pageModel = await repo.addPage(options);
+        const state = product.getState();
+        pageModel = await repo.addPage({
+            pageTemplate: state.pageTemplates[state.pageTemplateIndex].key,
+            title: state.title,
+            pathname: state.pathname
+        });
     }
     catch (error) {
         if (error instanceof ClientError) {
@@ -95,5 +152,27 @@ const addNewPage = (repo, options) => async (product) => {
     product.dispatchHostEvent(new PageAddedEvent(pageModel));
 };
 const setAddPageError = (error) => (state) => {
-    state.addPageError = error;
+    state.pagePathnameError = error;
+};
+const setTemplateIndex = (index) => (state) => {
+    state.pageTemplateIndex = index;
+};
+const setPageTitle = (title) => (state) => {
+    state.canAdd = title.length > 2;
+    state.title = title;
+};
+const setPagePathname = (pathname) => (state) => {
+    state.pathname = pathname.toLowerCase();
+};
+const clearPageIsValidMessage = (state) => {
+    state.pageIsValidMessage = "";
+};
+const setPageIsValidMessage = (message) => (state) => {
+    state.pageIsValidMessage = message;
+};
+const clearPagePathnameError = (state) => {
+    state.pagePathnameError = "";
+};
+const setPagePathnameBasedOnTitle = (state) => {
+    state.pathname = `/${PageModel.tokenize(state.title)}`;
 };
