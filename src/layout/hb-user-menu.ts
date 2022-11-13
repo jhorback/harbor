@@ -87,7 +87,7 @@ export class UserMenu extends LitElement {
                 </div>
                 <hr>
                 <div class="body-large on-surface-text dampen about-container">
-                    <a href="/about">About Harbor ${this.hbAppInfo.version}</a>
+                    <a href="/app/about">About Harbor ${this.hbAppInfo.version}</a>
                 </div>
             </div>
         `;

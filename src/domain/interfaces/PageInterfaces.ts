@@ -91,7 +91,8 @@ export interface IEditDocRepo {
 
 export const AddPageRepoKey:symbol = Symbol("ADD_PAGE_REPO");
 export interface IAddPageRepo {
-    addDoc(options:IAddNewPageOptions):Promise<PageModel>;
+    pageExists(pathname:string):Promise<boolean>;
+    addPage(options:IAddNewPageOptions):Promise<PageModel>;
 }
 export interface IAddNewPageOptions {
     pageTemplate: string;

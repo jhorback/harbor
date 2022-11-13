@@ -36,6 +36,7 @@ export class HbApp {
          * dynamic packages based on system settings
          */
         await import("../doc/index");
+        await import("../pages/index");
     }
 }
 HbApp.version = __APP_VERSION__;
