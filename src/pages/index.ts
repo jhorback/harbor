@@ -7,7 +7,7 @@
  * HbApp uses this to ensure all imports are present
  */
 import "./pageTemplates/pagePageTemplate";
-import "./hb-page/hb-page";
+import "./hb-page";
 import "./hb-page/hb-page-renderer";
 
 import "../doc/contentTypes/textContentType";
