@@ -1,7 +1,7 @@
 import { hostEvent, Product, StateController, stateProperty, windowEvent } from "@domx/statecontroller";
 import { inject } from "../../domain/DependencyContainer/decorators";
 import { HbCurrentUser, UserAction } from "../../domain/HbCurrentUser";
-import { IContentType } from "../../domain/interfaces/DocumentInterfaces";
+import { IContentType } from "../../domain/interfaces/PageInterfaces";
 import { EditPageRepoKey, IEditPageRepo } from "../../domain/interfaces/PageInterfaces";
 import { PageModel } from "../../domain/Pages/PageModel";
 import { pageTemplates } from "../../domain/Pages/pageTemplates";
@@ -135,7 +135,7 @@ export class PageController extends StateController {
     private updateShowSubtitle(event:UpdateShowSubtitleEvent) {
         Product.of<IPageState>(this)
             .next(updateShowSubtitle(event.showSubtitle))
-            .tap(savePage(this.editDocRepo))
+            .tap(savePage(this.editPageRepo))
             .requestUpdate(event);
     }
 
@@ -143,7 +143,7 @@ export class PageController extends StateController {
     private updateSubtitle(event:UpdateSubtitleEvent) {
         Product.of<IPageState>(this)
             .next(updateSubtitle(event.subtitle))
-            .tap(savePage(this.editDocRepo))
+            .tap(savePage(this.editPageRepo))
             .requestUpdate(event);
     }
 
@@ -151,7 +151,7 @@ export class PageController extends StateController {
     private updatePageContent(event:UpdatePageContentEvent) {
         Product.of<IPageState>(this)
             .next(updatePageContent(event.index, event.state))
-            .tap(savePage(this.editDocRepo))
+            .tap(savePage(this.editPageRepo))
             .requestUpdate(event);
     }
 
@@ -159,7 +159,7 @@ export class PageController extends StateController {
     private moveContent(event:MovePageContentEvent) {
         Product.of<IPageState>(this)
             .next(moveContent(event.index, event.moveUp))
-            .tap(savePage(this.editDocRepo))
+            .tap(savePage(this.editPageRepo))
             .requestUpdate(event);
     }
 
@@ -169,7 +169,7 @@ export class PageController extends StateController {
             .next(updateThumbs(event.thumbs))
             .next(setThumb(event.setIndex))
             .next(removeThumb(event.removeIndex))
-            .tap(savePage(this.editDocRepo))
+            .tap(savePage(this.editPageRepo))
             .requestUpdate(event);
     }
 }

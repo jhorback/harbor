@@ -91,25 +91,25 @@ export class PageController extends StateController {
     updateShowSubtitle(event) {
         Product.of(this)
             .next(updateShowSubtitle(event.showSubtitle))
-            .tap(savePage(this.editDocRepo))
+            .tap(savePage(this.editPageRepo))
             .requestUpdate(event);
     }
     updateSubtitle(event) {
         Product.of(this)
             .next(updateSubtitle(event.subtitle))
-            .tap(savePage(this.editDocRepo))
+            .tap(savePage(this.editPageRepo))
             .requestUpdate(event);
     }
     updatePageContent(event) {
         Product.of(this)
             .next(updatePageContent(event.index, event.state))
-            .tap(savePage(this.editDocRepo))
+            .tap(savePage(this.editPageRepo))
             .requestUpdate(event);
     }
     moveContent(event) {
         Product.of(this)
             .next(moveContent(event.index, event.moveUp))
-            .tap(savePage(this.editDocRepo))
+            .tap(savePage(this.editPageRepo))
             .requestUpdate(event);
     }
     pageThumb(event) {
@@ -117,7 +117,7 @@ export class PageController extends StateController {
             .next(updateThumbs(event.thumbs))
             .next(setThumb(event.setIndex))
             .next(removeThumb(event.removeIndex))
-            .tap(savePage(this.editDocRepo))
+            .tap(savePage(this.editPageRepo))
             .requestUpdate(event);
     }
 }

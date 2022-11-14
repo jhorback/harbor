@@ -32,7 +32,7 @@ export interface IContentTypeDescriptor {
 }
 
 export interface IContentTypeRenderOptions {
-    docUid:string,
+    pathname:string,
     contentIndex:number;
     data:IContentType;
 }

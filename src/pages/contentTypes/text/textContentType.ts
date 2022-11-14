@@ -1,6 +1,6 @@
-import { IContentType, IContentTypeDescriptor, IContentTypeRenderOptions } from "../../domain/interfaces/DocumentInterfaces";
-import { contentTypes } from "../../domain/Doc/contentTypes";
 import { html } from "lit-html";
+import { IContentType, IContentTypeDescriptor, IContentTypeRenderOptions } from "../../../domain/interfaces/PageInterfaces";
+import { contentTypes } from "../../../domain/Pages/contentTypes";
 
 
 export class TextContentData implements IContentType {
@@ -19,7 +19,7 @@ const textContentType:IContentTypeDescriptor = {
     description: "A rich text field",
     render: (options:IContentTypeRenderOptions) => html`
         <hb-text-content
-            .docUid=${options.docUid}
+            .pathname=${options.pathname}
             .contentIndex=${options.contentIndex}
             .data=${options.data}
         ></hb-text-content>

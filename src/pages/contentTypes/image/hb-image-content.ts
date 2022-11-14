@@ -1,9 +1,9 @@
 import { html, css, LitElement } from "lit";
 import { customElement, property, query } from "lit/decorators.js";
 import { styles } from "../../../styles";
-import { ImageAlignment, ImageContentDataState, ImageSize } from "../imageContentType";
+import { ImageAlignment, ImageContentDataState, ImageSize } from "./imageContentType";
 import "../hb-content";
-import { HbContent } from "../hb-content";
+import { HbPageContent } from "../../hb-page";
 import { FileUploadCompleteEvent, FileUploadPanel, FileUploaderAccept } from "../../../files/hb-file-upload-panel";
 import "../../../files/hb-find-file-dialog";
 import { FileSelectedEvent, FindFileDialog } from "../../../files/hb-find-file-dialog";
@@ -28,8 +28,8 @@ export class ImageContent extends LitElement {
 
     imageContent = new ImageContentController(this);
 
-    @query("hb-content")
-    $hbContent!:HbContent;
+    @query("hb-page-content")
+    $hbPageContent!:HbPageContent;
 
     @query("hb-file-upload-panel")
     $fileUploadPanel!:FileUploadPanel;
@@ -40,7 +40,7 @@ export class ImageContent extends LitElement {
     render() {
         const state = this.imageContent.state;
         return html`
-            <hb-content ?is-empty=${!state.url}>                
+            <hb-page-content ?is-empty=${!state.url}>                
                 <div>
                     ${this.renderImage(this.getImageSrcPerSize())}
                 </div>
@@ -92,7 +92,7 @@ export class ImageContent extends LitElement {
                         </select>
                     </div>
                 </div>
-            </hb-content>
+            </hb-page-content>
         `;
     }
 
@@ -123,7 +123,7 @@ export class ImageContent extends LitElement {
     }
 
     private clickedEmpty() {
-        this.$hbContent.edit();
+        this.$hbPageContent.edit();
     }
 
     private searchClicked() {

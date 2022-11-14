@@ -5,10 +5,10 @@ import { RequestSysadminSettingsEvent, SystemAdminData, UpdateHomePageEvent } fr
 import { linkProp } from "@domx/linkprop";
 import "../../common/hb-button";
 import "../../common/hb-horizontal-card";
-import { AddDocumentDialog } from "../../doc/hb-add-document-dialog";
+import { AddPageDialog } from "../../pages/hb-add-page-dialog";
 import { DocumentSelectedEvent, FindDocDialog } from "../../doc/hb-find-doc-dialog";
 import "../../doc/hb-find-doc-dialog";
-import { DocumentAddedEvent } from "../../doc/data/hb-add-document-data";
+import { DocumentAddedEvent as PageAddedEvent } from "../../doc/data/hb-add-document-data";
 import "../../doc/hb-add-document-dialog";
 
 
@@ -25,8 +25,8 @@ export class ProfileAdminTab extends LitElement {
     @state()
     changeHomePage = false;
 
-    @query("hb-add-document-dialog")
-    $addDocumentDialog!:AddDocumentDialog;
+    @query("hb-add-page-dialog")
+    $addPageDialog!:AddPageDialog;
 
     @query("hb-find-doc-dialog")
     $findDocDialog!:FindDocDialog;
@@ -45,9 +45,9 @@ export class ProfileAdminTab extends LitElement {
             <hb-system-admin-data
                 @settings-changed=${linkProp(this, "settings")}
             ></hb-system-admin-data>
-            <hb-add-document-dialog
-                @document-added=${this.documentAdded}
-            ></hb-add-document-dialog>
+            <hb-add-page-dialog
+                @page-added=${this.pageAdded}
+            ></hb-add-page-dialog>
             <hb-find-doc-dialog
                 @document-selected=${this.documentSelected}
             ></hb-find-doc-dialog>
@@ -95,10 +95,10 @@ export class ProfileAdminTab extends LitElement {
 
     private addNewHomePageClicked() {
         this.changeHomePage = false;
-        this.$addDocumentDialog.open = true;
+        this.$addPageDialog.showModal();
     }
 
-    private documentAdded(event:DocumentAddedEvent) {
+    private pageAdded(event:PageAddedEvent) {
         this.$systemAdminData.dispatchEvent(new UpdateHomePageEvent(event.docModel.toDocumentReference()));
     }
 

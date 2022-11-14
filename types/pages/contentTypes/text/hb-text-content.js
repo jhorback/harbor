@@ -1,37 +1,31 @@
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var TextContent_1;
 import { css, html, LitElement } from "lit";
 import { customElement, property, query } from "lit/decorators.js";
 import { unsafeHTML } from "lit/directives/unsafe-html.js";
 import { HbApp } from "../../../domain/HbApp";
-import { FileType, IUploadedFile } from "../../../domain/interfaces/FileInterfaces";
-import { FileUploadCompleteEvent, FileUploaderAccept, FileUploadPanel } from "../../../files/hb-file-upload-panel";
-import { FileSelectedEvent } from "../../../files/hb-find-file-dialog";
+import { FileType } from "../../../domain/interfaces/FileInterfaces";
+import { FileUploaderAccept, FileUploadPanel } from "../../../files/hb-file-upload-panel";
 import { styles } from "../../../styles";
-import { DocThumbChangeEvent, UpdateDocContentEvent } from "../../data/hb-doc-data";
-import { ContentActiveChangeEvent } from "../../docTypes/pages/hb-doc-page";
-import { DocumentSelectedEvent } from "../../hb-find-doc-dialog";
-import "../hb-content";
-import { HbContent } from "../hb-content";
-import { TextContentData } from "../textContentType";
+import { PageThumbChangeEvent, UpdatePageContentEvent } from "../../hb-page";
+import { TextContentData } from "./textContentType";
 import { TextContentSelectorDialog, TextContentSelectorType } from "./hb-text-content-selector-dialog";
-
 /**
  */
-@customElement('hb-text-content')
-export class TextContent extends LitElement {
-    static defaultState = new TextContentData();
-
-    @property({type:Number})
-    contentIndex:number = -1;
-
-    @property({type: Object})
-    data:TextContentData = TextContent.defaultState;
-
-    @query("hb-content")
-    $hbContent!:HbContent;
-
+let TextContent = TextContent_1 = class TextContent extends LitElement {
+    constructor() {
+        super(...arguments);
+        this.contentIndex = -1;
+        this.data = TextContent_1.defaultState;
+    }
     render() {
-        return html`
-            <hb-content @content-active-change=${this.contentActive} ?is-empty=${!this.data.text}>
+        return html `
+            <hb-page-content @content-active-change=${this.contentActive} ?is-empty=${!this.data.text}>
                 <div class="clearfix">${unsafeHTML(this.data.text)}</div>
                 <div slot="doc-edit-empty" @click=${this.textClicked}>
                     Click to enter text content
@@ -48,38 +42,35 @@ export class TextContent extends LitElement {
                         bullist numlist indent hr | harborSearch harborUpload | link image media table | codesample  fullscreen"
                 >${this.data.text}</tinymce-editor>
                 </div>
-            </hb-content>
+            </hb-page-content>
         `;
     }
-
-    contentActive(event:ContentActiveChangeEvent) {
+    contentActive(event) {
         if (event.active) {
             // @ts-ignore
             import("@tinymce/tinymce-webcomponent");
         }
     }
-
     textClicked() {
-        this.$hbContent.edit();
+        this.$hbPageContent.edit();
     }
-
-    tinymceChange(event:ChangeEvent) {        
+    tinymceChange(event) {
         this.checkForThumbs(event.value);
-        this.dispatchEvent(new UpdateDocContentEvent(this.contentIndex, TextContentData.of(event.value)));
+        this.dispatchEvent(new UpdatePageContentEvent(this.contentIndex, TextContentData.of(event.value)));
     }
-
-    private checkForThumbs(html:string) {
+    checkForThumbs(html) {
         const ctr = document.createElement("div");
         ctr.innerHTML = html;
         const images = ctr.querySelectorAll("img");
         const thumbs = Array.from(images).filter(el => el.dataset.type === undefined).map(el => el.src);
-        const posters = ctr.querySelectorAll("[poster]") as NodeListOf<HTMLElement>;
+        const posters = ctr.querySelectorAll("[poster]");
         thumbs.push(...Array.from(posters).filter(el => el.dataset.type === undefined &&
-                el.getAttribute("poster") !== "").map(el => el.getAttribute("poster") as string));
-        thumbs.length > 0 && this.dispatchEvent(new DocThumbChangeEvent({thumbs}));
+            el.getAttribute("poster") !== "").map(el => el.getAttribute("poster")));
+        thumbs.length > 0 && this.dispatchEvent(new PageThumbChangeEvent({ thumbs }));
     }
-
-    static styles = [styles.types, styles.format, css`
+};
+TextContent.defaultState = new TextContentData();
+TextContent.styles = [styles.types, styles.format, css `
         :host {
             display: block;
         }
@@ -88,10 +79,20 @@ export class TextContent extends LitElement {
             clear: both;
             display: table;
         }
-  `]
-}
-
-
+  `];
+__decorate([
+    property({ type: Number })
+], TextContent.prototype, "contentIndex", void 0);
+__decorate([
+    property({ type: Object })
+], TextContent.prototype, "data", void 0);
+__decorate([
+    query("hb-page-content")
+], TextContent.prototype, "$hbPageContent", void 0);
+TextContent = TextContent_1 = __decorate([
+    customElement('hb-text-content')
+], TextContent);
+export { TextContent };
 if (!window.tinymceSettings) {
     window.tinymceSettings = {
         config: {
@@ -104,134 +105,103 @@ if (!window.tinymceSettings) {
             toolbar_sticky: true,
             image_title: true,
             convert_urls: false,
-            setup: (editor:any) => {
-
+            setup: (editor) => {
                 editor.ui.registry.addButton("harborSearch", {
                     icon: "search",
                     tooltip: 'Search for page, images, audio, or video',
                     onAction: onHarborSearch(editor)
                 });
-                
                 editor.ui.registry.addButton("harborUpload", {
                     icon: "upload",
                     tooltip: 'Upload images, audio, or video',
                     onAction: onHarborUpload(editor)
-                });   
+                });
             },
-            
             plugins: "autolink lists link image autoresize fullscreen media table codesample",
             style_formats_merge: false,
-            style_formats: [               
-                  { title: 'Heading 1', block: 'h2', attributes: { class: 'headline-medium' } },
-                  { title: 'Heading 2', block: 'h3', attributes: { class: 'headline-small' }},
-                  { title: 'Heading 3', block: 'h4', attributes: { class: 'title-large' } },
-                  { title: "Quote", format: "blockquote" },
-                  { title: "Paragraph", format: "p" },                
-              ]
+            style_formats: [
+                { title: 'Heading 1', block: 'h2', attributes: { class: 'headline-medium' } },
+                { title: 'Heading 2', block: 'h3', attributes: { class: 'headline-small' } },
+                { title: 'Heading 3', block: 'h4', attributes: { class: 'title-large' } },
+                { title: "Quote", format: "blockquote" },
+                { title: "Paragraph", format: "p" },
+            ]
         },
-        changeHandler: (event:ITinyMceChangeEvent) => {
-            event.target.targetElm.dispatchEvent(new ChangeEvent(event.target.getContent()))
-        }  
-    } 
+        changeHandler: (event) => {
+            event.target.targetElm.dispatchEvent(new ChangeEvent(event.target.getContent()));
+        }
+    };
 }
-
-
-const onHarborSearch = (editor:any) => () => {
+const onHarborSearch = (editor) => () => {
     const selectedNode = editor.selection.getNode();
     const type = selectedNode.dataset.mcePDataType || selectedNode.dataset.type || null;
     const selType = type === "image" ? TextContentSelectorType.image :
         type === "audio" ? TextContentSelectorType.audio :
-        type === "video" ? TextContentSelectorType.video :
-        type === "file" ? TextContentSelectorType.file :
-        type === "page" ? TextContentSelectorType.page :
-        TextContentSelectorType.any;                     
-    
+            type === "video" ? TextContentSelectorType.video :
+                type === "file" ? TextContentSelectorType.file :
+                    type === "page" ? TextContentSelectorType.page :
+                        TextContentSelectorType.any;
     TextContentSelectorDialog.openContentSelector({
         type: selType,
-        onDocumentSelected: (event:DocumentSelectedEvent) => {
-            const thumb = event.docModel.toDocumentThumbnail();
-            const content = `<a href="${thumb.href}" title="${thumb.title}" data-type="page">${thumb.title}</a>`;
-            editor.selection.select(selectedNode);
-            editor.insertContent(content);
+        onDocumentSelected: (event) => {
+            // jch - update
+            //onDocumentSelected: (event:DocumentSelectedEvent) => {
+            // const thumb = event.docModel.toDocumentThumbnail();
+            // const content = `<a href="${thumb.href}" title="${thumb.title}" data-type="page">${thumb.title}</a>`;
+            // editor.selection.select(selectedNode);
+            // editor.insertContent(content);
         },
-        onFileSelected: (event:FileSelectedEvent) => {
-            insertFile(selectedNode, editor, {...event.file, fileDbPath:""});
+        onFileSelected: (event) => {
+            insertFile(selectedNode, editor, { ...event.file, fileDbPath: "" });
         }
     });
 };
-
-const onHarborUpload = (editor:any) => () => {
+const onHarborUpload = (editor) => () => {
     const selectedNode = editor.selection.getNode();
     const selectedTag = selectedNode.tagName;
     const accept = selectedTag === "IMG" ? FileUploaderAccept.images :
         (selectedTag === "VIDEO" || selectedNode.querySelector("video") !== null) ?
-            FileUploaderAccept.media : FileUploaderAccept.all; 
-
+            FileUploaderAccept.media : FileUploaderAccept.all;
     FileUploadPanel.openFileSelector({
         accept,
-        onUploadComplete: (event:FileUploadCompleteEvent) => {
+        onUploadComplete: (event) => {
             event.uploadedFile && insertFile(selectedNode, editor, event.uploadedFile);
         }
     });
 };
-
-const insertFile = (selectedNode:any, editor:any, file:IUploadedFile) => {
+const insertFile = (selectedNode, editor, file) => {
     const fileType = file.type?.indexOf("image") === 0 ? FileType.image :
-    file.type?.indexOf("audio") === 0 ? FileType.audio :
-    file.type?.indexOf("video") === 0 ? FileType.video : FileType.file;
-
+        file.type?.indexOf("audio") === 0 ? FileType.audio :
+            file.type?.indexOf("video") === 0 ? FileType.video : FileType.file;
     // tell the document we may have some thumbs
-    const thumbs:Array<string> = [];
+    const thumbs = [];
     file.thumbUrl && thumbs.push(file.thumbUrl);
     file.pictureUrl && thumbs.push(file.pictureUrl);
-    thumbs.length > 0 && editor.getContainer().dispatchEvent(new DocThumbChangeEvent({thumbs}));
-
-
+    thumbs.length > 0 && editor.getContainer().dispatchEvent(new PageThumbChangeEvent({ thumbs }));
     let content = "";
     if (fileType === FileType.image) {
         content = `<img src="${file.url}" title="${file.name}" alt="${file.name}" data-type="image">`;
-    } else if(fileType === FileType.audio || fileType === FileType.video) {
+    }
+    else if (fileType === FileType.audio || fileType === FileType.video) {
         content = `<video controls poster="${file.pictureUrl || ""}"
             width="${file.width || (fileType === FileType.audio ? 300 : "")}"
             height="${file.height || (fileType === FileType.audio ? 50 : "")}"
             data-type="${fileType}">
                 <source src="${file.url}" type="${file.type}">
             </video>
-            `;                              
-    } else {
+            `;
+    }
+    else {
         content = `<a href="${file.url}" target="_blank" title="${file.name}" data-type="file">${file.name}</a>`;
     }
     editor.selection.select(selectedNode);
     editor.insertContent(content);
-}
-
-
-
-interface ITinyMceChangeEvent {
-    target: {
-        targetElm: HTMLElement,
-        getContent: Function
-    }
 };
-
-interface ITinyMceSettings {
-    changeHandler: any,
-    config: any
-}
-
+;
 class ChangeEvent extends Event {
-    static eventType = "change";
-    value:string;
-    constructor(value:string) {
-        super(ChangeEvent.eventType, {bubbles:true, composed: true});
+    constructor(value) {
+        super(ChangeEvent.eventType, { bubbles: true, composed: true });
         this.value = value;
     }
 }
-
-
-declare global {
-    interface Window { tinymceSettings: ITinyMceSettings; }
-    interface HTMLElementTagNameMap {
-        'hb-text-content': TextContent
-    }
-}
+ChangeEvent.eventType = "change";

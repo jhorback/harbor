@@ -6,7 +6,7 @@ import "../hb-add-page-dialog";
 import { AddPageDialog } from "../hb-add-page-dialog";
 import { ContentEditableChangeEvent } from "../../common/hb-content-editable";
 import { SwitchChangeEvent } from "../../common/hb-switch";
-import { contentTypes } from "../../domain/Doc/contentTypes";
+import { contentTypes } from "../../domain/Pages/contentTypes";
 import { sendFeedback } from "../../layout/feedback";
 import { PageAddedEvent } from "../hb-add-page-dialog/AddPageController";
 import { HbPageContent } from "./hb-page-content";
@@ -95,7 +95,7 @@ export class HbPage extends LitElement {
                     @content-empty=${this.contentEmpty}
                 >
                     ${state.page.content.map((data, contentIndex) => contentTypes.get(data.contentType).render({
-                        docUid: state.page.uid, /* jch - need update */
+                        pathname: this.pathname,
                         contentIndex,
                         data
                     }))}
