@@ -1,6 +1,6 @@
-import { ContentTypes } from "../../domain/Doc/contentTypes";
-import { TextContentData } from "../../doc/contentTypes/textContentType";
+import { ContentTypes } from "../../domain/Pages/contentTypes";
 import { pageTemplates } from "../../domain/Pages/pageTemplates";
+import { TextContentData } from "../contentTypes/text";
 const pagePageType = {
     key: "page",
     name: "Page",

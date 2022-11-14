@@ -1,61 +1,54 @@
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
 import { css, html, LitElement } from "lit";
 import { customElement, query } from "lit/decorators.js";
 import "../../../common/hb-button";
 import "../../../common/hb-horizontal-card";
 import "../../../common/hb-text-input";
-import { FileSelectedEvent, FindFileDialog } from "../../../files/hb-find-file-dialog";
+import { FileSelectedEvent } from "../../../files/hb-find-file-dialog";
 import { styles } from "../../../styles";
-import { DocumentSelectedEvent, FindDocDialog } from "../../hb-find-doc-dialog";
-
-
-export enum TextContentSelectorType {
-    any = "any", // opens page or file chooser
-    page = "page", // opens page chooser
-    image = "image", // opens file chooser
-    audio = "audio",
-    video = "video",
-    file = "file"
-}
-
-export interface ITextContentSelectorOptions {
-    type:TextContentSelectorType;
-    onFileSelected: (event:FileSelectedEvent) => void;
-    onDocumentSelected: (event:DocumentSelectedEvent) => void;
-}
-
-/**  
+import { DocumentSelectedEvent } from "../../../doc/hb-find-doc-dialog"; // jch - update
+export var TextContentSelectorType;
+(function (TextContentSelectorType) {
+    TextContentSelectorType["any"] = "any";
+    TextContentSelectorType["page"] = "page";
+    TextContentSelectorType["image"] = "image";
+    TextContentSelectorType["audio"] = "audio";
+    TextContentSelectorType["video"] = "video";
+    TextContentSelectorType["file"] = "file";
+})(TextContentSelectorType || (TextContentSelectorType = {}));
+/**
  */
-@customElement('hb-text-content-selector-dialog')
-export class TextContentSelectorDialog extends LitElement {
-
-    static async openContentSelector(options:ITextContentSelectorOptions) {
-        const el = document.createElement("hb-text-content-selector-dialog") as TextContentSelectorDialog;
-        el.addEventListener(DocumentSelectedEvent.eventType, (event:Event) =>
-            options.onDocumentSelected(event as DocumentSelectedEvent));
-        el.addEventListener(FileSelectedEvent.eventType, (event:Event) =>
-            options.onFileSelected(event as FileSelectedEvent));
+let TextContentSelectorDialog = class TextContentSelectorDialog extends LitElement {
+    constructor() {
+        super(...arguments);
+        this.searchText = "";
+    }
+    static async openContentSelector(options) {
+        const el = document.createElement("hb-text-content-selector-dialog");
+        el.addEventListener(DocumentSelectedEvent.eventType, (event) => options.onDocumentSelected(event));
+        el.addEventListener(FileSelectedEvent.eventType, (event) => options.onFileSelected(event));
         document.body.appendChild(el);
         await el.updateComplete;
         el.open(options.type);
     }
-
-    open(type:TextContentSelectorType) {
+    open(type) {
         if (type === TextContentSelectorType.page) {
             this.insertPage();
-        } else if (type === TextContentSelectorType.any) {
+        }
+        else if (type === TextContentSelectorType.any) {
             this.$dialog.showModal();
-        } else {
+        }
+        else {
             this.insertContentType(type);
         }
     }
-
-    @query("dialog")
-    $dialog!:HTMLDialogElement;
-
-    searchText = "";
-
     render() {
-        return html`
+        return html `
             <dialog @cancel=${this.close}>
                 
                 <div class="contents">
@@ -90,41 +83,29 @@ export class TextContentSelectorDialog extends LitElement {
             ></hb-find-file-dialog>
         `;
     }
-
-    @query("hb-find-doc-dialog")
-    $findDocDlg!:FindDocDialog;
-
-    @query("hb-find-file-dialog")
-    $findFileDlg!:FindFileDialog;
-
     insertPage() {
         this.$dialog.close();
         this.$findDocDlg.open = true;
     }
-
-    insertContent(type?:TextContentSelectorType) {
+    insertContent(type) {
         this.insertContentType(TextContentSelectorType.file);
     }
-
-    insertContentType(type:TextContentSelectorType) {
+    insertContentType(type) {
         this.$dialog.close();
         this.$findFileDlg.setAttribute("file-type", type);
         this.$findFileDlg.open = true;
     }
-
-    documentSelected(event:DocumentSelectedEvent) {
+    documentSelected(event) {
         this.dispatchEvent(new DocumentSelectedEvent(event.docModel));
     }
-
-    fileSelected(event:FileSelectedEvent) {
+    fileSelected(event) {
         this.dispatchEvent(new FileSelectedEvent(event.file));
     }
-
     close() {
         this.parentElement?.removeChild(this);
     }
-
-    static styles = [styles.types, styles.dialog, styles.icons, css`
+};
+TextContentSelectorDialog.styles = [styles.types, styles.dialog, styles.icons, css `
         :host {
             display: block;
             z-index:1;
@@ -137,13 +118,17 @@ export class TextContentSelectorDialog extends LitElement {
         .center {
             text-align: center;
         }
-  `]
-}
-
-
-
-declare global {
-  interface HTMLElementTagNameMap {
-    'hb-text-content-selector-dialog': TextContentSelectorDialog
-  }
-}
+  `];
+__decorate([
+    query("dialog")
+], TextContentSelectorDialog.prototype, "$dialog", void 0);
+__decorate([
+    query("hb-find-doc-dialog")
+], TextContentSelectorDialog.prototype, "$findDocDlg", void 0);
+__decorate([
+    query("hb-find-file-dialog")
+], TextContentSelectorDialog.prototype, "$findFileDlg", void 0);
+TextContentSelectorDialog = __decorate([
+    customElement('hb-text-content-selector-dialog')
+], TextContentSelectorDialog);
+export { TextContentSelectorDialog };

@@ -9,7 +9,7 @@ import { customElement, property, query, state } from "lit/decorators.js";
 import "../../layout/hb-page-layout";
 import { styles } from "../../styles";
 import "../hb-add-page-dialog";
-import { contentTypes } from "../../domain/Doc/contentTypes";
+import { contentTypes } from "../../domain/Pages/contentTypes";
 import { sendFeedback } from "../../layout/feedback";
 import { PageController, UpdateShowSubtitleEvent, UpdateShowTitleEvent, UpdateSubtitleEvent } from "./PageController";
 export class PageEditModeChangeEvent extends Event {
@@ -74,7 +74,7 @@ let HbPage = class HbPage extends LitElement {
                     @content-empty=${this.contentEmpty}
                 >
                     ${state.page.content.map((data, contentIndex) => contentTypes.get(data.contentType).render({
-            docUid: state.page.uid,
+            pathname: this.pathname,
             contentIndex,
             data
         }))}

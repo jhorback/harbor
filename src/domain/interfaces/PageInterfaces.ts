@@ -32,7 +32,7 @@ export interface IContentTypeDescriptor {
 }
 
 export interface IContentTypeRenderOptions {
-    docUid:string,
+    pathname:string,
     contentIndex:number;
     data:IContentType;
 }
@@ -82,8 +82,8 @@ export interface ISearchPagesOptions {
 
 export const EditPageRepoKey:symbol = Symbol("EDIT_PAGE_REPO");
 export type IUnsubscribe = () => void;
-export interface IEditDocRepo {
-    subscribeToPage(uid:string, callback:(pageModel: PageModel) => void):IUnsubscribe;
+export interface IEditPageRepo {
+    subscribeToPage(uid:string, callback:(pageModel: PageModel) => void, signal:AbortSignal):void;
     savePage(page: PageModel):void;
 }
 

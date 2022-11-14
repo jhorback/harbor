@@ -1,6 +1,6 @@
-import { IContentType, IContentTypeDescriptor, IContentTypeRenderOptions } from "../../domain/interfaces/DocumentInterfaces";
-import { contentTypes } from "../../domain/Doc/contentTypes";
 import { html } from "lit-html";
+import { IContentType, IContentTypeDescriptor, IContentTypeRenderOptions } from "../../../domain/interfaces/PageInterfaces";
+import { contentTypes } from "../../../domain/Pages/contentTypes";
 
 
 export enum ImageSize {
@@ -36,7 +36,7 @@ const imageContentType:IContentTypeDescriptor = {
     description: "An image in the format of jpg, gif, png, etc.",
     render: (options:IContentTypeRenderOptions) => html`
         <hb-image-content
-            .docUid=${options.docUid}
+            .pathname=${options.pathname}
             .contentIndex=${options.contentIndex}
             .data=${options.data}
         ></hb-image-content>
