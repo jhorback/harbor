@@ -31,12 +31,12 @@ export class UpdateSubtitleEvent extends Event {
     }
 }
 
-export class UpdateDocContentEvent extends Event {
-    static eventType = "update-doc-content";
+export class UpdatePageContentEvent extends Event {
+    static eventType = "update-page-content";
     index:number;
     state:IContentType;
     constructor(index:number, state:IContentType) {
-        super(UpdateDocContentEvent.eventType, {bubbles:true, composed:true});
+        super(UpdatePageContentEvent.eventType, {bubbles:true, composed:true});
         if (!(index > -1)) {
             throw new Error("index must be 0 or greater");
         }
@@ -63,7 +63,7 @@ interface IPageThumbChangeEventOptions {
 }
 
 export class PageThumbChangeEvent extends Event {
-    static eventType = "doc-thumb-change";
+    static eventType = "page-thumb-change";
     removeIndex?:number;
     setIndex?:number;
     thumbs?:Array<string>;

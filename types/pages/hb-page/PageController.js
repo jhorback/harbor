@@ -27,9 +27,9 @@ export class UpdateSubtitleEvent extends Event {
     }
 }
 UpdateSubtitleEvent.eventType = "update-subtitle";
-export class UpdateDocContentEvent extends Event {
+export class UpdatePageContentEvent extends Event {
     constructor(index, state) {
-        super(UpdateDocContentEvent.eventType, { bubbles: true, composed: true });
+        super(UpdatePageContentEvent.eventType, { bubbles: true, composed: true });
         if (!(index > -1)) {
             throw new Error("index must be 0 or greater");
         }
@@ -37,7 +37,7 @@ export class UpdateDocContentEvent extends Event {
         this.state = state;
     }
 }
-UpdateDocContentEvent.eventType = "update-doc-content";
+UpdatePageContentEvent.eventType = "update-page-content";
 export class MovePageContentEvent extends Event {
     constructor(index, moveUp) {
         super(MovePageContentEvent.eventType, { bubbles: true, composed: true });
@@ -54,7 +54,7 @@ export class PageThumbChangeEvent extends Event {
         this.removeIndex = options.removeIndex;
     }
 }
-PageThumbChangeEvent.eventType = "doc-thumb-change";
+PageThumbChangeEvent.eventType = "page-thumb-change";
 export class PageController extends StateController {
     // @inject<IEditDocRepo>(EditDocRepoKey)
     // private editDocRepo!:IEditDocRepo;
