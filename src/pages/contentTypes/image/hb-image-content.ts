@@ -2,7 +2,6 @@ import { html, css, LitElement } from "lit";
 import { customElement, property, query } from "lit/decorators.js";
 import { styles } from "../../../styles";
 import { ImageAlignment, ImageContentDataState, ImageSize } from "./imageContentType";
-import "../hb-content";
 import { HbPageContent } from "../../hb-page";
 import { FileUploadCompleteEvent, FileUploadPanel, FileUploaderAccept } from "../../../files/hb-file-upload-panel";
 import "../../../files/hb-find-file-dialog";

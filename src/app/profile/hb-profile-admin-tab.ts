@@ -9,7 +9,6 @@ import { AddPageDialog } from "../../pages/hb-add-page-dialog";
 import { DocumentSelectedEvent, FindDocDialog } from "../../doc/hb-find-doc-dialog";
 import "../../doc/hb-find-doc-dialog";
 import { DocumentAddedEvent as PageAddedEvent } from "../../doc/data/hb-add-document-data";
-import "../../doc/hb-add-document-dialog";
 
 
 

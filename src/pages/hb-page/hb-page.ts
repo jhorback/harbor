@@ -127,9 +127,8 @@ export class HbPage extends LitElement {
     }
 
     editPageClicked() {
-        alert("edit page");
-        // this.inEditMode = true;
-        // this.dispatchEditModeChange();
+        this.inEditMode = true;
+        this.dispatchEditModeChange();
     }
 
     deletePageClicked() {
