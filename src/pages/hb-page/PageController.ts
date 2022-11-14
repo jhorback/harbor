@@ -1,4 +1,4 @@
-import { Product, StateController, stateProperty } from "@domx/statecontroller";
+import { hostEvent, Product, StateController, stateProperty, windowEvent } from "@domx/statecontroller";
 import { inject } from "../../domain/DependencyContainer/decorators";
 import { HbCurrentUser, UserAction } from "../../domain/HbCurrentUser";
 import { IContentType } from "../../domain/interfaces/DocumentInterfaces";
@@ -7,6 +7,7 @@ import { PageModel } from "../../domain/Pages/PageModel";
 import { pageTemplates } from "../../domain/Pages/pageTemplates";
 import { HbPage } from "./hb-page";
 import "../../domain/Pages/HbEditPageRepo";
+import { HbCurrentUserChangedEvent } from "../../domain/HbAuth";
 
 
 export class UpdateShowTitleEvent extends Event {
@@ -110,40 +111,99 @@ export class PageController extends StateController {
 
     hostConnected() {
         super.hostConnected();
-        this.editPageRepo.subscribeToPage(this.host.pathname, subscribeToPage(this), this.abortController.signal);
+        this.editPageRepo.subscribeToPage(this.host.pathname,
+            subscribeToPage(this), this.abortController.signal);
+    }
+
+    @windowEvent(HbCurrentUserChangedEvent, {capture: false})
+    private currentUserChanged(event:HbCurrentUserChangedEvent) {
+        Product.of<IPageState>(this)
+            .next(updateUserCanEdit)
+            .next(updateUserCanAdd)
+            .requestUpdate(event);
+    }
+
+    @hostEvent(UpdateShowTitleEvent)
+    private updateShowTitle(event:UpdateShowTitleEvent) {
+        Product.of<IPageState>(this)
+            .next(updateShowTitle(event.showTitle))
+            .tap(savePage(this.editPageRepo))
+            .requestUpdate(event);
+    }
+
+    @hostEvent(UpdateShowSubtitleEvent)
+    private updateShowSubtitle(event:UpdateShowSubtitleEvent) {
+        Product.of<IPageState>(this)
+            .next(updateShowSubtitle(event.showSubtitle))
+            .tap(savePage(this.editDocRepo))
+            .requestUpdate(event);
+    }
+
+    @hostEvent(UpdateSubtitleEvent)
+    private updateSubtitle(event:UpdateSubtitleEvent) {
+        Product.of<IPageState>(this)
+            .next(updateSubtitle(event.subtitle))
+            .tap(savePage(this.editDocRepo))
+            .requestUpdate(event);
+    }
+
+    @hostEvent(UpdatePageContentEvent)
+    private updatePageContent(event:UpdatePageContentEvent) {
+        Product.of<IPageState>(this)
+            .next(updatePageContent(event.index, event.state))
+            .tap(savePage(this.editDocRepo))
+            .requestUpdate(event);
+    }
+
+    @hostEvent(MovePageContentEvent)
+    private moveContent(event:MovePageContentEvent) {
+        Product.of<IPageState>(this)
+            .next(moveContent(event.index, event.moveUp))
+            .tap(savePage(this.editDocRepo))
+            .requestUpdate(event);
+    }
+
+    @hostEvent(PageThumbChangeEvent)
+    private pageThumb(event:PageThumbChangeEvent) {
+        Product.of<IPageState>(this)
+            .next(updateThumbs(event.thumbs))
+            .next(setThumb(event.setIndex))
+            .next(removeThumb(event.removeIndex))
+            .tap(savePage(this.editDocRepo))
+            .requestUpdate(event);
     }
 }
 
 
 const subscribeToPage = (pageController:PageController) => (page:PageModel) => {
     Product.of<IPageState>(pageController)
-        .next(updatePage(page))
-        .next(updateUserCanEdit(page))
+        .next(updatePageLoaded(page))
+        .next(updateUserCanEdit)
         .next(updateUserCanAdd)
         .requestUpdate("PageController.subscribeToPage");
 };
 
 
 
-const savePage = (editPageRepo:IEditPageRepo, page:PageModel) => (product:Product<IPageState>) => {
-    editPageRepo.savePage(page);
+const savePage = (editPageRepo:IEditPageRepo) => (product:Product<IPageState>) => {
+    editPageRepo.savePage(product.getState().page);
 };
 
-const updateUserCanEdit = (page:PageModel) => (state:IPageState) => {
-    state.currentUserCanEdit = userCanEdit(page);
+const updateUserCanEdit = (state:IPageState) => {
+    state.currentUserCanEdit = userCanEdit(state.page);
 };
 
 const updateUserCanAdd = (state:IPageState) => {
     state.currentUserCanAdd = new HbCurrentUser().authorize(UserAction.authorDocuments);
 }
 
-const userCanEdit = (doc:PageModel):boolean => {
+const userCanEdit = (page:PageModel):boolean => {
     const currentUser = new HbCurrentUser();
-    return currentUser.uid === doc.authorUid
+    return currentUser.uid === page.authorUid
         || currentUser.authorize(UserAction.editAnyDocument);
 }
 
-const updatePage = (page:PageModel) => (state:IPageState) => {
+const updatePageLoaded = (page:PageModel) => (state:IPageState) => {
     state.isLoaded = true;
     state.page = page;
 };
@@ -162,8 +222,19 @@ const updateSubtitle = (subtitle:string) => (state:IPageState) => {
     state.page.subtitle = subtitle;
 };
 
-const updateDocContent = (index:number, data:IContentType) => (state:IPageState) => {
+const updatePageContent = (index:number, data:IContentType) => (state:IPageState) => {
     state.page.content[index] = data;
+};
+
+const moveContent = (index:number, moveUp:boolean) => (state:IPageState) => {
+    const content = state.page.content;
+
+    if ((moveUp && index === 0) || (!moveUp && index === content.length -1)) {
+        return;
+    }
+
+    moveUp ? content.splice(index - 1, 0, content.splice(index, 1)[0]) :
+        content.splice(index + 1, 0, content.splice(index, 1)[0]);
 };
 
 

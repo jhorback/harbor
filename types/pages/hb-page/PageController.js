@@ -4,13 +4,14 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-import { Product, StateController, stateProperty } from "@domx/statecontroller";
+import { hostEvent, Product, StateController, stateProperty, windowEvent } from "@domx/statecontroller";
 import { inject } from "../../domain/DependencyContainer/decorators";
 import { HbCurrentUser, UserAction } from "../../domain/HbCurrentUser";
 import { EditPageRepoKey } from "../../domain/interfaces/PageInterfaces";
 import { PageModel } from "../../domain/Pages/PageModel";
 import { pageTemplates } from "../../domain/Pages/pageTemplates";
 import "../../domain/Pages/HbEditPageRepo";
+import { HbCurrentUserChangedEvent } from "../../domain/HbAuth";
 export class UpdateShowTitleEvent extends Event {
     constructor(showTitle) {
         super(UpdateShowTitleEvent.eventType);
@@ -75,6 +76,50 @@ export class PageController extends StateController {
         super.hostConnected();
         this.editPageRepo.subscribeToPage(this.host.pathname, subscribeToPage(this), this.abortController.signal);
     }
+    currentUserChanged(event) {
+        Product.of(this)
+            .next(updateUserCanEdit)
+            .next(updateUserCanAdd)
+            .requestUpdate(event);
+    }
+    updateShowTitle(event) {
+        Product.of(this)
+            .next(updateShowTitle(event.showTitle))
+            .tap(savePage(this.editPageRepo))
+            .requestUpdate(event);
+    }
+    updateShowSubtitle(event) {
+        Product.of(this)
+            .next(updateShowSubtitle(event.showSubtitle))
+            .tap(savePage(this.editDocRepo))
+            .requestUpdate(event);
+    }
+    updateSubtitle(event) {
+        Product.of(this)
+            .next(updateSubtitle(event.subtitle))
+            .tap(savePage(this.editDocRepo))
+            .requestUpdate(event);
+    }
+    updatePageContent(event) {
+        Product.of(this)
+            .next(updatePageContent(event.index, event.state))
+            .tap(savePage(this.editDocRepo))
+            .requestUpdate(event);
+    }
+    moveContent(event) {
+        Product.of(this)
+            .next(moveContent(event.index, event.moveUp))
+            .tap(savePage(this.editDocRepo))
+            .requestUpdate(event);
+    }
+    pageThumb(event) {
+        Product.of(this)
+            .next(updateThumbs(event.thumbs))
+            .next(setThumb(event.setIndex))
+            .next(removeThumb(event.removeIndex))
+            .tap(savePage(this.editDocRepo))
+            .requestUpdate(event);
+    }
 }
 __decorate([
     stateProperty()
@@ -82,28 +127,49 @@ __decorate([
 __decorate([
     inject(EditPageRepoKey)
 ], PageController.prototype, "editPageRepo", void 0);
+__decorate([
+    windowEvent(HbCurrentUserChangedEvent, { capture: false })
+], PageController.prototype, "currentUserChanged", null);
+__decorate([
+    hostEvent(UpdateShowTitleEvent)
+], PageController.prototype, "updateShowTitle", null);
+__decorate([
+    hostEvent(UpdateShowSubtitleEvent)
+], PageController.prototype, "updateShowSubtitle", null);
+__decorate([
+    hostEvent(UpdateSubtitleEvent)
+], PageController.prototype, "updateSubtitle", null);
+__decorate([
+    hostEvent(UpdatePageContentEvent)
+], PageController.prototype, "updatePageContent", null);
+__decorate([
+    hostEvent(MovePageContentEvent)
+], PageController.prototype, "moveContent", null);
+__decorate([
+    hostEvent(PageThumbChangeEvent)
+], PageController.prototype, "pageThumb", null);
 const subscribeToPage = (pageController) => (page) => {
     Product.of(pageController)
-        .next(updatePage(page))
-        .next(updateUserCanEdit(page))
+        .next(updatePageLoaded(page))
+        .next(updateUserCanEdit)
         .next(updateUserCanAdd)
         .requestUpdate("PageController.subscribeToPage");
 };
-const savePage = (editPageRepo, page) => (product) => {
-    editPageRepo.savePage(page);
+const savePage = (editPageRepo) => (product) => {
+    editPageRepo.savePage(product.getState().page);
 };
-const updateUserCanEdit = (page) => (state) => {
-    state.currentUserCanEdit = userCanEdit(page);
+const updateUserCanEdit = (state) => {
+    state.currentUserCanEdit = userCanEdit(state.page);
 };
 const updateUserCanAdd = (state) => {
     state.currentUserCanAdd = new HbCurrentUser().authorize(UserAction.authorDocuments);
 };
-const userCanEdit = (doc) => {
+const userCanEdit = (page) => {
     const currentUser = new HbCurrentUser();
-    return currentUser.uid === doc.authorUid
+    return currentUser.uid === page.authorUid
         || currentUser.authorize(UserAction.editAnyDocument);
 };
-const updatePage = (page) => (state) => {
+const updatePageLoaded = (page) => (state) => {
     state.isLoaded = true;
     state.page = page;
 };
@@ -116,8 +182,16 @@ const updateShowSubtitle = (showSubtitle) => (state) => {
 const updateSubtitle = (subtitle) => (state) => {
     state.page.subtitle = subtitle;
 };
-const updateDocContent = (index, data) => (state) => {
+const updatePageContent = (index, data) => (state) => {
     state.page.content[index] = data;
+};
+const moveContent = (index, moveUp) => (state) => {
+    const content = state.page.content;
+    if ((moveUp && index === 0) || (!moveUp && index === content.length - 1)) {
+        return;
+    }
+    moveUp ? content.splice(index - 1, 0, content.splice(index, 1)[0]) :
+        content.splice(index + 1, 0, content.splice(index, 1)[0]);
 };
 const removeThumb = (index) => (state) => {
     if (index === undefined) {
