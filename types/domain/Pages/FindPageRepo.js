@@ -15,6 +15,6 @@ export class FindPageRepo {
             .withConverter(PageModel);
         const snapshot = await getDocs(q);
         const pages = snapshot.docs.map((page) => page.data());
-        return pages[0];
+        return pages[0] || null;
     }
 }

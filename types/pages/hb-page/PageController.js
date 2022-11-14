@@ -4,8 +4,13 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-import { StateController, stateProperty } from "@domx/statecontroller";
+import { Product, StateController, stateProperty } from "@domx/statecontroller";
+import { inject } from "../../domain/DependencyContainer/decorators";
+import { HbCurrentUser, UserAction } from "../../domain/HbCurrentUser";
+import { EditPageRepoKey } from "../../domain/interfaces/PageInterfaces";
 import { PageModel } from "../../domain/Pages/PageModel";
+import { pageTemplates } from "../../domain/Pages/pageTemplates";
+import "../../domain/Pages/HbEditPageRepo";
 export class UpdateShowTitleEvent extends Event {
     constructor(showTitle) {
         super(UpdateShowTitleEvent.eventType);
@@ -56,8 +61,6 @@ export class PageThumbChangeEvent extends Event {
 }
 PageThumbChangeEvent.eventType = "page-thumb-change";
 export class PageController extends StateController {
-    // @inject<IEditDocRepo>(EditDocRepoKey)
-    // private editDocRepo!:IEditDocRepo;
     constructor(host) {
         super(host);
         this.state = {
@@ -66,8 +69,78 @@ export class PageController extends StateController {
             currentUserCanAdd: true,
             page: new PageModel()
         };
+        this.host = host;
+    }
+    hostConnected() {
+        super.hostConnected();
+        this.editPageRepo.subscribeToPage(this.host.pathname, subscribeToPage(this), this.abortController.signal);
     }
 }
 __decorate([
     stateProperty()
 ], PageController.prototype, "state", void 0);
+__decorate([
+    inject(EditPageRepoKey)
+], PageController.prototype, "editPageRepo", void 0);
+const subscribeToPage = (pageController) => (page) => {
+    Product.of(pageController)
+        .next(updatePage(page))
+        .next(updateUserCanEdit(page))
+        .next(updateUserCanAdd)
+        .requestUpdate("PageController.subscribeToPage");
+};
+const savePage = (editPageRepo, page) => (product) => {
+    editPageRepo.savePage(page);
+};
+const updateUserCanEdit = (page) => (state) => {
+    state.currentUserCanEdit = userCanEdit(page);
+};
+const updateUserCanAdd = (state) => {
+    state.currentUserCanAdd = new HbCurrentUser().authorize(UserAction.authorDocuments);
+};
+const userCanEdit = (doc) => {
+    const currentUser = new HbCurrentUser();
+    return currentUser.uid === doc.authorUid
+        || currentUser.authorize(UserAction.editAnyDocument);
+};
+const updatePage = (page) => (state) => {
+    state.isLoaded = true;
+    state.page = page;
+};
+const updateShowTitle = (showTitle) => (state) => {
+    state.page.showTitle = showTitle;
+};
+const updateShowSubtitle = (showSubtitle) => (state) => {
+    state.page.showSubtitle = showSubtitle;
+};
+const updateSubtitle = (subtitle) => (state) => {
+    state.page.subtitle = subtitle;
+};
+const updateDocContent = (index, data) => (state) => {
+    state.page.content[index] = data;
+};
+const removeThumb = (index) => (state) => {
+    if (index === undefined) {
+        return;
+    }
+    state.page.thumbUrls.splice(index, 1);
+};
+const setThumb = (index) => (state) => {
+    if (index === undefined) {
+        return;
+    }
+    state.page.thumbUrl = state.page.thumbUrls[index];
+};
+const updateThumbs = (thumbs) => (state) => {
+    if (!thumbs) {
+        return;
+    }
+    state.page.thumbUrls.unshift(...thumbs);
+    // using set makes sure they are unique
+    const thumbUrls = [...new Set(state.page.thumbUrls)];
+    state.page.thumbUrls = thumbUrls;
+    // set the thumb if it is the default
+    if (state.page.thumbUrls[0] && state.page.thumbUrl === pageTemplates.get(state.page.pageTemplate).defaultThumbUrl) {
+        state.page.thumbUrl = state.page.thumbUrls[0];
+    }
+};
