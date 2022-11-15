@@ -11,7 +11,6 @@ import { DocTypes, docTypes } from "../../../domain/Doc/docTypes";
 import { sendFeedback } from "../../../layout/feedback";
 import "../../../layout/hb-page-layout";
 import { styles } from "../../../styles";
-import { HbContent } from "../../contentTypes/hb-content";
 import { DocumentAddedEvent } from "../../data/hb-add-document-data";
 import {
     DocData,
@@ -20,7 +19,6 @@ import {
     UpdateShowTitleEvent,
     UpdateSubtitleEvent
 } from "../../data/hb-doc-data";
-import { AddDocumentDialog } from "../../hb-add-document-dialog";
 import "../../hb-delete-document-dialog";
 import { DeleteDocumentDialog } from "../../hb-delete-document-dialog";
 import "../../hb-doc-author";
@@ -49,9 +47,9 @@ export class ContentEmptyEvent extends Event {
 
 export class ContentActiveChangeEvent extends Event {
     static eventType = "content-active-change";
-    activeContent:HbContent;
+    activeContent:any;
     active:boolean;
-    constructor(activeContent:HbContent, active:boolean) {
+    constructor(activeContent:any, active:boolean) {
         super(ContentActiveChangeEvent.eventType, {bubbles: true, composed: true});
         this.activeContent = activeContent;
         this.active = active;
@@ -84,7 +82,7 @@ export class HbDocPage extends LitElement {
     $hbDocData!:DocData;
 
     @query("hb-add-document-dialog")
-    $addDocumentDialog!:AddDocumentDialog;
+    $addDocumentDialog!:any;
 
     @query("hb-delete-document-dialog")
     $deleteDocumentDialog!:DeleteDocumentDialog;
@@ -173,7 +171,7 @@ export class HbDocPage extends LitElement {
         this.dispatchEvent(new DocEditModeChangeEvent(this.inEditMode));
     }
 
-    private activeContent:HbContent|null = null;
+    private activeContent:any|null = null;
 
     private contentActive(event:ContentActiveChangeEvent) {
         this.closeActiveContent();

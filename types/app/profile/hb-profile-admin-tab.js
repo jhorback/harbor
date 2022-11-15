@@ -12,7 +12,6 @@ import { linkProp } from "@domx/linkprop";
 import "../../common/hb-button";
 import "../../common/hb-horizontal-card";
 import "../../doc/hb-find-doc-dialog";
-import "../../doc/hb-add-document-dialog";
 /**
  * @class ProfileAdminTab
  */
@@ -32,9 +31,9 @@ let ProfileAdminTab = class ProfileAdminTab extends LitElement {
             <hb-system-admin-data
                 @settings-changed=${linkProp(this, "settings")}
             ></hb-system-admin-data>
-            <hb-add-document-dialog
-                @document-added=${this.documentAdded}
-            ></hb-add-document-dialog>
+            <hb-add-page-dialog
+                @page-added=${this.pageAdded}
+            ></hb-add-page-dialog>
             <hb-find-doc-dialog
                 @document-selected=${this.documentSelected}
             ></hb-find-doc-dialog>
@@ -80,9 +79,9 @@ let ProfileAdminTab = class ProfileAdminTab extends LitElement {
     }
     addNewHomePageClicked() {
         this.changeHomePage = false;
-        this.$addDocumentDialog.open = true;
+        this.$addPageDialog.showModal();
     }
-    documentAdded(event) {
+    pageAdded(event) {
         this.$systemAdminData.dispatchEvent(new UpdateHomePageEvent(event.docModel.toDocumentReference()));
     }
     documentSelected(event) {
@@ -121,8 +120,8 @@ __decorate([
     state()
 ], ProfileAdminTab.prototype, "changeHomePage", void 0);
 __decorate([
-    query("hb-add-document-dialog")
-], ProfileAdminTab.prototype, "$addDocumentDialog", void 0);
+    query("hb-add-page-dialog")
+], ProfileAdminTab.prototype, "$addPageDialog", void 0);
 __decorate([
     query("hb-find-doc-dialog")
 ], ProfileAdminTab.prototype, "$findDocDialog", void 0);

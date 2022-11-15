@@ -16,6 +16,13 @@ service cloud.firestore {
       allow update: if request.auth.uid == resource.data.authorUid || userHasRole("SITE_ADMIN");
       allow delete: if request.auth.uid == resource.data.authorUid || userHasRole("SITE_ADMIN");
     }
+    
+    match /pages/{page} {
+      allow read;
+      allow create: if userHasRole("SITE_ADMIN") || userHasRole("AUTHOR") || userHasRole("USER_ADMIN")
+      allow update: if request.auth.uid == resource.data.authorUid || userHasRole("SITE_ADMIN");
+      allow delete: if request.auth.uid == resource.data.authorUid || userHasRole("SITE_ADMIN");
+    }
 
     match /users/{user} {
       allow read;

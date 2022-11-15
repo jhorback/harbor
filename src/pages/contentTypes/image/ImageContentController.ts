@@ -1,8 +1,8 @@
 import { hostEvent, Product, StateController, stateProperty } from "@domx/statecontroller";
 import { inject } from "../../../domain/DependencyContainer/decorators";
 import { FindFileRepoKey, IFindFileRepo, IUploadedFile } from "../../../domain/interfaces/FileInterfaces";
-import { UpdateDocContentEvent } from "../../data/hb-doc-data";
-import { ImageAlignment, ImageContentDataState, ImageSize } from "../imageContentType";
+import { UpdatePageContentEvent } from "../../hb-page";
+import { ImageAlignment, ImageContentDataState, ImageSize } from "./imageContentType";
 import { ImageContent } from "./hb-image-content";
 import "../../../domain/Files/HbFindFileRepo";
 import { FileModel } from "../../../domain/Files/FileModel";
@@ -64,7 +64,7 @@ export class ImageContentController extends StateController {
         Product.of<ImageContentDataState>(this, "state")
             .next(updateImageSize(event.size))
             .requestUpdate(event)
-            .dispatchHostEvent(new UpdateDocContentEvent(this.host.contentIndex, this.state))
+            .dispatchHostEvent(new UpdatePageContentEvent(this.host.contentIndex, this.state))
     }
 
     @hostEvent(ImageAlignmentChangeEvent)
@@ -72,7 +72,7 @@ export class ImageContentController extends StateController {
         Product.of<ImageContentDataState>(this, "state")
             .next(updateImageAlignment(event.alignment))
             .requestUpdate(event)
-            .dispatchHostEvent(new UpdateDocContentEvent(this.host.contentIndex, this.state))
+            .dispatchHostEvent(new UpdatePageContentEvent(this.host.contentIndex, this.state))
     }
 
     @hostEvent(ImageContentSelectedEvent)
@@ -80,7 +80,7 @@ export class ImageContentController extends StateController {
         Product.of<ImageContentDataState>(this, "state")
             .next(setImageContent(event.file))
             .requestUpdate(event)
-            .dispatchHostEvent(new UpdateDocContentEvent(this.host.contentIndex, this.state));
+            .dispatchHostEvent(new UpdatePageContentEvent(this.host.contentIndex, this.state));
     }
 
 }
@@ -101,7 +101,7 @@ const syncWithDb = (controller:ImageContentController, findFileRepo:IFindFileRep
     if (file.url !== state.url || file.thumbUrl !== state.thumbUrl) {
         product.next(updateImageUrl(file))
             .requestUpdate("ImageContentController.syncWithDb")
-            .dispatchHostEvent(new UpdateDocContentEvent(controller.host.contentIndex, product.getState()));
+            .dispatchHostEvent(new UpdatePageContentEvent(controller.host.contentIndex, product.getState()));
     }
 };
 

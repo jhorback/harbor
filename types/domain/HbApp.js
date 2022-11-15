@@ -36,6 +36,7 @@ export class HbApp {
          * dynamic packages based on system settings
          */
         await import("../doc/index");
+        await import("../pages/index");
     }
 }
 HbApp.version = __APP_VERSION__;
@@ -50,17 +51,19 @@ const updateHtmlTheme = () => {
     bodyEl?.classList.add(`${HbApp.theme}-theme`);
 };
 const handleApplicationErrors = () => {
-    window.addEventListener("error", (event) => {
-        if (event.error instanceof NotFoundError) {
-            Router.replaceUrl("/not-found");
-            console.error("Not Found Error:", event.error.message, { stack: event.error.stack });
-            event.preventDefault();
-        }
-        else if (event.error instanceof ServerError) {
-            const message = `Server Error: ${event.error.message}`;
-            sendFeedback({ message });
-            console.error(message, { stack: event.error.stack });
-            event.preventDefault();
-        }
-    });
+    window.addEventListener("error", (event) => tryHandleErrorEvent(event, event.error));
+    window.addEventListener("unhandledrejection", (event) => tryHandleErrorEvent(event, event.reason));
+};
+const tryHandleErrorEvent = (event, error) => {
+    if (error instanceof NotFoundError) {
+        Router.replaceUrl("/not-found");
+        console.error("Not Found Error:", error.message, { stack: error.stack });
+        event.preventDefault();
+    }
+    else if (error instanceof ServerError) {
+        const message = `Server Error: ${error.message}`;
+        sendFeedback({ message });
+        console.error(message, { stack: error.stack });
+        event.preventDefault();
+    }
 };

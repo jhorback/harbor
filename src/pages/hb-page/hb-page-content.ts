@@ -1,19 +1,19 @@
-import { html, css, LitElement } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators.js";
-import { ContentActiveChangeEvent, ContentEmptyEvent, DocEditModeChangeEvent, HbDocPage } from "../docTypes/pages/hb-doc-page";
 import { styles } from "../../styles";
-import { MoveDocContentEvent } from "../data/hb-doc-data";
+import { ContentActiveChangeEvent, ContentEmptyEvent, HbPage, PageEditModeChangeEvent } from "./hb-page";
+import { MovePageContentEvent } from "./PageController";
 
 /**
  */
-@customElement('hb-content')
-export class HbContent extends LitElement {
+@customElement('hb-page-content')
+export class HbPageContent extends LitElement {
 
     @property({type: Boolean, attribute: "is-empty"})
     isEmpty = false;
 
-    @property({type: Boolean, attribute: "doc-edit", reflect: true})
-    docEdit = false;
+    @property({type: Boolean, attribute: "page-edit", reflect: true})
+    pageEdit = false;
 
     @property({type: Boolean, attribute: "content-edit", reflect: true})
     contentEdit = false;
@@ -21,36 +21,33 @@ export class HbContent extends LitElement {
     @property({type: Boolean, attribute: "is-active", reflect: true})
     isActive = false;
 
-    get $docHost() { return (this.$contentHost.getRootNode() as ShadowRoot).host; }
+    abortController = new AbortController();
+
+    get $pageHost() { return (this.$contentHost.getRootNode() as ShadowRoot).host as HbPage; }
 
     get $contentHost() { return (this.getRootNode() as ShadowRoot).host }
 
-    private editModeHandler:((event:Event) => void)|null = null;
-
     connectedCallback() {
         super.connectedCallback();
-        this.editModeHandler = this.editModeChange.bind(this);
-        this.$docHostRef = this.$docHost;
-        this.$docHostRef.addEventListener(DocEditModeChangeEvent.eventType, this.editModeHandler);
-        this.docEdit = (this.$docHost as HbDocPage).inEditMode;
+        this.$pageHost.addEventListener(PageEditModeChangeEvent.eventType, this.editModeChange,
+            { signal: this.abortController.signal } as AddEventListenerOptions);
+        this.pageEdit = (this.$pageHost as HbPage).inEditMode;
     }
-
-    private $docHostRef:Element|null = null;
 
     disconnectedCallback() {
         super.disconnectedCallback();
-        this.editModeHandler && this.$docHostRef &&
-            this.$docHostRef.removeEventListener(DocEditModeChangeEvent.eventType, this.editModeHandler);
+        this.abortController.abort();
+        this.abortController = new AbortController();
     }
 
     editModeChange(event:Event) {
-        this.docEdit = (event as DocEditModeChangeEvent).inEditMode;
+        this.pageEdit = (event as PageEditModeChangeEvent).inEditMode;
     }
 
     render() {
         return html`
             <div class="hb-content" @click=${this.contentClicked}>
-                ${this.docEdit ? html`
+                ${this.pageEdit ? html`
                     <div class="edit-toolbar">
                         ${this.contentEdit ? html`
                             <slot name="edit-toolbar"></slot>
@@ -93,8 +90,8 @@ export class HbContent extends LitElement {
                         `}                    
                     </div>                
                 ` : html``}
-                ${!this.contentEdit && this.docEdit && this.isEmpty ? html`
-                    <slot name="doc-edit-empty"></slot>
+                ${!this.contentEdit && this.pageEdit && this.isEmpty ? html`
+                    <slot name="page-edit-empty"></slot>
                 ` : this.contentEdit ? html`
                     <slot name="content-edit"></slot>
                     <div class="content-edit-tools">
@@ -113,20 +110,20 @@ export class HbContent extends LitElement {
     }
 
     private contentClicked(event:Event) {
-        if(this.docEdit && !this.isActive) {
+        if(this.pageEdit && !this.isActive) {
             this.dispatchEvent(new ContentActiveChangeEvent(this, true));
         }
     }
 
     private moveUpClicked() {
         const index = (this.$contentHost as IIndexable).contentIndex;
-        index !== undefined ? this.dispatchEvent(new MoveDocContentEvent(index, true)) :
+        index !== undefined ? this.dispatchEvent(new MovePageContentEvent(index, true)) :
             console.error("Cannot move up, content has no content index");
     }
 
     private moveDownClicked() {
         const index = (this.$contentHost as IIndexable).contentIndex;
-        index !== undefined ? this.dispatchEvent(new MoveDocContentEvent(index, false)) :
+        index !== undefined ? this.dispatchEvent(new MovePageContentEvent(index, false)) :
             console.error("Cannot move down, content has no content index");
     }
 
@@ -195,6 +192,6 @@ interface IIndexable {
 
 declare global {
     interface HTMLElementTagNameMap {
-        'hb-content': HbContent
+        'hb-page-content': HbPageContent
     }
 }

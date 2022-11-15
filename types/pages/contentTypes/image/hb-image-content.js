@@ -1,46 +1,31 @@
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
 import { html, css, LitElement } from "lit";
 import { customElement, property, query } from "lit/decorators.js";
 import { styles } from "../../../styles";
-import { ImageAlignment, ImageContentDataState, ImageSize } from "../imageContentType";
-import "../hb-content";
-import { HbContent } from "../hb-content";
-import { FileUploadCompleteEvent, FileUploadPanel, FileUploaderAccept } from "../../../files/hb-file-upload-panel";
+import { ImageSize } from "./imageContentType";
+import { FileUploaderAccept } from "../../../files/hb-file-upload-panel";
 import "../../../files/hb-find-file-dialog";
-import { FileSelectedEvent, FindFileDialog } from "../../../files/hb-find-file-dialog";
 import { FileType } from "../../../domain/interfaces/FileInterfaces";
 import { ImageAlignmentChangeEvent, ImageContentController, ImageContentSelectedEvent, ImageSizeChangeEvent } from "./ImageContentController";
-
 /**
  */
-@customElement('hb-image-content')
-export class ImageContent extends LitElement {
-
+let ImageContent = class ImageContent extends LitElement {
+    constructor() {
+        super(...arguments);
+        this.docUid = "";
+        this.contentIndex = -1;
+        this.imageContent = new ImageContentController(this);
+    }
     get stateId() { return `${this.docUid}:content:${this.contentIndex}`; }
-
-    @property({type:String})
-    docUid:string = "";
-
-    @property({type:Number})
-    contentIndex:number = -1;
-
-    @property({type: Object})
-    data!:ImageContentDataState;    
-
-    imageContent = new ImageContentController(this);
-
-    @query("hb-content")
-    $hbContent!:HbContent;
-
-    @query("hb-file-upload-panel")
-    $fileUploadPanel!:FileUploadPanel;
-
-    @query("hb-find-file-dialog")
-    $findFileDlg!:FindFileDialog;
-
     render() {
         const state = this.imageContent.state;
-        return html`
-            <hb-content ?is-empty=${!state.url}>                
+        return html `
+            <hb-page-content ?is-empty=${!state.url}>                
                 <div>
                     ${this.renderImage(this.getImageSrcPerSize())}
                 </div>
@@ -92,66 +77,57 @@ export class ImageContent extends LitElement {
                         </select>
                     </div>
                 </div>
-            </hb-content>
+            </hb-page-content>
         `;
     }
-
-    private getImageSrcPerSize() {
+    getImageSrcPerSize() {
         const state = this.imageContent.state;
         return state.size === ImageSize.small ?
             state.thumbUrl ? state.thumbUrl :
                 state.url : state.url;
     }
-
-    private renderImage(src:string|null) {
-        const {state} = this.imageContent;
-        return !src ? html`` : html`
+    renderImage(src) {
+        const { state } = this.imageContent;
+        return !src ? html `` : html `
             <div size=${state.size} alignment=${state.alignment}>
                 <img src=${src}>
             </div>
         `;
     }
-
-    private sizeChanged(event:Event) {
-        const size = (event.target as HTMLSelectElement).value as ImageSize;
+    sizeChanged(event) {
+        const size = event.target.value;
         this.dispatchEvent(new ImageSizeChangeEvent(size));
     }
-
-    private alignmentChanged(event:Event) {
-        const alignment = (event.target as HTMLSelectElement).value as ImageAlignment;
+    alignmentChanged(event) {
+        const alignment = event.target.value;
         this.dispatchEvent(new ImageAlignmentChangeEvent(alignment));
     }
-
-    private clickedEmpty() {
-        this.$hbContent.edit();
+    clickedEmpty() {
+        this.$hbPageContent.edit();
     }
-
-    private searchClicked() {
+    searchClicked() {
         this.$findFileDlg.open = true;
     }
-
-    private fileSelected(event:FileSelectedEvent) {
+    fileSelected(event) {
         this.dispatchEvent(new ImageContentSelectedEvent({
             url: event.file.url,
             name: event.file.name,
             fileDbPath: event.file.storagePath,
-            height: event.file.height||null,
+            height: event.file.height || null,
             pictureUrl: event.file.pictureUrl,
             thumbUrl: event.file.thumbUrl,
             type: event.file.type || null,
             width: event.file.width || null
         }));
     }
-
-    private uploadClicked() {
+    uploadClicked() {
         this.$fileUploadPanel.openFileSelector();
     }
-
-    private fileUploadComplete(event:FileUploadCompleteEvent) {
+    fileUploadComplete(event) {
         event.uploadedFile && this.dispatchEvent(new ImageContentSelectedEvent(event.uploadedFile));
     }
-
-    static styles = [styles.icons, styles.form, css`
+};
+ImageContent.styles = [styles.icons, styles.form, css `
         :host {
             display: block;
             position: relative;
@@ -189,12 +165,26 @@ export class ImageContent extends LitElement {
         label {
             margin-right: 8px;
         }
-  `]
-}
-
-
-declare global {
-    interface HTMLElementTagNameMap {
-        'hb-image-content': ImageContent
-    }
-}
+  `];
+__decorate([
+    property({ type: String })
+], ImageContent.prototype, "docUid", void 0);
+__decorate([
+    property({ type: Number })
+], ImageContent.prototype, "contentIndex", void 0);
+__decorate([
+    property({ type: Object })
+], ImageContent.prototype, "data", void 0);
+__decorate([
+    query("hb-page-content")
+], ImageContent.prototype, "$hbPageContent", void 0);
+__decorate([
+    query("hb-file-upload-panel")
+], ImageContent.prototype, "$fileUploadPanel", void 0);
+__decorate([
+    query("hb-find-file-dialog")
+], ImageContent.prototype, "$findFileDlg", void 0);
+ImageContent = __decorate([
+    customElement('hb-image-content')
+], ImageContent);
+export { ImageContent };
