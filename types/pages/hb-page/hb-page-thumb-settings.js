@@ -1,43 +1,39 @@
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
 import { css, html, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators.js";
-import "../common/hb-button";
-import { FileType } from "../domain/interfaces/FileInterfaces";
-import { FileSelectedEvent, FindFileDialog } from "../files/hb-find-file-dialog";
-import { styles } from "../styles";
-import { DocThumbChangeEvent, IDocDataState } from "./data/hb-doc-data";
-
-
-/**  
- * 
+import { FileType } from "../../domain/interfaces/FileInterfaces";
+import { styles } from "../../styles";
+import "../../common/hb-button";
+import { PageThumbChangeEvent } from "./PageController";
+/**
+ *
  */
-@customElement('hb-doc-thumb-settings-tab')
-export class DocThumbSettingsTab extends LitElement {
-
-    @property({type: Object})
-    state!:IDocDataState;
-
-    @state()
-    selectedThumbIndex:number|null = null;
-
-    @query("hb-find-file-dialog")
-    $findFileDlg!:FindFileDialog;
-
+let PageThumbSettingsTab = class PageThumbSettingsTab extends LitElement {
+    constructor() {
+        super(...arguments);
+        this.selectedThumbIndex = null;
+    }
     render() {
-        const doc = this.state.doc;
-        return html`
+        const page = this.state.page;
+        return html `
             <div class="container">
                 <div class="thumb-ctr">
                     <div class="label-medium">Current thumb</div>
-                    <div class="thumb" style="background-image: url(${doc.thumbUrl})"></div>
+                    <div class="thumb" style="background-image: url(${page.thumbUrl})"></div>
                 </div>
                 <div class="subtitle body-medium">
                     <div class="label-medium">Subtitle</div>
-                    ${doc.subtitle}
+                    ${page.subtitle}
                 </div>
                 <div class="thumbs-ctr">
                     <div class="label-medium">Available thumbs</div>
                     <div class="thumbs">
-                        ${doc.thumbUrls.map((thumb, index) => html`
+                        ${page.thumbUrls.map((thumb, index) => html `
                             <div class="thumb-ctr" @click=${() => this.selectThumb(index)} thumb-index=${index}>
                                 <div class="thumb" style="background-image: url(${thumb})"></div>
                                 <img src=${thumb} @error=${() => this.onImageError(index)}>
@@ -46,9 +42,9 @@ export class DocThumbSettingsTab extends LitElement {
                     </div>
                 </div>                
                 <div class="buttons">
-                    ${this.selectedThumbIndex === null ? html`
+                    ${this.selectedThumbIndex === null ? html `
                         <hb-button label="Find Image" text-button @click=${this.findThumb}></hb-button>
-                    ` : html`
+                    ` : html `
                         <hb-button label="Select" text-button @click=${this.setThumb}></hb-button>
                         <hb-button label="Remove" text-button @click=${this.removeThumb}></hb-button>
                     `}
@@ -60,42 +56,36 @@ export class DocThumbSettingsTab extends LitElement {
             ></hb-find-file-dialog>    
         `;
     }
-
-    selectThumb(index: number) {
-        this.shadowRoot?.querySelectorAll("[thumb-index]").forEach(el =>
-            el.removeAttribute("selected"));
+    selectThumb(index) {
+        this.shadowRoot?.querySelectorAll("[thumb-index]").forEach(el => el.removeAttribute("selected"));
         if (index === this.selectedThumbIndex) {
             this.selectedThumbIndex = null;
-        } else {
+        }
+        else {
             this.shadowRoot?.querySelector(`[thumb-index="${index}"]`)?.setAttribute("selected", "");
             this.selectedThumbIndex = index;
         }
     }
-
-    onImageError(index:number) {
-        this.dispatchEvent(new DocThumbChangeEvent({removeIndex: index}));
+    onImageError(index) {
+        this.dispatchEvent(new PageThumbChangeEvent({ removeIndex: index }));
     }
-
     findThumb() {
         this.$findFileDlg.open = true;
     }
-
     setThumb() {
         this.selectedThumbIndex !== null &&
-            this.dispatchEvent(new DocThumbChangeEvent({setIndex: this.selectedThumbIndex}));
+            this.dispatchEvent(new PageThumbChangeEvent({ setIndex: this.selectedThumbIndex }));
     }
-
     removeThumb() {
         this.selectedThumbIndex !== null &&
-            this.dispatchEvent(new DocThumbChangeEvent({removeIndex: this.selectedThumbIndex}));
+            this.dispatchEvent(new PageThumbChangeEvent({ removeIndex: this.selectedThumbIndex }));
         this.selectedThumbIndex = null;
     }
-
-    fileSelected(event:FileSelectedEvent) {
-        this.dispatchEvent(new DocThumbChangeEvent({thumbs:[event.file.thumbUrl]}));
+    fileSelected(event) {
+        this.dispatchEvent(new PageThumbChangeEvent({ thumbs: [event.file.thumbUrl] }));
     }
-
-    static styles = [styles.types, styles.dialog, css`
+};
+PageThumbSettingsTab.styles = [styles.types, styles.dialog, css `
         :host {
             display: block;
         }
@@ -160,13 +150,17 @@ export class DocThumbSettingsTab extends LitElement {
         hb-button {
             width: 120px;
         }
-  `]
-}
-
-
-
-declare global {
-  interface HTMLElementTagNameMap {
-    'hb-doc-thumb-settings-tab': DocThumbSettingsTab
-  }
-}
+  `];
+__decorate([
+    property({ type: Object })
+], PageThumbSettingsTab.prototype, "state", void 0);
+__decorate([
+    state()
+], PageThumbSettingsTab.prototype, "selectedThumbIndex", void 0);
+__decorate([
+    query("hb-find-file-dialog")
+], PageThumbSettingsTab.prototype, "$findFileDlg", void 0);
+PageThumbSettingsTab = __decorate([
+    customElement('hb-page-thumb-settings-tab')
+], PageThumbSettingsTab);
+export { PageThumbSettingsTab };

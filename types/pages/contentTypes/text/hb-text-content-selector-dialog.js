@@ -10,8 +10,8 @@ import "../../../common/hb-button";
 import "../../../common/hb-horizontal-card";
 import "../../../common/hb-text-input";
 import { FileSelectedEvent } from "../../../files/hb-find-file-dialog";
+import { PageSelectedEvent } from "../../../pages/hb-find-page-dialog";
 import { styles } from "../../../styles";
-import { DocumentSelectedEvent } from "../../../doc/hb-find-doc-dialog"; // jch - update
 export var TextContentSelectorType;
 (function (TextContentSelectorType) {
     TextContentSelectorType["any"] = "any";
@@ -30,7 +30,7 @@ let TextContentSelectorDialog = class TextContentSelectorDialog extends LitEleme
     }
     static async openContentSelector(options) {
         const el = document.createElement("hb-text-content-selector-dialog");
-        el.addEventListener(DocumentSelectedEvent.eventType, (event) => options.onDocumentSelected(event));
+        el.addEventListener(PageSelectedEvent.eventType, (event) => options.onPageSelected(event));
         el.addEventListener(FileSelectedEvent.eventType, (event) => options.onFileSelected(event));
         document.body.appendChild(el);
         await el.updateComplete;
@@ -73,10 +73,10 @@ let TextContentSelectorDialog = class TextContentSelectorDialog extends LitEleme
                 </div>            
                             
             </dialog>
-            <hb-find-doc-dialog
-                @document-selected=${this.documentSelected}
+            <hb-find-page-dialog
+                @page-selected=${this.pageSelected}
                 @cancel=${this.close}
-            ></hb-find-doc-dialog>
+            ></hb-find-page-dialog>
             <hb-find-file-dialog
                 @file-selected=${this.fileSelected}
                 @cancel=${this.close}
@@ -85,7 +85,7 @@ let TextContentSelectorDialog = class TextContentSelectorDialog extends LitEleme
     }
     insertPage() {
         this.$dialog.close();
-        this.$findDocDlg.open = true;
+        this.$findPageDlg.showModal();
     }
     insertContent(type) {
         this.insertContentType(TextContentSelectorType.file);
@@ -95,8 +95,8 @@ let TextContentSelectorDialog = class TextContentSelectorDialog extends LitEleme
         this.$findFileDlg.setAttribute("file-type", type);
         this.$findFileDlg.open = true;
     }
-    documentSelected(event) {
-        this.dispatchEvent(new DocumentSelectedEvent(event.docModel));
+    pageSelected(event) {
+        this.dispatchEvent(new PageSelectedEvent(event.pageModel));
     }
     fileSelected(event) {
         this.dispatchEvent(new FileSelectedEvent(event.file));
@@ -123,8 +123,8 @@ __decorate([
     query("dialog")
 ], TextContentSelectorDialog.prototype, "$dialog", void 0);
 __decorate([
-    query("hb-find-doc-dialog")
-], TextContentSelectorDialog.prototype, "$findDocDlg", void 0);
+    query("hb-find-page-dialog")
+], TextContentSelectorDialog.prototype, "$findPageDlg", void 0);
 __decorate([
     query("hb-find-file-dialog")
 ], TextContentSelectorDialog.prototype, "$findFileDlg", void 0);

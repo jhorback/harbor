@@ -10,7 +10,7 @@ import "../domain/SystemAdmin/HbHomePageRepo";
 import { inject } from "../domain/DependencyContainer/decorators";
 import { HomePageRepoKey } from "../domain/interfaces/DocumentInterfaces";
 import { sendFeedback } from "../layout/feedback";
-import { docTypes } from "../domain/Doc/docTypes";
+import { pageTemplates } from "../domain/Pages/pageTemplates";
 /**
  * The job of this element is to look the home page
  * document up in the database and append the correct element to the dom
@@ -56,25 +56,19 @@ let HbHome = class HbHome extends LitElement {
             });
             return;
         }
-        // verify the docType exists
-        const docType = docTypes.get(homePageRef.docType);
-        if (!docType) {
-            this.showNotFound(`The docType was not found: ${homePageRef.docType}`);
+        // verify the pageTemplate exists
+        const pageTemplate = pageTemplates.get(homePageRef.pageTemplate);
+        if (!pageTemplate) {
+            this.showNotFound(`The page template was not found: ${homePageRef.pageTemplate}`);
             return;
         }
-        // verify the custom element has been defined
-        const el = docType.element;
-        if (customElements.get(el) === undefined) {
-            this.showNotFound(`The docType element was not defined: ${el}`);
-            return;
-        }
-        this.showDocElement(el, homePageRef.pid);
+        this.showDocElement(homePageRef.pathname);
     }
-    showDocElement(el, pid) {
-        const docEl = document.createElement(el);
-        docEl.setAttribute("pid", pid);
+    showDocElement(pathname) {
+        const pageEl = document.createElement("hb-page");
+        pageEl.setAttribute("pathname", pathname);
         this.$homeContainer.innerHTML = "";
-        this.$homeContainer.append(docEl);
+        this.$homeContainer.append(pageEl);
     }
     showNotFound(warn) {
         console.warn(warn);

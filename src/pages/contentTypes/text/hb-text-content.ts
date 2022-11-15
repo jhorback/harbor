@@ -146,7 +146,7 @@ const onHarborSearch = (editor:any) => () => {
     
     TextContentSelectorDialog.openContentSelector({
         type: selType,
-        onDocumentSelected: (event:Event) => {
+        onPageSelected: (event:Event) => {
         // jch - update
         //onDocumentSelected: (event:DocumentSelectedEvent) => {
             // const thumb = event.docModel.toDocumentThumbnail();

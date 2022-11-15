@@ -6,11 +6,13 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 import { css, html, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators.js";
+import { contentTypes } from "../../domain/Pages/contentTypes";
+import { sendFeedback } from "../../layout/feedback";
 import "../../layout/hb-page-layout";
 import { styles } from "../../styles";
 import "../hb-add-page-dialog";
-import { contentTypes } from "../../domain/Pages/contentTypes";
-import { sendFeedback } from "../../layout/feedback";
+import "./hb-page-author-settings";
+import "./hb-page-thumb-settings";
 import { PageController, UpdateShowSubtitleEvent, UpdateShowTitleEvent, UpdateSubtitleEvent } from "./PageController";
 export class PageEditModeChangeEvent extends Event {
     constructor(inEditMode) {
@@ -311,20 +313,18 @@ const renderEditSettingsTabContent = (page, state) => html `
 const showTitleClicked = (page) => (event) => page.shadowRoot?.dispatchEvent(new UpdateShowTitleEvent(event.selected));
 const showSubtitleClicked = (page) => (event) => page.shadowRoot?.dispatchEvent(new UpdateShowSubtitleEvent(event.selected));
 const renderEditThumbnailTabContent = (page, state) => {
-    // jch - need update
     return html `
         <div class="edit-tab-content">
-            <hb-doc-thumb-settings-tab .state=${state}></hb-doc-thumb-settings-tab>
+            <hb-page-thumb-settings-tab .state=${state}></hb-page-thumb-settings-tab>
         </div>
     `;
 };
 const renderEditAuthorTabContent = (page, state) => {
-    // jch - need update
     return html `
         <div class="edit-tab-content">
-            <hb-doc-author 
+            <hb-page-author-settings
                 uid=${state.page.authorUid}           
-            ></hb-doc-author>
+            ></hb-page-author-settings>
         </div>
     `;
 };

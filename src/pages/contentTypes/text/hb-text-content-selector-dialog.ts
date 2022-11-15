@@ -4,8 +4,8 @@ import "../../../common/hb-button";
 import "../../../common/hb-horizontal-card";
 import "../../../common/hb-text-input";
 import { FileSelectedEvent, FindFileDialog } from "../../../files/hb-find-file-dialog";
+import { FindPageDialog, PageSelectedEvent } from "../../../pages/hb-find-page-dialog";
 import { styles } from "../../../styles";
-import { DocumentSelectedEvent, FindDocDialog } from "../../../doc/hb-find-doc-dialog"; // jch - update
 
 
 export enum TextContentSelectorType {
@@ -20,7 +20,7 @@ export enum TextContentSelectorType {
 export interface ITextContentSelectorOptions {
     type:TextContentSelectorType;
     onFileSelected: (event:FileSelectedEvent) => void;
-    onDocumentSelected: (event:DocumentSelectedEvent) => void;
+    onPageSelected: (event:PageSelectedEvent) => void;
 }
 
 /**  
@@ -30,8 +30,8 @@ export class TextContentSelectorDialog extends LitElement {
 
     static async openContentSelector(options:ITextContentSelectorOptions) {
         const el = document.createElement("hb-text-content-selector-dialog") as TextContentSelectorDialog;
-        el.addEventListener(DocumentSelectedEvent.eventType, (event:Event) =>
-            options.onDocumentSelected(event as DocumentSelectedEvent));
+        el.addEventListener(PageSelectedEvent.eventType, (event:Event) =>
+            options.onPageSelected(event as PageSelectedEvent));
         el.addEventListener(FileSelectedEvent.eventType, (event:Event) =>
             options.onFileSelected(event as FileSelectedEvent));
         document.body.appendChild(el);
@@ -80,10 +80,10 @@ export class TextContentSelectorDialog extends LitElement {
                 </div>            
                             
             </dialog>
-            <hb-find-doc-dialog
-                @document-selected=${this.documentSelected}
+            <hb-find-page-dialog
+                @page-selected=${this.pageSelected}
                 @cancel=${this.close}
-            ></hb-find-doc-dialog>
+            ></hb-find-page-dialog>
             <hb-find-file-dialog
                 @file-selected=${this.fileSelected}
                 @cancel=${this.close}
@@ -91,15 +91,15 @@ export class TextContentSelectorDialog extends LitElement {
         `;
     }
 
-    @query("hb-find-doc-dialog")
-    $findDocDlg!:FindDocDialog;
+    @query("hb-find-page-dialog")
+    $findPageDlg!:FindPageDialog;
 
     @query("hb-find-file-dialog")
     $findFileDlg!:FindFileDialog;
 
     insertPage() {
         this.$dialog.close();
-        this.$findDocDlg.open = true;
+        this.$findPageDlg.showModal();
     }
 
     insertContent(type?:TextContentSelectorType) {
@@ -112,8 +112,8 @@ export class TextContentSelectorDialog extends LitElement {
         this.$findFileDlg.open = true;
     }
 
-    documentSelected(event:DocumentSelectedEvent) {
-        this.dispatchEvent(new DocumentSelectedEvent(event.docModel));
+    pageSelected(event:PageSelectedEvent) {
+        this.dispatchEvent(new PageSelectedEvent(event.pageModel));
     }
 
     fileSelected(event:FileSelectedEvent) {

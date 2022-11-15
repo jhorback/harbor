@@ -1,6 +1,7 @@
 import { Timestamp } from "firebase/firestore";
 import { TemplateResult } from "lit-html";
 import { DocModel } from "../Doc/DocModel";
+import { IPageReference, IPageThumbnail } from "./PageInterfaces";
 import { IThumbnail } from "./UIInterfaces";
 
 
@@ -112,7 +113,7 @@ export interface IDeleteDocRepo {
 
 export const HomePageRepoKey:symbol = Symbol("HOME_PAGE_REPO_KEY");
 export interface IHomePageRepo {
-    getHomePageRef():Promise<IDocumentReference|null>;
-    getHomePageThumbnail():Promise<IDocumentThumbnail|null>;
-    setHomePage(documentReference: IDocumentReference):Promise<void>;
+    getHomePageRef():Promise<IPageReference|null>;
+    getHomePageThumbnail():Promise<IPageThumbnail|null>;
+    setHomePage(pageReference: IPageReference):Promise<void>;
 }

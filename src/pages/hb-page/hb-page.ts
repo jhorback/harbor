@@ -1,15 +1,17 @@
 import { css, html, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators.js";
-import "../../layout/hb-page-layout";
-import { styles } from "../../styles";
-import "../hb-add-page-dialog";
-import { AddPageDialog } from "../hb-add-page-dialog";
 import { ContentEditableChangeEvent } from "../../common/hb-content-editable";
 import { SwitchChangeEvent } from "../../common/hb-switch";
 import { contentTypes } from "../../domain/Pages/contentTypes";
 import { sendFeedback } from "../../layout/feedback";
+import "../../layout/hb-page-layout";
+import { styles } from "../../styles";
+import "../hb-add-page-dialog";
+import { AddPageDialog } from "../hb-add-page-dialog";
 import { PageAddedEvent } from "../hb-add-page-dialog/AddPageController";
+import "./hb-page-author-settings";
 import { HbPageContent } from "./hb-page-content";
+import "./hb-page-thumb-settings";
 import { IPageState, PageController, UpdateShowSubtitleEvent, UpdateShowTitleEvent, UpdateSubtitleEvent } from "./PageController";
 
 
@@ -342,21 +344,19 @@ const showSubtitleClicked = (page:HbPage) => (event:SwitchChangeEvent) =>
 
 
 const renderEditThumbnailTabContent = (page:HbPage, state:IPageState) => {
-    // jch - need update
     return html`
         <div class="edit-tab-content">
-            <hb-doc-thumb-settings-tab .state=${state}></hb-doc-thumb-settings-tab>
+            <hb-page-thumb-settings-tab .state=${state}></hb-page-thumb-settings-tab>
         </div>
     `;
 };
 
 const renderEditAuthorTabContent = (page:HbPage, state:IPageState) => {
-    // jch - need update
     return html`
         <div class="edit-tab-content">
-            <hb-doc-author 
+            <hb-page-author-settings
                 uid=${state.page.authorUid}           
-            ></hb-doc-author>
+            ></hb-page-author-settings>
         </div>
     `;
 };

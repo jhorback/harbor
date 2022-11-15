@@ -2,7 +2,7 @@ import { html, css, LitElement } from "lit";
 import { customElement, property, query } from "lit/decorators.js";
 import { linkProp } from "@domx/linkprop";
 import { styles } from "../../styles";
-import { ISearchDocsState, SearchDocsData, SearchDocsEvent } from "../../doc/data/hb-search-docs-data";
+import { PageSearchController, SearchPagesEvent } from "../../pages/PageSearchController";
 import "../../common/hb-horizontal-card";
 
 /**
@@ -11,29 +11,26 @@ import "../../common/hb-horizontal-card";
 @customElement('hb-profile-docs-tab')
 export class ProfileDocsTab extends LitElement {
 
-    @property({type: Object})
-    state:ISearchDocsState = SearchDocsData.defaultState;
-
-    @query("hb-search-docs-data")
-    $dataEl!:SearchDocsData;
+    pageSearch:PageSearchController = new PageSearchController(this);
 
     async connectedCallback() {
         super.connectedCallback();
         await this.updateComplete;
-        this.$dataEl.dispatchEvent(new SearchDocsEvent({}));
+        this.dispatchEvent(new SearchPagesEvent({}));
     }
 
     render() {
+        const state = this.pageSearch.state;
         return html`
             <hb-search-docs-data
                 @state-changed=${linkProp(this, "state")}
             ></hb-search-docs-data>
-            ${this.state.isLoading || this.state.count !== 0 ? html`` : html`
+            ${state.isLoading || state.count !== 0 ? html`` : html`
                 <p>There are no documents</p>
             `}
             <div class="list">
-            ${this.state.list.map(docModel => {
-                const thumb = docModel.toDocumentThumbnail();
+            ${state.list.map(pageModel => {
+                const thumb = pageModel.toPageThumbnail();
                 return html`
                     <hb-horizontal-card
                         class="home-page-thumb"
