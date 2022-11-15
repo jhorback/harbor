@@ -11,6 +11,7 @@ import { HomePageRepoKey } from "../domain/interfaces/PageInterfaces";
 import { pageTemplates } from "../domain/Pages/pageTemplates";
 import "../domain/SystemAdmin/HbHomePageRepo";
 import { sendFeedback } from "../layout/feedback";
+import { RequestPageEvent } from "../pages/hb-page";
 /**
  * The job of this element is to look the home page
  * document up in the database and append the correct element to the dom
@@ -62,13 +63,14 @@ let HbHome = class HbHome extends LitElement {
             this.showNotFound(`The page template was not found: ${homePageRef.pageTemplate}`);
             return;
         }
-        this.showDocElement(homePageRef.pathname);
+        this.showPage(homePageRef.pathname);
     }
-    showDocElement(pathname) {
+    showPage(pathname) {
         const pageEl = document.createElement("hb-page");
         pageEl.setAttribute("pathname", pathname);
         this.$homeContainer.innerHTML = "";
         this.$homeContainer.append(pageEl);
+        pageEl.dispatchEvent(new RequestPageEvent());
     }
     showNotFound(warn) {
         console.warn(warn);

@@ -46,7 +46,7 @@ export class ProfilePage extends LitElement {
         <hb-link-tab
             id="pages-tab"
             label="Pages"
-            href="/profile/docs"
+            href="/profile/pages"
             ?hidden=${!isAuthorized(UserAction.authorDocuments)}
         ></hb-link-tab>
         <hb-link-tab

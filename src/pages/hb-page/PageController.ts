@@ -8,7 +8,15 @@ import { pageTemplates } from "../../domain/Pages/pageTemplates";
 import { HbPage } from "./hb-page";
 import "../../domain/Pages/HbEditPageRepo";
 import { HbCurrentUserChangedEvent } from "../../domain/HbAuth";
+import { LitElement } from "lit";
 
+
+export class RequestPageEvent extends Event {
+    static eventType = "request-page";
+    constructor() {
+        super(RequestPageEvent.eventType);
+    }
+}
 
 export class UpdateShowTitleEvent extends Event {
     static eventType = "update-show-title";
@@ -89,6 +97,10 @@ export interface IPageState {
     page:PageModel;
 }
 
+interface PageElement extends LitElement {
+    pathname:string;
+}
+
 export class PageController extends StateController {
 
     @stateProperty()
@@ -102,17 +114,11 @@ export class PageController extends StateController {
     @inject<IEditPageRepo>(EditPageRepoKey)
     private editPageRepo!:IEditPageRepo;
 
-    public host:HbPage;
+    public host:PageElement;
 
-    constructor(host:HbPage) {
+    constructor(host:PageElement) {
         super(host);
         this.host = host;
-    }
-
-    hostConnected() {
-        super.hostConnected();
-        this.editPageRepo.subscribeToPage(this.host.pathname,
-            subscribeToPage(this), this.abortController.signal);
     }
 
     @windowEvent(HbCurrentUserChangedEvent, {capture: false})
@@ -121,6 +127,12 @@ export class PageController extends StateController {
             .next(updateUserCanEdit)
             .next(updateUserCanAdd)
             .requestUpdate(event);
+    }
+
+    @hostEvent(RequestPageEvent)
+    private requestPage(event: RequestPageEvent) {
+        this.editPageRepo.subscribeToPage(this.host.pathname,
+            subscribeToPage(this), this.abortController.signal);
     }
 
     @hostEvent(UpdateShowTitleEvent)
@@ -180,7 +192,7 @@ const subscribeToPage = (pageController:PageController) => (page:PageModel) => {
         .next(updatePageLoaded(page))
         .next(updateUserCanEdit)
         .next(updateUserCanAdd)
-        .requestUpdate("PageController.subscribeToPage");
+        .requestUpdate(`PageController.subscribeToPage("${page.pathname}")`);
 };
 
 

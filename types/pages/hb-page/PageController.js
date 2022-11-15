@@ -12,6 +12,12 @@ import { PageModel } from "../../domain/Pages/PageModel";
 import { pageTemplates } from "../../domain/Pages/pageTemplates";
 import "../../domain/Pages/HbEditPageRepo";
 import { HbCurrentUserChangedEvent } from "../../domain/HbAuth";
+export class RequestPageEvent extends Event {
+    constructor() {
+        super(RequestPageEvent.eventType);
+    }
+}
+RequestPageEvent.eventType = "request-page";
 export class UpdateShowTitleEvent extends Event {
     constructor(showTitle) {
         super(UpdateShowTitleEvent.eventType);
@@ -72,15 +78,14 @@ export class PageController extends StateController {
         };
         this.host = host;
     }
-    hostConnected() {
-        super.hostConnected();
-        this.editPageRepo.subscribeToPage(this.host.pathname, subscribeToPage(this), this.abortController.signal);
-    }
     currentUserChanged(event) {
         Product.of(this)
             .next(updateUserCanEdit)
             .next(updateUserCanAdd)
             .requestUpdate(event);
+    }
+    requestPage(event) {
+        this.editPageRepo.subscribeToPage(this.host.pathname, subscribeToPage(this), this.abortController.signal);
     }
     updateShowTitle(event) {
         Product.of(this)
@@ -131,6 +136,9 @@ __decorate([
     windowEvent(HbCurrentUserChangedEvent, { capture: false })
 ], PageController.prototype, "currentUserChanged", null);
 __decorate([
+    hostEvent(RequestPageEvent)
+], PageController.prototype, "requestPage", null);
+__decorate([
     hostEvent(UpdateShowTitleEvent)
 ], PageController.prototype, "updateShowTitle", null);
 __decorate([
@@ -153,7 +161,7 @@ const subscribeToPage = (pageController) => (page) => {
         .next(updatePageLoaded(page))
         .next(updateUserCanEdit)
         .next(updateUserCanAdd)
-        .requestUpdate("PageController.subscribeToPage");
+        .requestUpdate(`PageController.subscribeToPage("${page.pathname}")`);
 };
 const savePage = (editPageRepo) => (product) => {
     editPageRepo.savePage(product.getState().page);

@@ -5,6 +5,7 @@ import { HomePageRepoKey, IHomePageRepo, IPageReference } from "../domain/interf
 import { pageTemplates } from "../domain/Pages/pageTemplates";
 import "../domain/SystemAdmin/HbHomePageRepo";
 import { sendFeedback } from "../layout/feedback";
+import { RequestPageEvent } from "../pages/hb-page";
 
 
 /**
@@ -73,14 +74,15 @@ export class HbHome extends LitElement {
             return;
         }
 
-        this.showDocElement(homePageRef.pathname);
+        this.showPage(homePageRef.pathname);
     }
 
-    private showDocElement(pathname:string) {
+    private showPage(pathname:string) {
         const pageEl = document.createElement("hb-page");
         pageEl.setAttribute("pathname", pathname);
         this.$homeContainer.innerHTML = "";
-        this.$homeContainer.append(pageEl); 
+        this.$homeContainer.append(pageEl);
+        pageEl.dispatchEvent(new RequestPageEvent());
     }
 
     private showNotFound(warn:string) {

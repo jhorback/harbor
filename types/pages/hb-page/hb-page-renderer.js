@@ -5,17 +5,24 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 import { html, LitElement } from "lit";
-import { customElement, property } from "lit/decorators.js";
+import { customElement, property, query } from "lit/decorators.js";
+import { RequestPageEvent } from "./PageController";
 let HbPageRenderer = class HbPageRenderer extends LitElement {
     render() {
         return html `
             <hb-page pathname=${location.pathname.toLowerCase()}></hb-page>
         `;
     }
+    updated() {
+        this.$hbPage.dispatchEvent(new RequestPageEvent());
+    }
 };
 __decorate([
     property({ type: String })
 ], HbPageRenderer.prototype, "pathname", void 0);
+__decorate([
+    query("hb-page")
+], HbPageRenderer.prototype, "$hbPage", void 0);
 HbPageRenderer = __decorate([
     customElement("hb-page-renderer")
 ], HbPageRenderer);
