@@ -6,6 +6,8 @@
  */
 import "./hb-page";
 import "./hb-page/hb-page-renderer";
+// page templates
 import "./pageTemplates/pagePageTemplate";
+// content types
 import "./contentTypes/text";
 import "./contentTypes/image";

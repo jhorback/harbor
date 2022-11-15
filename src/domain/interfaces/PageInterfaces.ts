@@ -73,9 +73,9 @@ export interface IPageData {
 
 export const SearchPagesRepoKey:symbol = Symbol("SEARCH_PAGES_REPO");
 export interface ISearchPagesRepo {
-    searchPages(options:ISearchPagesOptions):Promise<Array<PageModel>>;
+    searchPages(options:IPageSearchOptions):Promise<Array<PageModel>>;
 }
-export interface ISearchPagesOptions {
+export interface IPageSearchOptions {
     text?:string;
 }
 
