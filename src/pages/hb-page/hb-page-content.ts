@@ -29,7 +29,7 @@ export class HbPageContent extends LitElement {
 
     connectedCallback() {
         super.connectedCallback();
-        this.$pageHost.addEventListener(PageEditModeChangeEvent.eventType, this.editModeChange,
+        this.$pageHost.addEventListener(PageEditModeChangeEvent.eventType, this.editModeChange.bind(this),
             { signal: this.abortController.signal } as AddEventListenerOptions);
         this.pageEdit = (this.$pageHost as HbPage).inEditMode;
     }
@@ -162,16 +162,16 @@ export class HbPageContent extends LitElement {
             border-width: 0 0 1px 1px;
             background-color: var(--md-sys-color-surface-variant)
         }
-        :host([doc-edit]:hover),
-        :host([doc-edit][is-active]),
+        :host([page-edit]:hover),
+        :host([page-edit][is-active]),
         :host([content-edit]) {
             border-radius: var(--md-sys-shape-corner-medium);
             outline: 1px solid var(--md-sys-color-outline);
             margin: -1rem;
             padding: 1rem;
         }
-        :host([doc-edit]:hover) .edit-toolbar,
-        :host([doc-edit][is-active]) .edit-toolbar,
+        :host([page-edit]:hover) .edit-toolbar,
+        :host([page-edit][is-active]) .edit-toolbar,
         :host([content-edit]) .edit-toolbar {
             display: flex;
             justify-content: end;

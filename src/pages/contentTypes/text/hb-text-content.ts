@@ -7,7 +7,7 @@ import { FileUploadCompleteEvent, FileUploaderAccept, FileUploadPanel } from "..
 import { FileSelectedEvent } from "../../../files/hb-find-file-dialog";
 import { styles } from "../../../styles";
 import { ContentActiveChangeEvent, PageThumbChangeEvent, UpdatePageContentEvent } from "../../hb-page";
-// import { DocumentSelectedEvent } from "../../hb-find-doc-dialog";
+import { PageSelectedEvent } from "../../hb-find-page-dialog";
 import { HbPageContent } from "../../hb-page";
 import { TextContentData } from "./textContentType";
 import { TextContentSelectorDialog, TextContentSelectorType } from "./hb-text-content-selector-dialog";
@@ -31,7 +31,7 @@ export class TextContent extends LitElement {
         return html`
             <hb-page-content @content-active-change=${this.contentActive} ?is-empty=${!this.data.text}>
                 <div class="clearfix">${unsafeHTML(this.data.text)}</div>
-                <div slot="doc-edit-empty" @click=${this.textClicked}>
+                <div slot="page-edit-empty" @click=${this.textClicked}>
                     Click to enter text content
                 </div>
                 <div slot="content-edit">
@@ -146,13 +146,11 @@ const onHarborSearch = (editor:any) => () => {
     
     TextContentSelectorDialog.openContentSelector({
         type: selType,
-        onPageSelected: (event:Event) => {
-        // jch - update
-        //onDocumentSelected: (event:DocumentSelectedEvent) => {
-            // const thumb = event.docModel.toDocumentThumbnail();
-            // const content = `<a href="${thumb.href}" title="${thumb.title}" data-type="page">${thumb.title}</a>`;
-            // editor.selection.select(selectedNode);
-            // editor.insertContent(content);
+        onPageSelected: (event:PageSelectedEvent) => {
+            const thumb = event.pageModel.toPageThumbnail();
+            const content = `<a href="${thumb.href}" title="${thumb.title}" data-type="page">${thumb.title}</a>`;
+            editor.selection.select(selectedNode);
+            editor.insertContent(content);
         },
         onFileSelected: (event:FileSelectedEvent) => {
             insertFile(selectedNode, editor, {...event.file, fileDbPath:""});
@@ -180,7 +178,7 @@ const insertFile = (selectedNode:any, editor:any, file:IUploadedFile) => {
     file.type?.indexOf("audio") === 0 ? FileType.audio :
     file.type?.indexOf("video") === 0 ? FileType.video : FileType.file;
 
-    // tell the document we may have some thumbs
+    // tell the page we may have some thumbs
     const thumbs:Array<string> = [];
     file.thumbUrl && thumbs.push(file.thumbUrl);
     file.pictureUrl && thumbs.push(file.pictureUrl);

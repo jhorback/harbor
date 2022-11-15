@@ -27,7 +27,7 @@ let TextContent = TextContent_1 = class TextContent extends LitElement {
         return html `
             <hb-page-content @content-active-change=${this.contentActive} ?is-empty=${!this.data.text}>
                 <div class="clearfix">${unsafeHTML(this.data.text)}</div>
-                <div slot="doc-edit-empty" @click=${this.textClicked}>
+                <div slot="page-edit-empty" @click=${this.textClicked}>
                     Click to enter text content
                 </div>
                 <div slot="content-edit">
@@ -144,12 +144,10 @@ const onHarborSearch = (editor) => () => {
     TextContentSelectorDialog.openContentSelector({
         type: selType,
         onPageSelected: (event) => {
-            // jch - update
-            //onDocumentSelected: (event:DocumentSelectedEvent) => {
-            // const thumb = event.docModel.toDocumentThumbnail();
-            // const content = `<a href="${thumb.href}" title="${thumb.title}" data-type="page">${thumb.title}</a>`;
-            // editor.selection.select(selectedNode);
-            // editor.insertContent(content);
+            const thumb = event.pageModel.toPageThumbnail();
+            const content = `<a href="${thumb.href}" title="${thumb.title}" data-type="page">${thumb.title}</a>`;
+            editor.selection.select(selectedNode);
+            editor.insertContent(content);
         },
         onFileSelected: (event) => {
             insertFile(selectedNode, editor, { ...event.file, fileDbPath: "" });
@@ -173,7 +171,7 @@ const insertFile = (selectedNode, editor, file) => {
     const fileType = file.type?.indexOf("image") === 0 ? FileType.image :
         file.type?.indexOf("audio") === 0 ? FileType.audio :
             file.type?.indexOf("video") === 0 ? FileType.video : FileType.file;
-    // tell the document we may have some thumbs
+    // tell the page we may have some thumbs
     const thumbs = [];
     file.thumbUrl && thumbs.push(file.thumbUrl);
     file.pictureUrl && thumbs.push(file.pictureUrl);

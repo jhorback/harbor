@@ -45,7 +45,7 @@ let ImageContent = class ImageContent extends LitElement {
                         file_upload
                     </span>
                 </div>
-                <div slot="doc-edit-empty" @click=${this.clickedEmpty}>
+                <div slot="page-edit-empty" @click=${this.clickedEmpty}>
                     ${this.renderImage("/content/thumbs/files-thumb.svg")}
                 </div>
                 <div slot="content-edit">
