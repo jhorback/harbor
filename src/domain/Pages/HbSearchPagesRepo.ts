@@ -4,7 +4,7 @@ import { HbApp } from "../HbApp";
 import { HbCurrentUser, UserAction } from "../HbCurrentUser";
 import { HbDb } from "../HbDb";
 import {
-    ISearchPagesOptions,
+    IPageSearchOptions,
     ISearchPagesRepo,
     SearchPagesRepoKey
 } from "../interfaces/PageInterfaces";
@@ -14,7 +14,7 @@ import { PageModel } from "./PageModel";
 @provides<ISearchPagesRepo>(SearchPagesRepoKey, !HbApp.isStorybook)
 class SearchPagesRepo implements ISearchPagesRepo {
 
-    async searchPages(options: ISearchPagesOptions): Promise<PageModel[]> {
+    async searchPages(options: IPageSearchOptions): Promise<PageModel[]> {
         const currentUser = new HbCurrentUser();
         const searchText = options.text?.toLowerCase();
         const queryArgs:Array<QueryConstraint> = [];
