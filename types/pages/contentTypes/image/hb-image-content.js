@@ -8,7 +8,6 @@ import { html, css, LitElement } from "lit";
 import { customElement, property, query } from "lit/decorators.js";
 import { styles } from "../../../styles";
 import { ImageSize } from "./imageContentType";
-import "../hb-content";
 import { FileUploaderAccept } from "../../../files/hb-file-upload-panel";
 import "../../../files/hb-find-file-dialog";
 import { FileType } from "../../../domain/interfaces/FileInterfaces";

@@ -12,7 +12,6 @@ import { linkProp } from "@domx/linkprop";
 import "../../common/hb-button";
 import "../../common/hb-horizontal-card";
 import "../../doc/hb-find-doc-dialog";
-import "../../doc/hb-add-document-dialog";
 /**
  * @class ProfileAdminTab
  */
