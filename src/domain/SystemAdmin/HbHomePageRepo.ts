@@ -4,9 +4,8 @@ import { HbApp } from "../HbApp";
 import { authorize, UserAction } from "../HbCurrentUser";
 import { HbDb } from "../HbDb";
 import {
-    HomePageRepoKey, IHomePageRepo
-} from "../interfaces/DocumentInterfaces";
-import { IPageReference, IPageThumbnail } from "../interfaces/PageInterfaces";
+    HomePageRepoKey, IHomePageRepo, IPageReference, IPageThumbnail
+} from "../interfaces/PageInterfaces";
 import { FindPageRepo } from "../Pages/FindPageRepo";
 
 

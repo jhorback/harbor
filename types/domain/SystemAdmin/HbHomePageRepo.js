@@ -9,7 +9,7 @@ import { provides } from "../DependencyContainer/decorators";
 import { HbApp } from "../HbApp";
 import { authorize, UserAction } from "../HbCurrentUser";
 import { HbDb } from "../HbDb";
-import { HomePageRepoKey } from "../interfaces/DocumentInterfaces";
+import { HomePageRepoKey } from "../interfaces/PageInterfaces";
 import { FindPageRepo } from "../Pages/FindPageRepo";
 ;
 let HbHomePageRepo = class HbHomePageRepo {

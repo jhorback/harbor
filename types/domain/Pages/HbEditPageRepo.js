@@ -41,7 +41,7 @@ let EditPageRepo = class EditPageRepo {
     }
     async savePage(page) {
         try {
-            await setDoc(doc(HbDb.current, "documents", page.uid)
+            await setDoc(doc(HbDb.current, "pages", page.uid)
                 .withConverter(PageModel), page);
         }
         catch (error) {

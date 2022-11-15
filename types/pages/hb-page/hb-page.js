@@ -6,6 +6,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 import { css, html, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators.js";
+import "../../common/hb-content-editable";
 import { contentTypes } from "../../domain/Pages/contentTypes";
 import { sendFeedback } from "../../layout/feedback";
 import "../../layout/hb-page-layout";
@@ -85,7 +86,7 @@ let HbPage = class HbPage extends LitElement {
         `;
     }
     subtitleChange(event) {
-        this.shadowRoot?.dispatchEvent(new UpdateSubtitleEvent(event.value));
+        this.dispatchEvent(new UpdateSubtitleEvent(event.value));
     }
     contentEmpty(event) {
         event.host.className = !this.inEditMode && event.isEmpty ?

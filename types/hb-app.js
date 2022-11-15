@@ -15,7 +15,6 @@ import "./app/profile/hb-profile-page";
 import "./app/hb-about-page";
 import "./hb-current-user-data";
 import "./layout/feedback/hb-feedback";
-import { docTypes } from "./domain/Doc/docTypes";
 /**
  *
  */
@@ -61,14 +60,6 @@ let HarborApp = class HarborApp extends LitElement {
                 element="hb-page-renderer"
                 append-to="#hb-app"
             ></domx-route-not-found>
-            
-            ${docTypes.all().map(type => html `
-                <domx-route
-                pattern=${`${type.route}/:pid`}
-                element=${type.element}
-                append-to="#hb-app"
-                ></domx-route>
-            `)}
         `}
       `;
     }

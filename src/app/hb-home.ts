@@ -1,12 +1,10 @@
-import { html, css, LitElement } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, query } from "lit/decorators.js";
-import "../domain/SystemAdmin/HbHomePageRepo";
 import { inject } from "../domain/DependencyContainer/decorators";
-import { IDocumentReference, IHomePageRepo, HomePageRepoKey } from "../domain/interfaces/DocumentInterfaces";
-import { sendFeedback } from "../layout/feedback";
-import { docTypes } from "../domain/Doc/docTypes";
-import { IPageReference } from "../domain/interfaces/PageInterfaces";
+import { HomePageRepoKey, IHomePageRepo, IPageReference } from "../domain/interfaces/PageInterfaces";
 import { pageTemplates } from "../domain/Pages/pageTemplates";
+import "../domain/SystemAdmin/HbHomePageRepo";
+import { sendFeedback } from "../layout/feedback";
 
 
 /**

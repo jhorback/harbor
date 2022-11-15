@@ -1,5 +1,6 @@
 import { css, html, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators.js";
+import "../../common/hb-content-editable";
 import { ContentEditableChangeEvent } from "../../common/hb-content-editable";
 import { SwitchChangeEvent } from "../../common/hb-switch";
 import { contentTypes } from "../../domain/Pages/contentTypes";
@@ -107,7 +108,7 @@ export class HbPage extends LitElement {
     }
 
     private subtitleChange(event:ContentEditableChangeEvent) {
-        this.shadowRoot?.dispatchEvent(new UpdateSubtitleEvent(event.value));
+        this.dispatchEvent(new UpdateSubtitleEvent(event.value));
     }
 
     private contentEmpty(event:ContentEmptyEvent) {

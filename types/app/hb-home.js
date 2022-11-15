@@ -4,13 +4,13 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-import { html, css, LitElement } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, query } from "lit/decorators.js";
-import "../domain/SystemAdmin/HbHomePageRepo";
 import { inject } from "../domain/DependencyContainer/decorators";
-import { HomePageRepoKey } from "../domain/interfaces/DocumentInterfaces";
-import { sendFeedback } from "../layout/feedback";
+import { HomePageRepoKey } from "../domain/interfaces/PageInterfaces";
 import { pageTemplates } from "../domain/Pages/pageTemplates";
+import "../domain/SystemAdmin/HbHomePageRepo";
+import { sendFeedback } from "../layout/feedback";
 /**
  * The job of this element is to look the home page
  * document up in the database and append the correct element to the dom

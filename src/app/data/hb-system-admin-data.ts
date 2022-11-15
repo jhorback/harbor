@@ -2,9 +2,8 @@ import { DataElement, StateChange } from "@domx/dataelement";
 import { customDataElement, dataProperty, event } from "@domx/dataelement/decorators";
 import { inject } from "../../domain/DependencyContainer/decorators";
 import {
-    HomePageRepoKey, IHomePageRepo
-} from "../../domain/interfaces/DocumentInterfaces";
-import { IPageReference, IPageThumbnail } from "../../domain/interfaces/PageInterfaces";
+    HomePageRepoKey, IHomePageRepo, IPageReference, IPageThumbnail
+} from "../../domain/interfaces/PageInterfaces";
 import { sendFeedback } from "../../layout/feedback";
 
 

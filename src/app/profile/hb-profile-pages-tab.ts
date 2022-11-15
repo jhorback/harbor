@@ -6,10 +6,9 @@ import { PageSearchController, SearchPagesEvent } from "../../pages/PageSearchCo
 import "../../common/hb-horizontal-card";
 
 /**
- * @class ProfileDocsTab
  */
-@customElement('hb-profile-docs-tab')
-export class ProfileDocsTab extends LitElement {
+@customElement('hb-profile-pages-tab')
+export class ProfilePagesTab extends LitElement {
 
     pageSearch:PageSearchController = new PageSearchController(this);
 
@@ -26,7 +25,7 @@ export class ProfileDocsTab extends LitElement {
                 @state-changed=${linkProp(this, "state")}
             ></hb-search-docs-data>
             ${state.isLoading || state.count !== 0 ? html`` : html`
-                <p>There are no documents</p>
+                <p>There are no pages</p>
             `}
             <div class="list">
             ${state.list.map(pageModel => {
@@ -60,6 +59,6 @@ export class ProfileDocsTab extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'hb-profile-docs-tab': ProfileDocsTab
+    'hb-profile-pages-tab': ProfilePagesTab
   }
 }

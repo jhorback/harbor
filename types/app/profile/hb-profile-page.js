@@ -15,7 +15,7 @@ import "../../layout/hb-page-layout";
 import "../../common/tabs/hb-link-tab";
 import "../../common/tabs/hb-tab-bar";
 import "@domx/router/domx-route";
-import "./hb-profile-docs-tab";
+import "./hb-profile-pages-tab";
 import "./hb-profile-files-tab";
 import "./hb-profile-users-tab";
 import "./hb-profile-admin-tab";
@@ -25,7 +25,7 @@ import "./hb-profile-admin-tab";
 let ProfilePage = class ProfilePage extends LitElement {
     constructor() {
         super(...arguments);
-        this.selectedTab = "documents-tab";
+        this.selectedTab = "pages-tab";
         this.currentUser = CurrentUserData.defaultCurrentUser;
     }
     render() {
@@ -43,8 +43,8 @@ let ProfilePage = class ProfilePage extends LitElement {
     </div>
     <hb-tab-bar selected-tab=${this.selectedTab}>
         <hb-link-tab
-            id="documents-tab"
-            label="Documents"
+            id="pages-tab"
+            label="Pages"
             href="/profile/docs"
             ?hidden=${!isAuthorized(UserAction.authorDocuments)}
         ></hb-link-tab>
@@ -69,10 +69,10 @@ let ProfilePage = class ProfilePage extends LitElement {
     </hb-tab-bar>
     ${isAuthorized(UserAction.authorDocuments) ? html `
         <domx-route
-            pattern="/profile(/docs)"
-            element="hb-profile-docs-tab"
+            pattern="/profile(/pages)"
+            element="hb-profile-pages-tab"
             append-to="#tab-content-container"
-            @route-active=${() => this.selectTab("documents-tab")}
+            @route-active=${() => this.selectTab("pages-tab")}
         ></domx-route>
     ` : html ``}
     ${isAuthorized(UserAction.uploadFiles) ? html `

@@ -186,6 +186,7 @@ const subscribeToPage = (pageController:PageController) => (page:PageModel) => {
 
 
 const savePage = (editPageRepo:IEditPageRepo) => (product:Product<IPageState>) => {
+    debugger;
     editPageRepo.savePage(product.getState().page);
 };
 
