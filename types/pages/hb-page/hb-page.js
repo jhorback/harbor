@@ -12,6 +12,7 @@ import { sendFeedback } from "../../layout/feedback";
 import "../../layout/hb-page-layout";
 import { styles } from "../../styles";
 import "../hb-add-page-dialog";
+import "../hb-delete-page-dialog";
 import "./hb-page-author-settings";
 import "./hb-page-thumb-settings";
 import { PageController, UpdateShowSubtitleEvent, UpdateShowTitleEvent, UpdateSubtitleEvent } from "./PageController";
@@ -47,8 +48,6 @@ let HbPage = class HbPage extends LitElement {
         this.activeContent = null;
     }
     get stateId() { return this.pathname; }
-    // @query("hb-delete-page-dialog")
-    // $deletePagetDialog!:DeletePageDialog;
     render() {
         const state = this.page.state;
         const page = state.page;
@@ -108,8 +107,7 @@ let HbPage = class HbPage extends LitElement {
         this.dispatchEditModeChange();
     }
     deletePageClicked() {
-        alert("delete page");
-        // this.$deleteDocumentDialog.open = true;
+        this.$deletePageDialog.showModal();
     }
     doneButtonClicked() {
         this.selectedEditTab = "";
@@ -206,6 +204,9 @@ __decorate([
 __decorate([
     query("hb-add-page-dialog")
 ], HbPage.prototype, "$addPageDlg", void 0);
+__decorate([
+    query("hb-delete-page-dialog")
+], HbPage.prototype, "$deletePageDialog", void 0);
 HbPage = __decorate([
     customElement("hb-page")
 ], HbPage);
@@ -311,8 +312,8 @@ const renderEditSettingsTabContent = (page, state) => html `
         </div>            
     </div>
 `;
-const showTitleClicked = (page) => (event) => page.shadowRoot?.dispatchEvent(new UpdateShowTitleEvent(event.selected));
-const showSubtitleClicked = (page) => (event) => page.shadowRoot?.dispatchEvent(new UpdateShowSubtitleEvent(event.selected));
+const showTitleClicked = (page) => (event) => page.dispatchEvent(new UpdateShowTitleEvent(event.selected));
+const showSubtitleClicked = (page) => (event) => page.dispatchEvent(new UpdateShowSubtitleEvent(event.selected));
 const renderEditThumbnailTabContent = (page, state) => {
     return html `
         <div class="edit-tab-content">

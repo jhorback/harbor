@@ -10,6 +10,8 @@ import { styles } from "../../styles";
 import "../hb-add-page-dialog";
 import { AddPageDialog } from "../hb-add-page-dialog";
 import { PageAddedEvent } from "../hb-add-page-dialog/AddPageController";
+import { DeletePageDialog } from "../hb-delete-page-dialog";
+import "../hb-delete-page-dialog";
 import "./hb-page-author-settings";
 import { HbPageContent } from "./hb-page-content";
 import "./hb-page-thumb-settings";
@@ -66,8 +68,8 @@ export class HbPage extends LitElement {
     @query("hb-add-page-dialog")
     $addPageDlg!:AddPageDialog;
 
-    // @query("hb-delete-page-dialog")
-    // $deletePagetDialog!:DeletePageDialog;
+    @query("hb-delete-page-dialog")
+    $deletePageDialog!:DeletePageDialog;
 
     render() {
         const state = this.page.state;
@@ -135,8 +137,7 @@ export class HbPage extends LitElement {
     }
 
     deletePageClicked() {
-        alert("delete page");
-        // this.$deleteDocumentDialog.open = true;
+        this.$deletePageDialog.showModal();
     }
 
     doneButtonClicked() {
@@ -337,11 +338,11 @@ const renderEditSettingsTabContent = (page:HbPage, state:IPageState) => html`
 `;
 
 const showTitleClicked = (page:HbPage) => (event:SwitchChangeEvent) =>
-    page.shadowRoot?.dispatchEvent(new UpdateShowTitleEvent(event.selected));
+    page.dispatchEvent(new UpdateShowTitleEvent(event.selected));
 
 
 const showSubtitleClicked = (page:HbPage) => (event:SwitchChangeEvent) => 
-    page.shadowRoot?.dispatchEvent(new UpdateShowSubtitleEvent(event.selected));
+    page.dispatchEvent(new UpdateShowSubtitleEvent(event.selected));
 
 
 const renderEditThumbnailTabContent = (page:HbPage, state:IPageState) => {

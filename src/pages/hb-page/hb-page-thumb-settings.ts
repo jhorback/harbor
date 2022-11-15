@@ -34,7 +34,7 @@ export class PageThumbSettingsTab extends LitElement {
                     <div class="label-medium">Subtitle</div>
                     ${page.subtitle}
                 </div>
-                <div class="thumbs-ctr">
+                <div class="thumbs-ctr thumbs-grid">
                     <div class="label-medium">Available thumbs</div>
                     <div class="thumbs">
                         ${page.thumbUrls.map((thumb, index) => html`
@@ -109,6 +109,9 @@ export class PageThumbSettingsTab extends LitElement {
         }
         .container > .thumb-ctr, .subtitle { 
             padding: 5px 0;
+        }
+        .thumbs-grid {
+            padding-top: 5px;
         }
         .thumb-ctr, .thumb-ctr .thumb {             
             width: 100px;

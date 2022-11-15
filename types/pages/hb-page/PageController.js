@@ -156,7 +156,6 @@ const subscribeToPage = (pageController) => (page) => {
         .requestUpdate("PageController.subscribeToPage");
 };
 const savePage = (editPageRepo) => (product) => {
-    debugger;
     editPageRepo.savePage(product.getState().page);
 };
 const updateUserCanEdit = (state) => {
