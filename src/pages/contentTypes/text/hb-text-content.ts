@@ -11,26 +11,36 @@ import { PageSelectedEvent } from "../../hb-find-page-dialog";
 import { HbPageContent } from "../../hb-page";
 import { TextContentData } from "./textContentType";
 import { TextContentSelectorDialog, TextContentSelectorType } from "./hb-text-content-selector-dialog";
+import { PageContentController } from "../../hb-page/PageContentController";
 
 /**
  */
 @customElement('hb-text-content')
 export class TextContent extends LitElement {
-    static defaultState = new TextContentData();
 
-    @property({type:Number})
+    get stateId() { return this.pathname; }
+
+    pageContent:PageContentController<TextContentData> = new PageContentController(this);
+
+    @property({type: String})
+    pathname:string = "";
+
+    @property({type:Number, attribute: "content-index"})
     contentIndex:number = -1;
-
-    @property({type: Object})
-    data:TextContentData = TextContent.defaultState;
 
     @query("hb-page-content")
     $hbPageContent!:HbPageContent;
 
     render() {
+        const content = this.pageContent.content || new TextContentData(); // jch use default?
         return html`
-            <hb-page-content @content-active-change=${this.contentActive} ?is-empty=${!this.data.text}>
-                <div class="clearfix">${unsafeHTML(this.data.text)}</div>
+            <hb-page-content
+                pathname=${this.pathname}
+                content-index=${this.contentIndex}
+                ?is-empty=${!content.text}
+                @content-active-change=${this.contentActive}>
+
+                <div class="clearfix">${unsafeHTML(content.text)}</div>
                 <div slot="page-edit-empty" @click=${this.textClicked}>
                     Click to enter text content
                 </div>
@@ -44,14 +54,14 @@ export class TextContent extends LitElement {
                         menubar="false"
                         toolbar="undo redo | styles | bold italic underline strikethrough | align |
                         bullist numlist indent hr | harborSearch harborUpload | link image media table | codesample  fullscreen"
-                >${this.data.text}</tinymce-editor>
+                >${content.text}</tinymce-editor>
                 </div>
             </hb-page-content>
         `;
     }
 
     contentActive(event:ContentActiveChangeEvent) {
-        if (event.active) {
+        if (event.options.isActive) {
             // @ts-ignore
             import("@tinymce/tinymce-webcomponent");
         }
@@ -61,7 +71,7 @@ export class TextContent extends LitElement {
         this.$hbPageContent.edit();
     }
 
-    tinymceChange(event:ChangeEvent) {        
+    tinymceChange(event:TinymceChangeEvent) {        
         this.checkForThumbs(event.value);
         this.dispatchEvent(new UpdatePageContentEvent(this.contentIndex, TextContentData.of(event.value)));
     }
@@ -128,7 +138,7 @@ if (!window.tinymceSettings) {
               ]
         },
         changeHandler: (event:ITinyMceChangeEvent) => {
-            event.target.targetElm.dispatchEvent(new ChangeEvent(event.target.getContent()))
+            event.target.targetElm.dispatchEvent(new TinymceChangeEvent(event.target.getContent()))
         }  
     } 
 }
@@ -217,11 +227,11 @@ interface ITinyMceSettings {
     config: any
 }
 
-class ChangeEvent extends Event {
+class TinymceChangeEvent extends Event {
     static eventType = "change";
     value:string;
     constructor(value:string) {
-        super(ChangeEvent.eventType, {bubbles:true, composed: true});
+        super(TinymceChangeEvent.eventType, {bubbles:true, composed: true});
         this.value = value;
     }
 }

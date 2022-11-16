@@ -4,7 +4,6 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-var TextContent_1;
 import { css, html, LitElement } from "lit";
 import { customElement, property, query } from "lit/decorators.js";
 import { unsafeHTML } from "lit/directives/unsafe-html.js";
@@ -15,18 +14,27 @@ import { styles } from "../../../styles";
 import { PageThumbChangeEvent, UpdatePageContentEvent } from "../../hb-page";
 import { TextContentData } from "./textContentType";
 import { TextContentSelectorDialog, TextContentSelectorType } from "./hb-text-content-selector-dialog";
+import { PageContentController } from "../../hb-page/PageContentController";
 /**
  */
-let TextContent = TextContent_1 = class TextContent extends LitElement {
+let TextContent = class TextContent extends LitElement {
     constructor() {
         super(...arguments);
+        this.pageContent = new PageContentController(this);
+        this.pathname = "";
         this.contentIndex = -1;
-        this.data = TextContent_1.defaultState;
     }
+    get stateId() { return this.pathname; }
     render() {
+        const content = this.pageContent.content || new TextContentData(); // jch use default?
         return html `
-            <hb-page-content @content-active-change=${this.contentActive} ?is-empty=${!this.data.text}>
-                <div class="clearfix">${unsafeHTML(this.data.text)}</div>
+            <hb-page-content
+                pathname=${this.pathname}
+                content-index=${this.contentIndex}
+                ?is-empty=${!content.text}
+                @content-active-change=${this.contentActive}>
+
+                <div class="clearfix">${unsafeHTML(content.text)}</div>
                 <div slot="page-edit-empty" @click=${this.textClicked}>
                     Click to enter text content
                 </div>
@@ -40,13 +48,13 @@ let TextContent = TextContent_1 = class TextContent extends LitElement {
                         menubar="false"
                         toolbar="undo redo | styles | bold italic underline strikethrough | align |
                         bullist numlist indent hr | harborSearch harborUpload | link image media table | codesample  fullscreen"
-                >${this.data.text}</tinymce-editor>
+                >${content.text}</tinymce-editor>
                 </div>
             </hb-page-content>
         `;
     }
     contentActive(event) {
-        if (event.active) {
+        if (event.options.isActive) {
             // @ts-ignore
             import("@tinymce/tinymce-webcomponent");
         }
@@ -69,7 +77,6 @@ let TextContent = TextContent_1 = class TextContent extends LitElement {
         thumbs.length > 0 && this.dispatchEvent(new PageThumbChangeEvent({ thumbs }));
     }
 };
-TextContent.defaultState = new TextContentData();
 TextContent.styles = [styles.types, styles.format, css `
         :host {
             display: block;
@@ -81,15 +88,15 @@ TextContent.styles = [styles.types, styles.format, css `
         }
   `];
 __decorate([
-    property({ type: Number })
-], TextContent.prototype, "contentIndex", void 0);
+    property({ type: String })
+], TextContent.prototype, "pathname", void 0);
 __decorate([
-    property({ type: Object })
-], TextContent.prototype, "data", void 0);
+    property({ type: Number, attribute: "content-index" })
+], TextContent.prototype, "contentIndex", void 0);
 __decorate([
     query("hb-page-content")
 ], TextContent.prototype, "$hbPageContent", void 0);
-TextContent = TextContent_1 = __decorate([
+TextContent = __decorate([
     customElement('hb-text-content')
 ], TextContent);
 export { TextContent };
@@ -128,7 +135,7 @@ if (!window.tinymceSettings) {
             ]
         },
         changeHandler: (event) => {
-            event.target.targetElm.dispatchEvent(new ChangeEvent(event.target.getContent()));
+            event.target.targetElm.dispatchEvent(new TinymceChangeEvent(event.target.getContent()));
         }
     };
 }
@@ -196,10 +203,10 @@ const insertFile = (selectedNode, editor, file) => {
     editor.insertContent(content);
 };
 ;
-class ChangeEvent extends Event {
+class TinymceChangeEvent extends Event {
     constructor(value) {
-        super(ChangeEvent.eventType, { bubbles: true, composed: true });
+        super(TinymceChangeEvent.eventType, { bubbles: true, composed: true });
         this.value = value;
     }
 }
-ChangeEvent.eventType = "change";
+TinymceChangeEvent.eventType = "change";

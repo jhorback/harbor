@@ -1,55 +1,45 @@
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import { styles } from "../../styles";
-import { ContentActiveChangeEvent, ContentEmptyEvent, HbPage, PageEditModeChangeEvent } from "./hb-page";
+import { ContentActiveChangeEvent } from "./PageController";
 import { MovePageContentEvent } from "./PageController";
+import { PageContentController } from "./PageContentController";
 
 /**
  */
 @customElement('hb-page-content')
 export class HbPageContent extends LitElement {
 
+    get stateId() { return this.pathname; }
+
+    pageContent:PageContentController<any> = new PageContentController(this);
+
+    @property({type: String})
+    pathname:string = "";
+
+    @property({type: Number, attribute:"content-index"})
+    contentIndex:number = -1;
+
     @property({type: Boolean, attribute: "is-empty"})
     isEmpty = false;
 
-    @property({type: Boolean, attribute: "page-edit", reflect: true})
-    pageEdit = false;
+    // @property({type: Boolean, attribute: "page-edit", reflect: true})
+    // pageEdit = false;
 
-    @property({type: Boolean, attribute: "content-edit", reflect: true})
-    contentEdit = false;
+    // @property({type: Boolean, attribute: "content-edit", reflect: true})
+    // contentEdit = false;
 
-    @property({type: Boolean, attribute: "is-active", reflect: true})
-    isActive = false;
-
-    abortController = new AbortController();
-
-    get $pageHost() { return (this.$contentHost.getRootNode() as ShadowRoot).host as HbPage; }
-
-    get $contentHost() { return (this.getRootNode() as ShadowRoot).host }
-
-    connectedCallback() {
-        super.connectedCallback();
-        this.$pageHost.addEventListener(PageEditModeChangeEvent.eventType, this.editModeChange.bind(this),
-            { signal: this.abortController.signal } as AddEventListenerOptions);
-        this.pageEdit = (this.$pageHost as HbPage).inEditMode;
-    }
-
-    disconnectedCallback() {
-        super.disconnectedCallback();
-        this.abortController.abort();
-        this.abortController = new AbortController();
-    }
-
-    editModeChange(event:Event) {
-        this.pageEdit = (event as PageEditModeChangeEvent).inEditMode;
-    }
+    // @property({type: Boolean, attribute: "is-active", reflect: true})
+    // isActive = false;
 
     render() {
+        const pageState = this.pageContent.page.state;
+        const contentState = this.pageContent.state;
         return html`
             <div class="hb-content" @click=${this.contentClicked}>
-                ${this.pageEdit ? html`
+                ${pageState.inEditMode ? html`
                     <div class="edit-toolbar">
-                        ${this.contentEdit ? html`
+                        ${contentState.inContentEditMode ? html`
                             <slot name="edit-toolbar"></slot>
                             <span
                                 class="icon-button icon-small"
@@ -63,6 +53,7 @@ export class HbPageContent extends LitElement {
                                 class="icon-button icon-small"
                                 tab-index="0"
                                 title="Move down"
+                                ?disabled=${!contentState.canMoveDown}
                                 @click=${this.moveDownClicked}>
                                 arrow_downward
                             </span>
@@ -70,6 +61,7 @@ export class HbPageContent extends LitElement {
                                 class="icon-button icon-small"
                                 tab-index="0"
                                 title="Move up"
+                                ?disabled=${!contentState.canMoveUp}
                                 @click=${this.moveUpClicked}>
                                 arrow_upward
                             </span>
@@ -90,9 +82,9 @@ export class HbPageContent extends LitElement {
                         `}                    
                     </div>                
                 ` : html``}
-                ${!this.contentEdit && this.pageEdit && this.isEmpty ? html`
+                ${!contentState.inContentEditMode && pageState.inEditMode && this.isEmpty ? html`
                     <slot name="page-edit-empty"></slot>
-                ` : this.contentEdit ? html`
+                ` : contentState.inContentEditMode ? html`
                     <slot name="content-edit"></slot>
                     <div class="content-edit-tools">
                         <slot name="content-edit-tools"></slot>
@@ -104,32 +96,34 @@ export class HbPageContent extends LitElement {
         `;
     }
 
-    updated() {
-        const index = (this.$contentHost as IIndexable).contentIndex;
-        this.dispatchEvent(new ContentEmptyEvent(this.$contentHost, this.isEmpty));
-    }
-
     private contentClicked(event:Event) {
-        if(this.pageEdit && !this.isActive) {
-            this.dispatchEvent(new ContentActiveChangeEvent(this, true));
+        if(this.pageContent.page.pageEdit && !this.pageContent.state.isActive) {
+            this.dispatchEvent(new ContentActiveChangeEvent({
+                contentIndex: this.contentIndex,
+                isActive: true,
+                inEditMode: false
+            }));
         }
     }
 
     private moveUpClicked() {
-        const index = (this.$contentHost as IIndexable).contentIndex;
-        index !== undefined ? this.dispatchEvent(new MovePageContentEvent(index, true)) :
-            console.error("Cannot move up, content has no content index");
+        const contentState = this.pageContent.state;
+        contentState.canMoveUp &&
+            this.dispatchEvent(new MovePageContentEvent(this.contentIndex, true));
     }
 
     private moveDownClicked() {
-        const index = (this.$contentHost as IIndexable).contentIndex;
-        index !== undefined ? this.dispatchEvent(new MovePageContentEvent(index, false)) :
-            console.error("Cannot move down, content has no content index");
+        const contentState = this.pageContent.state;
+        contentState.canMoveDown &&
+            this.dispatchEvent(new MovePageContentEvent(this.contentIndex, false));
     }
 
     edit() {
-        this.dispatchEvent(new ContentActiveChangeEvent(this, true));
-        this.contentEdit = true;
+        this.dispatchEvent(new ContentActiveChangeEvent({
+            contentIndex: this.contentIndex,
+            isActive: true,
+            inEditMode: true
+        }));
     }
 
     delete() {
@@ -140,8 +134,11 @@ export class HbPageContent extends LitElement {
     }
 
     done(event:Event) {
-        this.dispatchEvent(new ContentActiveChangeEvent(this, false));
-        event.stopImmediatePropagation();
+        this.dispatchEvent(new ContentActiveChangeEvent({
+            contentIndex: this.contentIndex,
+            inEditMode: false,
+            isActive: false
+        }));
     }
 
     static styles = [styles.icons, css`
@@ -182,6 +179,9 @@ export class HbPageContent extends LitElement {
             // outline: 1px solid var(--md-sys-color-outline);        
             margin: -1rem;
             margin-top: 8px;
+        }
+        span[disabled] {
+            opacity: 0.12;
         }
   `];
 }

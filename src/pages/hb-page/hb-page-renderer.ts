@@ -1,7 +1,7 @@
 import { html, LitElement } from "lit";
 import { customElement, property, query } from "lit/decorators.js";
 import { HbPage } from "./hb-page";
-import { RequestPageEvent } from "./PageController";
+import { PagePathnameChangeEvent, RequestPageEvent } from "./PageController";
 
 
 @customElement("hb-page-renderer")
@@ -19,8 +19,12 @@ export class HbPageRenderer extends LitElement {
         `;
     }
 
-    updated() {
-        this.$hbPage.dispatchEvent(new RequestPageEvent());
+    async updated() {
+        window.dispatchEvent(new PagePathnameChangeEvent(this.pathname));
+        await this.$hbPage.updateComplete;
+        setTimeout(() => {
+            this.$hbPage.dispatchEvent(new RequestPageEvent());
+        });
     }
 }
 

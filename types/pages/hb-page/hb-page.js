@@ -5,7 +5,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 import { css, html, LitElement } from "lit";
-import { customElement, property, query, state } from "lit/decorators.js";
+import { customElement, property, query } from "lit/decorators.js";
 import "../../common/hb-content-editable";
 import { contentTypes } from "../../domain/Pages/contentTypes";
 import { sendFeedback } from "../../layout/feedback";
@@ -15,37 +15,11 @@ import "../hb-add-page-dialog";
 import "../hb-delete-page-dialog";
 import "./hb-page-author-settings";
 import "./hb-page-thumb-settings";
-import { PageController, UpdateShowSubtitleEvent, UpdateShowTitleEvent, UpdateSubtitleEvent } from "./PageController";
-export class PageEditModeChangeEvent extends Event {
-    constructor(inEditMode) {
-        super(PageEditModeChangeEvent.eventType, { bubbles: false });
-        this.inEditMode = inEditMode;
-    }
-}
-PageEditModeChangeEvent.eventType = "page-edit-mode-change";
-export class ContentEmptyEvent extends Event {
-    constructor(host, isEmpty) {
-        super(ContentEmptyEvent.eventType, { bubbles: true, composed: true });
-        this.host = host;
-        this.isEmpty = isEmpty;
-    }
-}
-ContentEmptyEvent.eventType = "content-empty";
-export class ContentActiveChangeEvent extends Event {
-    constructor(activeContent, active) {
-        super(ContentActiveChangeEvent.eventType, { bubbles: true, composed: true });
-        this.activeContent = activeContent;
-        this.active = active;
-    }
-}
-ContentActiveChangeEvent.eventType = "content-active-change";
+import { EditTabClickedEvent, PageController, PageEditModeChangeEvent, UpdateShowSubtitleEvent, UpdateShowTitleEvent, UpdateSubtitleEvent } from "./PageController";
 let HbPage = class HbPage extends LitElement {
     constructor() {
         super(...arguments);
         this.page = new PageController(this);
-        this.inEditMode = false;
-        this.selectedEditTab = "";
-        this.activeContent = null;
     }
     get stateId() { return this.pathname; }
     render() {
@@ -54,11 +28,11 @@ let HbPage = class HbPage extends LitElement {
         return html `
             <hb-page-layout>
                 ${renderAppBarButtons(this, state)}
-                ${this.inEditMode ? renderEditTabs(this, state) : html ``}
+                ${state.inEditMode ? renderEditTabs(this, state) : html ``}
                 <div ?hidden=${!state.isLoaded}>
-                    <h1 class="headline-large" ?hidden=${!this.inEditMode && !page.showTitle}>${page.title}</h1>
+                    <h1 class="headline-large" ?hidden=${!state.inEditMode && !page.showTitle}>${page.title}</h1>
 
-                    ${this.inEditMode ? html `
+                    ${state.inEditMode ? html `
                         <hb-content-editable
                             class="body-large"
                             value=${page.subtitle}
@@ -71,14 +45,10 @@ let HbPage = class HbPage extends LitElement {
                         </div>
                     `}
                 </div>
-                <div class="page-content"
-                    @content-active-change=${this.contentActive}
-                    @content-empty=${this.contentEmpty}
-                >
+                <div class="page-content">
                     ${state.page.content.map((data, contentIndex) => contentTypes.get(data.contentType).render({
             pathname: this.pathname,
-            contentIndex,
-            data
+            contentIndex
         }))}
                 </div>
             </hb-page-layout>
@@ -86,10 +56,6 @@ let HbPage = class HbPage extends LitElement {
     }
     subtitleChange(event) {
         this.dispatchEvent(new UpdateSubtitleEvent(event.value));
-    }
-    contentEmpty(event) {
-        event.host.className = !this.inEditMode && event.isEmpty ?
-            "empty" : "";
     }
     addPageClicked() {
         this.$addPageDlg.showModal();
@@ -103,33 +69,13 @@ let HbPage = class HbPage extends LitElement {
         });
     }
     editPageClicked() {
-        this.inEditMode = true;
-        this.dispatchEditModeChange();
+        this.dispatchEvent(new PageEditModeChangeEvent(true));
     }
     deletePageClicked() {
         this.$deletePageDialog.showModal();
     }
     doneButtonClicked() {
-        this.selectedEditTab = "";
-        this.inEditMode = false;
-        this.closeActiveContent();
-        this.dispatchEditModeChange();
-    }
-    contentActive(event) {
-        this.closeActiveContent();
-        if (event.active) {
-            this.activeContent = event.activeContent;
-            this.activeContent.isActive = true;
-        }
-    }
-    closeActiveContent() {
-        if (this.activeContent) {
-            this.activeContent.isActive = false;
-            this.activeContent.contentEdit = false;
-        }
-    }
-    dispatchEditModeChange() {
-        this.dispatchEvent(new PageEditModeChangeEvent(this.inEditMode));
+        this.dispatchEvent(new PageEditModeChangeEvent(false));
     }
 };
 HbPage.styles = [styles.types, styles.icons, css `
@@ -196,12 +142,6 @@ __decorate([
     property({ type: String })
 ], HbPage.prototype, "pathname", void 0);
 __decorate([
-    state()
-], HbPage.prototype, "inEditMode", void 0);
-__decorate([
-    state()
-], HbPage.prototype, "selectedEditTab", void 0);
-__decorate([
     query("hb-add-page-dialog")
 ], HbPage.prototype, "$addPageDlg", void 0);
 __decorate([
@@ -214,19 +154,19 @@ export { HbPage };
 const renderAppBarButtons = (page, state) => html `
     <div slot="app-bar-buttons">
         <span
-            ?hidden=${!state.currentUserCanEdit || page.inEditMode}
+            ?hidden=${!state.currentUserCanEdit || state.inEditMode}
             class="icon-button icon-medium"
             tabindex="0"
             @click=${page.editPageClicked}
         >edit_document</span>
         <span
-            ?hidden=${!state.currentUserCanAdd || page.inEditMode}
+            ?hidden=${!state.currentUserCanAdd || state.inEditMode}
             class="icon-button icon-medium"
             tabindex="0"
             @click=${page.addPageClicked}
         >add_circle</span>
         <hb-button
-            ?hidden=${!page.inEditMode}
+            ?hidden=${!state.inEditMode}
             tonal
             label="Done"
             @hb-button-click=${page.doneButtonClicked}
@@ -241,33 +181,32 @@ const renderEditTabs = (page, state) => html `
         <hb-button           
             text-button
             label="Settings"
-            ?selected=${page.selectedEditTab === "settings"}
+            ?selected=${state.selectedEditTab === "settings"}
             @click=${clickEditTab(page, "settings")}
         ></hb-button>
         <hb-button           
             text-button
             label="Thumbnail"
-            ?selected=${page.selectedEditTab === "thumbnail"}
+            ?selected=${state.selectedEditTab === "thumbnail"}
             @click=${clickEditTab(page, "thumbnail")}
         ></hb-button>
         <hb-button           
             text-button
             label="Author"
-            ?selected=${page.selectedEditTab === "author"}
+            ?selected=${state.selectedEditTab === "author"}
             @click=${clickEditTab(page, "author")}
         ></hb-button>
     </div>
     ${state.isLoaded ? renderEditTabContent(page, state) : html ``}
 `;
 const clickEditTab = (page, tab) => (event) => {
-    const nextTab = page.selectedEditTab === tab ? "" : tab;
-    page.selectedEditTab = nextTab;
+    page.dispatchEvent(new EditTabClickedEvent(tab));
 };
-const renderEditTabContent = (page, state) => page.selectedEditTab === "settings" ?
+const renderEditTabContent = (page, state) => state.selectedEditTab === "settings" ?
     renderEditSettingsTabContent(page, state) :
-    page.selectedEditTab === "thumbnail" ?
+    state.selectedEditTab === "thumbnail" ?
         renderEditThumbnailTabContent(page, state) :
-        page.selectedEditTab === "author" ?
+        state.selectedEditTab === "author" ?
             renderEditAuthorTabContent(page, state) :
             html ``;
 const renderEditSettingsTabContent = (page, state) => html `

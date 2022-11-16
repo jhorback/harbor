@@ -33,9 +33,8 @@ const imageContentType = {
     description: "An image in the format of jpg, gif, png, etc.",
     render: (options) => html `
         <hb-image-content
-            .pathname=${options.pathname}
-            .contentIndex=${options.contentIndex}
-            .data=${options.data}
+            pathname=${options.pathname}
+            content-index=${options.contentIndex}
         ></hb-image-content>
     `
 };

@@ -6,15 +6,19 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 import { html, LitElement } from "lit";
 import { customElement, property, query } from "lit/decorators.js";
-import { RequestPageEvent } from "./PageController";
+import { PagePathnameChangeEvent, RequestPageEvent } from "./PageController";
 let HbPageRenderer = class HbPageRenderer extends LitElement {
     render() {
         return html `
             <hb-page pathname=${location.pathname.toLowerCase()}></hb-page>
         `;
     }
-    updated() {
-        this.$hbPage.dispatchEvent(new RequestPageEvent());
+    async updated() {
+        window.dispatchEvent(new PagePathnameChangeEvent(this.pathname));
+        await this.$hbPage.updateComplete;
+        setTimeout(() => {
+            this.$hbPage.dispatchEvent(new RequestPageEvent());
+        });
     }
 };
 __decorate([
