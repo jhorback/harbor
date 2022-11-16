@@ -98,16 +98,7 @@ ContentActiveChangeEvent.eventType = "content-active-change";
 export class PageController extends StateController {
     constructor(host) {
         super(host);
-        this.state = {
-            isLoaded: false,
-            page: new PageModel(),
-            currentUserCanEdit: true,
-            currentUserCanAdd: true,
-            selectedEditTab: "",
-            inEditMode: false,
-            activeContentIndex: -1,
-            editableContentIndex: -1
-        };
+        this.state = { ...PageController.defaultState };
         this.host = host;
     }
     currentUserChanged(event) {
@@ -117,6 +108,7 @@ export class PageController extends StateController {
             .requestUpdate(event);
     }
     async pagePathnameChangeEvent(event) {
+        this.state = { ...PageController.defaultState };
         await this.host.updateComplete;
         this.refreshState();
     }
@@ -177,6 +169,16 @@ export class PageController extends StateController {
             .requestUpdate(event);
     }
 }
+PageController.defaultState = {
+    isLoaded: false,
+    page: new PageModel(),
+    currentUserCanEdit: true,
+    currentUserCanAdd: true,
+    selectedEditTab: "",
+    inEditMode: false,
+    activeContentIndex: -1,
+    editableContentIndex: -1
+};
 __decorate([
     stateProperty()
 ], PageController.prototype, "state", void 0);

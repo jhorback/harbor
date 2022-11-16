@@ -36,7 +36,11 @@ export class HbPageContent extends LitElement {
         const pageState = this.pageContent.page.state;
         const contentState = this.pageContent.state;
         return html`
-            <div class="hb-content" @click=${this.contentClicked}>
+            <div class="hb-content"
+                ?page-edit=${pageState.inEditMode}
+                ?content-edit=${contentState.inContentEditMode}
+                ?is-active=${contentState.isActive}
+                @click=${this.contentClicked}>
                 ${pageState.inEditMode ? html`
                     <div class="edit-toolbar">
                         ${contentState.inContentEditMode ? html`
@@ -143,8 +147,11 @@ export class HbPageContent extends LitElement {
 
     static styles = [styles.icons, css`
         :host {
+            display: block;       
+        }
+        .hb-content {
             display: block;
-            position: relative;       
+            position: relative;
         }
         .edit-toolbar {
             display: none;
@@ -159,17 +166,17 @@ export class HbPageContent extends LitElement {
             border-width: 0 0 1px 1px;
             background-color: var(--md-sys-color-surface-variant)
         }
-        :host([page-edit]:hover),
-        :host([page-edit][is-active]),
-        :host([content-edit]) {
+        .hb-content[page-edit]:hover,
+        .hb-content[page-edit][is-active],
+        .hb-content[content-edit] {
             border-radius: var(--md-sys-shape-corner-medium);
             outline: 1px solid var(--md-sys-color-outline);
             margin: -1rem;
             padding: 1rem;
         }
-        :host([page-edit]:hover) .edit-toolbar,
-        :host([page-edit][is-active]) .edit-toolbar,
-        :host([content-edit]) .edit-toolbar {
+        .hb-content[page-edit]:hover .edit-toolbar,
+        .hb-content[page-edit][is-active] .edit-toolbar,
+        .hb-content[content-edit] .edit-toolbar {
             display: flex;
             justify-content: end;
         }

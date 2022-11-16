@@ -39,16 +39,7 @@ let TextContent = class TextContent extends LitElement {
                     Click to enter text content
                 </div>
                 <div slot="content-edit">
-                    <tinymce-editor
-                        config="tinymceSettings.config"
-                        on-Change="tinymceSettings.changeHandler"
-                        @change=${this.tinymceChange}
-                        api-key="g3l947xa1kp0eguyzlt3vwy92xiobi1mowojbtjllsw91xyt"
-                        height="500"
-                        menubar="false"
-                        toolbar="undo redo | styles | bold italic underline strikethrough | align |
-                        bullist numlist indent hr | harborSearch harborUpload | link image media table | codesample  fullscreen"
-                >${content.text}</tinymce-editor>
+                   <!-- tinymce here -->
                 </div>
             </hb-page-content>
         `;
@@ -57,6 +48,29 @@ let TextContent = class TextContent extends LitElement {
         if (event.options.isActive) {
             // @ts-ignore
             import("@tinymce/tinymce-webcomponent");
+            // need to programmatically create the tinymce element to account for moving content
+            // when it is in the dom, the content.text is held on to 
+            const container = this.shadowRoot?.querySelector("[slot=content-edit]");
+            this.$contentEditSlot.innerHTML = "";
+            const tiny = document.createElement("tinymce-editor");
+            tiny.setAttribute("config", "tinymceSettings.config");
+            tiny.setAttribute("on-change", "tinymceSettings.changeHandler");
+            tiny.setAttribute("api-key", "g3l947xa1kp0eguyzlt3vwy92xiobi1mowojbtjllsw91xyt");
+            tiny.setAttribute("height", "500");
+            tiny.setAttribute("menubar", "false");
+            tiny.setAttribute("toolbar", [
+                "undo redo",
+                "styles",
+                "bold italic underline strikethrough",
+                "align",
+                "bullist numlist indent hr",
+                "harborSearch harborUpload",
+                "link image media table",
+                "codesample  fullscreen"
+            ].join(" | "));
+            tiny.innerText = this.pageContent.content.text;
+            tiny.addEventListener("change", (event) => this.tinymceChange(event));
+            this.$contentEditSlot.appendChild(tiny);
         }
     }
     textClicked() {
@@ -96,6 +110,9 @@ __decorate([
 __decorate([
     query("hb-page-content")
 ], TextContent.prototype, "$hbPageContent", void 0);
+__decorate([
+    query("[slot=content-edit]")
+], TextContent.prototype, "$contentEditSlot", void 0);
 TextContent = __decorate([
     customElement('hb-text-content')
 ], TextContent);

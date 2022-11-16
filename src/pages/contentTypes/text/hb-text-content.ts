@@ -31,6 +31,9 @@ export class TextContent extends LitElement {
     @query("hb-page-content")
     $hbPageContent!:HbPageContent;
 
+    @query("[slot=content-edit]")
+    $contentEditSlot!:HTMLDivElement;
+
     render() {
         const content = this.pageContent.content || new TextContentData(); // jch use default?
         return html`
@@ -45,16 +48,7 @@ export class TextContent extends LitElement {
                     Click to enter text content
                 </div>
                 <div slot="content-edit">
-                    <tinymce-editor
-                        config="tinymceSettings.config"
-                        on-Change="tinymceSettings.changeHandler"
-                        @change=${this.tinymceChange}
-                        api-key="g3l947xa1kp0eguyzlt3vwy92xiobi1mowojbtjllsw91xyt"
-                        height="500"
-                        menubar="false"
-                        toolbar="undo redo | styles | bold italic underline strikethrough | align |
-                        bullist numlist indent hr | harborSearch harborUpload | link image media table | codesample  fullscreen"
-                >${content.text}</tinymce-editor>
+                   <!-- tinymce here -->
                 </div>
             </hb-page-content>
         `;
@@ -64,6 +58,30 @@ export class TextContent extends LitElement {
         if (event.options.isActive) {
             // @ts-ignore
             import("@tinymce/tinymce-webcomponent");
+
+            // need to programmatically create the tinymce element to account for moving content
+            // when it is in the dom, the content.text is held on to 
+            const container = this.shadowRoot?.querySelector("[slot=content-edit]") as HTMLDivElement;
+            this.$contentEditSlot.innerHTML = "";
+            const tiny = document.createElement("tinymce-editor");
+            tiny.setAttribute("config", "tinymceSettings.config");
+            tiny.setAttribute("on-change", "tinymceSettings.changeHandler");
+            tiny.setAttribute("api-key", "g3l947xa1kp0eguyzlt3vwy92xiobi1mowojbtjllsw91xyt");
+            tiny.setAttribute("height", "500");
+            tiny.setAttribute("menubar", "false");
+            tiny.setAttribute("toolbar", [
+                "undo redo",
+                "styles",
+                "bold italic underline strikethrough",
+                "align",
+                "bullist numlist indent hr",
+                "harborSearch harborUpload",
+                "link image media table",
+                "codesample  fullscreen"
+            ].join(" | "));
+            tiny.innerText = this.pageContent.content.text;
+            tiny.addEventListener("change", (event:Event) => this.tinymceChange(event as TinymceChangeEvent));
+            this.$contentEditSlot.appendChild(tiny);
         }
     }
 

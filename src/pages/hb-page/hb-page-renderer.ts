@@ -21,10 +21,7 @@ export class HbPageRenderer extends LitElement {
 
     async updated() {
         window.dispatchEvent(new PagePathnameChangeEvent(this.pathname));
-        await this.$hbPage.updateComplete;
-        setTimeout(() => {
-            this.$hbPage.dispatchEvent(new RequestPageEvent());
-        });
+        this.$hbPage.dispatchEvent(new RequestPageEvent());
     }
 }
 

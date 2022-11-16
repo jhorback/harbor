@@ -148,9 +148,7 @@ export interface IPageElement extends LitElement {
 }
 
 export class PageController extends StateController {
-
-    @stateProperty()
-    state:IPageState = {
+    static defaultState:IPageState = {
         isLoaded: false,
         page: new PageModel(),
         currentUserCanEdit: true,
@@ -160,6 +158,9 @@ export class PageController extends StateController {
         activeContentIndex: -1,
         editableContentIndex: -1
     };
+
+    @stateProperty()
+    state:IPageState = {...PageController.defaultState};
 
     @inject<IEditPageRepo>(EditPageRepoKey)
     private editPageRepo!:IEditPageRepo;
@@ -181,6 +182,7 @@ export class PageController extends StateController {
 
     @windowEvent(PagePathnameChangeEvent, {capture: false})
     private async pagePathnameChangeEvent(event:PagePathnameChangeEvent) {
+        this.state = {...PageController.defaultState};
         await this.host.updateComplete;
         this.refreshState();
     }

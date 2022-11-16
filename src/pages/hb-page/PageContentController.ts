@@ -29,8 +29,8 @@ export class PageContentController<TContentType extends IContentType> extends St
         return {
             inContentEditMode: this.host.contentIndex === this.page.state.activeContentIndex,
             isActive: this.host.contentIndex === this.page.state.activeContentIndex,
-            canMoveUp: this.contentIndex > 0,
-            canMoveDown: this.contentIndex < this.page.state.page.content.length - 1
+            canMoveUp: this.page.state.activeContentIndex === -1 && this.host.contentIndex > 0,
+            canMoveDown: this.page.state.activeContentIndex === -1 && this.host.contentIndex < this.page.state.page.content.length - 1
         };
     }
 
