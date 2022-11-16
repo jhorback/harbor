@@ -123,6 +123,7 @@ export class AddPageDialog extends LitElement {
 
     private addButtonClicked() {
         this.dispatchEvent(new AddNewPageEvent());
+        this.close();
     }
 
     static styles = [styles.types, styles.dialog, css`

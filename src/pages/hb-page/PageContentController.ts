@@ -25,7 +25,7 @@ export class PageContentController<TContentType extends IContentType> extends St
         return this.page.state.page.content[this.host.contentIndex] as TContentType;
     }
 
-    get state():IPageContentState {
+    get contentState():IPageContentState {
         return {
             inContentEditMode: this.host.contentIndex === this.page.state.activeContentIndex,
             isActive: this.host.contentIndex === this.page.state.activeContentIndex,

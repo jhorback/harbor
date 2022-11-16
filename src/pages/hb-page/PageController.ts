@@ -8,6 +8,7 @@ import { pageTemplates } from "../../domain/Pages/pageTemplates";
 import "../../domain/Pages/HbEditPageRepo";
 import { HbCurrentUserChangedEvent } from "../../domain/HbAuth";
 import { LitElement } from "lit";
+import { NotFoundError } from "../../domain/Errors";
 
 
 export class RequestPageEvent extends Event {
@@ -267,6 +268,12 @@ export class PageController extends StateController {
 
 
 const subscribeToPage = (pageController:PageController) => (page:PageModel) => {
+
+    // happens if the page is deleted
+    if (!page) {
+        throw new NotFoundError("Page Not Found");
+    }
+
     Product.of<IPageState>(pageController)
         .next(updatePageLoaded(page))
         .next(updateUserCanEdit)

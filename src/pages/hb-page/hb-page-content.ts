@@ -34,7 +34,7 @@ export class HbPageContent extends LitElement {
 
     render() {
         const pageState = this.pageContent.page.state;
-        const contentState = this.pageContent.state;
+        const contentState = this.pageContent.contentState;
         return html`
             <div class="hb-content"
                 ?page-edit=${pageState.inEditMode}
@@ -101,7 +101,7 @@ export class HbPageContent extends LitElement {
     }
 
     private contentClicked(event:Event) {
-        if(this.pageContent.page.pageEdit && !this.pageContent.state.isActive) {
+        if(this.pageContent.page.pageEdit && !this.pageContent.contentState.isActive) {
             this.dispatchEvent(new ContentActiveChangeEvent({
                 contentIndex: this.contentIndex,
                 isActive: true,
@@ -111,13 +111,13 @@ export class HbPageContent extends LitElement {
     }
 
     private moveUpClicked() {
-        const contentState = this.pageContent.state;
+        const contentState = this.pageContent.contentState;
         contentState.canMoveUp &&
             this.dispatchEvent(new MovePageContentEvent(this.contentIndex, true));
     }
 
     private moveDownClicked() {
-        const contentState = this.pageContent.state;
+        const contentState = this.pageContent.contentState;
         contentState.canMoveDown &&
             this.dispatchEvent(new MovePageContentEvent(this.contentIndex, false));
     }
