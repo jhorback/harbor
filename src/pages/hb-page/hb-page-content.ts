@@ -23,15 +23,6 @@ export class HbPageContent extends LitElement {
     @property({type: Boolean, attribute: "is-empty"})
     isEmpty = false;
 
-    // @property({type: Boolean, attribute: "page-edit", reflect: true})
-    // pageEdit = false;
-
-    // @property({type: Boolean, attribute: "content-edit", reflect: true})
-    // contentEdit = false;
-
-    // @property({type: Boolean, attribute: "is-active", reflect: true})
-    // isActive = false;
-
     render() {
         const pageState = this.pageContent.page.state;
         const contentState = this.pageContent.contentState;

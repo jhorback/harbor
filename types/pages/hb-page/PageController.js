@@ -12,6 +12,7 @@ import { PageModel } from "../../domain/Pages/PageModel";
 import { pageTemplates } from "../../domain/Pages/pageTemplates";
 import "../../domain/Pages/HbEditPageRepo";
 import { HbCurrentUserChangedEvent } from "../../domain/HbAuth";
+import { NotFoundError } from "../../domain/Errors";
 export class RequestPageEvent extends Event {
     constructor() {
         super(RequestPageEvent.eventType);
@@ -222,6 +223,10 @@ __decorate([
     hostEvent(ContentActiveChangeEvent)
 ], PageController.prototype, "contentActiveChange", null);
 const subscribeToPage = (pageController) => (page) => {
+    // happens if the page is deleted
+    if (!page) {
+        throw new NotFoundError("Page Not Found");
+    }
     Product.of(pageController)
         .next(updatePageLoaded(page))
         .next(updateUserCanEdit)

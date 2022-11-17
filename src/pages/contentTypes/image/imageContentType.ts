@@ -15,18 +15,13 @@ export enum ImageAlignment {
     right = "right"
 }
 
-export class ImageContentDataState implements IContentType {
+export class ImageContentData implements IContentType {
     contentType = "image";
     size:ImageSize = ImageSize.small;
     alignment:ImageAlignment = ImageAlignment.left;
     url:string|null = null;
     thumbUrl:string|null = null;
     fileDbPath:string|null = null;
-    toPlainObject():ImageContentDataState {
-        return {
-            ...this
-        } as ImageContentDataState;
-    }
 }
 
 

@@ -1,29 +1,26 @@
-import { html, css, LitElement } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property, query } from "lit/decorators.js";
-import { styles } from "../../../styles";
-import { ImageAlignment, ImageContentDataState, ImageSize } from "./imageContentType";
-import { HbPageContent } from "../../hb-page";
-import { FileUploadCompleteEvent, FileUploadPanel, FileUploaderAccept } from "../../../files/hb-file-upload-panel";
+import { FileType } from "../../../domain/interfaces/FileInterfaces";
+import { FileUploadCompleteEvent, FileUploaderAccept, FileUploadPanel } from "../../../files/hb-file-upload-panel";
 import "../../../files/hb-find-file-dialog";
 import { FileSelectedEvent, FindFileDialog } from "../../../files/hb-find-file-dialog";
-import { FileType } from "../../../domain/interfaces/FileInterfaces";
+import { styles } from "../../../styles";
+import { HbPageContent } from "../../hb-page";
 import { ImageAlignmentChangeEvent, ImageContentController, ImageContentSelectedEvent, ImageSizeChangeEvent } from "./ImageContentController";
+import { ImageAlignment, ImageSize } from "./imageContentType";
 
 /**
  */
 @customElement('hb-image-content')
 export class ImageContent extends LitElement {
 
-    get stateId() { return `${this.docUid}:content:${this.contentIndex}`; }
+    get stateId() { return this.pathname; }
 
     @property({type:String})
-    docUid:string = "";
+    pathname:string = "";
 
-    @property({type:Number})
+    @property({type:Number, attribute: "content-index"})
     contentIndex:number = -1;
-
-    @property({type: Object})
-    data!:ImageContentDataState;    
 
     imageContent = new ImageContentController(this);
 
@@ -37,9 +34,12 @@ export class ImageContent extends LitElement {
     $findFileDlg!:FindFileDialog;
 
     render() {
-        const state = this.imageContent.state;
+        const state = this.imageContent.content;
         return html`
-            <hb-page-content ?is-empty=${!state.url}>                
+            <hb-page-content
+                pathname=${this.pathname}
+                content-index=${this.contentIndex}
+                ?is-empty=${!state.url}>                
                 <div>
                     ${this.renderImage(this.getImageSrcPerSize())}
                 </div>
@@ -96,14 +96,14 @@ export class ImageContent extends LitElement {
     }
 
     private getImageSrcPerSize() {
-        const state = this.imageContent.state;
+        const state = this.imageContent.content;
         return state.size === ImageSize.small ?
             state.thumbUrl ? state.thumbUrl :
                 state.url : state.url;
     }
 
     private renderImage(src:string|null) {
-        const {state} = this.imageContent;
+        const state = this.imageContent.content;
         return !src ? html`` : html`
             <div size=${state.size} alignment=${state.alignment}>
                 <img src=${src}>

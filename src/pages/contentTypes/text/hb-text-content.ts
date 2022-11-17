@@ -6,12 +6,11 @@ import { FileType, IUploadedFile } from "../../../domain/interfaces/FileInterfac
 import { FileUploadCompleteEvent, FileUploaderAccept, FileUploadPanel } from "../../../files/hb-file-upload-panel";
 import { FileSelectedEvent } from "../../../files/hb-find-file-dialog";
 import { styles } from "../../../styles";
-import { ContentActiveChangeEvent, PageThumbChangeEvent, UpdatePageContentEvent } from "../../hb-page";
 import { PageSelectedEvent } from "../../hb-find-page-dialog";
-import { HbPageContent } from "../../hb-page";
-import { TextContentData } from "./textContentType";
-import { TextContentSelectorDialog, TextContentSelectorType } from "./hb-text-content-selector-dialog";
+import { ContentActiveChangeEvent, HbPageContent, PageThumbChangeEvent, UpdatePageContentEvent } from "../../hb-page";
 import { PageContentController } from "../../hb-page/PageContentController";
+import { TextContentSelectorDialog, TextContentSelectorType } from "./hb-text-content-selector-dialog";
+import { TextContentData } from "./textContentType";
 
 /**
  */

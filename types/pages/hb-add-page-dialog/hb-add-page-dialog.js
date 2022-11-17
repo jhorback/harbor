@@ -114,6 +114,7 @@ let AddPageDialog = class AddPageDialog extends LitElement {
     }
     addButtonClicked() {
         this.dispatchEvent(new AddNewPageEvent());
+        this.close();
     }
 };
 AddPageDialog.styles = [styles.types, styles.dialog, css `

@@ -12,7 +12,7 @@ export var ImageAlignment;
     ImageAlignment["center"] = "center";
     ImageAlignment["right"] = "right";
 })(ImageAlignment || (ImageAlignment = {}));
-export class ImageContentDataState {
+export class ImageContentData {
     constructor() {
         this.contentType = "image";
         this.size = ImageSize.small;
@@ -20,11 +20,6 @@ export class ImageContentDataState {
         this.url = null;
         this.thumbUrl = null;
         this.fileDbPath = null;
-    }
-    toPlainObject() {
-        return {
-            ...this
-        };
     }
 }
 const imageContentType = {

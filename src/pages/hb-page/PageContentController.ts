@@ -19,7 +19,15 @@ export class PageContentController<TContentType extends IContentType> extends St
 
     host:IPageContentElement;
 
-    page:PageController = new PageController(this.host);
+    constructor(host:IPageContentElement) {
+        super(host);
+        this.host = host;
+        this.page = new PageController(this.host);
+        this.page.stateUpdated = () => this.stateUpdated();
+    }
+
+    page:PageController;
+    
 
     get content():TContentType {
         return this.page.state.page.content[this.host.contentIndex] as TContentType;
@@ -32,10 +40,5 @@ export class PageContentController<TContentType extends IContentType> extends St
             canMoveUp: this.page.state.activeContentIndex === -1 && this.host.contentIndex > 0,
             canMoveDown: this.page.state.activeContentIndex === -1 && this.host.contentIndex < this.page.state.page.content.length - 1
         };
-    }
-
-    constructor(host:IPageContentElement) {
-        super(host);
-        this.host = host;
     }
 }

@@ -21,15 +21,9 @@ let HbPageContent = class HbPageContent extends LitElement {
         this.isEmpty = false;
     }
     get stateId() { return this.pathname; }
-    // @property({type: Boolean, attribute: "page-edit", reflect: true})
-    // pageEdit = false;
-    // @property({type: Boolean, attribute: "content-edit", reflect: true})
-    // contentEdit = false;
-    // @property({type: Boolean, attribute: "is-active", reflect: true})
-    // isActive = false;
     render() {
         const pageState = this.pageContent.page.state;
-        const contentState = this.pageContent.state;
+        const contentState = this.pageContent.contentState;
         return html `
             <div class="hb-content"
                 ?page-edit=${pageState.inEditMode}
@@ -95,7 +89,7 @@ let HbPageContent = class HbPageContent extends LitElement {
         `;
     }
     contentClicked(event) {
-        if (this.pageContent.page.pageEdit && !this.pageContent.state.isActive) {
+        if (this.pageContent.page.pageEdit && !this.pageContent.contentState.isActive) {
             this.dispatchEvent(new ContentActiveChangeEvent({
                 contentIndex: this.contentIndex,
                 isActive: true,
@@ -104,12 +98,12 @@ let HbPageContent = class HbPageContent extends LitElement {
         }
     }
     moveUpClicked() {
-        const contentState = this.pageContent.state;
+        const contentState = this.pageContent.contentState;
         contentState.canMoveUp &&
             this.dispatchEvent(new MovePageContentEvent(this.contentIndex, true));
     }
     moveDownClicked() {
-        const contentState = this.pageContent.state;
+        const contentState = this.pageContent.contentState;
         contentState.canMoveDown &&
             this.dispatchEvent(new MovePageContentEvent(this.contentIndex, false));
     }

@@ -2,10 +2,11 @@ import { hostEvent, Product, StateController, stateProperty } from "@domx/statec
 import { inject } from "../../../domain/DependencyContainer/decorators";
 import { FindFileRepoKey, IFindFileRepo, IUploadedFile } from "../../../domain/interfaces/FileInterfaces";
 import { UpdatePageContentEvent } from "../../hb-page";
-import { ImageAlignment, ImageContentDataState, ImageSize } from "./imageContentType";
+import { ImageAlignment, ImageContentData, ImageSize } from "./imageContentType";
 import { ImageContent } from "./hb-image-content";
 import "../../../domain/Files/HbFindFileRepo";
 import { FileModel } from "../../../domain/Files/FileModel";
+import { PageContentController } from "../../hb-page/PageContentController";
 
 
 
@@ -37,39 +38,28 @@ export class ImageContentSelectedEvent extends Event {
 }
 
 
-export class ImageContentController extends StateController {
+export class ImageContentController extends PageContentController<ImageContentData> {
 
-    @stateProperty()
-    state:ImageContentDataState = new ImageContentDataState();
+    state:ImageContentData = { ...this.content };
 
-    host:ImageContent;
-
-    constructor(host:ImageContent) {
-        super(host);
-        this.host = host;
-    }
-
-    hostConnected() {
-        super.hostConnected();
-        this.state = this.host.data;
-        Product.of<ImageContentDataState>(this, "state")
-            .tap(syncWithDb(this, this.findFileRepo));
+    stateUpdated() {
+        this.state = { ...this.content };
     }
 
     @inject<IFindFileRepo>(FindFileRepoKey)
     private findFileRepo!:IFindFileRepo;
 
     @hostEvent(ImageSizeChangeEvent)
-    imageSizeChange(event:ImageSizeChangeEvent) {
-        Product.of<ImageContentDataState>(this, "state")
+    imageSizeChange(event:ImageSizeChangeEvent) {  
+        Product.of<ImageContentData>(this)
             .next(updateImageSize(event.size))
             .requestUpdate(event)
-            .dispatchHostEvent(new UpdatePageContentEvent(this.host.contentIndex, this.state))
+            .dispatchHostEvent(new UpdatePageContentEvent(this.host.contentIndex, this.state));
     }
 
     @hostEvent(ImageAlignmentChangeEvent)
     imageAlignmentChange(event:ImageAlignmentChangeEvent) {
-        Product.of<ImageContentDataState>(this, "state")
+        Product.of<ImageContentData>(this)
             .next(updateImageAlignment(event.alignment))
             .requestUpdate(event)
             .dispatchHostEvent(new UpdatePageContentEvent(this.host.contentIndex, this.state))
@@ -77,7 +67,7 @@ export class ImageContentController extends StateController {
 
     @hostEvent(ImageContentSelectedEvent)
     imageContentSelected(event:ImageContentSelectedEvent) {
-        Product.of<ImageContentDataState>(this, "state")
+        Product.of<ImageContentData>(this)
             .next(setImageContent(event.file))
             .requestUpdate(event)
             .dispatchHostEvent(new UpdatePageContentEvent(this.host.contentIndex, this.state));
@@ -86,8 +76,8 @@ export class ImageContentController extends StateController {
 }
 
 
-const syncWithDb = (controller:ImageContentController, findFileRepo:IFindFileRepo) => async (product:Product<ImageContentDataState>) => {
-    const state = product.getState() as ImageContentDataState;
+const syncWithDb = (controller:ImageContentController, findFileRepo:IFindFileRepo) => async (product:Product<ImageContentData>) => {
+    const state = product.getState() as ImageContentData;
 
     if (!state.fileDbPath) {
         return;
@@ -106,21 +96,21 @@ const syncWithDb = (controller:ImageContentController, findFileRepo:IFindFileRep
 };
 
 
-const updateImageSize = (size:ImageSize) => (state:ImageContentDataState) => {
+const updateImageSize = (size:ImageSize) => (state:ImageContentData) => {
     state.size = size;
 };
 
-const updateImageAlignment = (alignment:ImageAlignment) => (state:ImageContentDataState) => {
+const updateImageAlignment = (alignment:ImageAlignment) => (state:ImageContentData) => {
     state.alignment = alignment;
 };
 
-const setImageContent = (file:IUploadedFile) => (state:ImageContentDataState) => {
+const setImageContent = (file:IUploadedFile) => (state:ImageContentData) => {
     state.fileDbPath = file.fileDbPath;
     state.url = file.url;
     state.thumbUrl = file.thumbUrl || null;
 };
 
-const updateImageUrl = (file:FileModel)=> (state:ImageContentDataState) => {
+const updateImageUrl = (file:FileModel)=> (state:ImageContentData) => {
     state.url = file.url;
     state.thumbUrl = file.thumbUrl;
 };
