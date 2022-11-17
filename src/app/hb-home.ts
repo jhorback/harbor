@@ -1,10 +1,11 @@
-import { html, css, LitElement } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, query } from "lit/decorators.js";
-import "../domain/SystemAdmin/HbHomePageRepo";
 import { inject } from "../domain/DependencyContainer/decorators";
-import { IDocumentReference, IHomePageRepo, HomePageRepoKey } from "../domain/interfaces/DocumentInterfaces";
+import { HomePageRepoKey, IHomePageRepo, IPageReference } from "../domain/interfaces/PageInterfaces";
+import { pageTemplates } from "../domain/Pages/pageTemplates";
+import "../domain/SystemAdmin/HbHomePageRepo";
 import { sendFeedback } from "../layout/feedback";
-import { docTypes } from "../domain/Doc/docTypes";
+import { RequestPageEvent } from "../pages/hb-page";
 
 
 /**
@@ -42,20 +43,20 @@ export class HbHome extends LitElement {
         }
     }
 
-    private getHomePageFromLocalStorage():IDocumentReference|null {
+    private getHomePageFromLocalStorage():IPageReference|null {
         const homePageRefStr = localStorage.getItem("homePageRef");
         if (!homePageRefStr) {
             return null;
         }
         try {
-            return JSON.parse(homePageRefStr) as IDocumentReference|null;
+            return JSON.parse(homePageRefStr) as IPageReference|null;
         }
         catch {
             return null;
         }
     }
 
-    private showHomePage(homePageRef:IDocumentReference|null) {
+    private showHomePage(homePageRef:IPageReference|null) {
         if (homePageRef === null) {
             this.showNotFound("The home page is not configured");
             sendFeedback({
@@ -66,28 +67,22 @@ export class HbHome extends LitElement {
             return;
         } 
 
-        // verify the docType exists
-        const docType = docTypes.get(homePageRef.docType);
-        if (!docType) {
-            this.showNotFound(`The docType was not found: ${homePageRef.docType}`);
+        // verify the pageTemplate exists
+        const pageTemplate = pageTemplates.get(homePageRef.pageTemplate);
+        if (!pageTemplate) {
+            this.showNotFound(`The page template was not found: ${homePageRef.pageTemplate}`);
             return;
         }
 
-        // verify the custom element has been defined
-        const el = docType.element;
-        if (customElements.get(el) === undefined) {
-            this.showNotFound(`The docType element was not defined: ${el}`);
-            return;
-        }
-
-        this.showDocElement(el, homePageRef.pid);
+        this.showPage(homePageRef.pathname);
     }
 
-    private showDocElement(el:string, pid:string) {
-        const docEl = document.createElement(el);
-        docEl.setAttribute("pid", pid);
+    private showPage(pathname:string) {
+        const pageEl = document.createElement("hb-page");
+        pageEl.setAttribute("pathname", pathname);
         this.$homeContainer.innerHTML = "";
-        this.$homeContainer.append(docEl); 
+        this.$homeContainer.append(pageEl);
+        pageEl.dispatchEvent(new RequestPageEvent());
     }
 
     private showNotFound(warn:string) {

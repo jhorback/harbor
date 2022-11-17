@@ -9,8 +9,8 @@ service cloud.firestore {
     function hasOnly(fields) {
       return request.resource.data.diff(resource.data).affectedKeys().hasOnly(fields);
     }
-
-    match /documents/{doc} {
+    
+    match /pages/{page} {
       allow read;
       allow create: if userHasRole("SITE_ADMIN") || userHasRole("AUTHOR") || userHasRole("USER_ADMIN")
       allow update: if request.auth.uid == resource.data.authorUid || userHasRole("SITE_ADMIN");

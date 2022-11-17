@@ -4,13 +4,14 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-import { html, css, LitElement } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, query } from "lit/decorators.js";
-import "../domain/SystemAdmin/HbHomePageRepo";
 import { inject } from "../domain/DependencyContainer/decorators";
-import { HomePageRepoKey } from "../domain/interfaces/DocumentInterfaces";
+import { HomePageRepoKey } from "../domain/interfaces/PageInterfaces";
+import { pageTemplates } from "../domain/Pages/pageTemplates";
+import "../domain/SystemAdmin/HbHomePageRepo";
 import { sendFeedback } from "../layout/feedback";
-import { docTypes } from "../domain/Doc/docTypes";
+import { RequestPageEvent } from "../pages/hb-page";
 /**
  * The job of this element is to look the home page
  * document up in the database and append the correct element to the dom
@@ -56,25 +57,20 @@ let HbHome = class HbHome extends LitElement {
             });
             return;
         }
-        // verify the docType exists
-        const docType = docTypes.get(homePageRef.docType);
-        if (!docType) {
-            this.showNotFound(`The docType was not found: ${homePageRef.docType}`);
+        // verify the pageTemplate exists
+        const pageTemplate = pageTemplates.get(homePageRef.pageTemplate);
+        if (!pageTemplate) {
+            this.showNotFound(`The page template was not found: ${homePageRef.pageTemplate}`);
             return;
         }
-        // verify the custom element has been defined
-        const el = docType.element;
-        if (customElements.get(el) === undefined) {
-            this.showNotFound(`The docType element was not defined: ${el}`);
-            return;
-        }
-        this.showDocElement(el, homePageRef.pid);
+        this.showPage(homePageRef.pathname);
     }
-    showDocElement(el, pid) {
-        const docEl = document.createElement(el);
-        docEl.setAttribute("pid", pid);
+    showPage(pathname) {
+        const pageEl = document.createElement("hb-page");
+        pageEl.setAttribute("pathname", pathname);
         this.$homeContainer.innerHTML = "";
-        this.$homeContainer.append(docEl);
+        this.$homeContainer.append(pageEl);
+        pageEl.dispatchEvent(new RequestPageEvent());
     }
     showNotFound(warn) {
         console.warn(warn);

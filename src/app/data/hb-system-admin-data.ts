@@ -1,17 +1,14 @@
 import { DataElement, StateChange } from "@domx/dataelement";
 import { customDataElement, dataProperty, event } from "@domx/dataelement/decorators";
-import { sendFeedback } from "../../layout/feedback";
 import { inject } from "../../domain/DependencyContainer/decorators";
 import {
-    IDocumentThumbnail,
-    IHomePageRepo,
-    HomePageRepoKey,
-    IDocumentReference
-} from "../../domain/interfaces/DocumentInterfaces";
+    HomePageRepoKey, IHomePageRepo, IPageReference, IPageThumbnail
+} from "../../domain/interfaces/PageInterfaces";
+import { sendFeedback } from "../../layout/feedback";
 
 
 export interface ISystemAdminData {
-    homePageThumbnail: IDocumentThumbnail|null;
+    homePageThumbnail: IPageThumbnail|null;
 }
 
 export class RequestSysadminSettingsEvent extends Event {
@@ -23,10 +20,10 @@ export class RequestSysadminSettingsEvent extends Event {
 
 export class UpdateHomePageEvent extends Event {
     static eventType = "update-home-page";
-    documentReference:IDocumentReference;
-    constructor(documentReference:IDocumentReference) {
+    pageReference:IPageReference;
+    constructor(pageReference:IPageReference) {
         super(UpdateHomePageEvent.eventType, { bubbles: true, composed: true});
-        this.documentReference = documentReference;
+        this.pageReference = pageReference;
     }
 }
 
@@ -51,13 +48,13 @@ export class SystemAdminData extends DataElement {
     @event(UpdateHomePageEvent.eventType)
     async updateHomePage(event:UpdateHomePageEvent) {
         StateChange.of(this, "settings")
-            .tap(updateHomePage(this.homePageRepo, event.documentReference));
+            .tap(updateHomePage(this.homePageRepo, event.pageReference));
     }
 }
 
 
-const updateHomePage = (homePageRepo:IHomePageRepo, docRef:IDocumentReference) => async (stateChange:StateChange) => {
-    await homePageRepo.setHomePage(docRef);    
+const updateHomePage = (homePageRepo:IHomePageRepo, pageRef:IPageReference) => async (stateChange:StateChange) => {
+    await homePageRepo.setHomePage(pageRef);    
     stateChange.tap(requestSettings(homePageRepo));
     sendFeedback({
         message: "The home page has been updated"
@@ -71,6 +68,6 @@ const requestSettings = (homePageRepo:IHomePageRepo) => async (stateChange:State
         .dispatch();
 };
 
-const updateThumbnail = (thumbnail:IDocumentThumbnail|null) => (state:ISystemAdminData) => {
+const updateThumbnail = (thumbnail:IPageThumbnail|null) => (state:ISystemAdminData) => {
     state.homePageThumbnail = thumbnail;
 };

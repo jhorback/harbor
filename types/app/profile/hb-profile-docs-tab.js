@@ -5,10 +5,10 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 import { html, css, LitElement } from "lit";
-import { customElement, property, query } from "lit/decorators.js";
+import { customElement } from "lit/decorators.js";
 import { linkProp } from "@domx/linkprop";
 import { styles } from "../../styles";
-import { SearchDocsData, SearchDocsEvent } from "../../doc/data/hb-search-docs-data";
+import { PageSearchController, SearchPagesEvent } from "../../pages/PageSearchController";
 import "../../common/hb-horizontal-card";
 /**
  * @class ProfileDocsTab
@@ -16,24 +16,25 @@ import "../../common/hb-horizontal-card";
 let ProfileDocsTab = class ProfileDocsTab extends LitElement {
     constructor() {
         super(...arguments);
-        this.state = SearchDocsData.defaultState;
+        this.pageSearch = new PageSearchController(this);
     }
     async connectedCallback() {
         super.connectedCallback();
         await this.updateComplete;
-        this.$dataEl.dispatchEvent(new SearchDocsEvent({}));
+        this.dispatchEvent(new SearchPagesEvent({}));
     }
     render() {
+        const state = this.pageSearch.state;
         return html `
             <hb-search-docs-data
                 @state-changed=${linkProp(this, "state")}
             ></hb-search-docs-data>
-            ${this.state.isLoading || this.state.count !== 0 ? html `` : html `
+            ${state.isLoading || state.count !== 0 ? html `` : html `
                 <p>There are no documents</p>
             `}
             <div class="list">
-            ${this.state.list.map(docModel => {
-            const thumb = docModel.toDocumentThumbnail();
+            ${state.list.map(pageModel => {
+            const thumb = pageModel.toPageThumbnail();
             return html `
                     <hb-horizontal-card
                         class="home-page-thumb"
@@ -59,12 +60,6 @@ ProfileDocsTab.styles = [styles.types, css `
             row-gap: 16px;
         }
     `];
-__decorate([
-    property({ type: Object })
-], ProfileDocsTab.prototype, "state", void 0);
-__decorate([
-    query("hb-search-docs-data")
-], ProfileDocsTab.prototype, "$dataEl", void 0);
 ProfileDocsTab = __decorate([
     customElement('hb-profile-docs-tab')
 ], ProfileDocsTab);

@@ -1,45 +1,42 @@
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { provides } from "../DependencyContainer/decorators";
 import { HbApp } from "../HbApp";
-import { HbDb } from "../HbDb";
-import { FindDocRepo } from "../Doc/FindDocRepo";
-import {
-    IDocumentReference,
-    IDocumentThumbnail,
-    IHomePageRepo,
-    HomePageRepoKey
-} from "../interfaces/DocumentInterfaces";
 import { authorize, UserAction } from "../HbCurrentUser";
+import { HbDb } from "../HbDb";
+import {
+    HomePageRepoKey, IHomePageRepo, IPageReference, IPageThumbnail
+} from "../interfaces/PageInterfaces";
+import { FindPageRepo } from "../Pages/FindPageRepo";
 
 
 interface ISystemApp {
-    homePage?:IDocumentReference;
+    homePage?:IPageReference;
 };
 
 
 @provides<IHomePageRepo>(HomePageRepoKey, !HbApp.isStorybook)
 class HbHomePageRepo implements IHomePageRepo {
-    private findDocRepo:FindDocRepo;
+    private findPageRepo:FindPageRepo;
 
     constructor() {
-        this.findDocRepo = new FindDocRepo();
+        this.findPageRepo = new FindPageRepo();
     }
 
-    async getHomePageThumbnail(): Promise<IDocumentThumbnail | null> {
+    async getHomePageThumbnail(): Promise<IPageThumbnail | null> {
         const ref = await this.getHomePageRef();
         if (ref === null) {
             return null;
         }
 
-        const document = await this.findDocRepo.findDoc(ref.uid);
-        if (document === null) {
+        const page = await this.findPageRepo.findPage(ref.uid);
+        if (page === null) {
             return null;
         }
 
-        return document.toDocumentThumbnail();
+        return page.toPageThumbnail();
     }
 
-    async getHomePageRef():Promise<IDocumentReference|null> {
+    async getHomePageRef():Promise<IPageReference|null> {
         const systemApp = await this.getSystemApp();
         return systemApp?.homePage || null;
     }
@@ -56,13 +53,13 @@ class HbHomePageRepo implements IHomePageRepo {
     }
 
     @authorize(UserAction.editSiteSettings)
-    async setHomePage(documentReference: IDocumentReference):Promise<void> {
+    async setHomePage(pageReference: IPageReference):Promise<void> {
         const systemApp = await this.getSystemApp() || {};
         systemApp.homePage = {
-            uid: documentReference.uid,
-            docType: documentReference.docType,
-            pid: documentReference.pid,
-            documentRef: documentReference.documentRef
+            uid: pageReference.uid,
+            pageTemplate: pageReference.pageTemplate,
+            pathname: pageReference.pathname,
+            documentRef: pageReference.documentRef
         };
         await setDoc(doc(HbDb.current, "system", "app"), systemApp);
     }

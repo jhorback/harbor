@@ -4,15 +4,13 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-import { html, css, LitElement } from "lit";
-import { customElement, property, query, state } from "lit/decorators.js";
-import { styles } from "../../styles";
-import { RequestSysadminSettingsEvent, SystemAdminData, UpdateHomePageEvent } from "../data/hb-system-admin-data";
 import { linkProp } from "@domx/linkprop";
+import { css, html, LitElement } from "lit";
+import { customElement, property, query, state } from "lit/decorators.js";
 import "../../common/hb-button";
 import "../../common/hb-horizontal-card";
-import "../../doc/hb-find-doc-dialog";
-import "../../doc/hb-add-document-dialog";
+import { styles } from "../../styles";
+import { RequestSysadminSettingsEvent, SystemAdminData, UpdateHomePageEvent } from "../data/hb-system-admin-data";
 /**
  * @class ProfileAdminTab
  */
@@ -32,12 +30,12 @@ let ProfileAdminTab = class ProfileAdminTab extends LitElement {
             <hb-system-admin-data
                 @settings-changed=${linkProp(this, "settings")}
             ></hb-system-admin-data>
-            <hb-add-document-dialog
-                @document-added=${this.documentAdded}
-            ></hb-add-document-dialog>
-            <hb-find-doc-dialog
-                @document-selected=${this.documentSelected}
-            ></hb-find-doc-dialog>
+            <hb-add-page-dialog
+                @page-added=${this.pageAdded}
+            ></hb-add-page-dialog>
+            <hb-find-page-dialog
+                @page-selected=${this.pageSelected}
+            ></hb-find-page-dialog>
             <div class="home-page-container">
                 <div class="title-large">Home page</div>
                 ${this.settings.homePageThumbnail ? html `
@@ -80,17 +78,17 @@ let ProfileAdminTab = class ProfileAdminTab extends LitElement {
     }
     addNewHomePageClicked() {
         this.changeHomePage = false;
-        this.$addDocumentDialog.open = true;
+        this.$addPageDialog.showModal();
     }
-    documentAdded(event) {
-        this.$systemAdminData.dispatchEvent(new UpdateHomePageEvent(event.docModel.toDocumentReference()));
+    pageAdded(event) {
+        this.$systemAdminData.dispatchEvent(new UpdateHomePageEvent(event.pageModel.toPageReference()));
     }
-    documentSelected(event) {
-        this.$systemAdminData.dispatchEvent(new UpdateHomePageEvent(event.documentReference));
+    pageSelected(event) {
+        this.$systemAdminData.dispatchEvent(new UpdateHomePageEvent(event.pageReference));
     }
     searchExistingHomePageClicked() {
         this.changeHomePage = false;
-        this.$findDocDialog.open = true;
+        this.$findPageDialog.showModal();
     }
 };
 ProfileAdminTab.styles = [styles.types, css `
@@ -121,11 +119,11 @@ __decorate([
     state()
 ], ProfileAdminTab.prototype, "changeHomePage", void 0);
 __decorate([
-    query("hb-add-document-dialog")
-], ProfileAdminTab.prototype, "$addDocumentDialog", void 0);
+    query("hb-add-page-dialog")
+], ProfileAdminTab.prototype, "$addPageDialog", void 0);
 __decorate([
-    query("hb-find-doc-dialog")
-], ProfileAdminTab.prototype, "$findDocDialog", void 0);
+    query("hb-find-page-dialog")
+], ProfileAdminTab.prototype, "$findPageDialog", void 0);
 __decorate([
     query("hb-system-admin-data")
 ], ProfileAdminTab.prototype, "$systemAdminData", void 0);

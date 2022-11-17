@@ -51,7 +51,7 @@ export class HbApp {
          * In the future, can create a module to import
          * dynamic packages based on system settings
          */
-        await import("../doc/index");
+        await import("../pages/index");
     }
 }
 
@@ -67,21 +67,25 @@ const updateHtmlTheme = () => {
 
 
 const handleApplicationErrors = () => {
-    window.addEventListener("error", (event:ErrorEvent) => {
+    window.addEventListener("error", (event:ErrorEvent) =>
+        tryHandleErrorEvent(event, event.error));
 
-        if (event.error instanceof NotFoundError) {
+    window.addEventListener("unhandledrejection", (event:PromiseRejectionEvent) =>
+        tryHandleErrorEvent(event, event.reason));
+};
 
-          Router.replaceUrl("/not-found");
-          console.error("Not Found Error:", event.error.message, {stack: event.error.stack});
-          event.preventDefault();
+const tryHandleErrorEvent = (event:Event, error:Error) => {
+    if (error instanceof NotFoundError) {
 
-        } else if (event.error instanceof ServerError) {
+        Router.replaceUrl("/not-found");
+        console.error("Not Found Error:", error.message, {stack: error.stack});
+        event.preventDefault();
 
-          const message = `Server Error: ${event.error.message}`;
-          sendFeedback({ message });
-          console.error(message, {stack: event.error.stack});
-          event.preventDefault();
-          
-        }
-    });
-}
+    } else if (error instanceof ServerError) {
+
+        const message = `Server Error: ${error.message}`;
+        sendFeedback({ message });
+        console.error(message, {stack: error.stack});
+        event.preventDefault();
+    }
+};
