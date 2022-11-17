@@ -22,7 +22,7 @@ export class ImageContent extends LitElement {
     @property({type:Number, attribute: "content-index"})
     contentIndex:number = -1;
 
-    imageContent = new ImageContentController(this);
+    imageContent:ImageContentController = new ImageContentController(this);
 
     @query("hb-page-content")
     $hbPageContent!:HbPageContent;
