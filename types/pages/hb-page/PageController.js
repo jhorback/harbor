@@ -96,6 +96,13 @@ export class ContentActiveChangeEvent extends Event {
     }
 }
 ContentActiveChangeEvent.eventType = "content-active-change";
+export class ContentDeletedEvent extends Event {
+    constructor(index) {
+        super(ContentDeletedEvent.eventType, { bubbles: true, composed: true });
+        this.index = index;
+    }
+}
+ContentDeletedEvent.eventType = "content-deleted";
 export class PageController extends StateController {
     constructor(host) {
         super(host);
@@ -146,6 +153,17 @@ export class PageController extends StateController {
             .tap(savePage(this.editPageRepo))
             .requestUpdate(event);
     }
+    contentActiveChange(event) {
+        Product.of(this)
+            .next(setContentActive(event.options))
+            .requestUpdate(event);
+    }
+    contentDeleted(event) {
+        Product.of(this)
+            .next(deleteContent(event.index))
+            .tap(savePage(this.editPageRepo))
+            .requestUpdate(event);
+    }
     pageThumb(event) {
         Product.of(this)
             .next(updateThumbs(event.thumbs))
@@ -162,11 +180,6 @@ export class PageController extends StateController {
     pageEditModeChange(event) {
         Product.of(this)
             .next(setPageEditMode(event.inEditMode))
-            .requestUpdate(event);
-    }
-    contentActiveChange(event) {
-        Product.of(this)
-            .next(setContentActive(event.options))
             .requestUpdate(event);
     }
 }
@@ -211,6 +224,12 @@ __decorate([
     hostEvent(MovePageContentEvent)
 ], PageController.prototype, "moveContent", null);
 __decorate([
+    hostEvent(ContentActiveChangeEvent)
+], PageController.prototype, "contentActiveChange", null);
+__decorate([
+    hostEvent(ContentDeletedEvent)
+], PageController.prototype, "contentDeleted", null);
+__decorate([
     hostEvent(PageThumbChangeEvent)
 ], PageController.prototype, "pageThumb", null);
 __decorate([
@@ -219,9 +238,6 @@ __decorate([
 __decorate([
     hostEvent(PageEditModeChangeEvent)
 ], PageController.prototype, "pageEditModeChange", null);
-__decorate([
-    hostEvent(ContentActiveChangeEvent)
-], PageController.prototype, "contentActiveChange", null);
 const subscribeToPage = (pageController) => (page) => {
     // happens if the page is deleted
     if (!page) {
@@ -270,6 +286,11 @@ const moveContent = (index, moveUp) => (state) => {
     }
     moveUp ? content.splice(index - 1, 0, content.splice(index, 1)[0]) :
         content.splice(index + 1, 0, content.splice(index, 1)[0]);
+};
+const deleteContent = (index) => (state) => {
+    state.page.content.splice(index, 1);
+    state.activeContentIndex = -1;
+    state.editableContentIndex = -1;
 };
 const removeThumb = (index) => (state) => {
     if (index === undefined) {

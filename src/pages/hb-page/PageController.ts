@@ -131,6 +131,15 @@ export class ContentActiveChangeEvent extends Event {
     }
 }
 
+export class ContentDeletedEvent extends Event {
+    static eventType = "content-deleted";
+    index:number;
+    constructor(index:number) {
+        super(ContentDeletedEvent.eventType, {bubbles: true, composed: true});
+        this.index = index;
+    }
+}
+
 
 export interface IPageState {
     isLoaded: boolean;
@@ -234,6 +243,21 @@ export class PageController extends StateController {
             .requestUpdate(event);
     }
 
+    @hostEvent(ContentActiveChangeEvent)
+    private contentActiveChange(event:ContentActiveChangeEvent) {
+        Product.of<IPageState>(this)
+            .next(setContentActive(event.options))
+            .requestUpdate(event);
+    }
+
+    @hostEvent(ContentDeletedEvent)
+    private contentDeleted(event:ContentDeletedEvent) {
+        Product.of<IPageState>(this)
+            .next(deleteContent(event.index))
+            .tap(savePage(this.editPageRepo))
+            .requestUpdate(event);
+    }
+
     @hostEvent(PageThumbChangeEvent)
     private pageThumb(event:PageThumbChangeEvent) {
         Product.of<IPageState>(this)
@@ -255,13 +279,6 @@ export class PageController extends StateController {
     private pageEditModeChange(event:PageEditModeChangeEvent) {
         Product.of<IPageState>(this)
             .next(setPageEditMode(event.inEditMode))
-            .requestUpdate(event);
-    }
-
-    @hostEvent(ContentActiveChangeEvent)
-    private contentActiveChange(event:ContentActiveChangeEvent) {
-        Product.of<IPageState>(this)
-            .next(setContentActive(event.options))
             .requestUpdate(event);
     }
 }
@@ -333,6 +350,12 @@ const moveContent = (index:number, moveUp:boolean) => (state:IPageState) => {
 
     moveUp ? content.splice(index - 1, 0, content.splice(index, 1)[0]) :
         content.splice(index + 1, 0, content.splice(index, 1)[0]);
+};
+
+const deleteContent = (index:number) => (state:IPageState) => {
+    state.page.content.splice(index, 1);
+    state.activeContentIndex = -1;
+    state.editableContentIndex = -1;
 };
 
 

@@ -7,7 +7,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import { styles } from "../../styles";
-import { ContentActiveChangeEvent } from "./PageController";
+import { ContentActiveChangeEvent, ContentDeletedEvent } from "./PageController";
 import { MovePageContentEvent } from "./PageController";
 import { PageContentController } from "./PageContentController";
 /**
@@ -115,10 +115,8 @@ let HbPageContent = class HbPageContent extends LitElement {
         }));
     }
     delete() {
-        if (!confirm("Are you sure you want to delete this content?")) {
-            return;
-        }
-        alert("delete");
+        confirm("Are you sure you want to delete this content?") &&
+            this.dispatchEvent(new ContentDeletedEvent(this.contentIndex));
     }
     done(event) {
         this.dispatchEvent(new ContentActiveChangeEvent({
