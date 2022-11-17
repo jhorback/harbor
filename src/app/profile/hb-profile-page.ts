@@ -47,7 +47,7 @@ export class ProfilePage extends LitElement {
             id="pages-tab"
             label="Pages"
             href="/profile/pages"
-            ?hidden=${!isAuthorized(UserAction.authorDocuments)}
+            ?hidden=${!isAuthorized(UserAction.authorPages)}
         ></hb-link-tab>
         <hb-link-tab
             id="files-tab"
@@ -68,7 +68,7 @@ export class ProfilePage extends LitElement {
             ?hidden=${!isAuthorized(UserAction.editSiteSettings)}
         ></hb-link-tab>
     </hb-tab-bar>
-    ${isAuthorized(UserAction.authorDocuments) ? html`
+    ${isAuthorized(UserAction.authorPages) ? html`
         <domx-route
             pattern="/profile(/pages)"
             element="hb-profile-pages-tab"

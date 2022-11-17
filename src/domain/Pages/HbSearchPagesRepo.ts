@@ -21,7 +21,7 @@ class SearchPagesRepo implements ISearchPagesRepo {
 
         
         // authorize which pages
-        if (currentUser.authorize(UserAction.viewAllDocuments) === false) {
+        if (currentUser.authorize(UserAction.viewAllPages) === false) {
             queryArgs.push(where('authorUid', '==', currentUser.uid));
         }
        

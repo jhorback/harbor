@@ -12,7 +12,7 @@ import { authorize, UserAction } from "../HbCurrentUser";
 @provides<IDeletePageRepo>(DeletePageRepoKey, !HbApp.isStorybook)
 class DeletePageRepo implements IDeletePageRepo {
 
-    @authorize(UserAction.authorDocuments)
+    @authorize(UserAction.authorPages)
     async deletePage(uid: string): Promise<void> {
         await deleteDoc(doc(HbDb.current, "pages", uid));
     }

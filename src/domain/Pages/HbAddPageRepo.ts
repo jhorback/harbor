@@ -40,7 +40,7 @@ class AddPageRepo implements IAddPageRepo {
         return existingPage ? true : false;
     }
 
-    @authorize(UserAction.authorDocuments)
+    @authorize(UserAction.authorPages)
     async addPage(options:IAddNewPageOptions): Promise<PageModel> {
 
         const pageExists = await this.pageExists(options.pathname);

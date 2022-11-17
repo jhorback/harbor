@@ -292,13 +292,13 @@ const updateUserCanEdit = (state:IPageState) => {
 };
 
 const updateUserCanAdd = (state:IPageState) => {
-    state.currentUserCanAdd = new HbCurrentUser().authorize(UserAction.authorDocuments);
+    state.currentUserCanAdd = new HbCurrentUser().authorize(UserAction.authorPages);
 }
 
 const userCanEdit = (page:PageModel):boolean => {
     const currentUser = new HbCurrentUser();
     return currentUser.uid === page.authorUid
-        || currentUser.authorize(UserAction.editAnyDocument);
+        || currentUser.authorize(UserAction.editAnyPage);
 }
 
 const updatePageLoaded = (page:PageModel) => (state:IPageState) => {

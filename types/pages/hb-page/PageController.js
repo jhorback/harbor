@@ -240,12 +240,12 @@ const updateUserCanEdit = (state) => {
     state.currentUserCanEdit = userCanEdit(state.page);
 };
 const updateUserCanAdd = (state) => {
-    state.currentUserCanAdd = new HbCurrentUser().authorize(UserAction.authorDocuments);
+    state.currentUserCanAdd = new HbCurrentUser().authorize(UserAction.authorPages);
 };
 const userCanEdit = (page) => {
     const currentUser = new HbCurrentUser();
     return currentUser.uid === page.authorUid
-        || currentUser.authorize(UserAction.editAnyDocument);
+        || currentUser.authorize(UserAction.editAnyPage);
 };
 const updatePageLoaded = (page) => (state) => {
     state.isLoaded = true;
