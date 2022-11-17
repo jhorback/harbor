@@ -52,7 +52,7 @@ let AddPageRepo = class AddPageRepo {
     }
 };
 __decorate([
-    authorize(UserAction.authorDocuments)
+    authorize(UserAction.authorPages)
 ], AddPageRepo.prototype, "addPage", null);
 AddPageRepo = __decorate([
     provides(AddPageRepoKey, !HbApp.isStorybook)

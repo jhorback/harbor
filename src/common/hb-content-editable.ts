@@ -1,7 +1,6 @@
-import { html, css, LitElement } from "lit";
+import { css, html, LitElement } from "lit";
 import { live } from "lit-html/directives/live.js";
-import { customElement, property, query, state } from "lit/decorators.js";
-import { styles } from "../styles";
+import { customElement, property, query } from "lit/decorators.js";
 
 
 export class ContentEditableChangeEvent extends Event {

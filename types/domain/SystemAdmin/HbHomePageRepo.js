@@ -7,25 +7,25 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { provides } from "../DependencyContainer/decorators";
 import { HbApp } from "../HbApp";
-import { HbDb } from "../HbDb";
-import { FindDocRepo } from "../Doc/FindDocRepo";
-import { HomePageRepoKey } from "../interfaces/DocumentInterfaces";
 import { authorize, UserAction } from "../HbCurrentUser";
+import { HbDb } from "../HbDb";
+import { HomePageRepoKey } from "../interfaces/PageInterfaces";
+import { FindPageRepo } from "../Pages/FindPageRepo";
 ;
 let HbHomePageRepo = class HbHomePageRepo {
     constructor() {
-        this.findDocRepo = new FindDocRepo();
+        this.findPageRepo = new FindPageRepo();
     }
     async getHomePageThumbnail() {
         const ref = await this.getHomePageRef();
         if (ref === null) {
             return null;
         }
-        const document = await this.findDocRepo.findDoc(ref.uid);
-        if (document === null) {
+        const page = await this.findPageRepo.findPage(ref.uid);
+        if (page === null) {
             return null;
         }
-        return document.toDocumentThumbnail();
+        return page.toPageThumbnail();
     }
     async getHomePageRef() {
         const systemApp = await this.getSystemApp();
@@ -40,13 +40,13 @@ let HbHomePageRepo = class HbHomePageRepo {
         const systemApp = docSnap.data();
         return systemApp;
     }
-    async setHomePage(documentReference) {
+    async setHomePage(pageReference) {
         const systemApp = await this.getSystemApp() || {};
         systemApp.homePage = {
-            uid: documentReference.uid,
-            docType: documentReference.docType,
-            pid: documentReference.pid,
-            documentRef: documentReference.documentRef
+            uid: pageReference.uid,
+            pageTemplate: pageReference.pageTemplate,
+            pathname: pageReference.pathname,
+            documentRef: pageReference.documentRef
         };
         await setDoc(doc(HbDb.current, "system", "app"), systemApp);
     }

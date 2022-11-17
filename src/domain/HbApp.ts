@@ -51,7 +51,6 @@ export class HbApp {
          * In the future, can create a module to import
          * dynamic packages based on system settings
          */
-        await import("../doc/index");
         await import("../pages/index");
     }
 }

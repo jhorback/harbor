@@ -13,16 +13,16 @@ export enum UserRole {
 
 
 export enum UserAction {
-    /** create documents and access to profile documents tab */
-    authorDocuments =       "AUTHOR_DOCUMENTS",
-    /** in documents list and private documents */
-    viewAllDocuments =      "VIEW_ALL_DOCUMENTS",
-    /** allows user to edit any document */
-    editAnyDocument =       "EDIT_ANY_DOCUMENT",
-    /** allows user to delete their own documents */
-    deleteDocuments =       "DELETE_DOCUMENTS",
-    /** allows user to delete any document */
-    deleteAnyDocument =     "DELETE_ANY_DOCUMENT",
+    /** create pages and access to profile pages tab */
+    authorPages =       "AUTHOR_PAGES",
+    /** in pages list and private pages */
+    viewAllPages =      "VIEW_ALL_PAGES",
+    /** allows user to edit any page */
+    editAnyPage =       "EDIT_ANY_PAGE",
+    /** allows user to delete their own pages */
+    deletePages =       "DELETE_PAGES",
+    /** allows user to delete any page */
+    deleteAnyPage =     "DELETE_ANY_PAGE",
     /** allows user to upload files and access to the profile files tab */
     uploadFiles =           "UPLOAD_FILES",
     /** allows user to view all files */
@@ -42,23 +42,23 @@ export enum UserAction {
 
 
 const UserActionRoles:{[key:string]: Array<UserRole>} = {
-    [UserAction.authorDocuments]: [
+    [UserAction.authorPages]: [
         UserRole.userAdmin,
         UserRole.author,
         UserRole.siteAdmin
     ],
-    [UserAction.viewAllDocuments]: [
+    [UserAction.viewAllPages]: [
         UserRole.siteAdmin
     ],
-    [UserAction.editAnyDocument]: [
+    [UserAction.editAnyPage]: [
         UserRole.siteAdmin
     ],
-    [UserAction.deleteDocuments]: [
+    [UserAction.deletePages]: [
         UserRole.userAdmin,
         UserRole.author,
         UserRole.siteAdmin
     ],
-    [UserAction.deleteAnyDocument]: [
+    [UserAction.deleteAnyPage]: [
         UserRole.siteAdmin
     ],
     [UserAction.uploadFiles]: [

@@ -8,16 +8,16 @@ export var UserRole;
 })(UserRole || (UserRole = {}));
 export var UserAction;
 (function (UserAction) {
-    /** create documents and access to profile documents tab */
-    UserAction["authorDocuments"] = "AUTHOR_DOCUMENTS";
-    /** in documents list and private documents */
-    UserAction["viewAllDocuments"] = "VIEW_ALL_DOCUMENTS";
-    /** allows user to edit any document */
-    UserAction["editAnyDocument"] = "EDIT_ANY_DOCUMENT";
-    /** allows user to delete their own documents */
-    UserAction["deleteDocuments"] = "DELETE_DOCUMENTS";
-    /** allows user to delete any document */
-    UserAction["deleteAnyDocument"] = "DELETE_ANY_DOCUMENT";
+    /** create pages and access to profile pages tab */
+    UserAction["authorPages"] = "AUTHOR_PAGES";
+    /** in pages list and private pages */
+    UserAction["viewAllPages"] = "VIEW_ALL_PAGES";
+    /** allows user to edit any page */
+    UserAction["editAnyPage"] = "EDIT_ANY_PAGE";
+    /** allows user to delete their own pages */
+    UserAction["deletePages"] = "DELETE_PAGES";
+    /** allows user to delete any page */
+    UserAction["deleteAnyPage"] = "DELETE_ANY_PAGE";
     /** allows user to upload files and access to the profile files tab */
     UserAction["uploadFiles"] = "UPLOAD_FILES";
     /** allows user to view all files */
@@ -34,23 +34,23 @@ export var UserAction;
     UserAction["editSiteSettings"] = "EDIT_SITE_SETTINGS";
 })(UserAction || (UserAction = {}));
 const UserActionRoles = {
-    [UserAction.authorDocuments]: [
+    [UserAction.authorPages]: [
         UserRole.userAdmin,
         UserRole.author,
         UserRole.siteAdmin
     ],
-    [UserAction.viewAllDocuments]: [
+    [UserAction.viewAllPages]: [
         UserRole.siteAdmin
     ],
-    [UserAction.editAnyDocument]: [
+    [UserAction.editAnyPage]: [
         UserRole.siteAdmin
     ],
-    [UserAction.deleteDocuments]: [
+    [UserAction.deletePages]: [
         UserRole.userAdmin,
         UserRole.author,
         UserRole.siteAdmin
     ],
-    [UserAction.deleteAnyDocument]: [
+    [UserAction.deleteAnyPage]: [
         UserRole.siteAdmin
     ],
     [UserAction.uploadFiles]: [

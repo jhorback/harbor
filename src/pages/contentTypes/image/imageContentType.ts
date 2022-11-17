@@ -15,18 +15,13 @@ export enum ImageAlignment {
     right = "right"
 }
 
-export class ImageContentDataState implements IContentType {
+export class ImageContentData implements IContentType {
     contentType = "image";
     size:ImageSize = ImageSize.small;
     alignment:ImageAlignment = ImageAlignment.left;
     url:string|null = null;
     thumbUrl:string|null = null;
     fileDbPath:string|null = null;
-    toPlainObject():ImageContentDataState {
-        return {
-            ...this
-        } as ImageContentDataState;
-    }
 }
 
 
@@ -36,9 +31,8 @@ const imageContentType:IContentTypeDescriptor = {
     description: "An image in the format of jpg, gif, png, etc.",
     render: (options:IContentTypeRenderOptions) => html`
         <hb-image-content
-            .pathname=${options.pathname}
-            .contentIndex=${options.contentIndex}
-            .data=${options.data}
+            pathname=${options.pathname}
+            content-index=${options.contentIndex}
         ></hb-image-content>
     `
 };

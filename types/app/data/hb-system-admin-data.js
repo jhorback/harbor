@@ -7,9 +7,9 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var SystemAdminData_1;
 import { DataElement, StateChange } from "@domx/dataelement";
 import { customDataElement, dataProperty, event } from "@domx/dataelement/decorators";
-import { sendFeedback } from "../../layout/feedback";
 import { inject } from "../../domain/DependencyContainer/decorators";
-import { HomePageRepoKey } from "../../domain/interfaces/DocumentInterfaces";
+import { HomePageRepoKey } from "../../domain/interfaces/PageInterfaces";
+import { sendFeedback } from "../../layout/feedback";
 export class RequestSysadminSettingsEvent extends Event {
     constructor() {
         super(RequestSysadminSettingsEvent.eventType, { bubbles: true });
@@ -17,9 +17,9 @@ export class RequestSysadminSettingsEvent extends Event {
 }
 RequestSysadminSettingsEvent.eventType = "request-sysadmin-settings";
 export class UpdateHomePageEvent extends Event {
-    constructor(documentReference) {
+    constructor(pageReference) {
         super(UpdateHomePageEvent.eventType, { bubbles: true, composed: true });
-        this.documentReference = documentReference;
+        this.pageReference = pageReference;
     }
 }
 UpdateHomePageEvent.eventType = "update-home-page";
@@ -34,7 +34,7 @@ let SystemAdminData = SystemAdminData_1 = class SystemAdminData extends DataElem
     }
     async updateHomePage(event) {
         StateChange.of(this, "settings")
-            .tap(updateHomePage(this.homePageRepo, event.documentReference));
+            .tap(updateHomePage(this.homePageRepo, event.pageReference));
     }
 };
 SystemAdminData.defaultSettings = { homePageThumbnail: null };
@@ -56,8 +56,8 @@ SystemAdminData = SystemAdminData_1 = __decorate([
     })
 ], SystemAdminData);
 export { SystemAdminData };
-const updateHomePage = (homePageRepo, docRef) => async (stateChange) => {
-    await homePageRepo.setHomePage(docRef);
+const updateHomePage = (homePageRepo, pageRef) => async (stateChange) => {
+    await homePageRepo.setHomePage(pageRef);
     stateChange.tap(requestSettings(homePageRepo));
     sendFeedback({
         message: "The home page has been updated"

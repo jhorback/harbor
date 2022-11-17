@@ -31,7 +31,6 @@ export class AppBar extends LitElement {
           </a>
         </div>
         <slot name="buttons"></slot>
-        <a href="/testpage">Test Page Link</a>
         ${this.currentUser.isAuthenticated ? html`
           <hb-avatar-button href=${this.currentUser.photoURL}></hb-avatar-button>
         ` : ``}

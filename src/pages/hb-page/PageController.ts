@@ -5,10 +5,27 @@ import { IContentType } from "../../domain/interfaces/PageInterfaces";
 import { EditPageRepoKey, IEditPageRepo } from "../../domain/interfaces/PageInterfaces";
 import { PageModel } from "../../domain/Pages/PageModel";
 import { pageTemplates } from "../../domain/Pages/pageTemplates";
-import { HbPage } from "./hb-page";
 import "../../domain/Pages/HbEditPageRepo";
 import { HbCurrentUserChangedEvent } from "../../domain/HbAuth";
+import { LitElement } from "lit";
+import { NotFoundError } from "../../domain/Errors";
 
+
+export class RequestPageEvent extends Event {
+    static eventType = "request-page";
+    constructor() {
+        super(RequestPageEvent.eventType);
+    }
+}
+
+export class PagePathnameChangeEvent extends Event {
+    static eventType = "page-pathname-change";
+    pathname:string;
+    constructor(pathname:string) {
+        super(PagePathnameChangeEvent.eventType);
+        this.pathname = pathname;
+    }
+}
 
 export class UpdateShowTitleEvent extends Event {
     static eventType = "update-show-title";
@@ -81,38 +98,79 @@ export class PageThumbChangeEvent extends Event {
     }
 }
 
+export class PageEditModeChangeEvent extends Event {
+    static eventType = "page-edit-mode-change";
+    inEditMode:boolean;
+    constructor(inEditMode:boolean) {
+        super(PageEditModeChangeEvent.eventType);
+        this.inEditMode = inEditMode;
+    }
+}
+
+export class EditTabClickedEvent extends Event {
+    static eventType = "edit-tab-clicked";
+    tab:string;
+    constructor(tab:string) {
+        super(EditTabClickedEvent.eventType);
+        this.tab = tab;
+    }
+}
+
+export interface ContentActiveChangeOptions {
+    contentIndex: number;
+    isActive: boolean;
+    inEditMode: boolean;
+}
+
+export class ContentActiveChangeEvent extends Event {
+    static eventType = "content-active-change";
+    options:ContentActiveChangeOptions;
+    constructor(options:ContentActiveChangeOptions) {
+        super(ContentActiveChangeEvent.eventType, {bubbles: true, composed: true});
+        this.options = options;
+    }
+}
+
 
 export interface IPageState {
     isLoaded: boolean;
+    page:PageModel;
     currentUserCanEdit: boolean;
     currentUserCanAdd: boolean;
-    page:PageModel;
+    selectedEditTab: string;
+    inEditMode: boolean;
+    activeContentIndex: number;
+    editableContentIndex: number;
+}
+
+export interface IPageElement extends LitElement {
+    pathname:string;
+    stateId:string;
 }
 
 export class PageController extends StateController {
-
-    @stateProperty()
-    state:IPageState = {
+    static defaultState:IPageState = {
         isLoaded: false,
+        page: new PageModel(),
         currentUserCanEdit: true,
         currentUserCanAdd: true,
-        page: new PageModel()
-    }
+        selectedEditTab: "",
+        inEditMode: false,
+        activeContentIndex: -1,
+        editableContentIndex: -1
+    };
+
+    @stateProperty()
+    state:IPageState = {...PageController.defaultState};
 
     @inject<IEditPageRepo>(EditPageRepoKey)
     private editPageRepo!:IEditPageRepo;
 
-    public host:HbPage;
+    public host:IPageElement;
 
-    constructor(host:HbPage) {
+    constructor(host:IPageElement) {
         super(host);
         this.host = host;
-    }
-
-    hostConnected() {
-        super.hostConnected();
-        this.editPageRepo.subscribeToPage(this.host.pathname,
-            subscribeToPage(this), this.abortController.signal);
     }
 
     @windowEvent(HbCurrentUserChangedEvent, {capture: false})
@@ -121,6 +179,19 @@ export class PageController extends StateController {
             .next(updateUserCanEdit)
             .next(updateUserCanAdd)
             .requestUpdate(event);
+    }
+
+    @windowEvent(PagePathnameChangeEvent, {capture: false})
+    private async pagePathnameChangeEvent(event:PagePathnameChangeEvent) {
+        this.state = {...PageController.defaultState};
+        await this.host.updateComplete;
+        this.refreshState();
+    }
+
+    @hostEvent(RequestPageEvent)
+    private requestPage(event: RequestPageEvent) {
+        this.editPageRepo.subscribeToPage(this.host.pathname,
+            subscribeToPage(this), this.abortController.signal);
     }
 
     @hostEvent(UpdateShowTitleEvent)
@@ -172,15 +243,42 @@ export class PageController extends StateController {
             .tap(savePage(this.editPageRepo))
             .requestUpdate(event);
     }
+
+    @hostEvent(EditTabClickedEvent)
+    private editTabClicked(event:EditTabClickedEvent) {
+        Product.of<IPageState>(this)
+            .next(setEditTab(event.tab))
+            .requestUpdate(event);
+    }
+
+    @hostEvent(PageEditModeChangeEvent)
+    private pageEditModeChange(event:PageEditModeChangeEvent) {
+        Product.of<IPageState>(this)
+            .next(setPageEditMode(event.inEditMode))
+            .requestUpdate(event);
+    }
+
+    @hostEvent(ContentActiveChangeEvent)
+    private contentActiveChange(event:ContentActiveChangeEvent) {
+        Product.of<IPageState>(this)
+            .next(setContentActive(event.options))
+            .requestUpdate(event);
+    }
 }
 
 
 const subscribeToPage = (pageController:PageController) => (page:PageModel) => {
+
+    // happens if the page is deleted
+    if (!page) {
+        throw new NotFoundError("Page Not Found");
+    }
+
     Product.of<IPageState>(pageController)
         .next(updatePageLoaded(page))
         .next(updateUserCanEdit)
         .next(updateUserCanAdd)
-        .requestUpdate("PageController.subscribeToPage");
+        .requestUpdate(`PageController.subscribeToPage("${page.pathname}")`);
 };
 
 
@@ -194,13 +292,13 @@ const updateUserCanEdit = (state:IPageState) => {
 };
 
 const updateUserCanAdd = (state:IPageState) => {
-    state.currentUserCanAdd = new HbCurrentUser().authorize(UserAction.authorDocuments);
+    state.currentUserCanAdd = new HbCurrentUser().authorize(UserAction.authorPages);
 }
 
 const userCanEdit = (page:PageModel):boolean => {
     const currentUser = new HbCurrentUser();
     return currentUser.uid === page.authorUid
-        || currentUser.authorize(UserAction.editAnyDocument);
+        || currentUser.authorize(UserAction.editAnyPage);
 }
 
 const updatePageLoaded = (page:PageModel) => (state:IPageState) => {
@@ -263,5 +361,24 @@ const updateThumbs = (thumbs?:Array<string>) => (state:IPageState) => {
     // set the thumb if it is the default
     if (state.page.thumbUrls[0] && state.page.thumbUrl === pageTemplates.get(state.page.pageTemplate).defaultThumbUrl) {
         state.page.thumbUrl = state.page.thumbUrls[0];
+    }
+};
+
+
+const setEditTab = (tab:string) => (state:IPageState) => {
+    state.selectedEditTab = state.selectedEditTab === tab ? "" : tab;
+};
+
+const setContentActive = (options:ContentActiveChangeOptions) => (state:IPageState) => {
+    state.editableContentIndex = options.inEditMode ? options.contentIndex : -1;
+    state.activeContentIndex = options.isActive ? options.contentIndex : -1;
+};
+
+
+const setPageEditMode = (inEditMode:boolean) => (state:IPageState) => {
+    state.inEditMode = inEditMode;
+    if (!inEditMode) {
+        state.editableContentIndex = -1;
+        state.activeContentIndex = -1;
     }
 };

@@ -1,16 +1,15 @@
 import { html, css, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators.js";
-import { styles } from "../styles";
+import { styles } from "../../styles";
 import { linkProp } from "@domx/linkprop";
-import { UserData } from "../app/data/hb-user-data";
-import { AvatarSize } from "../common/hb-avatar";
+import { UserData } from "../../app/data/hb-user-data";
+import { AvatarSize } from "../../common/hb-avatar";
 
 
 /**  
- * @fires {@link DocumentSelectedEvent}
  */
-@customElement('hb-doc-author')
-export class DocAuthor extends LitElement {
+@customElement('hb-page-author-settings')
+export class PageAuthorSettings extends LitElement {
 
     @property({type:String})
     uid = "";
@@ -54,6 +53,6 @@ export class DocAuthor extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'hb-doc-author': DocAuthor
+    'hb-page-author-settings': PageAuthorSettings
   }
 }

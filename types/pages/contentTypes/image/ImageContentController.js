@@ -4,12 +4,12 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-import { hostEvent, Product, StateController, stateProperty } from "@domx/statecontroller";
+import { hostEvent, Product } from "@domx/statecontroller";
 import { inject } from "../../../domain/DependencyContainer/decorators";
 import { FindFileRepoKey } from "../../../domain/interfaces/FileInterfaces";
 import { UpdatePageContentEvent } from "../../hb-page";
-import { ImageContentDataState } from "./imageContentType";
 import "../../../domain/Files/HbFindFileRepo";
+import { PageContentController } from "../../hb-page/PageContentController";
 export class ImageSizeChangeEvent extends Event {
     constructor(size) {
         super(ImageSizeChangeEvent.eventType);
@@ -31,40 +31,33 @@ export class ImageContentSelectedEvent extends Event {
     }
 }
 ImageContentSelectedEvent.eventType = "image-content-selected";
-export class ImageContentController extends StateController {
-    constructor(host) {
-        super(host);
-        this.state = new ImageContentDataState();
-        this.host = host;
+export class ImageContentController extends PageContentController {
+    constructor() {
+        super(...arguments);
+        this.state = { ...this.content };
     }
-    hostConnected() {
-        super.hostConnected();
-        this.state = this.host.data;
-        Product.of(this, "state")
-            .tap(syncWithDb(this, this.findFileRepo));
+    stateUpdated() {
+        this.state = { ...this.content };
     }
     imageSizeChange(event) {
-        Product.of(this, "state")
+        Product.of(this)
             .next(updateImageSize(event.size))
             .requestUpdate(event)
             .dispatchHostEvent(new UpdatePageContentEvent(this.host.contentIndex, this.state));
     }
     imageAlignmentChange(event) {
-        Product.of(this, "state")
+        Product.of(this)
             .next(updateImageAlignment(event.alignment))
             .requestUpdate(event)
             .dispatchHostEvent(new UpdatePageContentEvent(this.host.contentIndex, this.state));
     }
     imageContentSelected(event) {
-        Product.of(this, "state")
+        Product.of(this)
             .next(setImageContent(event.file))
             .requestUpdate(event)
             .dispatchHostEvent(new UpdatePageContentEvent(this.host.contentIndex, this.state));
     }
 }
-__decorate([
-    stateProperty()
-], ImageContentController.prototype, "state", void 0);
 __decorate([
     inject(FindFileRepoKey)
 ], ImageContentController.prototype, "findFileRepo", void 0);

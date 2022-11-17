@@ -16,7 +16,7 @@ let DeletePageRepo = class DeletePageRepo {
     }
 };
 __decorate([
-    authorize(UserAction.authorDocuments)
+    authorize(UserAction.authorPages)
 ], DeletePageRepo.prototype, "deletePage", null);
 DeletePageRepo = __decorate([
     provides(DeletePageRepoKey, !HbApp.isStorybook)

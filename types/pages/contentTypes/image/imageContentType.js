@@ -12,7 +12,7 @@ export var ImageAlignment;
     ImageAlignment["center"] = "center";
     ImageAlignment["right"] = "right";
 })(ImageAlignment || (ImageAlignment = {}));
-export class ImageContentDataState {
+export class ImageContentData {
     constructor() {
         this.contentType = "image";
         this.size = ImageSize.small;
@@ -21,11 +21,6 @@ export class ImageContentDataState {
         this.thumbUrl = null;
         this.fileDbPath = null;
     }
-    toPlainObject() {
-        return {
-            ...this
-        };
-    }
 }
 const imageContentType = {
     type: "image",
@@ -33,9 +28,8 @@ const imageContentType = {
     description: "An image in the format of jpg, gif, png, etc.",
     render: (options) => html `
         <hb-image-content
-            .pathname=${options.pathname}
-            .contentIndex=${options.contentIndex}
-            .data=${options.data}
+            pathname=${options.pathname}
+            content-index=${options.contentIndex}
         ></hb-image-content>
     `
 };

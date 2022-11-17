@@ -52,7 +52,7 @@ class EditPageRepo implements IEditPageRepo {
 
     async savePage(page: PageModel) {
         try {
-            await setDoc(doc(HbDb.current, "documents", page.uid)
+            await setDoc(doc(HbDb.current, "pages", page.uid)
                 .withConverter(PageModel), page);
         } catch (error:any) {
             throw new ServerError(error.message, error);

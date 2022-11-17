@@ -97,6 +97,7 @@ let FindPageDialog = class FindPageDialog extends LitElement {
     close() {
         this.reset();
         this.dispatchEvent(new Event("cancel"));
+        this.$dialog.close();
     }
     isSelected(index) {
         return index === this.selectedIndex;

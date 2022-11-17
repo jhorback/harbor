@@ -11,9 +11,8 @@ import { styles } from "../../styles";
 import { PageSearchController, SearchPagesEvent } from "../../pages/PageSearchController";
 import "../../common/hb-horizontal-card";
 /**
- * @class ProfileDocsTab
  */
-let ProfileDocsTab = class ProfileDocsTab extends LitElement {
+let ProfilePagesTab = class ProfilePagesTab extends LitElement {
     constructor() {
         super(...arguments);
         this.pageSearch = new PageSearchController(this);
@@ -30,7 +29,7 @@ let ProfileDocsTab = class ProfileDocsTab extends LitElement {
                 @state-changed=${linkProp(this, "state")}
             ></hb-search-docs-data>
             ${state.isLoading || state.count !== 0 ? html `` : html `
-                <p>There are no documents</p>
+                <p>There are no pages</p>
             `}
             <div class="list">
             ${state.list.map(pageModel => {
@@ -49,7 +48,7 @@ let ProfileDocsTab = class ProfileDocsTab extends LitElement {
         `;
     }
 };
-ProfileDocsTab.styles = [styles.types, css `
+ProfilePagesTab.styles = [styles.types, css `
         :host {
             display: block;
         }
@@ -60,7 +59,7 @@ ProfileDocsTab.styles = [styles.types, css `
             row-gap: 16px;
         }
     `];
-ProfileDocsTab = __decorate([
-    customElement('hb-profile-docs-tab')
-], ProfileDocsTab);
-export { ProfileDocsTab };
+ProfilePagesTab = __decorate([
+    customElement('hb-profile-pages-tab')
+], ProfilePagesTab);
+export { ProfilePagesTab };

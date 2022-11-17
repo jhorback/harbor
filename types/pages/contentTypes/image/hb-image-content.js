@@ -4,28 +4,31 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-import { html, css, LitElement } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property, query } from "lit/decorators.js";
-import { styles } from "../../../styles";
-import { ImageSize } from "./imageContentType";
+import { FileType } from "../../../domain/interfaces/FileInterfaces";
 import { FileUploaderAccept } from "../../../files/hb-file-upload-panel";
 import "../../../files/hb-find-file-dialog";
-import { FileType } from "../../../domain/interfaces/FileInterfaces";
+import { styles } from "../../../styles";
 import { ImageAlignmentChangeEvent, ImageContentController, ImageContentSelectedEvent, ImageSizeChangeEvent } from "./ImageContentController";
+import { ImageSize } from "./imageContentType";
 /**
  */
 let ImageContent = class ImageContent extends LitElement {
     constructor() {
         super(...arguments);
-        this.docUid = "";
+        this.pathname = "";
         this.contentIndex = -1;
         this.imageContent = new ImageContentController(this);
     }
-    get stateId() { return `${this.docUid}:content:${this.contentIndex}`; }
+    get stateId() { return this.pathname; }
     render() {
-        const state = this.imageContent.state;
+        const state = this.imageContent.content;
         return html `
-            <hb-page-content ?is-empty=${!state.url}>                
+            <hb-page-content
+                pathname=${this.pathname}
+                content-index=${this.contentIndex}
+                ?is-empty=${!state.url}>                
                 <div>
                     ${this.renderImage(this.getImageSrcPerSize())}
                 </div>
@@ -45,7 +48,7 @@ let ImageContent = class ImageContent extends LitElement {
                         file_upload
                     </span>
                 </div>
-                <div slot="doc-edit-empty" @click=${this.clickedEmpty}>
+                <div slot="page-edit-empty" @click=${this.clickedEmpty}>
                     ${this.renderImage("/content/thumbs/files-thumb.svg")}
                 </div>
                 <div slot="content-edit">
@@ -81,13 +84,13 @@ let ImageContent = class ImageContent extends LitElement {
         `;
     }
     getImageSrcPerSize() {
-        const state = this.imageContent.state;
+        const state = this.imageContent.content;
         return state.size === ImageSize.small ?
             state.thumbUrl ? state.thumbUrl :
                 state.url : state.url;
     }
     renderImage(src) {
-        const { state } = this.imageContent;
+        const state = this.imageContent.content;
         return !src ? html `` : html `
             <div size=${state.size} alignment=${state.alignment}>
                 <img src=${src}>
@@ -168,13 +171,10 @@ ImageContent.styles = [styles.icons, styles.form, css `
   `];
 __decorate([
     property({ type: String })
-], ImageContent.prototype, "docUid", void 0);
+], ImageContent.prototype, "pathname", void 0);
 __decorate([
-    property({ type: Number })
+    property({ type: Number, attribute: "content-index" })
 ], ImageContent.prototype, "contentIndex", void 0);
-__decorate([
-    property({ type: Object })
-], ImageContent.prototype, "data", void 0);
 __decorate([
     query("hb-page-content")
 ], ImageContent.prototype, "$hbPageContent", void 0);

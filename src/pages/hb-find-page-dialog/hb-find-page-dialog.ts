@@ -113,6 +113,7 @@ export class FindPageDialog extends LitElement {
     close() {
         this.reset();
         this.dispatchEvent(new Event("cancel"));
+        this.$dialog.close();
     }
 
     private isSelected(index:number) {

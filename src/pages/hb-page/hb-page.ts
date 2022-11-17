@@ -1,48 +1,21 @@
 import { css, html, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators.js";
-import "../../layout/hb-page-layout";
-import { styles } from "../../styles";
-import "../hb-add-page-dialog";
-import { AddPageDialog } from "../hb-add-page-dialog";
+import "../../common/hb-content-editable";
 import { ContentEditableChangeEvent } from "../../common/hb-content-editable";
 import { SwitchChangeEvent } from "../../common/hb-switch";
 import { contentTypes } from "../../domain/Pages/contentTypes";
 import { sendFeedback } from "../../layout/feedback";
+import "../../layout/hb-page-layout";
+import { styles } from "../../styles";
+import "../hb-add-page-dialog";
+import { AddPageDialog } from "../hb-add-page-dialog";
 import { PageAddedEvent } from "../hb-add-page-dialog/AddPageController";
+import { DeletePageDialog } from "../hb-delete-page-dialog";
+import "../hb-delete-page-dialog";
+import "./hb-page-author-settings";
 import { HbPageContent } from "./hb-page-content";
-import { IPageState, PageController, UpdateShowSubtitleEvent, UpdateShowTitleEvent, UpdateSubtitleEvent } from "./PageController";
-
-
-export class PageEditModeChangeEvent extends Event {
-    static eventType = "page-edit-mode-change";
-    inEditMode:boolean;
-    constructor(inEditMode:boolean) {
-        super(PageEditModeChangeEvent.eventType, {bubbles: false});
-        this.inEditMode = inEditMode;
-    }
-}
-
-export class ContentEmptyEvent extends Event {
-    static eventType = "content-empty";
-    host:Element;
-    isEmpty:boolean;
-    constructor(host:Element, isEmpty:boolean) {
-        super(ContentEmptyEvent.eventType, {bubbles: true, composed:true});
-        this.host = host;
-        this.isEmpty = isEmpty;
-    }
-}
-
-export class ContentActiveChangeEvent extends Event {
-    static eventType = "content-active-change";
-    activeContent:HbPageContent;
-    active:boolean;
-    constructor(activeContent:HbPageContent, active:boolean) {
-        super(ContentActiveChangeEvent.eventType, {bubbles: true, composed: true});
-        this.activeContent = activeContent;
-        this.active = active;
-    }
-}
+import "./hb-page-thumb-settings";
+import { EditTabClickedEvent, IPageState, PageController, PageEditModeChangeEvent, UpdateShowSubtitleEvent, UpdateShowTitleEvent, UpdateSubtitleEvent } from "./PageController";
 
 
 @customElement("hb-page")
@@ -54,17 +27,11 @@ export class HbPage extends LitElement {
     @property({type: String})
     pathname!:string;
 
-    @state()
-    inEditMode = false;
-
-    @state()
-    selectedEditTab:string = "";
-
     @query("hb-add-page-dialog")
     $addPageDlg!:AddPageDialog;
 
-    // @query("hb-delete-page-dialog")
-    // $deletePagetDialog!:DeletePageDialog;
+    @query("hb-delete-page-dialog")
+    $deletePageDialog!:DeletePageDialog;
 
     render() {
         const state = this.page.state;
@@ -73,11 +40,11 @@ export class HbPage extends LitElement {
         return html`
             <hb-page-layout>
                 ${renderAppBarButtons(this, state)}
-                ${this.inEditMode ? renderEditTabs(this, state) : html``}
+                ${state.inEditMode ? renderEditTabs(this, state) : html``}
                 <div ?hidden=${!state.isLoaded}>
-                    <h1 class="headline-large" ?hidden=${!this.inEditMode && !page.showTitle}>${page.title}</h1>
+                    <h1 class="headline-large" ?hidden=${!state.inEditMode && !page.showTitle}>${page.title}</h1>
 
-                    ${this.inEditMode ? html`
+                    ${state.inEditMode ? html`
                         <hb-content-editable
                             class="body-large"
                             value=${page.subtitle}
@@ -90,14 +57,10 @@ export class HbPage extends LitElement {
                         </div>
                     `}
                 </div>
-                <div class="page-content"
-                    @content-active-change=${this.contentActive}
-                    @content-empty=${this.contentEmpty}
-                >
+                <div class="page-content">
                     ${state.page.content.map((data, contentIndex) => contentTypes.get(data.contentType).render({
                         pathname: this.pathname,
-                        contentIndex,
-                        data
+                        contentIndex
                     }))}
                 </div>
             </hb-page-layout>
@@ -105,12 +68,7 @@ export class HbPage extends LitElement {
     }
 
     private subtitleChange(event:ContentEditableChangeEvent) {
-        this.shadowRoot?.dispatchEvent(new UpdateSubtitleEvent(event.value));
-    }
-
-    private contentEmpty(event:ContentEmptyEvent) {
-        event.host.className = !this.inEditMode && event.isEmpty ?
-            "empty" : "";
+        this.dispatchEvent(new UpdateSubtitleEvent(event.value));
     }
 
     addPageClicked() {
@@ -127,41 +85,15 @@ export class HbPage extends LitElement {
     }
 
     editPageClicked() {
-        this.inEditMode = true;
-        this.dispatchEditModeChange();
+        this.dispatchEvent(new PageEditModeChangeEvent(true));
     }
 
     deletePageClicked() {
-        alert("delete page");
-        // this.$deleteDocumentDialog.open = true;
+        this.$deletePageDialog.showModal();
     }
 
     doneButtonClicked() {
-        this.selectedEditTab = "";
-        this.inEditMode = false;
-        this.closeActiveContent();
-        this.dispatchEditModeChange();
-    }
-
-    private activeContent:HbPageContent|null = null;
-
-    private contentActive(event:ContentActiveChangeEvent) {
-        this.closeActiveContent();
-        if (event.active) {
-            this.activeContent = event.activeContent;
-            this.activeContent.isActive = true;
-        }   
-    }
-
-    private closeActiveContent() {
-        if(this.activeContent) {
-            this.activeContent.isActive = false;
-            this.activeContent.contentEdit = false;
-        }
-    }
-
-    private dispatchEditModeChange() {
-        this.dispatchEvent(new PageEditModeChangeEvent(this.inEditMode));
+        this.dispatchEvent(new PageEditModeChangeEvent(false));
     }
 
     static styles = [styles.types, styles.icons, css`
@@ -229,19 +161,19 @@ export class HbPage extends LitElement {
 const renderAppBarButtons = (page:HbPage, state:IPageState) => html`
     <div slot="app-bar-buttons">
         <span
-            ?hidden=${!state.currentUserCanEdit || page.inEditMode}
+            ?hidden=${!state.currentUserCanEdit || state.inEditMode}
             class="icon-button icon-medium"
             tabindex="0"
             @click=${page.editPageClicked}
         >edit_document</span>
         <span
-            ?hidden=${!state.currentUserCanAdd || page.inEditMode}
+            ?hidden=${!state.currentUserCanAdd || state.inEditMode}
             class="icon-button icon-medium"
             tabindex="0"
             @click=${page.addPageClicked}
         >add_circle</span>
         <hb-button
-            ?hidden=${!page.inEditMode}
+            ?hidden=${!state.inEditMode}
             tonal
             label="Done"
             @hb-button-click=${page.doneButtonClicked}
@@ -257,35 +189,35 @@ const renderEditTabs = (page:HbPage, state:IPageState) => html`
         <hb-button           
             text-button
             label="Settings"
-            ?selected=${page.selectedEditTab === "settings"}
+            ?selected=${state.selectedEditTab === "settings"}
             @click=${clickEditTab(page, "settings")}
         ></hb-button>
         <hb-button           
             text-button
             label="Thumbnail"
-            ?selected=${page.selectedEditTab === "thumbnail"}
+            ?selected=${state.selectedEditTab === "thumbnail"}
             @click=${clickEditTab(page, "thumbnail")}
         ></hb-button>
         <hb-button           
             text-button
             label="Author"
-            ?selected=${page.selectedEditTab === "author"}
+            ?selected=${state.selectedEditTab === "author"}
             @click=${clickEditTab(page, "author")}
         ></hb-button>
     </div>
     ${state.isLoaded ? renderEditTabContent(page, state) : html``}
 `;
 
+
 const clickEditTab = (page:HbPage, tab:string) => (event:Event) => {
-    const nextTab = page.selectedEditTab === tab ? "" : tab;
-    page.selectedEditTab = nextTab;
+    page.dispatchEvent(new EditTabClickedEvent(tab));
 };
 
-const renderEditTabContent = (page:HbPage, state:IPageState) => page.selectedEditTab === "settings" ? 
+const renderEditTabContent = (page:HbPage, state:IPageState) => state.selectedEditTab === "settings" ? 
     renderEditSettingsTabContent(page, state) :
-    page.selectedEditTab === "thumbnail" ?
+    state.selectedEditTab === "thumbnail" ?
         renderEditThumbnailTabContent(page, state) :
-        page.selectedEditTab === "author" ?
+        state.selectedEditTab === "author" ?
             renderEditAuthorTabContent(page, state) :
             html``;
 
@@ -334,29 +266,27 @@ const renderEditSettingsTabContent = (page:HbPage, state:IPageState) => html`
 `;
 
 const showTitleClicked = (page:HbPage) => (event:SwitchChangeEvent) =>
-    page.shadowRoot?.dispatchEvent(new UpdateShowTitleEvent(event.selected));
+    page.dispatchEvent(new UpdateShowTitleEvent(event.selected));
 
 
 const showSubtitleClicked = (page:HbPage) => (event:SwitchChangeEvent) => 
-    page.shadowRoot?.dispatchEvent(new UpdateShowSubtitleEvent(event.selected));
+    page.dispatchEvent(new UpdateShowSubtitleEvent(event.selected));
 
 
 const renderEditThumbnailTabContent = (page:HbPage, state:IPageState) => {
-    // jch - need update
     return html`
         <div class="edit-tab-content">
-            <hb-doc-thumb-settings-tab .state=${state}></hb-doc-thumb-settings-tab>
+            <hb-page-thumb-settings-tab .state=${state}></hb-page-thumb-settings-tab>
         </div>
     `;
 };
 
 const renderEditAuthorTabContent = (page:HbPage, state:IPageState) => {
-    // jch - need update
     return html`
         <div class="edit-tab-content">
-            <hb-doc-author 
+            <hb-page-author-settings
                 uid=${state.page.authorUid}           
-            ></hb-doc-author>
+            ></hb-page-author-settings>
         </div>
     `;
 };

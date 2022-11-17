@@ -34,7 +34,6 @@ export interface IContentTypeDescriptor {
 export interface IContentTypeRenderOptions {
     pathname:string,
     contentIndex:number;
-    data:IContentType;
 }
 
 

@@ -12,6 +12,20 @@ import { PageModel } from "../../domain/Pages/PageModel";
 import { pageTemplates } from "../../domain/Pages/pageTemplates";
 import "../../domain/Pages/HbEditPageRepo";
 import { HbCurrentUserChangedEvent } from "../../domain/HbAuth";
+import { NotFoundError } from "../../domain/Errors";
+export class RequestPageEvent extends Event {
+    constructor() {
+        super(RequestPageEvent.eventType);
+    }
+}
+RequestPageEvent.eventType = "request-page";
+export class PagePathnameChangeEvent extends Event {
+    constructor(pathname) {
+        super(PagePathnameChangeEvent.eventType);
+        this.pathname = pathname;
+    }
+}
+PagePathnameChangeEvent.eventType = "page-pathname-change";
 export class UpdateShowTitleEvent extends Event {
     constructor(showTitle) {
         super(UpdateShowTitleEvent.eventType);
@@ -61,26 +75,46 @@ export class PageThumbChangeEvent extends Event {
     }
 }
 PageThumbChangeEvent.eventType = "page-thumb-change";
+export class PageEditModeChangeEvent extends Event {
+    constructor(inEditMode) {
+        super(PageEditModeChangeEvent.eventType);
+        this.inEditMode = inEditMode;
+    }
+}
+PageEditModeChangeEvent.eventType = "page-edit-mode-change";
+export class EditTabClickedEvent extends Event {
+    constructor(tab) {
+        super(EditTabClickedEvent.eventType);
+        this.tab = tab;
+    }
+}
+EditTabClickedEvent.eventType = "edit-tab-clicked";
+export class ContentActiveChangeEvent extends Event {
+    constructor(options) {
+        super(ContentActiveChangeEvent.eventType, { bubbles: true, composed: true });
+        this.options = options;
+    }
+}
+ContentActiveChangeEvent.eventType = "content-active-change";
 export class PageController extends StateController {
     constructor(host) {
         super(host);
-        this.state = {
-            isLoaded: false,
-            currentUserCanEdit: true,
-            currentUserCanAdd: true,
-            page: new PageModel()
-        };
+        this.state = { ...PageController.defaultState };
         this.host = host;
-    }
-    hostConnected() {
-        super.hostConnected();
-        this.editPageRepo.subscribeToPage(this.host.pathname, subscribeToPage(this), this.abortController.signal);
     }
     currentUserChanged(event) {
         Product.of(this)
             .next(updateUserCanEdit)
             .next(updateUserCanAdd)
             .requestUpdate(event);
+    }
+    async pagePathnameChangeEvent(event) {
+        this.state = { ...PageController.defaultState };
+        await this.host.updateComplete;
+        this.refreshState();
+    }
+    requestPage(event) {
+        this.editPageRepo.subscribeToPage(this.host.pathname, subscribeToPage(this), this.abortController.signal);
     }
     updateShowTitle(event) {
         Product.of(this)
@@ -120,7 +154,32 @@ export class PageController extends StateController {
             .tap(savePage(this.editPageRepo))
             .requestUpdate(event);
     }
+    editTabClicked(event) {
+        Product.of(this)
+            .next(setEditTab(event.tab))
+            .requestUpdate(event);
+    }
+    pageEditModeChange(event) {
+        Product.of(this)
+            .next(setPageEditMode(event.inEditMode))
+            .requestUpdate(event);
+    }
+    contentActiveChange(event) {
+        Product.of(this)
+            .next(setContentActive(event.options))
+            .requestUpdate(event);
+    }
 }
+PageController.defaultState = {
+    isLoaded: false,
+    page: new PageModel(),
+    currentUserCanEdit: true,
+    currentUserCanAdd: true,
+    selectedEditTab: "",
+    inEditMode: false,
+    activeContentIndex: -1,
+    editableContentIndex: -1
+};
 __decorate([
     stateProperty()
 ], PageController.prototype, "state", void 0);
@@ -130,6 +189,12 @@ __decorate([
 __decorate([
     windowEvent(HbCurrentUserChangedEvent, { capture: false })
 ], PageController.prototype, "currentUserChanged", null);
+__decorate([
+    windowEvent(PagePathnameChangeEvent, { capture: false })
+], PageController.prototype, "pagePathnameChangeEvent", null);
+__decorate([
+    hostEvent(RequestPageEvent)
+], PageController.prototype, "requestPage", null);
 __decorate([
     hostEvent(UpdateShowTitleEvent)
 ], PageController.prototype, "updateShowTitle", null);
@@ -148,12 +213,25 @@ __decorate([
 __decorate([
     hostEvent(PageThumbChangeEvent)
 ], PageController.prototype, "pageThumb", null);
+__decorate([
+    hostEvent(EditTabClickedEvent)
+], PageController.prototype, "editTabClicked", null);
+__decorate([
+    hostEvent(PageEditModeChangeEvent)
+], PageController.prototype, "pageEditModeChange", null);
+__decorate([
+    hostEvent(ContentActiveChangeEvent)
+], PageController.prototype, "contentActiveChange", null);
 const subscribeToPage = (pageController) => (page) => {
+    // happens if the page is deleted
+    if (!page) {
+        throw new NotFoundError("Page Not Found");
+    }
     Product.of(pageController)
         .next(updatePageLoaded(page))
         .next(updateUserCanEdit)
         .next(updateUserCanAdd)
-        .requestUpdate("PageController.subscribeToPage");
+        .requestUpdate(`PageController.subscribeToPage("${page.pathname}")`);
 };
 const savePage = (editPageRepo) => (product) => {
     editPageRepo.savePage(product.getState().page);
@@ -162,12 +240,12 @@ const updateUserCanEdit = (state) => {
     state.currentUserCanEdit = userCanEdit(state.page);
 };
 const updateUserCanAdd = (state) => {
-    state.currentUserCanAdd = new HbCurrentUser().authorize(UserAction.authorDocuments);
+    state.currentUserCanAdd = new HbCurrentUser().authorize(UserAction.authorPages);
 };
 const userCanEdit = (page) => {
     const currentUser = new HbCurrentUser();
     return currentUser.uid === page.authorUid
-        || currentUser.authorize(UserAction.editAnyDocument);
+        || currentUser.authorize(UserAction.editAnyPage);
 };
 const updatePageLoaded = (page) => (state) => {
     state.isLoaded = true;
@@ -216,5 +294,19 @@ const updateThumbs = (thumbs) => (state) => {
     // set the thumb if it is the default
     if (state.page.thumbUrls[0] && state.page.thumbUrl === pageTemplates.get(state.page.pageTemplate).defaultThumbUrl) {
         state.page.thumbUrl = state.page.thumbUrls[0];
+    }
+};
+const setEditTab = (tab) => (state) => {
+    state.selectedEditTab = state.selectedEditTab === tab ? "" : tab;
+};
+const setContentActive = (options) => (state) => {
+    state.editableContentIndex = options.inEditMode ? options.contentIndex : -1;
+    state.activeContentIndex = options.isActive ? options.contentIndex : -1;
+};
+const setPageEditMode = (inEditMode) => (state) => {
+    state.inEditMode = inEditMode;
+    if (!inEditMode) {
+        state.editableContentIndex = -1;
+        state.activeContentIndex = -1;
     }
 };
