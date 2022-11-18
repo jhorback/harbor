@@ -31,7 +31,7 @@ let HbPageContent = class HbPageContent extends LitElement {
                 ?is-active=${contentState.isActive}
                 @click=${this.contentClicked}>
                 ${pageState.inEditMode ? html `
-                    <div class="edit-toolbar">
+                    <div class="edit-toolbar" @click=${this.editToolbarClicked}>
                         ${contentState.inContentEditMode ? html `
                             <slot name="edit-toolbar"></slot>
                             <span
@@ -88,14 +88,14 @@ let HbPageContent = class HbPageContent extends LitElement {
             </div>
         `;
     }
-    contentClicked(event) {
-        if (this.pageContent.page.pageEdit && !this.pageContent.contentState.isActive) {
-            this.dispatchEvent(new ContentActiveChangeEvent({
-                contentIndex: this.contentIndex,
-                isActive: true,
-                inEditMode: false
-            }));
-        }
+    contentClicked() {
+        //if(this.pageContent.page.state.inEditMode && !this.pageContent.contentState.isActive) {
+        this.dispatchEvent(new ContentActiveChangeEvent({
+            contentIndex: this.contentIndex,
+            isActive: true,
+            inEditMode: false
+        }));
+        //}
     }
     moveUpClicked() {
         const contentState = this.pageContent.contentState;
@@ -106,6 +106,9 @@ let HbPageContent = class HbPageContent extends LitElement {
         const contentState = this.pageContent.contentState;
         contentState.canMoveDown &&
             this.dispatchEvent(new MovePageContentEvent(this.contentIndex, false));
+    }
+    editToolbarClicked(event) {
+        event.stopPropagation();
     }
     edit() {
         this.dispatchEvent(new ContentActiveChangeEvent({
@@ -118,7 +121,7 @@ let HbPageContent = class HbPageContent extends LitElement {
         confirm("Are you sure you want to delete this content?") &&
             this.dispatchEvent(new ContentDeletedEvent(this.contentIndex));
     }
-    done(event) {
+    done() {
         this.dispatchEvent(new ContentActiveChangeEvent({
             contentIndex: this.contentIndex,
             inEditMode: false,

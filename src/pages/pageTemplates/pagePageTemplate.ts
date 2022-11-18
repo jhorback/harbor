@@ -1,5 +1,5 @@
 import { IPageTemplateDescriptor } from "../../domain/interfaces/PageInterfaces";
-import { ContentTypes } from "../../domain/Pages/contentTypes";
+import { ContentTypes } from "../contentTypes";
 import { pageTemplates } from "../../domain/Pages/pageTemplates";
 import { TextContentData } from "../contentTypes/text";
 
