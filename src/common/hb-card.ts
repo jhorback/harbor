@@ -67,10 +67,12 @@ export class Card extends LitElement {
             cursor: default;
             gap: 5px;
             background-color: var(--md-sys-color-surface-variant);
+            height: 100%;
         }
         .media,.media #thumbnail { 
             width: 100%;
             height: 168px;
+            border-radius: 0 0 8px 8px;
         }
         .media #thumbnail {
             overflow: hidden;

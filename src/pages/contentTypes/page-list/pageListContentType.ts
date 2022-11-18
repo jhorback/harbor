@@ -4,9 +4,9 @@ import { contentTypes } from "../../../domain/Pages/contentTypes";
 
 
 export enum PageListDisplay {
-    verticalCard = "vertical-card",
-    horizontalCard = "horizontal-card",
-    textOnly = "textOnly"
+    verticalCard = "Card",
+    horizontalCard = "Horizontal Card",
+    textOnly = "Text Only"
 }
 
 export class PageListContentData implements IContentType {

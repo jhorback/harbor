@@ -204,8 +204,8 @@ PageController.defaultState = {
     currentUserCanAdd: true,
     selectedEditTab: "",
     inEditMode: true,
-    activeContentIndex: -1,
-    editableContentIndex: -1,
+    activeContentIndex: 0,
+    editableContentIndex: 0,
     pageTemplate: pageTemplates.get("page")
 };
 __decorate([

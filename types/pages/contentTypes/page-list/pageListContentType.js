@@ -2,9 +2,9 @@ import { html } from "lit-html";
 import { contentTypes } from "../../../domain/Pages/contentTypes";
 export var PageListDisplay;
 (function (PageListDisplay) {
-    PageListDisplay["verticalCard"] = "vertical-card";
-    PageListDisplay["horizontalCard"] = "horizontal-card";
-    PageListDisplay["textOnly"] = "textOnly";
+    PageListDisplay["verticalCard"] = "Card";
+    PageListDisplay["horizontalCard"] = "Horizontal Card";
+    PageListDisplay["textOnly"] = "Text Only";
 })(PageListDisplay || (PageListDisplay = {}));
 export class PageListContentData {
     constructor() {

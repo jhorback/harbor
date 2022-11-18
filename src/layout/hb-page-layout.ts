@@ -56,6 +56,9 @@ export class PageLayout extends LitElement {
       :host([large]) .page-layout {
         max-width: 840px;
       }
+      :host([wide]) .page-layout {
+        max-width: 1200px;
+      }
     `]
 }
 
