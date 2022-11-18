@@ -8,7 +8,7 @@ export class PageModel {
         /** Generated on create in db */
         this.uid = "";
         /** Page template key referenced in pageTemplates */
-        this.pageTemplate = "";
+        this.pageTemplate = "page";
         /** The page route */
         this.pathname = "";
         this.title = "";

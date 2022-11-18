@@ -30,7 +30,7 @@ export class PageModel implements IPageData {
     /** Generated on create in db */
     uid = "";
     /** Page template key referenced in pageTemplates */
-    pageTemplate = "";
+    pageTemplate = "page";
     /** The page route */
     pathname = "";
     title = "";

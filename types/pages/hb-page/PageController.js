@@ -13,6 +13,7 @@ import { pageTemplates } from "../../domain/Pages/pageTemplates";
 import "../../domain/Pages/HbEditPageRepo";
 import { HbCurrentUserChangedEvent } from "../../domain/HbAuth";
 import { NotFoundError } from "../../domain/Errors";
+import { contentTypes } from "../../domain/Pages/contentTypes";
 export class RequestPageEvent extends Event {
     constructor() {
         super(RequestPageEvent.eventType);
@@ -96,6 +97,20 @@ export class ContentActiveChangeEvent extends Event {
     }
 }
 ContentActiveChangeEvent.eventType = "content-active-change";
+export class ContentDeletedEvent extends Event {
+    constructor(index) {
+        super(ContentDeletedEvent.eventType, { bubbles: true, composed: true });
+        this.index = index;
+    }
+}
+ContentDeletedEvent.eventType = "content-deleted";
+export class AddContentEvent extends Event {
+    constructor(contentType) {
+        super(AddContentEvent.eventType);
+        this.contentType = contentType;
+    }
+}
+AddContentEvent.eventType = "add-content";
 export class PageController extends StateController {
     constructor(host) {
         super(host);
@@ -146,6 +161,17 @@ export class PageController extends StateController {
             .tap(savePage(this.editPageRepo))
             .requestUpdate(event);
     }
+    contentActiveChange(event) {
+        Product.of(this)
+            .next(setContentActive(event.options))
+            .requestUpdate(event);
+    }
+    contentDeleted(event) {
+        Product.of(this)
+            .next(deleteContent(event.index))
+            .tap(savePage(this.editPageRepo))
+            .requestUpdate(event);
+    }
     pageThumb(event) {
         Product.of(this)
             .next(updateThumbs(event.thumbs))
@@ -164,9 +190,10 @@ export class PageController extends StateController {
             .next(setPageEditMode(event.inEditMode))
             .requestUpdate(event);
     }
-    contentActiveChange(event) {
+    addContent(event) {
         Product.of(this)
-            .next(setContentActive(event.options))
+            .next(addContent(event.contentType))
+            .tap(savePage(this.editPageRepo))
             .requestUpdate(event);
     }
 }
@@ -176,9 +203,10 @@ PageController.defaultState = {
     currentUserCanEdit: true,
     currentUserCanAdd: true,
     selectedEditTab: "",
-    inEditMode: false,
+    inEditMode: true,
     activeContentIndex: -1,
-    editableContentIndex: -1
+    editableContentIndex: -1,
+    pageTemplate: pageTemplates.get("page")
 };
 __decorate([
     stateProperty()
@@ -211,6 +239,12 @@ __decorate([
     hostEvent(MovePageContentEvent)
 ], PageController.prototype, "moveContent", null);
 __decorate([
+    hostEvent(ContentActiveChangeEvent)
+], PageController.prototype, "contentActiveChange", null);
+__decorate([
+    hostEvent(ContentDeletedEvent)
+], PageController.prototype, "contentDeleted", null);
+__decorate([
     hostEvent(PageThumbChangeEvent)
 ], PageController.prototype, "pageThumb", null);
 __decorate([
@@ -220,8 +254,8 @@ __decorate([
     hostEvent(PageEditModeChangeEvent)
 ], PageController.prototype, "pageEditModeChange", null);
 __decorate([
-    hostEvent(ContentActiveChangeEvent)
-], PageController.prototype, "contentActiveChange", null);
+    hostEvent(AddContentEvent)
+], PageController.prototype, "addContent", null);
 const subscribeToPage = (pageController) => (page) => {
     // happens if the page is deleted
     if (!page) {
@@ -229,18 +263,13 @@ const subscribeToPage = (pageController) => (page) => {
     }
     Product.of(pageController)
         .next(updatePageLoaded(page))
+        .next(updatePageTemplate)
         .next(updateUserCanEdit)
         .next(updateUserCanAdd)
         .requestUpdate(`PageController.subscribeToPage("${page.pathname}")`);
 };
 const savePage = (editPageRepo) => (product) => {
     editPageRepo.savePage(product.getState().page);
-};
-const updateUserCanEdit = (state) => {
-    state.currentUserCanEdit = userCanEdit(state.page);
-};
-const updateUserCanAdd = (state) => {
-    state.currentUserCanAdd = new HbCurrentUser().authorize(UserAction.authorPages);
 };
 const userCanEdit = (page) => {
     const currentUser = new HbCurrentUser();
@@ -250,6 +279,15 @@ const userCanEdit = (page) => {
 const updatePageLoaded = (page) => (state) => {
     state.isLoaded = true;
     state.page = page;
+};
+const updatePageTemplate = (state) => {
+    state.pageTemplate = pageTemplates.get(state.page.pageTemplate);
+};
+const updateUserCanEdit = (state) => {
+    state.currentUserCanEdit = userCanEdit(state.page);
+};
+const updateUserCanAdd = (state) => {
+    state.currentUserCanAdd = new HbCurrentUser().authorize(UserAction.authorPages);
 };
 const updateShowTitle = (showTitle) => (state) => {
     state.page.showTitle = showTitle;
@@ -270,6 +308,11 @@ const moveContent = (index, moveUp) => (state) => {
     }
     moveUp ? content.splice(index - 1, 0, content.splice(index, 1)[0]) :
         content.splice(index + 1, 0, content.splice(index, 1)[0]);
+};
+const deleteContent = (index) => (state) => {
+    state.page.content.splice(index, 1);
+    state.activeContentIndex = -1;
+    state.editableContentIndex = -1;
 };
 const removeThumb = (index) => (state) => {
     if (index === undefined) {
@@ -300,8 +343,26 @@ const setEditTab = (tab) => (state) => {
     state.selectedEditTab = state.selectedEditTab === tab ? "" : tab;
 };
 const setContentActive = (options) => (state) => {
-    state.editableContentIndex = options.inEditMode ? options.contentIndex : -1;
-    state.activeContentIndex = options.isActive ? options.contentIndex : -1;
+    if (options.inEditMode) {
+        state.editableContentIndex = options.contentIndex;
+        state.activeContentIndex = options.contentIndex;
+    }
+    else if (options.isActive && state.editableContentIndex !== options.contentIndex) {
+        state.activeContentIndex === options.contentIndex ?
+            state.activeContentIndex = -1 :
+            state.activeContentIndex = options.contentIndex;
+        state.editableContentIndex = -1;
+    }
+    else if (state.editableContentIndex !== options.contentIndex ||
+        (!options.inEditMode && !options.isActive)) {
+        state.activeContentIndex = -1;
+        state.editableContentIndex = -1;
+    }
+};
+const addContent = (contentType) => (state) => {
+    state.page.content.push(contentTypes.get(contentType).defaultData);
+    state.activeContentIndex = state.page.content.length - 1;
+    state.editableContentIndex = -1;
 };
 const setPageEditMode = (inEditMode) => (state) => {
     state.inEditMode = inEditMode;

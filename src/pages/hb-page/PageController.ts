@@ -1,7 +1,7 @@
 import { hostEvent, Product, StateController, stateProperty, windowEvent } from "@domx/statecontroller";
 import { inject } from "../../domain/DependencyContainer/decorators";
 import { HbCurrentUser, UserAction } from "../../domain/HbCurrentUser";
-import { IContentType } from "../../domain/interfaces/PageInterfaces";
+import { IContentType, IPageTemplateDescriptor } from "../../domain/interfaces/PageInterfaces";
 import { EditPageRepoKey, IEditPageRepo } from "../../domain/interfaces/PageInterfaces";
 import { PageModel } from "../../domain/Pages/PageModel";
 import { pageTemplates } from "../../domain/Pages/pageTemplates";
@@ -9,6 +9,7 @@ import "../../domain/Pages/HbEditPageRepo";
 import { HbCurrentUserChangedEvent } from "../../domain/HbAuth";
 import { LitElement } from "lit";
 import { NotFoundError } from "../../domain/Errors";
+import { contentTypes } from "../../domain/Pages/contentTypes";
 
 
 export class RequestPageEvent extends Event {
@@ -131,6 +132,24 @@ export class ContentActiveChangeEvent extends Event {
     }
 }
 
+export class ContentDeletedEvent extends Event {
+    static eventType = "content-deleted";
+    index:number;
+    constructor(index:number) {
+        super(ContentDeletedEvent.eventType, {bubbles: true, composed: true});
+        this.index = index;
+    }
+}
+
+export class AddContentEvent extends Event {
+    static eventType = "add-content";
+    contentType:string;
+    constructor(contentType:string) {
+        super(AddContentEvent.eventType);
+        this.contentType = contentType;
+    }
+}
+
 
 export interface IPageState {
     isLoaded: boolean;
@@ -141,6 +160,7 @@ export interface IPageState {
     inEditMode: boolean;
     activeContentIndex: number;
     editableContentIndex: number;
+    pageTemplate:IPageTemplateDescriptor;
 }
 
 export interface IPageElement extends LitElement {
@@ -155,9 +175,10 @@ export class PageController extends StateController {
         currentUserCanEdit: true,
         currentUserCanAdd: true,
         selectedEditTab: "",
-        inEditMode: false,
+        inEditMode: true,
         activeContentIndex: -1,
-        editableContentIndex: -1
+        editableContentIndex: -1,
+        pageTemplate: pageTemplates.get("page")
     };
 
     @stateProperty()
@@ -234,6 +255,21 @@ export class PageController extends StateController {
             .requestUpdate(event);
     }
 
+    @hostEvent(ContentActiveChangeEvent)
+    private contentActiveChange(event:ContentActiveChangeEvent) {
+        Product.of<IPageState>(this)
+            .next(setContentActive(event.options))
+            .requestUpdate(event);
+    }
+
+    @hostEvent(ContentDeletedEvent)
+    private contentDeleted(event:ContentDeletedEvent) {
+        Product.of<IPageState>(this)
+            .next(deleteContent(event.index))
+            .tap(savePage(this.editPageRepo))
+            .requestUpdate(event);
+    }
+
     @hostEvent(PageThumbChangeEvent)
     private pageThumb(event:PageThumbChangeEvent) {
         Product.of<IPageState>(this)
@@ -258,10 +294,11 @@ export class PageController extends StateController {
             .requestUpdate(event);
     }
 
-    @hostEvent(ContentActiveChangeEvent)
-    private contentActiveChange(event:ContentActiveChangeEvent) {
+    @hostEvent(AddContentEvent)
+    private addContent(event:AddContentEvent) {
         Product.of<IPageState>(this)
-            .next(setContentActive(event.options))
+            .next(addContent(event.contentType))
+            .tap(savePage(this.editPageRepo))
             .requestUpdate(event);
     }
 }
@@ -276,24 +313,16 @@ const subscribeToPage = (pageController:PageController) => (page:PageModel) => {
 
     Product.of<IPageState>(pageController)
         .next(updatePageLoaded(page))
+        .next(updatePageTemplate)
         .next(updateUserCanEdit)
         .next(updateUserCanAdd)
         .requestUpdate(`PageController.subscribeToPage("${page.pathname}")`);
 };
 
 
-
 const savePage = (editPageRepo:IEditPageRepo) => (product:Product<IPageState>) => {
     editPageRepo.savePage(product.getState().page);
 };
-
-const updateUserCanEdit = (state:IPageState) => {
-    state.currentUserCanEdit = userCanEdit(state.page);
-};
-
-const updateUserCanAdd = (state:IPageState) => {
-    state.currentUserCanAdd = new HbCurrentUser().authorize(UserAction.authorPages);
-}
 
 const userCanEdit = (page:PageModel):boolean => {
     const currentUser = new HbCurrentUser();
@@ -306,6 +335,17 @@ const updatePageLoaded = (page:PageModel) => (state:IPageState) => {
     state.page = page;
 };
 
+const updatePageTemplate = (state:IPageState) => {
+    state.pageTemplate = pageTemplates.get(state.page.pageTemplate);
+};
+
+const updateUserCanEdit = (state:IPageState) => {
+    state.currentUserCanEdit = userCanEdit(state.page);
+};
+
+const updateUserCanAdd = (state:IPageState) => {
+    state.currentUserCanAdd = new HbCurrentUser().authorize(UserAction.authorPages);
+}
 
 
 const updateShowTitle = (showTitle:boolean) => (state:IPageState) => {
@@ -333,6 +373,12 @@ const moveContent = (index:number, moveUp:boolean) => (state:IPageState) => {
 
     moveUp ? content.splice(index - 1, 0, content.splice(index, 1)[0]) :
         content.splice(index + 1, 0, content.splice(index, 1)[0]);
+};
+
+const deleteContent = (index:number) => (state:IPageState) => {
+    state.page.content.splice(index, 1);
+    state.activeContentIndex = -1;
+    state.editableContentIndex = -1;
 };
 
 
@@ -369,11 +415,27 @@ const setEditTab = (tab:string) => (state:IPageState) => {
     state.selectedEditTab = state.selectedEditTab === tab ? "" : tab;
 };
 
-const setContentActive = (options:ContentActiveChangeOptions) => (state:IPageState) => {
-    state.editableContentIndex = options.inEditMode ? options.contentIndex : -1;
-    state.activeContentIndex = options.isActive ? options.contentIndex : -1;
+const setContentActive = (options:ContentActiveChangeOptions) => (state:IPageState) => { 
+    if (options.inEditMode) {
+        state.editableContentIndex = options.contentIndex;
+        state.activeContentIndex = options.contentIndex;
+    } else if (options.isActive && state.editableContentIndex !== options.contentIndex) {
+        state.activeContentIndex === options.contentIndex ?
+            state.activeContentIndex = -1 :
+            state.activeContentIndex = options.contentIndex;
+        state.editableContentIndex = -1;
+    } else if (state.editableContentIndex !== options.contentIndex || 
+            (!options.inEditMode && !options.isActive)) {
+        state.activeContentIndex = -1;
+        state.editableContentIndex = -1;
+    }
 };
 
+const addContent = (contentType:string) => (state:IPageState) => {
+    state.page.content.push(contentTypes.get(contentType).defaultData);
+    state.activeContentIndex = state.page.content.length - 1;
+    state.editableContentIndex = -1;
+};
 
 const setPageEditMode = (inEditMode:boolean) => (state:IPageState) => {
     state.inEditMode = inEditMode;

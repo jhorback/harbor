@@ -1,9 +1,3 @@
-export var ContentTypes;
-(function (ContentTypes) {
-    ContentTypes["text"] = "text";
-    ContentTypes["image"] = "image";
-})(ContentTypes || (ContentTypes = {}));
-;
 export const contentTypes = {
     register: (key, type) => registeredContentTypes[key] = type,
     get: (type) => {

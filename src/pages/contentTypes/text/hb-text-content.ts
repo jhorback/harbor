@@ -34,7 +34,7 @@ export class TextContent extends LitElement {
     $contentEditSlot!:HTMLDivElement;
 
     render() {
-        const content = this.pageContent.content || new TextContentData(); // jch use default?
+        const content = this.pageContent.content;
         return html`
             <hb-page-content
                 pathname=${this.pathname}

@@ -26,7 +26,7 @@ let TextContent = class TextContent extends LitElement {
     }
     get stateId() { return this.pathname; }
     render() {
-        const content = this.pageContent.content || new TextContentData(); // jch use default?
+        const content = this.pageContent.content;
         return html `
             <hb-page-content
                 pathname=${this.pathname}

@@ -35,10 +35,10 @@ export class PageContentController<TContentType extends IContentType> extends St
 
     get contentState():IPageContentState {
         return {
-            inContentEditMode: this.host.contentIndex === this.page.state.activeContentIndex,
+            inContentEditMode: this.host.contentIndex === this.page.state.editableContentIndex,
             isActive: this.host.contentIndex === this.page.state.activeContentIndex,
-            canMoveUp: this.page.state.activeContentIndex === -1 && this.host.contentIndex > 0,
-            canMoveDown: this.page.state.activeContentIndex === -1 && this.host.contentIndex < this.page.state.page.content.length - 1
+            canMoveUp: this.page.state.editableContentIndex === -1 && this.host.contentIndex > 0,
+            canMoveDown: this.page.state.editableContentIndex === -1 && this.host.contentIndex < this.page.state.page.content.length - 1
         };
     }
 }

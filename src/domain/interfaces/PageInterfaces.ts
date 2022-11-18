@@ -28,6 +28,8 @@ export interface IContentTypeDescriptor {
     type: string;
     name: string;
     description: string;
+    icon: string;
+    defaultData: IContentType;
     render(options:IContentTypeRenderOptions):TemplateResult;
 }
 

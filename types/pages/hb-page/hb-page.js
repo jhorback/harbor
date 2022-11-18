@@ -15,7 +15,7 @@ import "../hb-add-page-dialog";
 import "../hb-delete-page-dialog";
 import "./hb-page-author-settings";
 import "./hb-page-thumb-settings";
-import { EditTabClickedEvent, PageController, PageEditModeChangeEvent, UpdateShowSubtitleEvent, UpdateShowTitleEvent, UpdateSubtitleEvent } from "./PageController";
+import { AddContentEvent, EditTabClickedEvent, PageController, PageEditModeChangeEvent, UpdateShowSubtitleEvent, UpdateShowTitleEvent, UpdateSubtitleEvent } from "./PageController";
 let HbPage = class HbPage extends LitElement {
     constructor() {
         super(...arguments);
@@ -51,6 +51,8 @@ let HbPage = class HbPage extends LitElement {
             contentIndex
         }))}
                 </div>
+                ${renderAddContent(this, state)}
+                <div class="page-bottom-spacer"></div>
             </hb-page-layout>
         `;
     }
@@ -78,7 +80,7 @@ let HbPage = class HbPage extends LitElement {
         this.dispatchEvent(new PageEditModeChangeEvent(false));
     }
 };
-HbPage.styles = [styles.types, styles.icons, css `
+HbPage.styles = [styles.types, styles.format, styles.icons, css `
         :host {
             display: block;
         }
@@ -136,6 +138,42 @@ HbPage.styles = [styles.types, styles.icons, css `
         }
         .page-content > .empty {
             margin-bottom: 0;
+        }
+
+        .add-content {
+            margin-top: 3rem;
+        }
+        .add-content-ctr {
+            margin-top: 12px;
+            display: grid;
+            gap: 10px;
+            grid-auto-flow: column;
+            grid-auto-columns: 100px;
+            grid-auto-rows: minmax(100px, auto);
+        }
+        .content-type {     
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            padding: 8px;
+            padding-top: 24px;
+            cursor: default;
+            text-align: center;
+            background-color: var(--md-sys-color-surface-variant);
+            border-radius: var(--md-sys-shape-corner-small);
+            border: 1px solid transparent;
+            opacity: 0.5;
+            transition: opacity 0.2s;
+        }
+        .content-type:hover {
+            opacity: 1;
+        }
+        .content-type:active {
+            opacity: 0.7;
+        }
+
+        .page-bottom-spacer {
+            height: 200px;
         }
   `];
 __decorate([
@@ -251,6 +289,28 @@ const renderEditSettingsTabContent = (page, state) => html `
         </div>            
     </div>
 `;
+const renderAddContent = (page, state) => {
+    if (!state.inEditMode || !state.pageTemplate || state.pageTemplate.validContentTypes.length === 0) {
+        return html ``;
+    }
+    return html `
+        <div class="add-content">
+            <div class="body-large">Add Content</div>            
+            <div class="add-content-ctr">                        
+                ${state.pageTemplate.validContentTypes.map(contentTypeKey => {
+        const contentType = contentTypes.get(contentTypeKey);
+        return html `
+                        <div class="content-type" title=${contentType.description} @click=${() => addContent(page, contentTypeKey)}>
+                            <span class="material-symbols-outlined">${contentType.icon}</span>
+                            <div class="body-large">${contentType.name}</div>
+                        </div>                       
+                    `;
+    })}
+            </div>
+        </div>
+    `;
+};
+const addContent = (page, contentType) => page.dispatchEvent(new AddContentEvent(contentType));
 const showTitleClicked = (page) => (event) => page.dispatchEvent(new UpdateShowTitleEvent(event.selected));
 const showSubtitleClicked = (page) => (event) => page.dispatchEvent(new UpdateShowSubtitleEvent(event.selected));
 const renderEditThumbnailTabContent = (page, state) => {

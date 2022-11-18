@@ -7,7 +7,7 @@ import { FileSelectedEvent, FindFileDialog } from "../../../files/hb-find-file-d
 import { styles } from "../../../styles";
 import { HbPageContent } from "../../hb-page";
 import { ImageAlignmentChangeEvent, ImageContentController, ImageContentSelectedEvent, ImageSizeChangeEvent } from "./ImageContentController";
-import { ImageAlignment, ImageSize } from "./imageContentType";
+import { DEFAULT_IMAGE_URL, ImageAlignment, ImageSize } from "./imageContentType";
 
 /**
  */
@@ -60,10 +60,10 @@ export class ImageContent extends LitElement {
                     </span>
                 </div>
                 <div slot="page-edit-empty" @click=${this.clickedEmpty}>
-                    ${this.renderImage("/content/thumbs/files-thumb.svg")}
+                    ${this.renderImage(DEFAULT_IMAGE_URL)}
                 </div>
                 <div slot="content-edit">
-                    ${this.renderImage(state.url || "/content/thumbs/files-thumb.svg")}
+                    ${this.renderImage(state.url || DEFAULT_IMAGE_URL)}
                     <hb-file-upload-panel
                         accept=${FileUploaderAccept.images}
                         @file-upload-complete=${this.fileUploadComplete}
