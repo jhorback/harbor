@@ -8,7 +8,7 @@ const pagePageType:IPageTemplateDescriptor = {
     key: "page",
     name: "Page",
     description: "A flexible free-form page that can contain any content",
-    validContentTypes: [ContentTypes.text, ContentTypes.image],
+    validContentTypes: [ContentTypes.text, ContentTypes.image, ContentTypes.pageList],
     defaultContent: [new TextContentData()],
     icon: "article",
     defaultThumbUrl: "/content/thumbs/default-page-thumb.png"
