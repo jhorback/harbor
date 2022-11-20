@@ -2,7 +2,7 @@ import { css, html, LitElement } from "lit";
 import { customElement, property, query } from "lit/decorators.js";
 import { styles } from "../../../styles";
 import { HbPageContent } from "../../hb-page";
-import { AddListPageEvent, ChangePageListDisplayEvent, PageListContentController } from "./PageListContentController";
+import { AddListPageEvent, ChangePageListDisplayEvent, PageListContentController, ReorderPageListItemsEvent } from "./PageListContentController";
 import "../../../common/hb-button";
 import "../../../common/hb-card";
 import { DEFAULT_IMAGE_URL } from "../image/imageContentType";
@@ -10,6 +10,8 @@ import { PageListContentData, PageListDisplay } from "./pageListContentType";
 import { IPageThumbnail } from "../../../domain/interfaces/PageInterfaces";
 import { FindPageDialog, PageSelectedEvent } from "../../hb-find-page-dialog";
 import { IPageContentState } from "../../hb-page/PageContentController";
+import { HbCurrentUserChangedEvent } from "../../../domain/HbAuth";
+import { Card } from "../../../common/hb-card";
 
 /**
  */
@@ -93,10 +95,13 @@ export class PageListContent extends LitElement {
     private renderPages(contentState:IPageContentState) {
         const state = this.pageListContent.content;
         return html`
-            <div class="page-list">
-                ${state.pages.map(page => state.display === PageListDisplay.horizontalCard ?
+            <div class="page-list"
+                .index=${state.pages.length}
+                @dragover=${pageListDragOver}
+                @drop=${pageListDrop}>
+                ${state.pages.map((page, index) => state.display === PageListDisplay.horizontalCard ?
                     renderHorizontalCard(contentState, page) : state.display === PageListDisplay.verticalCard ?
-                        renderVerticalCard(contentState, page) :
+                        renderVerticalCard(contentState, page, index) :
                         renderTextOnly(contentState, page)
                 )}
             </div>
@@ -164,14 +169,75 @@ export class PageListContent extends LitElement {
 }
 
 
-const renderVerticalCard = (contentState:IPageContentState, page:IPageThumbnail) => html`
+const renderVerticalCard = (contentState:IPageContentState, page:IPageThumbnail, index:number) => html`
     <hb-card
+        .index=${index}
+        draggable="true"
+        @dragstart=${pageDragStart}
+        @dragend=${pageDragEnd}
+        @dragenter=${pageDragEnter}
+        @dragleave=${pageDragLeave}
         media-url=${page.thumbUrl}
         media-href=${contentState.isActive ? "javascript:;" : page.href}
         text=${page.title}
         description=${page.thumbDescription}
     ></hb-card>
 `;
+
+interface IIndexedElement extends HTMLElement {
+    index:string
+}
+
+
+// https://developer.mozilla.org/en-US/docs/Web/API/HTML_Drag_and_Drop_API/Drag_operations#draggableattribute
+const pageDragStart = (event:DragEvent) => {
+    const dt = event.dataTransfer!;
+    const target = event.target as IIndexedElement;
+    target.style.opacity = "0.4";
+    dt.effectAllowed = "move";
+    dt.setData("application/harbor-app-page", target.index);
+};
+
+const pageDragEnd = (event:DragEvent) => {
+    const target = event.target as HTMLElement;
+    target.style.opacity = "1";
+};
+
+const pageDragEnter = (event:DragEvent) => {
+    const target = event.target as HTMLElement;
+    target.style.opacity = "0.2";
+};
+
+const pageDragLeave = (event:DragEvent) => {
+    const target = event.target as IIndexedElement;
+    const dt = event.dataTransfer!;
+    dt.dropEffect = "move";
+    const sourceIndex = parseInt(dt.getData("application/harbor-app-page"));
+    const targetIndex = parseInt(target.index);
+    console.log(dt.types, dt.getData("application/harbor-app-page"), sourceIndex, targetIndex);
+    if (targetIndex !== sourceIndex) {
+        target.style.opacity = "1";
+    }
+};
+
+const pageListDragOver = (event:DragEvent) => {
+    event.preventDefault();
+    const dt = event.dataTransfer!;
+    dt.dropEffect = "move";
+};
+
+const pageListDrop = (event:DragEvent) => {
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    const target = event.target as IIndexedElement;
+    target.style.opacity = "1";
+    const dt = event.dataTransfer!;
+    console.log(dt.types);
+    const sourceIndex = parseInt(dt.getData("application/harbor-app-page"));
+    const targetIndex = parseInt(target.index);
+    target.dispatchEvent(new ReorderPageListItemsEvent(sourceIndex, targetIndex));
+};
+
 
 const renderHorizontalCard = (contentState:IPageContentState, page:IPageThumbnail) => html`
     <hb-horizontal-card
@@ -189,6 +255,7 @@ const renderTextOnly = (contentState:IPageContentState, page:IPageThumbnail) => 
         description=${page.thumbDescription}
     ></hb-card>
 `;
+
 
 
 

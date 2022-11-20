@@ -7,7 +7,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 import { css, html, LitElement } from "lit";
 import { customElement, property, query } from "lit/decorators.js";
 import { styles } from "../../../styles";
-import { AddListPageEvent, ChangePageListDisplayEvent, PageListContentController } from "./PageListContentController";
+import { AddListPageEvent, ChangePageListDisplayEvent, PageListContentController, ReorderPageListItemsEvent } from "./PageListContentController";
 import "../../../common/hb-button";
 import "../../../common/hb-card";
 import { DEFAULT_IMAGE_URL } from "../image/imageContentType";
@@ -80,10 +80,13 @@ let PageListContent = class PageListContent extends LitElement {
     renderPages(contentState) {
         const state = this.pageListContent.content;
         return html `
-            <div class="page-list">
-                ${state.pages.map(page => state.display === PageListDisplay.horizontalCard ?
+            <div class="page-list"
+                .index=${state.pages.length}
+                @dragover=${pageListDragOver}
+                @drop=${pageListDrop}>
+                ${state.pages.map((page, index) => state.display === PageListDisplay.horizontalCard ?
             renderHorizontalCard(contentState, page) : state.display === PageListDisplay.verticalCard ?
-            renderVerticalCard(contentState, page) :
+            renderVerticalCard(contentState, page, index) :
             renderTextOnly(contentState, page))}
             </div>
         `;
@@ -157,14 +160,55 @@ PageListContent = __decorate([
     customElement('hb-page-list-content')
 ], PageListContent);
 export { PageListContent };
-const renderVerticalCard = (contentState, page) => html `
+const renderVerticalCard = (contentState, page, index) => html `
     <hb-card
+        .index=${index}
+        draggable="true"
+        @dragstart=${pageDragStart}
+        @dragend=${pageDragEnd}
+        @dragenter=${pageDragEnter}
+        @dragleave=${pageDragLeave}
         media-url=${page.thumbUrl}
         media-href=${contentState.isActive ? "javascript:;" : page.href}
         text=${page.title}
         description=${page.thumbDescription}
     ></hb-card>
 `;
+// https://developer.mozilla.org/en-US/docs/Web/API/HTML_Drag_and_Drop_API/Drag_operations#draggableattribute
+const pageDragStart = (event) => {
+    const dt = event.dataTransfer;
+    const target = event.target;
+    target.style.opacity = "0.4";
+    dt.effectAllowed = "move";
+    dt.setData("application/harbor-app-page", target.index);
+};
+const pageDragEnd = (event) => {
+    const target = event.target;
+    target.style.opacity = "1";
+};
+const pageDragEnter = (event) => {
+    const target = event.target;
+    target.style.opacity = "0.2";
+};
+const pageDragLeave = (event) => {
+    const target = event.target;
+    target.style.opacity = "1";
+};
+const pageListDragOver = (event) => {
+    event.preventDefault();
+    const dt = event.dataTransfer;
+    dt.dropEffect = "move";
+};
+const pageListDrop = (event) => {
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    const target = event.target;
+    target.style.opacity = "1";
+    const dt = event.dataTransfer;
+    const sourceIndex = parseInt(dt.getData("application/harbor-app-page"));
+    const targetIndex = parseInt(target.index);
+    target.dispatchEvent(new ReorderPageListItemsEvent(sourceIndex, targetIndex));
+};
 const renderHorizontalCard = (contentState, page) => html `
     <hb-horizontal-card
         media-url=${page.thumbUrl}

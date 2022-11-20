@@ -25,6 +25,17 @@ export class ChangePageListDisplayEvent extends Event {
     }
 }
 
+export class ReorderPageListItemsEvent extends Event {
+    static eventType = "reorder-page-list-items";
+    sourceIndex:number;
+    targetIndex:number;
+    constructor(sourceIndex:number, targetIndex:number) {
+        super(ReorderPageListItemsEvent.eventType, {bubbles:true, composed:true});
+        this.sourceIndex = sourceIndex;
+        this.targetIndex = targetIndex;
+    }
+}
+
 export class PageListContentController extends PageContentController<PageListContentData> {
 
     state:PageListContentData = { ...this.content };
@@ -49,7 +60,23 @@ export class PageListContentController extends PageContentController<PageListCon
             .requestUpdate(event)
             .dispatchHostEvent(new UpdatePageContentEvent(this.host.contentIndex, this.state));
     }
+
+    @hostEvent(ReorderPageListItemsEvent)
+    reorderItems(event:ReorderPageListItemsEvent) {
+        Product.of<PageListContentData>(this)
+            .next(reorderItems(event.sourceIndex, event.targetIndex))
+            .requestUpdate(event)
+            .dispatchHostEvent(new UpdatePageContentEvent(this.host.contentIndex, this.state));
+    }
 }
+
+const reorderItems = (sourceIndex:number, targetIndex:number) => (state:PageListContentData) => {
+    const pages = state.pages;
+    const page = pages[sourceIndex];
+    targetIndex = targetIndex >= pages.length ? targetIndex - 1 : targetIndex;   
+    pages.splice(sourceIndex, 1);
+    pages.splice(targetIndex, 0, page);
+};
 
 const sendThumb = (page:IPageThumbnail) => (product:Product<PageListContentData>) => {
     if (page.thumbUrl) {
@@ -67,5 +94,6 @@ const addPage = (page:IPageThumbnail) => (state:PageListContentData) => {
 const setDisplay = (display:PageListDisplay) => (state:PageListContentData) => {
     state.display = display;
 };
+
 
 // todo - sync with db method for syncing updates

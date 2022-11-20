@@ -23,6 +23,14 @@ export class ChangePageListDisplayEvent extends Event {
     }
 }
 ChangePageListDisplayEvent.eventType = "change-page-list-display";
+export class ReorderPageListItemsEvent extends Event {
+    constructor(sourceIndex, targetIndex) {
+        super(ReorderPageListItemsEvent.eventType, { bubbles: true, composed: true });
+        this.sourceIndex = sourceIndex;
+        this.targetIndex = targetIndex;
+    }
+}
+ReorderPageListItemsEvent.eventType = "reorder-page-list-items";
 export class PageListContentController extends PageContentController {
     constructor() {
         super(...arguments);
@@ -44,6 +52,12 @@ export class PageListContentController extends PageContentController {
             .requestUpdate(event)
             .dispatchHostEvent(new UpdatePageContentEvent(this.host.contentIndex, this.state));
     }
+    reorderItems(event) {
+        Product.of(this)
+            .next(reorderItems(event.sourceIndex, event.targetIndex))
+            .requestUpdate(event)
+            .dispatchHostEvent(new UpdatePageContentEvent(this.host.contentIndex, this.state));
+    }
 }
 __decorate([
     hostEvent(AddListPageEvent)
@@ -51,6 +65,16 @@ __decorate([
 __decorate([
     hostEvent(ChangePageListDisplayEvent)
 ], PageListContentController.prototype, "changeDisplay", null);
+__decorate([
+    hostEvent(ReorderPageListItemsEvent)
+], PageListContentController.prototype, "reorderItems", null);
+const reorderItems = (sourceIndex, targetIndex) => (state) => {
+    const pages = state.pages;
+    const page = pages[sourceIndex];
+    targetIndex = targetIndex >= pages.length ? targetIndex - 1 : targetIndex;
+    pages.splice(sourceIndex, 1);
+    pages.splice(targetIndex, 0, page);
+};
 const sendThumb = (page) => (product) => {
     if (page.thumbUrl) {
         product.dispatchHostEvent(new PageThumbChangeEvent({
