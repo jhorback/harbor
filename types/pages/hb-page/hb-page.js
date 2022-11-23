@@ -46,6 +46,11 @@ let HbPage = class HbPage extends LitElement {
                     `}
                 </div>
                 <div class="page-content">
+                    ${state.isLoaded === false ? html `
+                        <div>
+                            Loading page...
+                        </div>
+                    ` : html ``}
                     ${state.page.content.map((data, contentIndex) => contentTypes.get(data.contentType).render({
             pathname: this.pathname,
             contentIndex

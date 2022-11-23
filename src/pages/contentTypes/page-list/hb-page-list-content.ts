@@ -1,17 +1,15 @@
-import { css, html, LitElement } from "lit";
+import { css, html, LitElement, ReactiveController } from "lit";
 import { customElement, property, query } from "lit/decorators.js";
-import { styles } from "../../../styles";
-import { HbPageContent } from "../../hb-page";
-import { AddListPageEvent, ChangePageListDisplayEvent, PageListContentController, ReorderPageListItemsEvent } from "./PageListContentController";
 import "../../../common/hb-button";
 import "../../../common/hb-card";
-import { DEFAULT_IMAGE_URL } from "../image/imageContentType";
-import { PageListContentData, PageListDisplay } from "./pageListContentType";
 import { IPageThumbnail } from "../../../domain/interfaces/PageInterfaces";
+import { styles } from "../../../styles";
 import { FindPageDialog, PageSelectedEvent } from "../../hb-find-page-dialog";
+import { HbPageContent } from "../../hb-page";
 import { IPageContentState } from "../../hb-page/PageContentController";
-import { HbCurrentUserChangedEvent } from "../../../domain/HbAuth";
-import { Card } from "../../../common/hb-card";
+import { DEFAULT_IMAGE_URL } from "../image/imageContentType";
+import { AddListPageEvent, ChangePageListDisplayEvent, PageListContentController, ReorderPageListItemsEvent } from "./PageListContentController";
+import { PageListDisplay } from "./pageListContentType";
 
 /**
  */
@@ -94,15 +92,16 @@ export class PageListContent extends LitElement {
 
     private renderPages(contentState:IPageContentState) {
         const state = this.pageListContent.content;
+        const inEditMode = this.pageListContent.contentState.inContentEditMode;
         return html`
             <div class="page-list"
                 .index=${state.pages.length}
-                @dragover=${pageListDragOver}
-                @drop=${pageListDrop}>
+                @dragover=${inEditMode ? pageListDragOver : noop}
+                @drop=${inEditMode ? pageListDrop : noop}>
                 ${state.pages.map((page, index) => state.display === PageListDisplay.horizontalCard ?
-                    renderHorizontalCard(contentState, page) : state.display === PageListDisplay.verticalCard ?
+                    renderHorizontalCard(contentState, page, index) : state.display === PageListDisplay.verticalCard ?
                         renderVerticalCard(contentState, page, index) :
-                        renderTextOnly(contentState, page)
+                        renderTextOnly(contentState, page, index)
                 )}
             </div>
         `;
@@ -169,16 +168,63 @@ export class PageListContent extends LitElement {
 }
 
 
+const noop = () => {};
+
+
+class DragOrderController implements ReactiveController {
+    
+    host:LitElement;
+    
+    constructor(host: LitElement) {
+        this.host = host;
+    }
+
+    hostUpdated() {
+
+    }
+}
+
+
 const renderVerticalCard = (contentState:IPageContentState, page:IPageThumbnail, index:number) => html`
     <hb-card
         .index=${index}
-        draggable="true"
-        @dragstart=${pageDragStart}
-        @dragend=${pageDragEnd}
-        @dragenter=${pageDragEnter}
-        @dragleave=${pageDragLeave}
+        draggable=${contentState.inContentEditMode ? true : false}
+        @dragstart=${contentState.inContentEditMode ? pageDragStart : noop}
+        @dragend=${contentState.inContentEditMode ? pageDragEnd : noop}
+        @dragenter=${contentState.inContentEditMode ? pageDragEnter : noop}
+        @dragleave=${contentState.inContentEditMode ? pageDragLeave : noop}
         media-url=${page.thumbUrl}
-        media-href=${contentState.isActive ? "javascript:;" : page.href}
+        media-href=${contentState.inContentEditMode ? "javascript:;" : page.href}
+        text=${page.title}
+        description=${page.thumbDescription}
+    ></hb-card>
+`;
+
+
+const renderHorizontalCard = (contentState:IPageContentState, page:IPageThumbnail, index:number) => html`
+    <hb-horizontal-card
+        .index=${index}
+        draggable=${contentState.inContentEditMode ? true : false}
+        @dragstart=${contentState.inContentEditMode ? pageDragStart : noop}
+        @dragend=${contentState.inContentEditMode ? pageDragEnd : noop}
+        @dragenter=${contentState.inContentEditMode ? pageDragEnter : noop}
+        @dragleave=${contentState.inContentEditMode ? pageDragLeave : noop}
+        media-url=${page.thumbUrl}
+        media-href=${contentState.inContentEditMode ? "javascript:;" : page.href}
+        text=${page.title}
+        description=${page.thumbDescription}
+    ></hb-horizontal-card>
+`;
+
+const renderTextOnly = (contentState:IPageContentState, page:IPageThumbnail, index:number) => html`
+    <hb-card
+        .index=${index}
+        draggable=${contentState.inContentEditMode ? true : false}
+        @dragstart=${contentState.inContentEditMode ? pageDragStart : noop}
+        @dragend=${contentState.inContentEditMode ? pageDragEnd : noop}
+        @dragenter=${contentState.inContentEditMode ? pageDragEnter : noop}
+        @dragleave=${contentState.inContentEditMode ? pageDragLeave : noop}
+        media-href=${contentState.inContentEditMode ? "javascript:;" : page.href}
         text=${page.title}
         description=${page.thumbDescription}
     ></hb-card>
@@ -189,10 +235,13 @@ interface IIndexedElement extends HTMLElement {
 }
 
 
+let dragSource:HTMLElement|null = null; 
+
 // https://developer.mozilla.org/en-US/docs/Web/API/HTML_Drag_and_Drop_API/Drag_operations#draggableattribute
 const pageDragStart = (event:DragEvent) => {
     const dt = event.dataTransfer!;
     const target = event.target as IIndexedElement;
+    dragSource = target;
     target.style.opacity = "0.4";
     dt.effectAllowed = "move";
     dt.setData("application/harbor-app-page", target.index);
@@ -205,17 +254,18 @@ const pageDragEnd = (event:DragEvent) => {
 
 const pageDragEnter = (event:DragEvent) => {
     const target = event.target as HTMLElement;
-    target.style.opacity = "0.2";
+    if (target !== dragSource && dragSource !== null) {
+        // this looks okay but changes the indexes
+        // target.insertAdjacentElement("afterend", dragSource);
+        target.style.opacity = "0.2";
+    }
 };
 
 const pageDragLeave = (event:DragEvent) => {
     const target = event.target as IIndexedElement;
     const dt = event.dataTransfer!;
     dt.dropEffect = "move";
-    const sourceIndex = parseInt(dt.getData("application/harbor-app-page"));
-    const targetIndex = parseInt(target.index);
-    console.log(dt.types, dt.getData("application/harbor-app-page"), sourceIndex, targetIndex);
-    if (targetIndex !== sourceIndex) {
+    if (target !== dragSource) {
         target.style.opacity = "1";
     }
 };
@@ -232,30 +282,11 @@ const pageListDrop = (event:DragEvent) => {
     const target = event.target as IIndexedElement;
     target.style.opacity = "1";
     const dt = event.dataTransfer!;
-    console.log(dt.types);
     const sourceIndex = parseInt(dt.getData("application/harbor-app-page"));
     const targetIndex = parseInt(target.index);
+    console.log("REORDER", sourceIndex, targetIndex)
     target.dispatchEvent(new ReorderPageListItemsEvent(sourceIndex, targetIndex));
 };
-
-
-const renderHorizontalCard = (contentState:IPageContentState, page:IPageThumbnail) => html`
-    <hb-horizontal-card
-        media-url=${page.thumbUrl}
-        media-href=${contentState.isActive ? "javascript:;" : page.href}
-        text=${page.title}
-        description=${page.thumbDescription}
-    ></hb-horizontal-card>
-`;
-
-const renderTextOnly = (contentState:IPageContentState, page:IPageThumbnail) => html`
-    <hb-card
-        media-href=${contentState.isActive ? "javascript:;" : page.href}
-        text=${page.title}
-        description=${page.thumbDescription}
-    ></hb-card>
-`;
-
 
 
 

@@ -6,11 +6,11 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 import { css, html, LitElement } from "lit";
 import { customElement, property, query } from "lit/decorators.js";
-import { styles } from "../../../styles";
-import { AddListPageEvent, ChangePageListDisplayEvent, PageListContentController, ReorderPageListItemsEvent } from "./PageListContentController";
 import "../../../common/hb-button";
 import "../../../common/hb-card";
+import { styles } from "../../../styles";
 import { DEFAULT_IMAGE_URL } from "../image/imageContentType";
+import { AddListPageEvent, ChangePageListDisplayEvent, PageListContentController, ReorderPageListItemsEvent } from "./PageListContentController";
 import { PageListDisplay } from "./pageListContentType";
 /**
  */
@@ -79,15 +79,16 @@ let PageListContent = class PageListContent extends LitElement {
     }
     renderPages(contentState) {
         const state = this.pageListContent.content;
+        const inEditMode = this.pageListContent.contentState.inContentEditMode;
         return html `
             <div class="page-list"
                 .index=${state.pages.length}
-                @dragover=${pageListDragOver}
-                @drop=${pageListDrop}>
+                @dragover=${inEditMode ? pageListDragOver : noop}
+                @drop=${inEditMode ? pageListDrop : noop}>
                 ${state.pages.map((page, index) => state.display === PageListDisplay.horizontalCard ?
-            renderHorizontalCard(contentState, page) : state.display === PageListDisplay.verticalCard ?
+            renderHorizontalCard(contentState, page, index) : state.display === PageListDisplay.verticalCard ?
             renderVerticalCard(contentState, page, index) :
-            renderTextOnly(contentState, page))}
+            renderTextOnly(contentState, page, index))}
             </div>
         `;
     }
@@ -160,24 +161,61 @@ PageListContent = __decorate([
     customElement('hb-page-list-content')
 ], PageListContent);
 export { PageListContent };
+const noop = () => { };
+class DragOrderController {
+    constructor(host) {
+        this.host = host;
+    }
+    hostUpdated() {
+    }
+}
 const renderVerticalCard = (contentState, page, index) => html `
     <hb-card
         .index=${index}
-        draggable="true"
-        @dragstart=${pageDragStart}
-        @dragend=${pageDragEnd}
-        @dragenter=${pageDragEnter}
-        @dragleave=${pageDragLeave}
+        draggable=${contentState.inContentEditMode ? true : false}
+        @dragstart=${contentState.inContentEditMode ? pageDragStart : noop}
+        @dragend=${contentState.inContentEditMode ? pageDragEnd : noop}
+        @dragenter=${contentState.inContentEditMode ? pageDragEnter : noop}
+        @dragleave=${contentState.inContentEditMode ? pageDragLeave : noop}
         media-url=${page.thumbUrl}
-        media-href=${contentState.isActive ? "javascript:;" : page.href}
+        media-href=${contentState.inContentEditMode ? "javascript:;" : page.href}
         text=${page.title}
         description=${page.thumbDescription}
     ></hb-card>
 `;
+const renderHorizontalCard = (contentState, page, index) => html `
+    <hb-horizontal-card
+        .index=${index}
+        draggable=${contentState.inContentEditMode ? true : false}
+        @dragstart=${contentState.inContentEditMode ? pageDragStart : noop}
+        @dragend=${contentState.inContentEditMode ? pageDragEnd : noop}
+        @dragenter=${contentState.inContentEditMode ? pageDragEnter : noop}
+        @dragleave=${contentState.inContentEditMode ? pageDragLeave : noop}
+        media-url=${page.thumbUrl}
+        media-href=${contentState.inContentEditMode ? "javascript:;" : page.href}
+        text=${page.title}
+        description=${page.thumbDescription}
+    ></hb-horizontal-card>
+`;
+const renderTextOnly = (contentState, page, index) => html `
+    <hb-card
+        .index=${index}
+        draggable=${contentState.inContentEditMode ? true : false}
+        @dragstart=${contentState.inContentEditMode ? pageDragStart : noop}
+        @dragend=${contentState.inContentEditMode ? pageDragEnd : noop}
+        @dragenter=${contentState.inContentEditMode ? pageDragEnter : noop}
+        @dragleave=${contentState.inContentEditMode ? pageDragLeave : noop}
+        media-href=${contentState.inContentEditMode ? "javascript:;" : page.href}
+        text=${page.title}
+        description=${page.thumbDescription}
+    ></hb-card>
+`;
+let dragSource = null;
 // https://developer.mozilla.org/en-US/docs/Web/API/HTML_Drag_and_Drop_API/Drag_operations#draggableattribute
 const pageDragStart = (event) => {
     const dt = event.dataTransfer;
     const target = event.target;
+    dragSource = target;
     target.style.opacity = "0.4";
     dt.effectAllowed = "move";
     dt.setData("application/harbor-app-page", target.index);
@@ -188,11 +226,19 @@ const pageDragEnd = (event) => {
 };
 const pageDragEnter = (event) => {
     const target = event.target;
-    target.style.opacity = "0.2";
+    if (target !== dragSource && dragSource !== null) {
+        // this looks okay but changes the indexes
+        // target.insertAdjacentElement("afterend", dragSource);
+        target.style.opacity = "0.2";
+    }
 };
 const pageDragLeave = (event) => {
     const target = event.target;
-    target.style.opacity = "1";
+    const dt = event.dataTransfer;
+    dt.dropEffect = "move";
+    if (target !== dragSource) {
+        target.style.opacity = "1";
+    }
 };
 const pageListDragOver = (event) => {
     event.preventDefault();
@@ -207,20 +253,6 @@ const pageListDrop = (event) => {
     const dt = event.dataTransfer;
     const sourceIndex = parseInt(dt.getData("application/harbor-app-page"));
     const targetIndex = parseInt(target.index);
+    console.log("REORDER", sourceIndex, targetIndex);
     target.dispatchEvent(new ReorderPageListItemsEvent(sourceIndex, targetIndex));
 };
-const renderHorizontalCard = (contentState, page) => html `
-    <hb-horizontal-card
-        media-url=${page.thumbUrl}
-        media-href=${contentState.isActive ? "javascript:;" : page.href}
-        text=${page.title}
-        description=${page.thumbDescription}
-    ></hb-horizontal-card>
-`;
-const renderTextOnly = (contentState, page) => html `
-    <hb-card
-        media-href=${contentState.isActive ? "javascript:;" : page.href}
-        text=${page.title}
-        description=${page.thumbDescription}
-    ></hb-card>
-`;
