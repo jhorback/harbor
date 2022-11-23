@@ -10,7 +10,7 @@ import "../../../common/hb-button";
 import "../../../common/hb-card";
 import { styles } from "../../../styles";
 import { DEFAULT_IMAGE_URL } from "../image/imageContentType";
-import { AddListPageEvent, ChangePageListDisplayEvent, PageListContentController, ReorderPageListItemsEvent } from "./PageListContentController";
+import { AddListPageEvent, ChangePageListDisplayEvent, PageListContentController, RemovePageListItemEvent, ReorderPageListItemsEvent } from "./PageListContentController";
 import { PageListDisplay } from "./pageListContentType";
 /**
  */
@@ -136,13 +136,23 @@ PageListContent.styles = [styles.icons, styles.form, css `
             grid-template-columns: repeat(auto-fill, var(--hb-page-list-item-width));
         }
         .page-list > * {
-          
+            position: relative;
         }
         hb-card {
             max-width: var(--hb-page-list-item-width);
         }
         label {
             margin-right: 8px;
+        }
+        .page-list > *:hover .delete-icon {
+            display: inline-block;
+        }
+        .delete-icon {
+            display: none;
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            background-color: var(--md-sys-color-background);
         }
   `];
 __decorate([
@@ -162,13 +172,6 @@ PageListContent = __decorate([
 ], PageListContent);
 export { PageListContent };
 const noop = () => { };
-class DragOrderController {
-    constructor(host) {
-        this.host = host;
-    }
-    hostUpdated() {
-    }
-}
 const renderVerticalCard = (contentState, page, index) => html `
     <hb-card
         .index=${index}
@@ -180,8 +183,9 @@ const renderVerticalCard = (contentState, page, index) => html `
         media-url=${page.thumbUrl}
         media-href=${contentState.inContentEditMode ? "javascript:;" : page.href}
         text=${page.title}
-        description=${page.thumbDescription}
-    ></hb-card>
+        description=${page.thumbDescription}>
+            ${renderDeleteIcon(contentState.inContentEditMode, index)}
+    </hb-card>
 `;
 const renderHorizontalCard = (contentState, page, index) => html `
     <hb-horizontal-card
@@ -194,8 +198,9 @@ const renderHorizontalCard = (contentState, page, index) => html `
         media-url=${page.thumbUrl}
         media-href=${contentState.inContentEditMode ? "javascript:;" : page.href}
         text=${page.title}
-        description=${page.thumbDescription}
-    ></hb-horizontal-card>
+        description=${page.thumbDescription}>
+            ${renderDeleteIcon(contentState.inContentEditMode, index)}      
+        </hb-horizontal-card>
 `;
 const renderTextOnly = (contentState, page, index) => html `
     <hb-card
@@ -207,9 +212,17 @@ const renderTextOnly = (contentState, page, index) => html `
         @dragleave=${contentState.inContentEditMode ? pageDragLeave : noop}
         media-href=${contentState.inContentEditMode ? "javascript:;" : page.href}
         text=${page.title}
-        description=${page.thumbDescription}
-    ></hb-card>
+        description=${page.thumbDescription}>
+        ${renderDeleteIcon(contentState.inContentEditMode, index)}
+        </hb-card>
 `;
+const renderDeleteIcon = (inEditMode, index) => inEditMode ? html `
+    <div class="delete-icon icon-button" title="Remove" @click=${(e) => removePage(e, index)}>close</div>
+` : html ``;
+const removePage = (event, index) => {
+    const target = event.target;
+    target?.dispatchEvent(new RemovePageListItemEvent(index));
+};
 let dragSource = null;
 // https://developer.mozilla.org/en-US/docs/Web/API/HTML_Drag_and_Drop_API/Drag_operations#draggableattribute
 const pageDragStart = (event) => {

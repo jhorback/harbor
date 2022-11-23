@@ -8,7 +8,7 @@ import { FindPageDialog, PageSelectedEvent } from "../../hb-find-page-dialog";
 import { HbPageContent } from "../../hb-page";
 import { IPageContentState } from "../../hb-page/PageContentController";
 import { DEFAULT_IMAGE_URL } from "../image/imageContentType";
-import { AddListPageEvent, ChangePageListDisplayEvent, PageListContentController, ReorderPageListItemsEvent } from "./PageListContentController";
+import { AddListPageEvent, ChangePageListDisplayEvent, PageListContentController, RemovePageListItemEvent, ReorderPageListItemsEvent } from "./PageListContentController";
 import { PageListDisplay } from "./pageListContentType";
 
 /**
@@ -156,7 +156,7 @@ export class PageListContent extends LitElement {
             grid-template-columns: repeat(auto-fill, var(--hb-page-list-item-width));
         }
         .page-list > * {
-          
+            position: relative;
         }
         hb-card {
             max-width: var(--hb-page-list-item-width);
@@ -164,25 +164,21 @@ export class PageListContent extends LitElement {
         label {
             margin-right: 8px;
         }
+        .page-list > *:hover .delete-icon {
+            display: inline-block;
+        }
+        .delete-icon {
+            display: none;
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            background-color: var(--md-sys-color-background);
+        }
   `];
 }
 
 
 const noop = () => {};
-
-
-class DragOrderController implements ReactiveController {
-    
-    host:LitElement;
-    
-    constructor(host: LitElement) {
-        this.host = host;
-    }
-
-    hostUpdated() {
-
-    }
-}
 
 
 const renderVerticalCard = (contentState:IPageContentState, page:IPageThumbnail, index:number) => html`
@@ -196,10 +192,10 @@ const renderVerticalCard = (contentState:IPageContentState, page:IPageThumbnail,
         media-url=${page.thumbUrl}
         media-href=${contentState.inContentEditMode ? "javascript:;" : page.href}
         text=${page.title}
-        description=${page.thumbDescription}
-    ></hb-card>
+        description=${page.thumbDescription}>
+            ${renderDeleteIcon(contentState.inContentEditMode, index)}
+    </hb-card>
 `;
-
 
 const renderHorizontalCard = (contentState:IPageContentState, page:IPageThumbnail, index:number) => html`
     <hb-horizontal-card
@@ -212,9 +208,11 @@ const renderHorizontalCard = (contentState:IPageContentState, page:IPageThumbnai
         media-url=${page.thumbUrl}
         media-href=${contentState.inContentEditMode ? "javascript:;" : page.href}
         text=${page.title}
-        description=${page.thumbDescription}
-    ></hb-horizontal-card>
+        description=${page.thumbDescription}>
+            ${renderDeleteIcon(contentState.inContentEditMode, index)}      
+        </hb-horizontal-card>
 `;
+
 
 const renderTextOnly = (contentState:IPageContentState, page:IPageThumbnail, index:number) => html`
     <hb-card
@@ -226,9 +224,21 @@ const renderTextOnly = (contentState:IPageContentState, page:IPageThumbnail, ind
         @dragleave=${contentState.inContentEditMode ? pageDragLeave : noop}
         media-href=${contentState.inContentEditMode ? "javascript:;" : page.href}
         text=${page.title}
-        description=${page.thumbDescription}
-    ></hb-card>
+        description=${page.thumbDescription}>
+        ${renderDeleteIcon(contentState.inContentEditMode, index)}
+        </hb-card>
 `;
+
+
+const renderDeleteIcon = (inEditMode:boolean, index:number) => inEditMode ? html`
+    <div class="delete-icon icon-button" title="Remove" @click=${(e:Event) => removePage(e, index)}>close</div>
+` : html``;
+
+const removePage = (event:Event, index:number) => {
+    const target = event.target;
+    target?.dispatchEvent(new RemovePageListItemEvent(index));
+};
+
 
 interface IIndexedElement extends HTMLElement {
     index:string

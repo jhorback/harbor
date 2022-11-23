@@ -36,6 +36,15 @@ export class ReorderPageListItemsEvent extends Event {
     }
 }
 
+export class RemovePageListItemEvent extends Event {
+    static eventType = "remove-page-list-item";
+    index:number;
+    constructor(index:number) {
+        super(RemovePageListItemEvent.eventType, {bubbles:true, composed: true});
+        this.index = index;
+    }
+}
+
 export class PageListContentController extends PageContentController<PageListContentData> {
 
     state:PageListContentData = { ...this.content };
@@ -68,7 +77,21 @@ export class PageListContentController extends PageContentController<PageListCon
             .requestUpdate(event)
             .dispatchHostEvent(new UpdatePageContentEvent(this.host.contentIndex, this.state));
     }
+
+    @hostEvent(RemovePageListItemEvent)
+    removePageListItem(event:RemovePageListItemEvent) {
+        Product.of<PageListContentData>(this)
+            .next(removeItem(event.index))
+            .requestUpdate(event)
+            .dispatchHostEvent(new UpdatePageContentEvent(this.host.contentIndex, this.state));
+    }
 }
+
+
+const removeItem = (index:number) => (state:PageListContentData) => {
+    state.pages.splice(index, 1);
+};
+
 
 const reorderItems = (sourceIndex:number, targetIndex:number) => (state:PageListContentData) => {
     const pages = state.pages;
