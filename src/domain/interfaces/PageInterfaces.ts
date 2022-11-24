@@ -57,6 +57,7 @@ export interface IPageThumbnail extends IThumbnail, IPageReference { }
 export interface IPageData {
     uid: string;
     pageTemplate: string;
+    pageSize: PageSize;
     pathname: string;
     title: string,
     showTitle: boolean;
@@ -68,6 +69,15 @@ export interface IPageData {
     dateUpdated: Date|Timestamp;
     authorUid: string;
     content: Array<IContentType>;
+}
+
+
+export enum PageSize {
+    small = "small",
+    medium = "medium",
+    large = "large",
+    wide = "wide",
+    full = "full"
 }
 
 

@@ -84,8 +84,10 @@ let PageListContent = class PageListContent extends LitElement {
     renderPages(contentState) {
         const state = this.pageListContent.content;
         const inEditMode = this.pageListContent.contentState.inContentEditMode;
+        const size = this.pageListContent.page.state.page.pageSize;
         return html `
             <div class="page-list"
+                page-size=${size}
                 .index=${state.pages.length}
                 @dragover=${inEditMode ? pageListDragOver : noop}
                 @drop=${inEditMode ? pageListDrop : noop}>
@@ -116,13 +118,16 @@ let PageListContent = class PageListContent extends LitElement {
         this.dispatchEvent(new ChangePageListDisplayEvent(display));
     }
 };
+// wide+ = 5 columns
+// large = 4 columns
+// medium- = 3 columns
+// wide - 1200 - 40 = 1160 / 5 = 232
+// large - 840 - 30 = 810 / 4 = 202
+// medium - 750 - 20 = 730 / 3 = 243
 PageListContent.styles = [styles.icons, styles.form, css `
         :host {
             display: block;
             position: relative;
-            --hb-page-list-item-page-wide-width: 292px;
-            --hb-page-list-item-page-medium-width: 243px;
-            --hb-page-list-item-width: var(--hb-page-list-item-page-medium-width);
         }       
         div[slot="content-edit-tools"] {
             padding: 8px;
@@ -137,11 +142,17 @@ PageListContent.styles = [styles.icons, styles.form, css `
         div[slot="content-edit-tools"] hb-button {
             margin-top: 5px;
         }
-
         .page-list {
             display: grid;
             gap: 10px;
-            grid-template-columns: repeat(auto-fill, var(--hb-page-list-item-width));
+            grid-template-columns: repeat(3, 1fr);
+        }
+        .page-list[page-size=large] {
+            grid-template-columns: repeat(4, 1fr);
+        }
+        .page-list[page-size=wide],
+        .page-list[page-size=full] {
+            grid-template-columns: repeat(5, 1fr);
         }
         .page-list > * {
             position: relative;

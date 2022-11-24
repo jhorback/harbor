@@ -15,7 +15,7 @@ import "../hb-add-page-dialog";
 import "../hb-delete-page-dialog";
 import "./hb-page-author-settings";
 import "./hb-page-thumb-settings";
-import { AddContentEvent, EditTabClickedEvent, PageController, PageEditModeChangeEvent, UpdateShowSubtitleEvent, UpdateShowTitleEvent, UpdateSubtitleEvent } from "./PageController";
+import { AddContentEvent, EditTabClickedEvent, PageController, PageEditModeChangeEvent, UpdatePageSizeEvent, UpdateShowSubtitleEvent, UpdateShowTitleEvent, UpdateSubtitleEvent } from "./PageController";
 let HbPage = class HbPage extends LitElement {
     constructor() {
         super(...arguments);
@@ -26,24 +26,26 @@ let HbPage = class HbPage extends LitElement {
         const state = this.page.state;
         const page = state.page;
         return html `
-            <hb-page-layout>
+            <hb-page-layout size=${state.page.pageSize}>
                 ${renderAppBarButtons(this, state)}
-                ${state.inEditMode ? renderEditTabs(this, state) : html ``}
-                <div ?hidden=${!state.isLoaded}>
-                    <h1 class="headline-large" ?hidden=${!state.inEditMode && !page.showTitle}>${page.title}</h1>
+                <div class="page-header">
+                    ${state.inEditMode ? renderEditTabs(this, state) : html ``}
+                    <div ?hidden=${!state.isLoaded}>
+                        <h1 class="display-medium" ?hidden=${!state.inEditMode && !page.showTitle}>${page.title}</h1>
 
-                    ${state.inEditMode ? html `
-                        <hb-content-editable
-                            class="body-large"
-                            value=${page.subtitle}
-                            placeholder="Enter a subtitle"
-                            @change=${this.subtitleChange}
-                        ></hb-content-editable>                        
-                    ` : html `
-                        <div class="body-large" ?hidden=${!page.showSubtitle}>
-                            ${page.subtitle}
-                        </div>
-                    `}
+                        ${state.inEditMode ? html `
+                            <hb-content-editable
+                                class="body-large"
+                                value=${page.subtitle}
+                                placeholder="Enter a subtitle"
+                                @change=${this.subtitleChange}
+                            ></hb-content-editable>                        
+                        ` : html `
+                            <div class="body-large" ?hidden=${!page.showSubtitle}>
+                                ${page.subtitle}
+                            </div>
+                        `}
+                    </div>
                 </div>
                 <div class="page-content">
                     ${state.isLoaded === false ? html `
@@ -85,7 +87,7 @@ let HbPage = class HbPage extends LitElement {
         this.dispatchEvent(new PageEditModeChangeEvent(false));
     }
 };
-HbPage.styles = [styles.types, styles.format, styles.icons, css `
+HbPage.styles = [styles.types, styles.format, styles.icons, styles.form, css `
         :host {
             display: block;
         }
@@ -108,12 +110,22 @@ HbPage.styles = [styles.types, styles.format, styles.icons, css `
             margin-bottom: 1rem;
         }
 
+        .details-tab {
+            display: flex;
+        }
+        .details-tab > :first-child {
+            flex-grow: 1;
+        }
 
         .edit-settings-tab-content {
             display: flex;
             gap: 48px;
             padding: 0 0 0 16px;
             justify-content: space-between;
+        }
+        .edit-settings-tab-content > :last-child {
+            flex-grow: 1;
+            text-align: right;
         }
 
 
@@ -133,6 +145,10 @@ HbPage.styles = [styles.types, styles.format, styles.icons, css `
             margin-bottom: 1rem;
         }
 
+        .page-header {
+            max-width: 750px;
+            margin: auto;
+        }
         .page-content{
             display:flex;
             flex-direction: column;
@@ -235,9 +251,9 @@ const renderEditTabs = (page, state) => html `
         ></hb-button>
         <hb-button           
             text-button
-            label="Author"
-            ?selected=${state.selectedEditTab === "author"}
-            @click=${clickEditTab(page, "author")}
+            label="Details"
+            ?selected=${state.selectedEditTab === "details"}
+            @click=${clickEditTab(page, "details")}
         ></hb-button>
     </div>
     ${state.isLoaded ? renderEditTabContent(page, state) : html ``}
@@ -249,37 +265,40 @@ const renderEditTabContent = (page, state) => state.selectedEditTab === "setting
     renderEditSettingsTabContent(page, state) :
     state.selectedEditTab === "thumbnail" ?
         renderEditThumbnailTabContent(page, state) :
-        state.selectedEditTab === "author" ?
-            renderEditAuthorTabContent(page, state) :
+        state.selectedEditTab === "details" ?
+            renderEditDetailsTabContent(page, state) :
             html ``;
 const renderEditSettingsTabContent = (page, state) => html `
     <div class="edit-tab-content">
         <div class="edit-settings-tab-content">
             <div>
                 <div class="switch-field">
-                    <div>Show title</div>
+                    <div class="label-large">Show title</div>
                     <hb-switch
                         ?selected=${state.page.showTitle}
                         @hb-switch-change=${showTitleClicked(page)}
                     ></hb-switch>
                 </div>
                 <div class="switch-field">
-                    <div>Show subtitle</div>
-                        <hb-switch
+                    <div class="label-large">Show subtitle</div>
+                    <hb-switch
                         ?selected=${state.page.showSubtitle}
                         @hb-switch-change=${showSubtitleClicked(page)}
                     ></hb-switch>
                 </div>
             </div>
             <div>
-                <div class="text-field">
-                    <div class="label-large">Page updated</div>
-                    <div class="body=large">${state.page.dateUpdated.toLocaleDateString()}</div>
-                </div>
-                <div class="text-field">
-                    <div class="label-large">Page added</div>
-                    <div class="body=large">${state.page.dateCreated.toLocaleDateString()}</div>
-                </div>
+                <div class="switch-field">
+                    <div class="label-large">Page size</div>
+                    <select .value=${state.page.pageSize}
+                        @change=${pageSizeChanged(page)}>
+                        <option value="small">Small</option>
+                        <option value="medium">Medium</option>
+                        <option value="large">Large</option>
+                        <option value="wide">Wide</option>
+                        <option value="full">Full</option>
+                    </select>
+                </div>                
             </div>
             <div>
                 <hb-button
@@ -318,6 +337,7 @@ const renderAddContent = (page, state) => {
 const addContent = (page, contentType) => page.dispatchEvent(new AddContentEvent(contentType));
 const showTitleClicked = (page) => (event) => page.dispatchEvent(new UpdateShowTitleEvent(event.selected));
 const showSubtitleClicked = (page) => (event) => page.dispatchEvent(new UpdateShowSubtitleEvent(event.selected));
+const pageSizeChanged = (page) => (event) => page.dispatchEvent(new UpdatePageSizeEvent(event.target.value));
 const renderEditThumbnailTabContent = (page, state) => {
     return html `
         <div class="edit-tab-content">
@@ -325,12 +345,22 @@ const renderEditThumbnailTabContent = (page, state) => {
         </div>
     `;
 };
-const renderEditAuthorTabContent = (page, state) => {
+const renderEditDetailsTabContent = (page, state) => {
     return html `
-        <div class="edit-tab-content">
+        <div class="edit-tab-content details-tab">
             <hb-page-author-settings
                 uid=${state.page.authorUid}           
             ></hb-page-author-settings>
+            <div>
+                <div class="text-field">
+                    <div class="label-small">Page updated</div>
+                    <div class="body=large">${state.page.dateUpdated.toLocaleDateString()}</div>
+                </div>
+                <div class="text-field">
+                    <div class="label-small">Page added</div>
+                    <div class="body=large">${state.page.dateCreated.toLocaleDateString()}</div>
+                </div>
+            </div>
         </div>
     `;
 };

@@ -1,7 +1,7 @@
 import { hostEvent, Product, StateController, stateProperty, windowEvent } from "@domx/statecontroller";
 import { inject } from "../../domain/DependencyContainer/decorators";
 import { HbCurrentUser, UserAction } from "../../domain/HbCurrentUser";
-import { IContentType, IPageTemplateDescriptor } from "../../domain/interfaces/PageInterfaces";
+import { IContentType, IPageTemplateDescriptor, PageSize } from "../../domain/interfaces/PageInterfaces";
 import { EditPageRepoKey, IEditPageRepo } from "../../domain/interfaces/PageInterfaces";
 import { PageModel } from "../../domain/Pages/PageModel";
 import { pageTemplates } from "../../domain/Pages/pageTemplates";
@@ -52,6 +52,15 @@ export class UpdateSubtitleEvent extends Event {
     constructor(subtitle:string) {
         super(UpdateSubtitleEvent.eventType);
         this.subtitle = subtitle;
+    }
+}
+
+export class UpdatePageSizeEvent extends Event {
+    static eventType = "update-page-size";
+    size:PageSize;
+    constructor(size:PageSize) {
+        super(UpdatePageSizeEvent.eventType);
+        this.size = size;
     }
 }
 
@@ -239,6 +248,14 @@ export class PageController extends StateController {
             .requestUpdate(event);
     }
 
+    @hostEvent(UpdatePageSizeEvent)
+    private updatePageSize(event:UpdatePageSizeEvent) {
+        Product.of<IPageState>(this)
+            .next(updatePageSize(event.size))
+            .tap(savePage(this.editPageRepo))
+            .requestUpdate(event);
+    }
+
     @hostEvent(UpdatePageContentEvent)
     private updatePageContent(event:UpdatePageContentEvent) {
         Product.of<IPageState>(this)
@@ -358,6 +375,10 @@ const updateShowSubtitle = (showSubtitle:boolean) => (state:IPageState) => {
 
 const updateSubtitle = (subtitle:string) => (state:IPageState) => {
     state.page.subtitle = subtitle;
+};
+
+const updatePageSize = (size:PageSize) => (state:IPageState) => {
+    state.page.pageSize = size;
 };
 
 const updatePageContent = (index:number, data:IContentType) => (state:IPageState) => {

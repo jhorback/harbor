@@ -123,9 +123,8 @@ PageThumbSettingsTab.styles = [styles.types, styles.dialog, css `
             overflow-y: auto;
             overflow-x: clip;
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            column-gap: 6px;
-            row-gap: 6px;
+            gap: 6px;
+            grid-template-columns: repeat(auto-fill, 50px);
         }
         .thumbs .thumb-ctr, .thumbs .thumb {
             width: 50px;
