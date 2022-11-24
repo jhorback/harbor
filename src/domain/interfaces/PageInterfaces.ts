@@ -57,6 +57,7 @@ export interface IPageThumbnail extends IThumbnail, IPageReference { }
 export interface IPageData {
     uid: string;
     pageTemplate: string;
+    isVisible: boolean;
     pageSize: PageSize;
     pathname: string;
     title: string,

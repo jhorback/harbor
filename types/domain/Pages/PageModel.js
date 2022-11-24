@@ -10,6 +10,7 @@ export class PageModel {
         this.uid = "";
         /** Page template key referenced in pageTemplates */
         this.pageTemplate = "page";
+        this.isVisible = true;
         this.pageSize = PageSize.medium;
         /** The page route */
         this.pathname = "";
@@ -78,6 +79,7 @@ export class PageModel {
             uid: page.uid,
             authorUid: page.authorUid,
             pageTemplate: page.pageTemplate,
+            isVisible: page.isVisible,
             pageSize: page.pageSize,
             pathname: page.pathname,
             title: page.title,

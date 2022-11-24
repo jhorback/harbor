@@ -31,6 +31,7 @@ export class PageModel implements IPageData {
     uid = "";
     /** Page template key referenced in pageTemplates */
     pageTemplate = "page";
+    isVisible = true;
     pageSize = PageSize.medium;
     /** The page route */
     pathname = "";
@@ -88,6 +89,7 @@ export class PageModel implements IPageData {
             uid: page.uid,
             authorUid: page.authorUid,
             pageTemplate: page.pageTemplate,
+            isVisible: page.isVisible,
             pageSize: page.pageSize,
             pathname: page.pathname,
             title: page.title,

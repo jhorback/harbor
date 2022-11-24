@@ -46,6 +46,15 @@ export class UpdateShowSubtitleEvent extends Event {
     }
 }
 
+export class UpdatePageVisibilityEvent extends Event {
+    static eventType = "update-page-visibility";
+    isVisible:boolean;
+    constructor(isVisible:boolean) {
+        super(UpdatePageVisibilityEvent.eventType);
+        this.isVisible = isVisible;
+    }
+}
+
 export class UpdateSubtitleEvent extends Event {
     static eventType = "update-subtitle";
     subtitle:string;
@@ -256,6 +265,14 @@ export class PageController extends StateController {
             .requestUpdate(event);
     }
 
+    @hostEvent(UpdatePageVisibilityEvent)
+    updatePageVisibility(event:UpdatePageVisibilityEvent) {
+        Product.of<IPageState>(this)
+            .next(updatePageVisibility(event.isVisible))
+            .tap(savePage(this.editPageRepo))
+            .requestUpdate(event);
+    }
+
     @hostEvent(UpdatePageContentEvent)
     private updatePageContent(event:UpdatePageContentEvent) {
         Product.of<IPageState>(this)
@@ -379,6 +396,10 @@ const updateSubtitle = (subtitle:string) => (state:IPageState) => {
 
 const updatePageSize = (size:PageSize) => (state:IPageState) => {
     state.page.pageSize = size;
+};
+
+const updatePageVisibility = (isVisible:boolean) => (state:IPageState) => {
+    state.page.isVisible = isVisible;
 };
 
 const updatePageContent = (index:number, data:IContentType) => (state:IPageState) => {

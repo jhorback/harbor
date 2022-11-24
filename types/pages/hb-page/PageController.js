@@ -41,6 +41,13 @@ export class UpdateShowSubtitleEvent extends Event {
     }
 }
 UpdateShowSubtitleEvent.eventType = "update-show-subtitle";
+export class UpdatePageVisibilityEvent extends Event {
+    constructor(isVisible) {
+        super(UpdatePageVisibilityEvent.eventType);
+        this.isVisible = isVisible;
+    }
+}
+UpdatePageVisibilityEvent.eventType = "update-page-visibility";
 export class UpdateSubtitleEvent extends Event {
     constructor(subtitle) {
         super(UpdateSubtitleEvent.eventType);
@@ -162,6 +169,12 @@ export class PageController extends StateController {
             .tap(savePage(this.editPageRepo))
             .requestUpdate(event);
     }
+    updatePageVisibility(event) {
+        Product.of(this)
+            .next(updatePageVisibility(event.isVisible))
+            .tap(savePage(this.editPageRepo))
+            .requestUpdate(event);
+    }
     updatePageContent(event) {
         Product.of(this)
             .next(updatePageContent(event.index, event.state))
@@ -249,6 +262,9 @@ __decorate([
     hostEvent(UpdatePageSizeEvent)
 ], PageController.prototype, "updatePageSize", null);
 __decorate([
+    hostEvent(UpdatePageVisibilityEvent)
+], PageController.prototype, "updatePageVisibility", null);
+__decorate([
     hostEvent(UpdatePageContentEvent)
 ], PageController.prototype, "updatePageContent", null);
 __decorate([
@@ -316,6 +332,9 @@ const updateSubtitle = (subtitle) => (state) => {
 };
 const updatePageSize = (size) => (state) => {
     state.page.pageSize = size;
+};
+const updatePageVisibility = (isVisible) => (state) => {
+    state.page.isVisible = isVisible;
 };
 const updatePageContent = (index, data) => (state) => {
     state.page.content[index] = data;
