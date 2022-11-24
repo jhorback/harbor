@@ -7,6 +7,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 import { Product } from "@domx/statecontroller";
 import { hostEvent } from "@domx/statecontroller";
 import "../../../domain/Files/HbFindFileRepo";
+import { FindPageRepo } from "../../../domain/Pages/FindPageRepo";
 import { PageThumbChangeEvent, UpdatePageContentEvent } from "../../hb-page";
 import { PageContentController } from "../../hb-page/PageContentController";
 export class AddListPageEvent extends Event {
@@ -45,6 +46,14 @@ export class PageListContentController extends PageContentController {
     }
     stateUpdated() {
         this.state = { ...this.content };
+        if (!this.isSynced) {
+            this.syncPages();
+        }
+    }
+    syncPages() {
+        this.isSynced = true;
+        Product.of(this)
+            .tap(syncPages(this, this.host.contentIndex));
     }
     addListPage(event) {
         Product.of(this)
@@ -107,4 +116,17 @@ const addPage = (page) => (state) => {
 const setDisplay = (display) => (state) => {
     state.display = display;
 };
-// todo - sync with db method for syncing updates
+const syncPages = (controller, contentIndex) => async (product) => {
+    const state = product.getState();
+    const findPageRepo = new FindPageRepo();
+    const pageRequests = state.pages.map(page => findPageRepo.findPage(page.uid));
+    const pagesOrNull = await Promise.all(pageRequests);
+    const pages = pagesOrNull.filter(p => p !== null);
+    product
+        .next(setPages(pages))
+        .requestUpdate("PageListContentController.syncPages")
+        .dispatchHostEvent(new UpdatePageContentEvent(contentIndex, product.getState()));
+};
+const setPages = (pages) => (state) => {
+    state.pages = pages.map(p => p.toPageThumbnail());
+};

@@ -40,7 +40,7 @@ export class PageListContent extends LitElement {
             <hb-page-content
                 pathname=${this.pathname}
                 content-index=${this.contentIndex}
-                ?is-empty=${state.pages.length === 0}>                
+                ?is-empty=${!state.pages || state.pages.length === 0}>                
                 <div>
                     ${state.pages.length === 0 ? html`` : this.renderPages(contentState)}
                 </div>
@@ -294,7 +294,6 @@ const pageListDrop = (event:DragEvent) => {
     const dt = event.dataTransfer!;
     const sourceIndex = parseInt(dt.getData("application/harbor-app-page"));
     const targetIndex = parseInt(target.index);
-    console.log("REORDER", sourceIndex, targetIndex)
     target.dispatchEvent(new ReorderPageListItemsEvent(sourceIndex, targetIndex));
 };
 
