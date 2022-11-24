@@ -1,9 +1,10 @@
-import { css, html, LitElement, ReactiveController } from "lit";
+import { css, html, LitElement } from "lit";
 import { customElement, property, query } from "lit/decorators.js";
 import "../../../common/hb-button";
 import "../../../common/hb-card";
 import { IPageThumbnail } from "../../../domain/interfaces/PageInterfaces";
 import { styles } from "../../../styles";
+import { AddPageDialog, PageAddedEvent } from "../../hb-add-page-dialog";
 import { FindPageDialog, PageSelectedEvent } from "../../hb-find-page-dialog";
 import { HbPageContent } from "../../hb-page";
 import { IPageContentState } from "../../hb-page/PageContentController";
@@ -32,6 +33,8 @@ export class PageListContent extends LitElement {
     @query("hb-find-page-dialog")
     $findPageDialog!:FindPageDialog;
 
+    @query("hb-add-page-dialog")
+    $addPageDialog!:AddPageDialog;
 
     render() {
         const state = this.pageListContent.content;
@@ -55,6 +58,10 @@ export class PageListContent extends LitElement {
                     <hb-find-page-dialog
                         @page-selected=${this.pageSelected}
                     ></hb-find-page-dialog>
+                    <hb-add-page-dialog
+                        url-prefix=${location.pathname === "/" ? "" : location.pathname}
+                        @page-added=${this.pageAdded}
+                    ></hb-add-page-dialog>
                 </div>
                 <div slot="content-edit-tools">
                     <div>
@@ -112,7 +119,7 @@ export class PageListContent extends LitElement {
     }
 
     private addNewPage() {
-
+        this.$addPageDialog.showModal();
     }
 
     private searchForPage() {
@@ -120,6 +127,10 @@ export class PageListContent extends LitElement {
     }
 
     private pageSelected(event:PageSelectedEvent) {
+        this.dispatchEvent(new AddListPageEvent(event.pageModel.toPageThumbnail()));
+    }
+
+    private pageAdded(event:PageAddedEvent) {
         this.dispatchEvent(new AddListPageEvent(event.pageModel.toPageThumbnail()));
     }
 

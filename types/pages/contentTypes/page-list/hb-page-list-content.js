@@ -44,6 +44,10 @@ let PageListContent = class PageListContent extends LitElement {
                     <hb-find-page-dialog
                         @page-selected=${this.pageSelected}
                     ></hb-find-page-dialog>
+                    <hb-add-page-dialog
+                        url-prefix=${location.pathname === "/" ? "" : location.pathname}
+                        @page-added=${this.pageAdded}
+                    ></hb-add-page-dialog>
                 </div>
                 <div slot="content-edit-tools">
                     <div>
@@ -96,11 +100,15 @@ let PageListContent = class PageListContent extends LitElement {
         this.$hbPageContent.edit();
     }
     addNewPage() {
+        this.$addPageDialog.showModal();
     }
     searchForPage() {
         this.$findPageDialog.showModal();
     }
     pageSelected(event) {
+        this.dispatchEvent(new AddListPageEvent(event.pageModel.toPageThumbnail()));
+    }
+    pageAdded(event) {
         this.dispatchEvent(new AddListPageEvent(event.pageModel.toPageThumbnail()));
     }
     displayTypeChanged(event) {
@@ -167,6 +175,9 @@ __decorate([
 __decorate([
     query("hb-find-page-dialog")
 ], PageListContent.prototype, "$findPageDialog", void 0);
+__decorate([
+    query("hb-add-page-dialog")
+], PageListContent.prototype, "$addPageDialog", void 0);
 PageListContent = __decorate([
     customElement('hb-page-list-content')
 ], PageListContent);
