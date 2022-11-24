@@ -1,5 +1,5 @@
 import { css, html, LitElement } from "lit";
-import { customElement, query } from "lit/decorators.js";
+import { customElement, property, query } from "lit/decorators.js";
 import "../../common/hb-button";
 import "../../common/hb-list-item";
 import "../../common/hb-text-input";
@@ -14,6 +14,9 @@ import { AddNewPageEvent, AddPageController, PageAddedEvent, PagePathnameChanged
  */
 @customElement('hb-add-page-dialog')
 export class AddPageDialog extends LitElement {
+
+    @property({type: String, attribute: "url-prefix"})
+    urlPrefix:string = "";
 
     @query("dialog")
     $dialog!:HTMLDialogElement;
@@ -61,7 +64,6 @@ export class AddPageDialog extends LitElement {
                         <hb-button
                             text-button
                             label="Check URL"
-                            ?disabled=${!state.canAdd}
                             @click=${this.validateButtonClicked}
                         ></hb-button>
                     </div>

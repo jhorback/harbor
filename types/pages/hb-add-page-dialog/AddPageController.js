@@ -55,8 +55,8 @@ export class PageAddedEvent extends Event {
 }
 PageAddedEvent.eventType = "page-added";
 export class AddPageController extends StateController {
-    constructor() {
-        super(...arguments);
+    constructor(host) {
+        super(host);
         this.state = {
             pageTemplates: pageTemplates.all(),
             pagePathnameError: null,
@@ -64,8 +64,17 @@ export class AddPageController extends StateController {
             pageTemplateIndex: 0,
             title: "",
             pathname: "",
-            canAdd: false
+            canAdd: false,
+            urlPrefix: ""
         };
+        this.host = host;
+    }
+    hostConnected() {
+        super.hostConnected();
+        Product.of(this)
+            .next(setUrlPrefix(this.host.urlPrefix))
+            .next(setPagePathnameBasedOnTitle)
+            .requestUpdate("AddPageController.hostConnected");
     }
     pageTemplateChanged(event) {
         Product.of(this)
@@ -119,14 +128,35 @@ __decorate([
 ], AddPageController.prototype, "addNewPage", null);
 const validateNewPageOptions = (repo) => async (product) => {
     const state = product.getState();
-    const exists = await repo.pageExists(state.pathname);
-    const message = exists ? "The page already exists, please select a different url" :
-        "The page does not exist, you're good to go!";
-    const error = exists ? "Url exists" : "";
+    let pagePathnameError = "";
+    let pageIsValidMessage = "";
+    let canAdd = true;
+    if (state.title.length < 3) {
+        canAdd = false;
+        pageIsValidMessage = "The title must be at least 3 characters long.";
+    }
+    if (state.pathname.indexOf("/") !== 0) {
+        canAdd = false;
+        pagePathnameError = "The page URL must begin with a forward slash: \"/\"";
+    }
+    if (canAdd) {
+        const exists = await repo.pageExists(state.pathname);
+        pageIsValidMessage = exists ? "The page already exists, please select a different url" :
+            "The page is valid, you're good to go!";
+        pagePathnameError = exists ? "Url exists" : "";
+        canAdd = !exists;
+    }
     product
-        .next(setAddPageError(error))
-        .next(setPageIsValidMessage(message))
+        .next(setPagePathnameError(pagePathnameError))
+        .next(setPageIsValidMessage(pageIsValidMessage))
+        .next(setCanAdd(canAdd))
         .requestUpdate("HbAddPageRepo.validateNewPageOptions");
+};
+const setUrlPrefix = (urlPrefix) => (state) => {
+    state.urlPrefix = urlPrefix;
+};
+const setCanAdd = (canAdd) => (state) => {
+    state.canAdd = canAdd;
 };
 const addNewPage = (repo) => async (product) => {
     let pageModel;
@@ -141,7 +171,7 @@ const addNewPage = (repo) => async (product) => {
     catch (error) {
         if (error instanceof ClientError) {
             product
-                .next(setAddPageError(error.message))
+                .next(setPagePathnameError(error.message))
                 .requestUpdate("AddPageController.addNewPage");
         }
         else {
@@ -151,18 +181,19 @@ const addNewPage = (repo) => async (product) => {
     }
     product.dispatchHostEvent(new PageAddedEvent(pageModel));
 };
-const setAddPageError = (error) => (state) => {
+const setPagePathnameError = (error) => (state) => {
     state.pagePathnameError = error;
 };
 const setTemplateIndex = (index) => (state) => {
     state.pageTemplateIndex = index;
 };
 const setPageTitle = (title) => (state) => {
-    state.canAdd = title.length > 2;
+    state.canAdd = false;
     state.title = title;
 };
 const setPagePathname = (pathname) => (state) => {
-    state.pathname = pathname.toLowerCase();
+    state.canAdd = false;
+    state.pathname = pathname.toLowerCase().replace(/[^0-9a-z\-/]/g, '');
 };
 const clearPageIsValidMessage = (state) => {
     state.pageIsValidMessage = "";
@@ -174,5 +205,6 @@ const clearPagePathnameError = (state) => {
     state.pagePathnameError = "";
 };
 const setPagePathnameBasedOnTitle = (state) => {
-    state.pathname = `/${PageModel.tokenize(state.title)}`;
+    state.canAdd = false;
+    state.pathname = `${state.urlPrefix}/${PageModel.tokenize(state.title)}`;
 };

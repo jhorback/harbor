@@ -50,6 +50,9 @@ PageLayout.styles = [css `
       :host([large]) .page-layout {
         max-width: 840px;
       }
+      :host([wide]) .page-layout {
+        max-width: 1200px;
+      }
     `];
 __decorate([
     query("hb-user-menu")

@@ -40,6 +40,7 @@ export class HorizontalCard extends LitElement {
                         <div class="title-medium readable" title=${this.text}>${this.text}</div>
                     `}                    
                     <div class="body-medium readable" title=${this.description}>${this.description}</div>
+                    <slot></slot>
                 </div>
                 <div class="media" ?hidden=${this.mediaUrl === ""}>
                     ${this.mediaHref ? html`

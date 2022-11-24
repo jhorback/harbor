@@ -175,7 +175,7 @@ export class PageController extends StateController {
         currentUserCanEdit: true,
         currentUserCanAdd: true,
         selectedEditTab: "",
-        inEditMode: true,
+        inEditMode: false,
         activeContentIndex: -1,
         editableContentIndex: -1,
         pageTemplate: pageTemplates.get("page")

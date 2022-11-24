@@ -27,7 +27,7 @@ export class Card extends LitElement {
             <div class="card" @click=${this.handleClick}>
                 <div class="media" ?hidden=${this.mediaUrl === ""}>
                     ${this.mediaHref ? html`
-                        <a href=${this.mediaHref}>
+                        <a href=${this.mediaHref} draggable="false">
                             <div id="thumbnail" style="background-image: url(${this.mediaUrl})"></div>
                         </a>
                     ` : html`
@@ -36,7 +36,7 @@ export class Card extends LitElement {
                 </div>
                 <div class="text">
                     ${this.mediaHref ? html`
-                        <a href=${this.mediaHref}>
+                        <a href=${this.mediaHref} draggable="false">
                             <div class="headline-small readable" title=${this.text}>${this.text}</div>
                         </a>
                     ` : html`
@@ -67,10 +67,12 @@ export class Card extends LitElement {
             cursor: default;
             gap: 5px;
             background-color: var(--md-sys-color-surface-variant);
+            height: 100%;
         }
         .media,.media #thumbnail { 
             width: 100%;
             height: 168px;
+            border-radius: 0 0 8px 8px;
         }
         .media #thumbnail {
             overflow: hidden;
