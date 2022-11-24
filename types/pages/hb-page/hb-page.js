@@ -28,22 +28,24 @@ let HbPage = class HbPage extends LitElement {
         return html `
             <hb-page-layout>
                 ${renderAppBarButtons(this, state)}
-                ${state.inEditMode ? renderEditTabs(this, state) : html ``}
-                <div ?hidden=${!state.isLoaded}>
-                    <h1 class="headline-large" ?hidden=${!state.inEditMode && !page.showTitle}>${page.title}</h1>
+                <div class="page-header">
+                    ${state.inEditMode ? renderEditTabs(this, state) : html ``}
+                    <div ?hidden=${!state.isLoaded}>
+                        <h1 class="display-medium" ?hidden=${!state.inEditMode && !page.showTitle}>${page.title}</h1>
 
-                    ${state.inEditMode ? html `
-                        <hb-content-editable
-                            class="body-large"
-                            value=${page.subtitle}
-                            placeholder="Enter a subtitle"
-                            @change=${this.subtitleChange}
-                        ></hb-content-editable>                        
-                    ` : html `
-                        <div class="body-large" ?hidden=${!page.showSubtitle}>
-                            ${page.subtitle}
-                        </div>
-                    `}
+                        ${state.inEditMode ? html `
+                            <hb-content-editable
+                                class="body-large"
+                                value=${page.subtitle}
+                                placeholder="Enter a subtitle"
+                                @change=${this.subtitleChange}
+                            ></hb-content-editable>                        
+                        ` : html `
+                            <div class="body-large" ?hidden=${!page.showSubtitle}>
+                                ${page.subtitle}
+                            </div>
+                        `}
+                    </div>
                 </div>
                 <div class="page-content">
                     ${state.isLoaded === false ? html `
@@ -85,7 +87,7 @@ let HbPage = class HbPage extends LitElement {
         this.dispatchEvent(new PageEditModeChangeEvent(false));
     }
 };
-HbPage.styles = [styles.types, styles.format, styles.icons, css `
+HbPage.styles = [styles.types, styles.format, styles.icons, styles.form, css `
         :host {
             display: block;
         }
@@ -121,6 +123,10 @@ HbPage.styles = [styles.types, styles.format, styles.icons, css `
             padding: 0 0 0 16px;
             justify-content: space-between;
         }
+        .edit-settings-tab-content > :last-child {
+            flex-grow: 1;
+            text-align: right;
+        }
 
 
         .switch-field {
@@ -139,6 +145,10 @@ HbPage.styles = [styles.types, styles.format, styles.icons, css `
             margin-bottom: 1rem;
         }
 
+        .page-header {
+            max-width: 750px;
+            margin: auto;
+        }
         .page-content{
             display:flex;
             flex-direction: column;
@@ -263,19 +273,31 @@ const renderEditSettingsTabContent = (page, state) => html `
         <div class="edit-settings-tab-content">
             <div>
                 <div class="switch-field">
-                    <div>Show title</div>
+                    <div class="label-large">Show title</div>
                     <hb-switch
                         ?selected=${state.page.showTitle}
                         @hb-switch-change=${showTitleClicked(page)}
                     ></hb-switch>
                 </div>
                 <div class="switch-field">
-                    <div>Show subtitle</div>
-                        <hb-switch
+                    <div class="label-large">Show subtitle</div>
+                    <hb-switch
                         ?selected=${state.page.showSubtitle}
                         @hb-switch-change=${showSubtitleClicked(page)}
                     ></hb-switch>
                 </div>
+            </div>
+            <div>
+                <div class="switch-field">
+                    <div class="label-large">Page size</div>
+                    <select>
+                        <option>Small</option>
+                        <option>Medium</option>
+                        <option>Large</option>
+                        <option>Wide</option>
+                        <option>Full</option>
+                    </select>
+                </div>                
             </div>
             <div>
                 <hb-button
