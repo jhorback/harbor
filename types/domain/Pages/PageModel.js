@@ -1,4 +1,5 @@
 import { Timestamp } from "firebase/firestore";
+import { PageSize } from "../interfaces/PageInterfaces";
 import { pageTemplates } from "./pageTemplates";
 /**
  *
@@ -9,6 +10,7 @@ export class PageModel {
         this.uid = "";
         /** Page template key referenced in pageTemplates */
         this.pageTemplate = "page";
+        this.pageSize = PageSize.medium;
         /** The page route */
         this.pathname = "";
         this.title = "";
@@ -76,6 +78,7 @@ export class PageModel {
             uid: page.uid,
             authorUid: page.authorUid,
             pageTemplate: page.pageTemplate,
+            pageSize: page.pageSize,
             pathname: page.pathname,
             title: page.title,
             showTitle: page.showTitle,

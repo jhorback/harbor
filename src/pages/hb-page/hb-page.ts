@@ -3,6 +3,7 @@ import { customElement, property, query } from "lit/decorators.js";
 import "../../common/hb-content-editable";
 import { ContentEditableChangeEvent } from "../../common/hb-content-editable";
 import { SwitchChangeEvent } from "../../common/hb-switch";
+import { PageSize } from "../../domain/interfaces/PageInterfaces";
 import { contentTypes } from "../../domain/Pages/contentTypes";
 import { sendFeedback } from "../../layout/feedback";
 import "../../layout/hb-page-layout";
@@ -14,7 +15,7 @@ import "../hb-delete-page-dialog";
 import { DeletePageDialog } from "../hb-delete-page-dialog";
 import "./hb-page-author-settings";
 import "./hb-page-thumb-settings";
-import { AddContentEvent, EditTabClickedEvent, IPageState, PageController, PageEditModeChangeEvent, UpdateShowSubtitleEvent, UpdateShowTitleEvent, UpdateSubtitleEvent } from "./PageController";
+import { AddContentEvent, EditTabClickedEvent, IPageState, PageController, PageEditModeChangeEvent, UpdatePageSizeEvent, UpdateShowSubtitleEvent, UpdateShowTitleEvent, UpdateSubtitleEvent } from "./PageController";
 
 
 @customElement("hb-page")
@@ -37,7 +38,7 @@ export class HbPage extends LitElement {
         const page = state.page;
 
         return html`
-            <hb-page-layout>
+            <hb-page-layout size=${state.page.pageSize}>
                 ${renderAppBarButtons(this, state)}
                 <div class="page-header">
                     ${state.inEditMode ? renderEditTabs(this, state) : html``}
@@ -302,12 +303,13 @@ const renderEditSettingsTabContent = (page:HbPage, state:IPageState) => html`
             <div>
                 <div class="switch-field">
                     <div class="label-large">Page size</div>
-                    <select>
-                        <option>Small</option>
-                        <option>Medium</option>
-                        <option>Large</option>
-                        <option>Wide</option>
-                        <option>Full</option>
+                    <select .value=${state.page.pageSize}
+                        @change=${pageSizeChanged(page)}>
+                        <option value="small">Small</option>
+                        <option value="medium">Medium</option>
+                        <option value="large">Large</option>
+                        <option value="wide">Wide</option>
+                        <option value="full">Full</option>
                     </select>
                 </div>                
             </div>
@@ -358,6 +360,10 @@ const showTitleClicked = (page:HbPage) => (event:SwitchChangeEvent) =>
 
 const showSubtitleClicked = (page:HbPage) => (event:SwitchChangeEvent) => 
     page.dispatchEvent(new UpdateShowSubtitleEvent(event.selected));
+
+
+const pageSizeChanged = (page:HbPage) => (event:InputEvent) =>
+    page.dispatchEvent(new UpdatePageSizeEvent((event.target as HTMLSelectElement).value as PageSize));
 
 
 const renderEditThumbnailTabContent = (page:HbPage, state:IPageState) => {

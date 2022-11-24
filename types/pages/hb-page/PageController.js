@@ -48,6 +48,13 @@ export class UpdateSubtitleEvent extends Event {
     }
 }
 UpdateSubtitleEvent.eventType = "update-subtitle";
+export class UpdatePageSizeEvent extends Event {
+    constructor(size) {
+        super(UpdatePageSizeEvent.eventType);
+        this.size = size;
+    }
+}
+UpdatePageSizeEvent.eventType = "update-page-size";
 export class UpdatePageContentEvent extends Event {
     constructor(index, state) {
         super(UpdatePageContentEvent.eventType, { bubbles: true, composed: true });
@@ -149,6 +156,12 @@ export class PageController extends StateController {
             .tap(savePage(this.editPageRepo))
             .requestUpdate(event);
     }
+    updatePageSize(event) {
+        Product.of(this)
+            .next(updatePageSize(event.size))
+            .tap(savePage(this.editPageRepo))
+            .requestUpdate(event);
+    }
     updatePageContent(event) {
         Product.of(this)
             .next(updatePageContent(event.index, event.state))
@@ -233,6 +246,9 @@ __decorate([
     hostEvent(UpdateSubtitleEvent)
 ], PageController.prototype, "updateSubtitle", null);
 __decorate([
+    hostEvent(UpdatePageSizeEvent)
+], PageController.prototype, "updatePageSize", null);
+__decorate([
     hostEvent(UpdatePageContentEvent)
 ], PageController.prototype, "updatePageContent", null);
 __decorate([
@@ -297,6 +313,9 @@ const updateShowSubtitle = (showSubtitle) => (state) => {
 };
 const updateSubtitle = (subtitle) => (state) => {
     state.page.subtitle = subtitle;
+};
+const updatePageSize = (size) => (state) => {
+    state.page.pageSize = size;
 };
 const updatePageContent = (index, data) => (state) => {
     state.page.content[index] = data;

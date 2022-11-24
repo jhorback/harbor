@@ -15,7 +15,7 @@ import "../hb-add-page-dialog";
 import "../hb-delete-page-dialog";
 import "./hb-page-author-settings";
 import "./hb-page-thumb-settings";
-import { AddContentEvent, EditTabClickedEvent, PageController, PageEditModeChangeEvent, UpdateShowSubtitleEvent, UpdateShowTitleEvent, UpdateSubtitleEvent } from "./PageController";
+import { AddContentEvent, EditTabClickedEvent, PageController, PageEditModeChangeEvent, UpdatePageSizeEvent, UpdateShowSubtitleEvent, UpdateShowTitleEvent, UpdateSubtitleEvent } from "./PageController";
 let HbPage = class HbPage extends LitElement {
     constructor() {
         super(...arguments);
@@ -26,7 +26,7 @@ let HbPage = class HbPage extends LitElement {
         const state = this.page.state;
         const page = state.page;
         return html `
-            <hb-page-layout>
+            <hb-page-layout size=${state.page.pageSize}>
                 ${renderAppBarButtons(this, state)}
                 <div class="page-header">
                     ${state.inEditMode ? renderEditTabs(this, state) : html ``}
@@ -290,12 +290,13 @@ const renderEditSettingsTabContent = (page, state) => html `
             <div>
                 <div class="switch-field">
                     <div class="label-large">Page size</div>
-                    <select>
-                        <option>Small</option>
-                        <option>Medium</option>
-                        <option>Large</option>
-                        <option>Wide</option>
-                        <option>Full</option>
+                    <select .value=${state.page.pageSize}
+                        @change=${pageSizeChanged(page)}>
+                        <option value="small">Small</option>
+                        <option value="medium">Medium</option>
+                        <option value="large">Large</option>
+                        <option value="wide">Wide</option>
+                        <option value="full">Full</option>
                     </select>
                 </div>                
             </div>
@@ -336,6 +337,7 @@ const renderAddContent = (page, state) => {
 const addContent = (page, contentType) => page.dispatchEvent(new AddContentEvent(contentType));
 const showTitleClicked = (page) => (event) => page.dispatchEvent(new UpdateShowTitleEvent(event.selected));
 const showSubtitleClicked = (page) => (event) => page.dispatchEvent(new UpdateShowSubtitleEvent(event.selected));
+const pageSizeChanged = (page) => (event) => page.dispatchEvent(new UpdatePageSizeEvent(event.target.value));
 const renderEditThumbnailTabContent = (page, state) => {
     return html `
         <div class="edit-tab-content">
