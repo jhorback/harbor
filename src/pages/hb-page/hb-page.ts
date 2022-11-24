@@ -1,5 +1,5 @@
 import { css, html, LitElement } from "lit";
-import { customElement, property, query, state } from "lit/decorators.js";
+import { customElement, property, query } from "lit/decorators.js";
 import "../../common/hb-content-editable";
 import { ContentEditableChangeEvent } from "../../common/hb-content-editable";
 import { SwitchChangeEvent } from "../../common/hb-switch";
@@ -10,10 +10,9 @@ import { styles } from "../../styles";
 import "../hb-add-page-dialog";
 import { AddPageDialog } from "../hb-add-page-dialog";
 import { PageAddedEvent } from "../hb-add-page-dialog/AddPageController";
-import { DeletePageDialog } from "../hb-delete-page-dialog";
 import "../hb-delete-page-dialog";
+import { DeletePageDialog } from "../hb-delete-page-dialog";
 import "./hb-page-author-settings";
-import { HbPageContent } from "./hb-page-content";
 import "./hb-page-thumb-settings";
 import { AddContentEvent, EditTabClickedEvent, IPageState, PageController, PageEditModeChangeEvent, UpdateShowSubtitleEvent, UpdateShowTitleEvent, UpdateSubtitleEvent } from "./PageController";
 
@@ -126,6 +125,12 @@ export class HbPage extends LitElement {
             margin-bottom: 1rem;
         }
 
+        .details-tab {
+            display: flex;
+        }
+        .details-tab > :first-child {
+            flex-grow: 1;
+        }
 
         .edit-settings-tab-content {
             display: flex;
@@ -243,9 +248,9 @@ const renderEditTabs = (page:HbPage, state:IPageState) => html`
         ></hb-button>
         <hb-button           
             text-button
-            label="Author"
-            ?selected=${state.selectedEditTab === "author"}
-            @click=${clickEditTab(page, "author")}
+            label="Details"
+            ?selected=${state.selectedEditTab === "details"}
+            @click=${clickEditTab(page, "details")}
         ></hb-button>
     </div>
     ${state.isLoaded ? renderEditTabContent(page, state) : html``}
@@ -260,8 +265,8 @@ const renderEditTabContent = (page:HbPage, state:IPageState) => state.selectedEd
     renderEditSettingsTabContent(page, state) :
     state.selectedEditTab === "thumbnail" ?
         renderEditThumbnailTabContent(page, state) :
-        state.selectedEditTab === "author" ?
-            renderEditAuthorTabContent(page, state) :
+        state.selectedEditTab === "details" ?
+            renderEditDetailsTabContent(page, state) :
             html``;
 
 
@@ -282,16 +287,6 @@ const renderEditSettingsTabContent = (page:HbPage, state:IPageState) => html`
                         ?selected=${state.page.showSubtitle}
                         @hb-switch-change=${showSubtitleClicked(page)}
                     ></hb-switch>
-                </div>
-            </div>
-            <div>
-                <div class="text-field">
-                    <div class="label-large">Page updated</div>
-                    <div class="body=large">${state.page.dateUpdated.toLocaleDateString()}</div>
-                </div>
-                <div class="text-field">
-                    <div class="label-large">Page added</div>
-                    <div class="body=large">${state.page.dateCreated.toLocaleDateString()}</div>
                 </div>
             </div>
             <div>
@@ -351,12 +346,22 @@ const renderEditThumbnailTabContent = (page:HbPage, state:IPageState) => {
     `;
 };
 
-const renderEditAuthorTabContent = (page:HbPage, state:IPageState) => {
+const renderEditDetailsTabContent = (page:HbPage, state:IPageState) => {
     return html`
-        <div class="edit-tab-content">
+        <div class="edit-tab-content details-tab">
             <hb-page-author-settings
                 uid=${state.page.authorUid}           
             ></hb-page-author-settings>
+            <div>
+                <div class="text-field">
+                    <div class="label-small">Page updated</div>
+                    <div class="body=large">${state.page.dateUpdated.toLocaleDateString()}</div>
+                </div>
+                <div class="text-field">
+                    <div class="label-small">Page added</div>
+                    <div class="body=large">${state.page.dateCreated.toLocaleDateString()}</div>
+                </div>
+            </div>
         </div>
     `;
 };

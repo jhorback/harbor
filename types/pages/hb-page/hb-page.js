@@ -108,6 +108,12 @@ HbPage.styles = [styles.types, styles.format, styles.icons, css `
             margin-bottom: 1rem;
         }
 
+        .details-tab {
+            display: flex;
+        }
+        .details-tab > :first-child {
+            flex-grow: 1;
+        }
 
         .edit-settings-tab-content {
             display: flex;
@@ -235,9 +241,9 @@ const renderEditTabs = (page, state) => html `
         ></hb-button>
         <hb-button           
             text-button
-            label="Author"
-            ?selected=${state.selectedEditTab === "author"}
-            @click=${clickEditTab(page, "author")}
+            label="Details"
+            ?selected=${state.selectedEditTab === "details"}
+            @click=${clickEditTab(page, "details")}
         ></hb-button>
     </div>
     ${state.isLoaded ? renderEditTabContent(page, state) : html ``}
@@ -249,8 +255,8 @@ const renderEditTabContent = (page, state) => state.selectedEditTab === "setting
     renderEditSettingsTabContent(page, state) :
     state.selectedEditTab === "thumbnail" ?
         renderEditThumbnailTabContent(page, state) :
-        state.selectedEditTab === "author" ?
-            renderEditAuthorTabContent(page, state) :
+        state.selectedEditTab === "details" ?
+            renderEditDetailsTabContent(page, state) :
             html ``;
 const renderEditSettingsTabContent = (page, state) => html `
     <div class="edit-tab-content">
@@ -269,16 +275,6 @@ const renderEditSettingsTabContent = (page, state) => html `
                         ?selected=${state.page.showSubtitle}
                         @hb-switch-change=${showSubtitleClicked(page)}
                     ></hb-switch>
-                </div>
-            </div>
-            <div>
-                <div class="text-field">
-                    <div class="label-large">Page updated</div>
-                    <div class="body=large">${state.page.dateUpdated.toLocaleDateString()}</div>
-                </div>
-                <div class="text-field">
-                    <div class="label-large">Page added</div>
-                    <div class="body=large">${state.page.dateCreated.toLocaleDateString()}</div>
                 </div>
             </div>
             <div>
@@ -325,12 +321,22 @@ const renderEditThumbnailTabContent = (page, state) => {
         </div>
     `;
 };
-const renderEditAuthorTabContent = (page, state) => {
+const renderEditDetailsTabContent = (page, state) => {
     return html `
-        <div class="edit-tab-content">
+        <div class="edit-tab-content details-tab">
             <hb-page-author-settings
                 uid=${state.page.authorUid}           
             ></hb-page-author-settings>
+            <div>
+                <div class="text-field">
+                    <div class="label-small">Page updated</div>
+                    <div class="body=large">${state.page.dateUpdated.toLocaleDateString()}</div>
+                </div>
+                <div class="text-field">
+                    <div class="label-small">Page added</div>
+                    <div class="body=large">${state.page.dateCreated.toLocaleDateString()}</div>
+                </div>
+            </div>
         </div>
     `;
 };
