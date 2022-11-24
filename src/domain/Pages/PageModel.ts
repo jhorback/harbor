@@ -53,6 +53,7 @@ export class PageModel implements IPageData {
     toPageReference = ():IPageReference => ({
         uid: this.uid,
         pageTemplate: this.pageTemplate,
+        isVisible: this.isVisible,
         pathname: this.pathname,
         documentRef: this.documentRef
     });
@@ -60,6 +61,7 @@ export class PageModel implements IPageData {
     toPageThumbnail = ():IPageThumbnail => ({
         uid: this.uid,
         pageTemplate: this.pageTemplate,
+        isVisible: this.isVisible,
         pathname: this.pathname,
         documentRef: this.documentRef,
         title: this.title,

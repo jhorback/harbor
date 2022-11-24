@@ -45,6 +45,7 @@ export interface IContentTypeRenderOptions {
  */
 export interface IPageReference {
     uid: string;
+    isVisible: boolean;
     pageTemplate: string;
     pathname: string;
     documentRef: string;

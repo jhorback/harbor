@@ -27,12 +27,14 @@ export class PageModel {
         this.toPageReference = () => ({
             uid: this.uid,
             pageTemplate: this.pageTemplate,
+            isVisible: this.isVisible,
             pathname: this.pathname,
             documentRef: this.documentRef
         });
         this.toPageThumbnail = () => ({
             uid: this.uid,
             pageTemplate: this.pageTemplate,
+            isVisible: this.isVisible,
             pathname: this.pathname,
             documentRef: this.documentRef,
             title: this.title,
