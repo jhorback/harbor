@@ -45,6 +45,7 @@ export interface IContentTypeRenderOptions {
  */
 export interface IPageReference {
     uid: string;
+    isVisible: boolean;
     pageTemplate: string;
     pathname: string;
     documentRef: string;
@@ -57,6 +58,7 @@ export interface IPageThumbnail extends IThumbnail, IPageReference { }
 export interface IPageData {
     uid: string;
     pageTemplate: string;
+    isVisible: boolean;
     pageSize: PageSize;
     pathname: string;
     title: string,

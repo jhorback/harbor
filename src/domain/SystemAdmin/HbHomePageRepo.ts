@@ -58,6 +58,7 @@ class HbHomePageRepo implements IHomePageRepo {
         systemApp.homePage = {
             uid: pageReference.uid,
             pageTemplate: pageReference.pageTemplate,
+            isVisible: pageReference.isVisible,
             pathname: pageReference.pathname,
             documentRef: pageReference.documentRef
         };

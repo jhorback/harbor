@@ -7,7 +7,6 @@ import { styles } from "../../../styles";
 import { AddPageDialog, PageAddedEvent } from "../../hb-add-page-dialog";
 import { FindPageDialog, PageSelectedEvent } from "../../hb-find-page-dialog";
 import { HbPageContent } from "../../hb-page";
-import { IPageContentState } from "../../hb-page/PageContentController";
 import { DEFAULT_IMAGE_URL } from "../image/imageContentType";
 import { AddListPageEvent, ChangePageListDisplayEvent, PageListContentController, RemovePageListItemEvent, ReorderPageListItemsEvent } from "./PageListContentController";
 import { PageListDisplay } from "./pageListContentType";
@@ -45,7 +44,7 @@ export class PageListContent extends LitElement {
                 content-index=${this.contentIndex}
                 ?is-empty=${!state.pages || state.pages.length === 0}>                
                 <div>
-                    ${state.pages.length === 0 ? html`` : this.renderPages(contentState)}
+                    ${state.pages.length === 0 ? html`` : this.renderPages()}
                 </div>
                 <div slot="edit-toolbar">
                     <!-- NO TOOLBAR //-->
@@ -54,7 +53,7 @@ export class PageListContent extends LitElement {
                     ${this.renderDefault()}
                 </div>
                 <div slot="content-edit">
-                    ${state.pages.length === 0 ? this.renderDefault() : this.renderPages(contentState)}
+                    ${state.pages.length === 0 ? this.renderDefault() : this.renderPages()}
                     <hb-find-page-dialog
                         @page-selected=${this.pageSelected}
                     ></hb-find-page-dialog>
@@ -97,7 +96,7 @@ export class PageListContent extends LitElement {
         `;
     }
 
-    private renderPages(contentState:IPageContentState) {
+    private renderPages() {
         const state = this.pageListContent.content;
         const inEditMode = this.pageListContent.contentState.inContentEditMode;
         const size = this.pageListContent.page.state.page.pageSize;
@@ -108,11 +107,70 @@ export class PageListContent extends LitElement {
                 @dragover=${inEditMode ? pageListDragOver : noop}
                 @drop=${inEditMode ? pageListDrop : noop}>
                 ${state.pages.map((page, index) => state.display === PageListDisplay.horizontalCard ?
-                    renderHorizontalCard(contentState, page, index) : state.display === PageListDisplay.verticalCard ?
-                        renderVerticalCard(contentState, page, index) :
-                        renderTextOnly(contentState, page, index)
+                    this.renderHorizontalCard(page, index) : state.display === PageListDisplay.verticalCard ?
+                        this.renderVerticalCard(page, index) :
+                        this.renderTextOnly(page, index)
                 )}
             </div>
+        `;
+    }
+
+    private renderVerticalCard(page:IPageThumbnail, index:number) {
+        const inContentEditMode = this.pageListContent.contentState.inContentEditMode;
+        return html`
+            <hb-card
+                .index=${index}
+                visibility=${this.pageListContent.getPageVisibility(page.isVisible)}
+                draggable=${inContentEditMode ? true : false}
+                @dragstart=${inContentEditMode ? pageDragStart : noop}
+                @dragend=${inContentEditMode ? pageDragEnd : noop}
+                @dragenter=${inContentEditMode ? pageDragEnter : noop}
+                @dragleave=${inContentEditMode ? pageDragLeave : noop}
+                media-url=${page.thumbUrl}
+                media-href=${inContentEditMode ? "javascript:;" : page.href}
+                text=${page.title}
+                description=${page.thumbDescription}>
+                    ${renderDeleteIcon(inContentEditMode, index)}
+            </hb-card>
+        `;
+    }
+
+    private renderHorizontalCard(page:IPageThumbnail, index:number)  {
+        const inContentEditMode = this.pageListContent.contentState.inContentEditMode;
+        return html`
+            <hb-horizontal-card
+                .index=${index}
+                visibility=${this.pageListContent.getPageVisibility(page.isVisible)}
+                draggable=${inContentEditMode ? true : false}
+                @dragstart=${inContentEditMode ? pageDragStart : noop}
+                @dragend=${inContentEditMode ? pageDragEnd : noop}
+                @dragenter=${inContentEditMode ? pageDragEnter : noop}
+                @dragleave=${inContentEditMode ? pageDragLeave : noop}
+                media-url=${page.thumbUrl}
+                media-href=${inContentEditMode ? "javascript:;" : page.href}
+                text=${page.title}
+                description=${page.thumbDescription}>
+                    ${renderDeleteIcon(inContentEditMode, index)}      
+            </hb-horizontal-card>
+        `;
+    }
+
+    private renderTextOnly(page:IPageThumbnail, index:number) {
+        const inContentEditMode = this.pageListContent.contentState.inContentEditMode;
+        return html`
+            <hb-card
+                .index=${index}
+                visibility=${this.pageListContent.getPageVisibility(page.isVisible)}
+                draggable=${inContentEditMode ? true : false}
+                @dragstart=${inContentEditMode ? pageDragStart : noop}
+                @dragend=${inContentEditMode ? pageDragEnd : noop}
+                @dragenter=${inContentEditMode ? pageDragEnter : noop}
+                @dragleave=${inContentEditMode ? pageDragLeave : noop}
+                media-href=${inContentEditMode ? "javascript:;" : page.href}
+                text=${page.title}
+                description=${page.thumbDescription}>
+                ${renderDeleteIcon(inContentEditMode, index)}
+            </hb-card>
         `;
     }
 
@@ -140,13 +198,6 @@ export class PageListContent extends LitElement {
         const display = (event.target as HTMLSelectElement).value as PageListDisplay;
         this.dispatchEvent(new ChangePageListDisplayEvent(display));
     }
-
-    // wide+ = 5 columns
-    // large = 4 columns
-    // medium- = 3 columns
-    // wide - 1200 - 40 = 1160 / 5 = 232
-    // large - 840 - 30 = 810 / 4 = 202
-    // medium - 750 - 20 = 730 / 3 = 243
 
     static styles = [styles.icons, styles.form, css`
         :host {
@@ -181,9 +232,6 @@ export class PageListContent extends LitElement {
         .page-list > * {
             position: relative;
         }
-        hb-card {
-            max-width: var(--hb-page-list-item-width);
-        }
         label {
             margin-right: 8px;
         }
@@ -197,60 +245,28 @@ export class PageListContent extends LitElement {
             left: 4px;
             background-color: var(--md-sys-color-background);
         }
+        [visibility=hidden] {
+            display: none;
+        }
+        [visibility=author] {
+            opacity: 0.7;
+
+        }
+        [visibility=author]::after {
+            content:"hidden";
+            position: absolute;
+            bottom: -2px;
+            right: 0;
+            padding: 4px 8px;
+            background-color: var(--md-sys-color-background);
+            color: var(--md-sys-color-on-background);
+            border-radius: 8px 0 8px 0;
+        }
   `];
 }
 
 
 const noop = () => {};
-
-
-const renderVerticalCard = (contentState:IPageContentState, page:IPageThumbnail, index:number) => html`
-    <hb-card
-        .index=${index}
-        draggable=${contentState.inContentEditMode ? true : false}
-        @dragstart=${contentState.inContentEditMode ? pageDragStart : noop}
-        @dragend=${contentState.inContentEditMode ? pageDragEnd : noop}
-        @dragenter=${contentState.inContentEditMode ? pageDragEnter : noop}
-        @dragleave=${contentState.inContentEditMode ? pageDragLeave : noop}
-        media-url=${page.thumbUrl}
-        media-href=${contentState.inContentEditMode ? "javascript:;" : page.href}
-        text=${page.title}
-        description=${page.thumbDescription}>
-            ${renderDeleteIcon(contentState.inContentEditMode, index)}
-    </hb-card>
-`;
-
-const renderHorizontalCard = (contentState:IPageContentState, page:IPageThumbnail, index:number) => html`
-    <hb-horizontal-card
-        .index=${index}
-        draggable=${contentState.inContentEditMode ? true : false}
-        @dragstart=${contentState.inContentEditMode ? pageDragStart : noop}
-        @dragend=${contentState.inContentEditMode ? pageDragEnd : noop}
-        @dragenter=${contentState.inContentEditMode ? pageDragEnter : noop}
-        @dragleave=${contentState.inContentEditMode ? pageDragLeave : noop}
-        media-url=${page.thumbUrl}
-        media-href=${contentState.inContentEditMode ? "javascript:;" : page.href}
-        text=${page.title}
-        description=${page.thumbDescription}>
-            ${renderDeleteIcon(contentState.inContentEditMode, index)}      
-        </hb-horizontal-card>
-`;
-
-
-const renderTextOnly = (contentState:IPageContentState, page:IPageThumbnail, index:number) => html`
-    <hb-card
-        .index=${index}
-        draggable=${contentState.inContentEditMode ? true : false}
-        @dragstart=${contentState.inContentEditMode ? pageDragStart : noop}
-        @dragend=${contentState.inContentEditMode ? pageDragEnd : noop}
-        @dragenter=${contentState.inContentEditMode ? pageDragEnter : noop}
-        @dragleave=${contentState.inContentEditMode ? pageDragLeave : noop}
-        media-href=${contentState.inContentEditMode ? "javascript:;" : page.href}
-        text=${page.title}
-        description=${page.thumbDescription}>
-        ${renderDeleteIcon(contentState.inContentEditMode, index)}
-        </hb-card>
-`;
 
 
 const renderDeleteIcon = (inEditMode:boolean, index:number) => inEditMode ? html`

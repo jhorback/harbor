@@ -30,6 +30,9 @@ let EditPageRepo = class EditPageRepo {
         if (page === null) {
             throw new NotFoundError(`Page not found: ${pathname}`);
         }
+        if (page.isVisible === false && this.currentUser.uid !== page.authorUid) {
+            throw new NotFoundError(`Page is not visible: ${pathname}`);
+        }
         const unsubscribe = onSnapshot(doc(HbDb.current, "pages", page.uid)
             .withConverter(PageModel), (snapshot) => {
             const doc = snapshot.data();

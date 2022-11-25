@@ -1,6 +1,7 @@
 import { Product } from "@domx/statecontroller";
 import { hostEvent } from "@domx/statecontroller";
 import "../../../domain/Files/HbFindFileRepo";
+import { HbCurrentUser } from "../../../domain/HbCurrentUser";
 import { IPageThumbnail } from "../../../domain/interfaces/PageInterfaces";
 import { FindPageRepo } from "../../../domain/Pages/FindPageRepo";
 import { PageModel } from "../../../domain/Pages/PageModel";
@@ -56,6 +57,14 @@ export class PageListContentController extends PageContentController<PageListCon
         if(!this.isSynced) {
             this.syncPages();
         }
+    }
+
+    private currentUser:HbCurrentUser = new HbCurrentUser();
+
+    getPageVisibility(isVisible:boolean):string {
+        return isVisible ? "visible" :
+            this.page.state.page.authorUid === this.currentUser.uid ?
+            "author" : "hidden";
     }
 
     private isSynced!:boolean;

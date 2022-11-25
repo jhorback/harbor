@@ -7,6 +7,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 import { Product } from "@domx/statecontroller";
 import { hostEvent } from "@domx/statecontroller";
 import "../../../domain/Files/HbFindFileRepo";
+import { HbCurrentUser } from "../../../domain/HbCurrentUser";
 import { FindPageRepo } from "../../../domain/Pages/FindPageRepo";
 import { PageThumbChangeEvent, UpdatePageContentEvent } from "../../hb-page";
 import { PageContentController } from "../../hb-page/PageContentController";
@@ -43,12 +44,18 @@ export class PageListContentController extends PageContentController {
     constructor() {
         super(...arguments);
         this.state = { ...this.content };
+        this.currentUser = new HbCurrentUser();
     }
     stateUpdated() {
         this.state = { ...this.content };
         if (!this.isSynced) {
             this.syncPages();
         }
+    }
+    getPageVisibility(isVisible) {
+        return isVisible ? "visible" :
+            this.page.state.page.authorUid === this.currentUser.uid ?
+                "author" : "hidden";
     }
     syncPages() {
         this.isSynced = true;
