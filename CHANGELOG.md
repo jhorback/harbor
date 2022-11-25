@@ -5,15 +5,24 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [0.8.0] - 2022-11-24
+### Added
+- Doc visibility setting
+- Page size setting
+- Page list content component
+- hb-card component
+- Add/remove page content
+
+
 ## [0.7.0] - 2022-11-17
 ### Updated
 - Documents to Pages conversion
 
 
-
 ## [0.6.0] - 2022-11-11
 ### Added 
 - Document Thumbnails
+
 
 ## [0.5.0] - 2022-11-09
 ### Added
