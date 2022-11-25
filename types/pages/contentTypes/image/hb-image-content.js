@@ -11,7 +11,7 @@ import { FileUploaderAccept } from "../../../files/hb-file-upload-panel";
 import "../../../files/hb-find-file-dialog";
 import { styles } from "../../../styles";
 import { ImageAlignmentChangeEvent, ImageContentController, ImageContentSelectedEvent, ImageSizeChangeEvent } from "./ImageContentController";
-import { ImageSize } from "./imageContentType";
+import { DEFAULT_IMAGE_URL, ImageSize } from "./imageContentType";
 /**
  */
 let ImageContent = class ImageContent extends LitElement {
@@ -49,10 +49,10 @@ let ImageContent = class ImageContent extends LitElement {
                     </span>
                 </div>
                 <div slot="page-edit-empty" @click=${this.clickedEmpty}>
-                    ${this.renderImage("/content/thumbs/files-thumb.svg")}
+                    ${this.renderImage(DEFAULT_IMAGE_URL)}
                 </div>
                 <div slot="content-edit">
-                    ${this.renderImage(state.url || "/content/thumbs/files-thumb.svg")}
+                    ${this.renderImage(state.url || DEFAULT_IMAGE_URL)}
                     <hb-file-upload-panel
                         accept=${FileUploaderAccept.images}
                         @file-upload-complete=${this.fileUploadComplete}

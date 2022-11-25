@@ -39,16 +39,28 @@ PageLayout.styles = [css `
       :host {
         display: block;
       }
+      :host([small]) .page-layout,
+      :host([size=small]) .page-layout {
+        max-width: 80ch;
+      }
+      :host([medium]) .page-layout,
+      :host([size=medium]) .page-layout,
       .page-layout {
         max-width: 750px;
         margin: auto;
         padding: 1rem;
       }
-      :host([small]) .page-layout {
-        max-width: 80ch;
-      }
-      :host([large]) .page-layout {
+      :host([large]) .page-layout,
+      :host([size=large]) .page-layout {
         max-width: 840px;
+      }
+      :host([wide]) .page-layout,
+      :host([size=wide]) .page-layout {
+        max-width: 1200px;
+      }
+      :host([full]) .page-layout,
+      :host([size=full]) .page-layout {
+        max-width: 100%;
       }
     `];
 __decorate([

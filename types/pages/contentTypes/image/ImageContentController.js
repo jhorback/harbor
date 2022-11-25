@@ -7,7 +7,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 import { hostEvent, Product } from "@domx/statecontroller";
 import { inject } from "../../../domain/DependencyContainer/decorators";
 import { FindFileRepoKey } from "../../../domain/interfaces/FileInterfaces";
-import { UpdatePageContentEvent } from "../../hb-page";
+import { PageThumbChangeEvent, UpdatePageContentEvent } from "../../hb-page";
 import "../../../domain/Files/HbFindFileRepo";
 import { PageContentController } from "../../hb-page/PageContentController";
 export class ImageSizeChangeEvent extends Event {
@@ -55,7 +55,10 @@ export class ImageContentController extends PageContentController {
         Product.of(this)
             .next(setImageContent(event.file))
             .requestUpdate(event)
-            .dispatchHostEvent(new UpdatePageContentEvent(this.host.contentIndex, this.state));
+            .dispatchHostEvent(new UpdatePageContentEvent(this.host.contentIndex, this.state))
+            .dispatchHostEvent(new PageThumbChangeEvent({
+            thumbs: [event.file.thumbUrl]
+        }));
     }
 }
 __decorate([

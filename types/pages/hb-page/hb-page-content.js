@@ -7,7 +7,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import { styles } from "../../styles";
-import { ContentActiveChangeEvent } from "./PageController";
+import { ContentActiveChangeEvent, ContentDeletedEvent } from "./PageController";
 import { MovePageContentEvent } from "./PageController";
 import { PageContentController } from "./PageContentController";
 /**
@@ -31,7 +31,7 @@ let HbPageContent = class HbPageContent extends LitElement {
                 ?is-active=${contentState.isActive}
                 @click=${this.contentClicked}>
                 ${pageState.inEditMode ? html `
-                    <div class="edit-toolbar">
+                    <div class="edit-toolbar" @click=${this.editToolbarClicked}>
                         ${contentState.inContentEditMode ? html `
                             <slot name="edit-toolbar"></slot>
                             <span
@@ -88,14 +88,14 @@ let HbPageContent = class HbPageContent extends LitElement {
             </div>
         `;
     }
-    contentClicked(event) {
-        if (this.pageContent.page.pageEdit && !this.pageContent.contentState.isActive) {
-            this.dispatchEvent(new ContentActiveChangeEvent({
-                contentIndex: this.contentIndex,
-                isActive: true,
-                inEditMode: false
-            }));
-        }
+    contentClicked() {
+        //if(this.pageContent.page.state.inEditMode && !this.pageContent.contentState.isActive) {
+        this.dispatchEvent(new ContentActiveChangeEvent({
+            contentIndex: this.contentIndex,
+            isActive: true,
+            inEditMode: false
+        }));
+        //}
     }
     moveUpClicked() {
         const contentState = this.pageContent.contentState;
@@ -107,6 +107,9 @@ let HbPageContent = class HbPageContent extends LitElement {
         contentState.canMoveDown &&
             this.dispatchEvent(new MovePageContentEvent(this.contentIndex, false));
     }
+    editToolbarClicked(event) {
+        event.stopPropagation();
+    }
     edit() {
         this.dispatchEvent(new ContentActiveChangeEvent({
             contentIndex: this.contentIndex,
@@ -115,12 +118,10 @@ let HbPageContent = class HbPageContent extends LitElement {
         }));
     }
     delete() {
-        if (!confirm("Are you sure you want to delete this content?")) {
-            return;
-        }
-        alert("delete");
+        confirm("Are you sure you want to delete this content?") &&
+            this.dispatchEvent(new ContentDeletedEvent(this.contentIndex));
     }
-    done(event) {
+    done() {
         this.dispatchEvent(new ContentActiveChangeEvent({
             contentIndex: this.contentIndex,
             inEditMode: false,

@@ -1,5 +1,5 @@
 import { QueryDocumentSnapshot, Timestamp } from "firebase/firestore";
-import { IAddNewPageOptions, IContentType, IPageData, IPageReference, IPageThumbnail } from "../interfaces/PageInterfaces";
+import { IAddNewPageOptions, IContentType, IPageData, IPageReference, IPageThumbnail, PageSize } from "../interfaces/PageInterfaces";
 import { IListItem } from "../interfaces/UIInterfaces";
 import { pageTemplates } from "./pageTemplates";
 
@@ -30,7 +30,9 @@ export class PageModel implements IPageData {
     /** Generated on create in db */
     uid = "";
     /** Page template key referenced in pageTemplates */
-    pageTemplate = "";
+    pageTemplate = "page";
+    isVisible = true;
+    pageSize = PageSize.medium;
     /** The page route */
     pathname = "";
     title = "";
@@ -51,6 +53,7 @@ export class PageModel implements IPageData {
     toPageReference = ():IPageReference => ({
         uid: this.uid,
         pageTemplate: this.pageTemplate,
+        isVisible: this.isVisible,
         pathname: this.pathname,
         documentRef: this.documentRef
     });
@@ -58,6 +61,7 @@ export class PageModel implements IPageData {
     toPageThumbnail = ():IPageThumbnail => ({
         uid: this.uid,
         pageTemplate: this.pageTemplate,
+        isVisible: this.isVisible,
         pathname: this.pathname,
         documentRef: this.documentRef,
         title: this.title,
@@ -87,6 +91,8 @@ export class PageModel implements IPageData {
             uid: page.uid,
             authorUid: page.authorUid,
             pageTemplate: page.pageTemplate,
+            isVisible: page.isVisible,
+            pageSize: page.pageSize,
             pathname: page.pathname,
             title: page.title,
             showTitle: page.showTitle,

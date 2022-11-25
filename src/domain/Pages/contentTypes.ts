@@ -1,12 +1,6 @@
 import { IContentTypeDescriptor } from "../interfaces/PageInterfaces";
 
 
-export enum ContentTypes {
-    text = "text",
-    image = "image"
-};
-
-
 
 export const contentTypes = {
     register: (key:string, type:IContentTypeDescriptor) => registeredContentTypes[key] = type,
