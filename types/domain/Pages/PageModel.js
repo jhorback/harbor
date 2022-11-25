@@ -1,4 +1,5 @@
 import { Timestamp } from "firebase/firestore";
+import { PageSize } from "../interfaces/PageInterfaces";
 import { pageTemplates } from "./pageTemplates";
 /**
  *
@@ -8,7 +9,9 @@ export class PageModel {
         /** Generated on create in db */
         this.uid = "";
         /** Page template key referenced in pageTemplates */
-        this.pageTemplate = "";
+        this.pageTemplate = "page";
+        this.isVisible = true;
+        this.pageSize = PageSize.medium;
         /** The page route */
         this.pathname = "";
         this.title = "";
@@ -24,12 +27,14 @@ export class PageModel {
         this.toPageReference = () => ({
             uid: this.uid,
             pageTemplate: this.pageTemplate,
+            isVisible: this.isVisible,
             pathname: this.pathname,
             documentRef: this.documentRef
         });
         this.toPageThumbnail = () => ({
             uid: this.uid,
             pageTemplate: this.pageTemplate,
+            isVisible: this.isVisible,
             pathname: this.pathname,
             documentRef: this.documentRef,
             title: this.title,
@@ -76,6 +81,8 @@ export class PageModel {
             uid: page.uid,
             authorUid: page.authorUid,
             pageTemplate: page.pageTemplate,
+            isVisible: page.isVisible,
+            pageSize: page.pageSize,
             pathname: page.pathname,
             title: page.title,
             showTitle: page.showTitle,

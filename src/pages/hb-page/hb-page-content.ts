@@ -1,7 +1,7 @@
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import { styles } from "../../styles";
-import { ContentActiveChangeEvent } from "./PageController";
+import { ContentActiveChangeEvent, ContentDeletedEvent } from "./PageController";
 import { MovePageContentEvent } from "./PageController";
 import { PageContentController } from "./PageContentController";
 
@@ -33,7 +33,7 @@ export class HbPageContent extends LitElement {
                 ?is-active=${contentState.isActive}
                 @click=${this.contentClicked}>
                 ${pageState.inEditMode ? html`
-                    <div class="edit-toolbar">
+                    <div class="edit-toolbar" @click=${this.editToolbarClicked}>
                         ${contentState.inContentEditMode ? html`
                             <slot name="edit-toolbar"></slot>
                             <span
@@ -91,14 +91,14 @@ export class HbPageContent extends LitElement {
         `;
     }
 
-    private contentClicked(event:Event) {
-        if(this.pageContent.page.pageEdit && !this.pageContent.contentState.isActive) {
+    private contentClicked() {
+        //if(this.pageContent.page.state.inEditMode && !this.pageContent.contentState.isActive) {
             this.dispatchEvent(new ContentActiveChangeEvent({
                 contentIndex: this.contentIndex,
                 isActive: true,
                 inEditMode: false
             }));
-        }
+        //}
     }
 
     private moveUpClicked() {
@@ -113,6 +113,10 @@ export class HbPageContent extends LitElement {
             this.dispatchEvent(new MovePageContentEvent(this.contentIndex, false));
     }
 
+    editToolbarClicked(event:Event) {
+        event.stopPropagation();
+    }
+
     edit() {
         this.dispatchEvent(new ContentActiveChangeEvent({
             contentIndex: this.contentIndex,
@@ -122,13 +126,11 @@ export class HbPageContent extends LitElement {
     }
 
     delete() {
-        if (!confirm("Are you sure you want to delete this content?")) {
-            return;
-        }
-        alert("delete");
+        confirm("Are you sure you want to delete this content?") &&
+            this.dispatchEvent(new ContentDeletedEvent(this.contentIndex));
     }
 
-    done(event:Event) {
+    done() {
         this.dispatchEvent(new ContentActiveChangeEvent({
             contentIndex: this.contentIndex,
             inEditMode: false,

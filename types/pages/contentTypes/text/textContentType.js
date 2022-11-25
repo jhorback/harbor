@@ -15,6 +15,8 @@ const textContentType = {
     type: "text",
     name: "Text",
     description: "A rich text field",
+    icon: "description",
+    defaultData: new TextContentData(),
     render: (options) => html `
         <hb-text-content
             pathname=${options.pathname}

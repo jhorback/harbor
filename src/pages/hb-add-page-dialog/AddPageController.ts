@@ -5,6 +5,7 @@ import { AddPageRepoKey, IAddPageRepo, IPageTemplateDescriptor } from "../../dom
 import "../../domain/Pages/HbAddPageRepo";
 import { PageModel } from "../../domain/Pages/PageModel";
 import { pageTemplates } from "../../domain/Pages/pageTemplates";
+import { AddPageDialog } from "./hb-add-page-dialog";
 
 
 
@@ -16,6 +17,7 @@ export interface IAddPageState {
     title: string;
     pathname: string;
     canAdd: boolean;
+    urlPrefix: string
 }
 
 
@@ -85,8 +87,24 @@ export class AddPageController extends StateController {
         pageTemplateIndex: 0,
         title: "",
         pathname: "",
-        canAdd: false
+        canAdd: false,
+        urlPrefix: ""
     };
+
+    host:AddPageDialog;
+
+    constructor(host:AddPageDialog) {
+        super(host);
+        this.host = host;
+    }
+
+    hostConnected(){
+        super.hostConnected();
+        Product.of<IAddPageState>(this)
+            .next(setUrlPrefix(this.host.urlPrefix))
+            .next(setPagePathnameBasedOnTitle)
+            .requestUpdate("AddPageController.hostConnected");
+    }
 
     @hostEvent(PageTemplateChangedEvent)
     pageTemplateChanged(event: PageTemplateChangedEvent) {
@@ -129,16 +147,45 @@ export class AddPageController extends StateController {
 
 const validateNewPageOptions = (repo:IAddPageRepo) => async (product:Product<IAddPageState>) => {
     const state = product.getState();
-    const exists = await repo.pageExists(state.pathname);
-    const message = exists ? "The page already exists, please select a different url" :
-        "The page does not exist, you're good to go!";
-    const error = exists ? "Url exists" : "";
+
+    let pagePathnameError = "";
+    let pageIsValidMessage = "";
+    let canAdd = true;
+
+    if (state.title.length < 3) {
+        canAdd = false;
+        pageIsValidMessage = "The title must be at least 3 characters long.";
+    }
+
+    if (state.pathname.indexOf("/") !== 0) {
+        canAdd = false;
+        pagePathnameError = "The page URL must begin with a forward slash: \"/\"";
+    }
+
+    if (canAdd) {
+        const exists = await repo.pageExists(state.pathname);
+        pageIsValidMessage = exists ? "The page already exists, please select a different url" :
+            "The page is valid, you're good to go!";
+        pagePathnameError = exists ? "Url exists" : "";
+        canAdd = !exists;
+    }
 
     product
-        .next(setAddPageError(error))
-        .next(setPageIsValidMessage(message))
+        .next(setPagePathnameError(pagePathnameError))
+        .next(setPageIsValidMessage(pageIsValidMessage))
+        .next(setCanAdd(canAdd))
         .requestUpdate("HbAddPageRepo.validateNewPageOptions")
 };
+
+
+const setUrlPrefix = (urlPrefix:string)  => (state:IAddPageState) => {
+    state.urlPrefix = urlPrefix;
+};
+
+const setCanAdd = (canAdd:boolean) => (state:IAddPageState) => {
+    state.canAdd = canAdd;
+};
+
 
 const addNewPage = (repo:IAddPageRepo) => async (product:Product<IAddPageState>) => {
 
@@ -155,7 +202,7 @@ const addNewPage = (repo:IAddPageRepo) => async (product:Product<IAddPageState>)
     catch(error:any) {
         if (error instanceof ClientError) {
             product
-                .next(setAddPageError(error.message))
+                .next(setPagePathnameError(error.message))
                 .requestUpdate("AddPageController.addNewPage");
         }
         else {
@@ -168,7 +215,7 @@ const addNewPage = (repo:IAddPageRepo) => async (product:Product<IAddPageState>)
 };
 
 
-const setAddPageError = (error:string) => (state:IAddPageState) => {
+const setPagePathnameError = (error:string) => (state:IAddPageState) => {
     state.pagePathnameError = error;
 };
 
@@ -177,12 +224,13 @@ const setTemplateIndex = (index:number) => (state:IAddPageState) => {
 };
 
 const setPageTitle = (title:string) => (state:IAddPageState) => {
-    state.canAdd = title.length > 2;
+    state.canAdd = false;
     state.title = title;
 };
 
 const setPagePathname = (pathname:string) => (state:IAddPageState) => {
-    state.pathname = pathname.toLowerCase();
+    state.canAdd = false;
+    state.pathname = pathname.toLowerCase().replace(/[^0-9a-z\-/]/g,'');
 };
 
 const clearPageIsValidMessage = (state:IAddPageState) => {
@@ -198,5 +246,6 @@ const clearPagePathnameError = (state:IAddPageState) => {
 };
 
 const setPagePathnameBasedOnTitle = (state:IAddPageState) => {
-    state.pathname = `/${PageModel.tokenize(state.title)}`;
+    state.canAdd = false;
+    state.pathname = `${state.urlPrefix}/${PageModel.tokenize(state.title)}`;
 };

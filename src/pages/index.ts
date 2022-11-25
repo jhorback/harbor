@@ -10,8 +10,7 @@ import "./hb-page";
 import "./hb-page/hb-page-renderer";
 
 // page templates
-import "./pageTemplates/pagePageTemplate";
+import "./pageTemplates";
 
 // content types
-import "./contentTypes/text";
-import "./contentTypes/image";
+import "./contentTypes";

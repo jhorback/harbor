@@ -16,4 +16,7 @@ select {
     background-color: var(--md-sys-color-surface-variant);
     color: var(--md-sys-color-on-surface-variant);
 }
+select.small {
+    height: 32px;
+}
 `;

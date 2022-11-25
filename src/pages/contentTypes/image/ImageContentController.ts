@@ -1,7 +1,7 @@
 import { hostEvent, Product, StateController, stateProperty } from "@domx/statecontroller";
 import { inject } from "../../../domain/DependencyContainer/decorators";
 import { FindFileRepoKey, IFindFileRepo, IUploadedFile } from "../../../domain/interfaces/FileInterfaces";
-import { UpdatePageContentEvent } from "../../hb-page";
+import { PageThumbChangeEvent, UpdatePageContentEvent } from "../../hb-page";
 import { ImageAlignment, ImageContentData, ImageSize } from "./imageContentType";
 import { ImageContent } from "./hb-image-content";
 import "../../../domain/Files/HbFindFileRepo";
@@ -70,7 +70,10 @@ export class ImageContentController extends PageContentController<ImageContentDa
         Product.of<ImageContentData>(this)
             .next(setImageContent(event.file))
             .requestUpdate(event)
-            .dispatchHostEvent(new UpdatePageContentEvent(this.host.contentIndex, this.state));
+            .dispatchHostEvent(new UpdatePageContentEvent(this.host.contentIndex, this.state))
+            .dispatchHostEvent(new PageThumbChangeEvent({
+                thumbs: [event.file.thumbUrl as string]
+            }));
     }
 
 }

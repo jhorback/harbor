@@ -28,6 +28,8 @@ export interface IContentTypeDescriptor {
     type: string;
     name: string;
     description: string;
+    icon: string;
+    defaultData: IContentType;
     render(options:IContentTypeRenderOptions):TemplateResult;
 }
 
@@ -43,6 +45,7 @@ export interface IContentTypeRenderOptions {
  */
 export interface IPageReference {
     uid: string;
+    isVisible: boolean;
     pageTemplate: string;
     pathname: string;
     documentRef: string;
@@ -55,6 +58,8 @@ export interface IPageThumbnail extends IThumbnail, IPageReference { }
 export interface IPageData {
     uid: string;
     pageTemplate: string;
+    isVisible: boolean;
+    pageSize: PageSize;
     pathname: string;
     title: string,
     showTitle: boolean;
@@ -66,6 +71,15 @@ export interface IPageData {
     dateUpdated: Date|Timestamp;
     authorUid: string;
     content: Array<IContentType>;
+}
+
+
+export enum PageSize {
+    small = "small",
+    medium = "medium",
+    large = "large",
+    wide = "wide",
+    full = "full"
 }
 
 

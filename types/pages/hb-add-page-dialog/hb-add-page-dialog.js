@@ -5,7 +5,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 import { css, html, LitElement } from "lit";
-import { customElement, query } from "lit/decorators.js";
+import { customElement, property, query } from "lit/decorators.js";
 import "../../common/hb-button";
 import "../../common/hb-list-item";
 import "../../common/hb-text-input";
@@ -17,6 +17,7 @@ import { AddNewPageEvent, AddPageController, PagePathnameChangedEvent, PageTempl
 let AddPageDialog = class AddPageDialog extends LitElement {
     constructor() {
         super(...arguments);
+        this.urlPrefix = "";
         this.addPage = new AddPageController(this);
     }
     render() {
@@ -60,7 +61,6 @@ let AddPageDialog = class AddPageDialog extends LitElement {
                         <hb-button
                             text-button
                             label="Check URL"
-                            ?disabled=${!state.canAdd}
                             @click=${this.validateButtonClicked}
                         ></hb-button>
                     </div>
@@ -150,6 +150,9 @@ AddPageDialog.styles = [styles.types, styles.dialog, css `
         }
         
   `];
+__decorate([
+    property({ type: String, attribute: "url-prefix" })
+], AddPageDialog.prototype, "urlPrefix", void 0);
 __decorate([
     query("dialog")
 ], AddPageDialog.prototype, "$dialog", void 0);
