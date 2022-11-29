@@ -1,8 +1,10 @@
 import { html, css, LitElement } from "lit";
-import { customElement } from "lit/decorators.js";
+import { customElement, query } from "lit/decorators.js";
 import { SearchFilesController, SearchFilesEvent } from "../../files/SearchFilesController";
 import "../../domain/Files/HbSearchFilesRepo";
+import "../../files/hb-file-viewer";
 import { styles } from "../../styles";
+import { FileViewer } from "../../files/hb-file-viewer";
 
 
 /**
@@ -13,6 +15,9 @@ export class ProfileContentTab extends LitElement {
 
     searchFiles:SearchFilesController = new SearchFilesController(this);
 
+    @query("hb-file-viewer")
+    $fileViewer!:FileViewer;
+
     async connectedCallback() {
         super.connectedCallback();
         await this.updateComplete;
@@ -22,6 +27,10 @@ export class ProfileContentTab extends LitElement {
     render() {
         const state = this.searchFiles.state;
         return html`
+            <hb-file-viewer
+                detail-pane
+                .files=${state.list}
+            ></hb-file-viewer>
             ${state.isLoading || state.count !== 0 ? html`` : html`
                 <p>There are no files</p>
             `}
@@ -31,15 +40,19 @@ export class ProfileContentTab extends LitElement {
                     <hb-horizontal-card                        
                         text=${fileModel.name}
                         description=${fileModel.thumbDescription}
-                        media-url=${fileModel.thumbUrl}
-                        media-href=${fileModel.url}
                         link-target="files"
-                        
+                        media-url=${fileModel.thumbUrl}
+                        xxx-media-href=${fileModel.url}
+                        @click=${() => this.fileClicked(fileModel.name)}
                     ></hb-horizontal-card>
                 `;
             })}
             </div>
         `;
+    }
+
+    fileClicked(fileName:string) {
+        this.$fileViewer.show(fileName)
     }
 
     static styles = [styles.types, css`
@@ -51,6 +64,9 @@ export class ProfileContentTab extends LitElement {
             grid-template-columns: repeat(3, 260px);
             column-gap: 16px;
             row-gap: 16px;
+        }
+        hb-horizontal-card {
+            --hb-horizontal-card-cursor: pointer;
         }
     `]
 }

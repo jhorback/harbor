@@ -9,6 +9,9 @@ import { customElement, property } from "lit/decorators.js";
 import { styles } from "../styles";
 /**
  * @class HorizontalCard
+ * @fires hb-horizontal-card-click
+ * Styling:
+ * --hb-horizontal-card-cursor
  */
 let HorizontalCard = class HorizontalCard extends LitElement {
     constructor() {
@@ -53,6 +56,7 @@ let HorizontalCard = class HorizontalCard extends LitElement {
 HorizontalCard.styles = [styles.icons, styles.types, css `
         :host {
             display: block;
+            --hb-horizontal-card-cursor: default;
         }
         .horizontal-card {
             overflow: clip;
@@ -62,7 +66,7 @@ HorizontalCard.styles = [styles.icons, styles.types, css `
             border: 1px solid transparent;
             padding: 0 0 0 10px;
             align-items: center;
-            cursor: default;
+            cursor: var(--hb-horizontal-card-cursor);
             gap: 5px;
             background-color: var(--md-sys-color-surface-variant);
         }
