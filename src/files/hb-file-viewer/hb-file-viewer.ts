@@ -118,11 +118,14 @@ export class FileViewer extends LitElement {
                         <div class="title-large">${file.name}</div>
                     </div>
                     <div class="pad">
-                        <div class="body-large">Uploaded on ${file.updatedDate.toLocaleDateString()}</div>
+                        <div class="body-large">Uploaded on ${file.updatedDate.toLocaleDateString()}</div>                        
+                        <div class="body-large">
+                            ${file.readableSize} ·
+                            <a href="${file.url}" target="file">(download)</a>
+                        </div>
                         ${!file.width ? html `` :  html`
                             <div class="body-large">${file.width} x ${file.height}</div>                        
                         `}
-                        <div class="body-large">${file.readableSize}</div>
                     </div>
                     <hr>
 
@@ -158,11 +161,13 @@ export class FileViewer extends LitElement {
                     `}                    
 
                     <div class="buttons">
+                        ${state.selectedFile.canExtractPictureFile ? html`
+                            <hb-button label="Extract Picture File" text-button @click=${this.extractPicture}></hb-button>                        
+                        ` : html``}
                         ${state.selectedFile.useMediaPreview ? html`
-                            <hb-button label="Extract Picture File" text-button @click=${this.extractPicture}></hb-button>
                             <hb-button label="Set Picture File" text-button @click=${this.setPicture}></hb-button>
-                        ` : html`` }                        
-                        <hb-button label="Delete" text-button @click=${this.deleteFile}></hb-button>
+                        ` : html`` }
+                        <hb-button label="Delete File" text-button @click=${this.deleteFile}></hb-button>
                     </div>
                 </div>
             </div>
@@ -358,7 +363,7 @@ export class FileViewer extends LitElement {
             flex-direction: column;
             gap: 10px;
             text-align: center;
-            padding: 1rem;
+            padding: 0 1rem 1rem 1rem;
         }
   `]
 }

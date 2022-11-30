@@ -9,6 +9,7 @@ export class FileModel implements IFileData {
     storagePath: string = "";
     url: string = "";
     thumbUrl: string = "";
+    pictureFileName: string | null = null;
     pictureUrl: string = "";
     size: number = 0;
     type: string | null = null;
@@ -40,6 +41,7 @@ export class FileModel implements IFileData {
             storagePath: file.storagePath,
             url: file.url,
             thumbUrl: file.thumbUrl,
+            pictureFileName: file.pictureFileName,
             pictureUrl: file.pictureUrl,
             size: file.size,
             type: file.type,

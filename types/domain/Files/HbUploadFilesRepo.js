@@ -71,6 +71,7 @@ let HbUploadFilesRepo = class HbUploadFilesRepo {
             size: md.size,
             url,
             pictureUrl: pictureData?.url || null,
+            pictureFileName: null,
             thumbUrl: thumbData?.url || null,
             width: thumbData?.width || null,
             height: thumbData?.height || null,

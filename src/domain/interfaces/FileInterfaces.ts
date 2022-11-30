@@ -127,6 +127,7 @@ export interface IFileData {
     thumbUrl:string|null;
     /** For media types this is the picture/photo to represent the media */
     pictureUrl:string|null;
+    pictureFileName: string | null;
     size: number;
     type: string|null;
     /** width of the full image or thumbnail */

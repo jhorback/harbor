@@ -92,6 +92,7 @@ export class HbUploadFilesRepo implements IUploadFilesRepo {
             size: md.size,
             url,
             pictureUrl: pictureData?.url || null,
+            pictureFileName: null,
             thumbUrl: thumbData?.url || null,
             width: thumbData?.width || null,
             height: thumbData?.height || null,

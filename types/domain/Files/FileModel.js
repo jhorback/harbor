@@ -5,6 +5,7 @@ export class FileModel {
         this.storagePath = "";
         this.url = "";
         this.thumbUrl = "";
+        this.pictureFileName = null;
         this.pictureUrl = "";
         this.size = 0;
         this.type = null;
@@ -32,6 +33,7 @@ export class FileModel {
             storagePath: file.storagePath,
             url: file.url,
             thumbUrl: file.thumbUrl,
+            pictureFileName: file.pictureFileName,
             pictureUrl: file.pictureUrl,
             size: file.size,
             type: file.type,

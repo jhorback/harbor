@@ -84,9 +84,11 @@ const setSelectedFileData = (state) => {
     const isImage = file.type?.indexOf("image") === 0;
     const useMediaPreview = (file.type?.indexOf("audio") === 0 ||
         file.type?.indexOf("video") === 0) ? true : false;
+    const canExtractPictureFile = (file.pictureUrl && !file.pictureFileName) ? true : false;
     state.selectedFile = {
         file,
         useMediaPreview,
+        canExtractPictureFile,
         imagePreviewUrl: isImage ? file.url : file.pictureUrl || file.thumbUrl || file.defaultThumb
     };
 };
