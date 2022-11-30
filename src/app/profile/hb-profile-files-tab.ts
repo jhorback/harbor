@@ -2,7 +2,7 @@ import { html, css, LitElement } from "lit";
 import { customElement, query } from "lit/decorators.js";
 import { SearchFilesController, SearchFilesEvent } from "../../files/SearchFilesController";
 import "../../domain/Files/HbSearchFilesRepo";
-import "../../files/hb-file-viewer";
+import "../../files/hb-file-viewer/hb-file-viewer";
 import { styles } from "../../styles";
 import { FileViewer } from "../../files/hb-file-viewer";
 
@@ -41,8 +41,7 @@ export class ProfileContentTab extends LitElement {
                         text=${fileModel.name}
                         description=${fileModel.thumbDescription}
                         link-target="files"
-                        media-url=${fileModel.thumbUrl}
-                        xxx-media-href=${fileModel.url}
+                        media-url=${fileModel.thumbUrl || fileModel.defaultThumb}                        
                         @click=${() => this.fileClicked(fileModel.name)}
                     ></hb-horizontal-card>
                 `;

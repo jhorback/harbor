@@ -17,12 +17,20 @@ export class FileModel implements IFileData {
     updated: string = "";
     mediaTags: IMediaTags | null = null;
 
+    get defaultThumb():string {
+        return "/content/thumbs/files-thumb.svg";
+    }
+
     get updatedDate() {
         return new Date(this.updated);
     }
 
     get thumbDescription() {
         return `${readableBytes(this.size)} (${this.updatedDate.toLocaleDateString()})`;
+    }
+
+    get readableSize() {
+        return readableBytes(this.size);
     }
 
     static toFirestore(file:FileModel):IFileData {

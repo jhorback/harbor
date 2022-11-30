@@ -1,8 +1,9 @@
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
-import "../common/hb-button";
-import { FileModel } from "../domain/Files/FileModel";
-import { styles } from "../styles";
+import "../../common/hb-button";
+import { FileModel } from "../../domain/Files/FileModel";
+import { styles } from "../../styles";
+import { FileViewerController, NavigateFileViewerEvent, ShowFileViewerEvent } from "./FileViewerController";
 
 
 
@@ -25,6 +26,9 @@ export class FileViewer extends LitElement {
 
     private abortController:AbortController = new AbortController();
 
+    private fileViewer:FileViewerController = new FileViewerController(this);
+
+
     connectedCallback() {
         super.connectedCallback();
         document.addEventListener("keydown", this.keyClicked.bind(this), {
@@ -39,10 +43,13 @@ export class FileViewer extends LitElement {
     }
 
     render() {
-        let mediaUrl = "";
-        mediaUrl = "https://lh3.googleusercontent.com/TtLzAQtE1mJwSJnnBxddJ8iXnbasIOQ0_VyypdFaT0shpKTwGDgsNTJF-qSoDMuBb0pHU-Wxj7Gj5fMe1QO6k7Hfu1nXFgDuB9DVIKexQIHKdN0N9mKWL9BXHdZU_mgyqn6F3Qm1-DDmNJVHr0oMoNlX3xwRDfLLztcvuv9VKB7alQR-D4tciR0qHK25H-nMBncCyJ-GMf2CTs3vk94YxHynkqZJwwLutvEgKGjr4qqhCsft4sA5z52zxOLapUT2WKPdIHOYzFlie-nYpse64pqSNWUH6dWXopWf4DThPgm-NlKW-UrtUuF6fPc6_OdsORLP602oKIXIllB879DroX57a8e8z8Tj0y0Zzqn0oHQlCNiuSihSM6xa-Lg381I1JnvLQ38ooDmePs7L9WTUxtVxcDaetPmGBzoq18Ki8NwbnxE4pY2hmQZVXFCae1rc3YLs-uMC4U8-NDn-6tv_OxsMjSy2ZIz1KKkJintXq8nWZgjBwJCM0gYy2wthjFl4UdSFzrBzO5bOXXLOsP5XEPq6cqdy90OXq0UDyTVdlsPnFEoBuPPdZ14h90ongaTq5fRXLAbmlvqQaU50aKzFXe5AY8vUKs4O64gYsMic3ZwIjdq3StegPE28gWaBEHY1aQUkn0MHPkaJx1ANuLGPDID6CjaJd2uIAl1dE1btjsMKBjJ98FIsx9c0AT4cU4wOVNmio7TqQ4TwdiFwwrdA-uyCrmcKTEd6YyvG5OKXBgchwDHYOxSeQL2hPSZeWvu8F1l2zL81xJYFdvn8CJmCNYMPqyi5ls8gQUs3zRDU_wPx1YanVzP0cGXrqyTj50ItY9RC2Fe-3nYBzIGT_MPqZ_3LuW8wRGGqFIIz6fsq1OnHyDe2CImiHgAHQmrUrsHBuSUlwD2SUG-1EVifed6T8RhQa5KkoRv_sH1UXabg4eppwlaC7A=w2253-h1268-no?authuser=0";
-        // mediaUrl = "/content/thumbs/audio-thumb.svg";
-        // mediaUrl = "https://photos.google.com/photo/AF1QipNg1srcdLxX9Cp-e_DgaawJZgLOXpgITrCbDqGU";
+        const state = this.fileViewer.state;
+        if (state.selectedFile === undefined) {
+            return html``;
+        }
+        const file = state.selectedFile.file;
+
+
         return html`
             <div class="file-viewer" ?details-panel=${this.showDetails}>
                 <div class="content">
@@ -59,7 +66,7 @@ export class FileViewer extends LitElement {
                                 @click=${this.detailsButtonClicked}
                             >menu_open</div>
                         </div>
-                        <div class="icon-previous-ctr" @click=${this.previous}>
+                        <div class="icon-previous-ctr" @click=${this.previous} ?hidden=${!state.canGoPrevious}>
                             <div class="icon-previous">
                                 <div class="icon-button icon-large">
                                     chevron_left
@@ -67,7 +74,7 @@ export class FileViewer extends LitElement {
                             </div>
                         </div> 
                         <div></div> 
-                        <div class="icon-next-ctr" @click=${this.next}>
+                        <div class="icon-next-ctr" @click=${this.next} ?hidden=${!state.canGoNext}>
                             <div class="icon-next">
                                 <div class="icon-button icon-large">
                                     chevron_right
@@ -75,40 +82,55 @@ export class FileViewer extends LitElement {
                             </div>
                         </div> 
                     </div>
-                    <div class="content-image">
-                        <img src=${mediaUrl}>
+                    <div class="content-preview">
+
+                        <img src=${state.selectedFile.imagePreviewUrl}>                        
+
                     </div> 
                 </div>
                 <div class="details-panel" ?hidden=${!this.showDetails}>
                     <div class="pad">
-                        <div class="title-large">Bacchus - Into Me.mp3</div>
+                        <div class="title-large">${file.name}</div>
                     </div>
                     <div class="pad">
-                        <div class="body-large">Uploaded on 11/29/2022</div>
-                        <div class="body-large">1200 x 600</div>
-                        <div class="body-large">2.3 MB</div>
-                    </div>                    
-                    <hr>
-                    <div class="pad">
-                        <div class="title-medium">Media Tags</div>
-                    </div>
-                    <div class="pad">
-                        <div class="body-large">Into Me (track 1)</div>
-                        <div class="body-medium">Title</div>
-                    </div>
-                    <div class="pad">
-                        <div class="body-large">A Bacchus Christmas (1999)</div>
-                        <div class="body-medium">Album</div>
-                    </div>
-                    <div class="pad">
-                        <div class="body-large">Bacchus</div>
-                        <div class="body-medium">Artist</div>
-                    </div>
-                    <div class="pad">
-                        <div class="body-large">Original</div>
-                        <div class="body-medium">Genre</div>
+                        <div class="body-large">Uploaded on ${file.updatedDate.toLocaleDateString()}</div>
+                        ${!file.width ? html `` :  html`
+                            <div class="body-large">${file.width} x ${file.height}</div>                        
+                        `}
+                        <div class="body-large">${file.readableSize}</div>
                     </div>
                     <hr>
+
+                    ${!file.mediaTags ? html`` : html`
+                        <div class="pad">
+                            <div class="title-medium">Media Tags</div>
+                        </div>
+                        ${!file.mediaTags.title ? html`` : html`
+                            <div class="pad">
+                                <div class="body-large">${file.mediaTags.title} ${file.mediaTags.track ? html`(track ${file.mediaTags.track})` : html``}</div>
+                                <div class="body-medium">Title</div>
+                            </div>
+                        `}
+                        ${!file.mediaTags.album ? html`` : html`
+                            <div class="pad">
+                                <div class="body-large">${file.mediaTags.album} ${file.mediaTags.year ? html`(${file.mediaTags.year})` : html``}</div>
+                                <div class="body-medium">Album</div>
+                            </div>
+                        `}
+                        ${!file.mediaTags.artist ? html`` : html`
+                            <div class="pad">
+                                <div class="body-large">${file.mediaTags.artist}</div>
+                                <div class="body-medium">Artist</div>
+                            </div>
+                        `}
+                        ${!file.mediaTags.genre ? html`` : html`
+                            <div class="pad">
+                                <div class="body-large">${file.mediaTags.genre}</div>
+                                <div class="body-medium">Genre</div>
+                            </div>
+                        `}
+                        <hr>
+                    `}                    
 
                     <div class="buttons">
                         <hb-button label="View Picture File" text-button @click=${this.viewPicture}></hb-button>
@@ -129,6 +151,7 @@ export class FileViewer extends LitElement {
     show(fileName:string) {
         this.fileName = fileName;
         this.open = true;
+        this.dispatchEvent(new ShowFileViewerEvent());
     }
 
     close() {
@@ -145,11 +168,13 @@ export class FileViewer extends LitElement {
     }
     
     private previous() {
-        alert("previous");
+        this.fileViewer.state.canGoPrevious && 
+            this.dispatchEvent(new NavigateFileViewerEvent(false));
     }
 
     private next() {
-        alert("next");
+        this.fileViewer.state.canGoNext && 
+            this.dispatchEvent(new NavigateFileViewerEvent(true));
     }
 
     private viewPicture() {
@@ -199,17 +224,17 @@ export class FileViewer extends LitElement {
         }
 
 
-        .content-image {
+        .content-preview {
             display: flex;
             height: 100%;
             justify-content: center;
             align-items: center;
         }
-        .content-image img {
+        .content-preview img {
             max-width: 100vw;
             max-height: 100vh;
         }
-        .file-viewer[details-panel] .content-image img {
+        .file-viewer[details-panel] .content-preview img {
             max-width: calc(100vw - 340px);
         }
 
