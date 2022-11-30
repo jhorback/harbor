@@ -1,10 +1,9 @@
 import { css, html, LitElement } from "lit";
-import { customElement, property, state } from "lit/decorators.js";
+import { customElement, property, query, state } from "lit/decorators.js";
 import "../../common/hb-button";
 import { FileModel } from "../../domain/Files/FileModel";
 import { styles } from "../../styles";
 import { CloseFileViewerEvent, FileViewerController, NavigateFileViewerEvent, ShowFileViewerEvent } from "./FileViewerController";
-
 
 
 /**  
@@ -27,6 +26,9 @@ export class FileViewer extends LitElement {
     private abortController:AbortController = new AbortController();
 
     private fileViewer:FileViewerController = new FileViewerController(this);
+
+    @query("video")
+    private $video!:HTMLVideoElement;
 
 
     getFileNameFromUrl():string|null {
@@ -97,9 +99,18 @@ export class FileViewer extends LitElement {
                         </div> 
                     </div>
                     <div class="content-preview">
+                        ${state.selectedFile.useMediaPreview ? html`                           
 
-                        <img src=${state.selectedFile.imagePreviewUrl}>                        
+                            <video
+                                poster=${file.pictureUrl}
+                                controls="controls"
+                                >
+                                <source src=${file.url}>
+                            </video>
 
+                        ` : html`                        
+                            <img src=${state.selectedFile.imagePreviewUrl}>                        
+                        `}
                     </div> 
                 </div>
                 <div class="details-panel" ?hidden=${!this.showDetails}>
@@ -147,9 +158,10 @@ export class FileViewer extends LitElement {
                     `}                    
 
                     <div class="buttons">
-                        <hb-button label="View Picture File" text-button @click=${this.viewPicture}></hb-button>
-                        <hb-button label="Extract Picture File" text-button @click=${this.extractPicture}></hb-button>
-                        <hb-button label="Set Picture File" text-button @click=${this.setPicture}></hb-button>
+                        ${state.selectedFile.useMediaPreview ? html`
+                            <hb-button label="Extract Picture File" text-button @click=${this.extractPicture}></hb-button>
+                            <hb-button label="Set Picture File" text-button @click=${this.setPicture}></hb-button>
+                        ` : html`` }                        
                         <hb-button label="Delete" text-button @click=${this.deleteFile}></hb-button>
                     </div>
                 </div>
@@ -170,6 +182,7 @@ export class FileViewer extends LitElement {
 
     close() {
        this.open = false;
+       this.$video.pause();
        this.dispatchEvent(new CloseFileViewerEvent());
     }
 
@@ -191,10 +204,6 @@ export class FileViewer extends LitElement {
     private next() {
         this.fileViewer.state.canGoNext && 
             this.dispatchEvent(new NavigateFileViewerEvent(true));
-    }
-
-    private viewPicture() {
-        alert("view picture");
     }
 
     private extractPicture() {
@@ -256,7 +265,26 @@ export class FileViewer extends LitElement {
         .file-viewer[details-panel] .content-preview img {
             max-width: calc(100vw - 340px);
         }
-
+        .content-preview media-controller,
+        .content-preview video {
+            max-width: 100vw;
+            min-width: 600px;
+            max-height: 100vh;
+        }
+        media-control-bar {
+            --media-control-background: rgba(20,20,30, 0.7);
+            --media-control-background: transparent;
+            --media-control-hover-background: transparent;
+        }
+        .file-viewer[details-panel] .content-preview media-controller,
+        .file-viewer[details-panel] .content-preview video {
+            max-width: calc(100vw - 340px);
+        }
+        .media-control-spacer {
+            flex-grow:1;
+            background: var(--media-control-background);
+        }
+        
 
         .content-navigation {
             position: absolute;
@@ -335,6 +363,28 @@ export class FileViewer extends LitElement {
   `]
 }
 
+/*
+ <!-- <media-controller>
+        <video
+            slot="media"
+            src=${file.url}
+            poster=${file.pictureUrl}
+        ></video>
+        <media-control-bar>
+            <media-time-range></media-time-range>
+        </media-control-bar>                               
+        <media-control-bar>
+            <media-play-button></media-play-button>
+            <media-seek-forward-button seek-offset="10"></media-seek-forward-button>
+            <media-seek-backward-button seek-offset="10"></media-seek-backward-button>
+            <media-mute-button></media-mute-button>
+            <media-volume-range></media-volume-range>
+            <span class="media-control-spacer"></span>
+            <media-time-display show-duration></media-time-display>
+            <media-fullscreen-button></media-fullscreen-button>
+        </media-control-bar>
+    </media-controller> -->
+*/
 
 
 declare global {

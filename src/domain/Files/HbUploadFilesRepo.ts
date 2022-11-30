@@ -5,8 +5,8 @@ import { ClientError, ServerError } from "../Errors";
 import { authorize, HbCurrentUser, UserAction } from "../HbCurrentUser";
 import { HbDb } from "../HbDb";
 import { HbStorage } from "../HbStorage";
-import { FileType, FileUploadProgressEvent, IFileData, IMediaTags, IUploadFileOptions, IUploadFilesRepo, UploadFilesRepoKey, IUploadedFile } from "../interfaces/FileInterfaces";
-import { convertPictureToBase64Src, convertPictureToFile, extractMediaTags } from "./extractMediaTags";
+import { FileType, FileUploadProgressEvent, IFileData, IMediaTags, IUploadedFile, IUploadFileOptions, IUploadFilesRepo, UploadFilesRepoKey } from "../interfaces/FileInterfaces";
+import { convertPictureToFile, extractMediaTags } from "./extractMediaTags";
 import { resizeImageFile } from "./resizeImageFile";
 
 
@@ -115,7 +115,7 @@ export class HbUploadFilesRepo implements IUploadFilesRepo {
     }
 
     private async storePicture(file:File, mediaTags:IMediaTags|null):Promise<IImageData|null> {
-        if (mediaTags === null || mediaTags.picture === undefined) {
+        if (mediaTags === null || !mediaTags.picture) {
             return null;
         }
 

@@ -100,12 +100,12 @@ export interface IUploadedFile {
 }
 
 export interface IMediaTags {
-    title:string,
-    artist:string,
-    album:string,
-    year:number,
-    track:number,
-    genre:string,
+    title:string|null,
+    artist:string|null,
+    album:string|null,
+    year:number|null,
+    track:number|null,
+    genre:string|null,
     picture?:IMediaTagPicture
 }
 

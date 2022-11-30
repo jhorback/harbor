@@ -5,7 +5,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 import { css, html, LitElement } from "lit";
-import { customElement, property } from "lit/decorators.js";
+import { customElement, property, query } from "lit/decorators.js";
 import "../../common/hb-button";
 import { styles } from "../../styles";
 import { CloseFileViewerEvent, FileViewerController, NavigateFileViewerEvent, ShowFileViewerEvent } from "./FileViewerController";
@@ -80,9 +80,18 @@ let FileViewer = class FileViewer extends LitElement {
                         </div> 
                     </div>
                     <div class="content-preview">
+                        ${state.selectedFile.useMediaPreview ? html `                           
 
-                        <img src=${state.selectedFile.imagePreviewUrl}>                        
+                            <video
+                                poster=${file.pictureUrl}
+                                controls="controls"
+                                >
+                                <source src=${file.url}>
+                            </video>
 
+                        ` : html `                        
+                            <img src=${state.selectedFile.imagePreviewUrl}>                        
+                        `}
                     </div> 
                 </div>
                 <div class="details-panel" ?hidden=${!this.showDetails}>
@@ -130,9 +139,10 @@ let FileViewer = class FileViewer extends LitElement {
                     `}                    
 
                     <div class="buttons">
-                        <hb-button label="View Picture File" text-button @click=${this.viewPicture}></hb-button>
-                        <hb-button label="Extract Picture File" text-button @click=${this.extractPicture}></hb-button>
-                        <hb-button label="Set Picture File" text-button @click=${this.setPicture}></hb-button>
+                        ${state.selectedFile.useMediaPreview ? html `
+                            <hb-button label="Extract Picture File" text-button @click=${this.extractPicture}></hb-button>
+                            <hb-button label="Set Picture File" text-button @click=${this.setPicture}></hb-button>
+                        ` : html ``}                        
                         <hb-button label="Delete" text-button @click=${this.deleteFile}></hb-button>
                     </div>
                 </div>
@@ -150,6 +160,7 @@ let FileViewer = class FileViewer extends LitElement {
     }
     close() {
         this.open = false;
+        this.$video.pause();
         this.dispatchEvent(new CloseFileViewerEvent());
     }
     detailsButtonClicked() {
@@ -167,9 +178,6 @@ let FileViewer = class FileViewer extends LitElement {
     next() {
         this.fileViewer.state.canGoNext &&
             this.dispatchEvent(new NavigateFileViewerEvent(true));
-    }
-    viewPicture() {
-        alert("view picture");
     }
     extractPicture() {
         alert("extract picture");
@@ -228,7 +236,26 @@ FileViewer.styles = [styles.types, styles.icons, css `
         .file-viewer[details-panel] .content-preview img {
             max-width: calc(100vw - 340px);
         }
-
+        .content-preview media-controller,
+        .content-preview video {
+            max-width: 100vw;
+            min-width: 600px;
+            max-height: 100vh;
+        }
+        media-control-bar {
+            --media-control-background: rgba(20,20,30, 0.7);
+            --media-control-background: transparent;
+            --media-control-hover-background: transparent;
+        }
+        .file-viewer[details-panel] .content-preview media-controller,
+        .file-viewer[details-panel] .content-preview video {
+            max-width: calc(100vw - 340px);
+        }
+        .media-control-spacer {
+            flex-grow:1;
+            background: var(--media-control-background);
+        }
+        
 
         .content-navigation {
             position: absolute;
@@ -317,6 +344,9 @@ __decorate([
 __decorate([
     property({ type: Boolean, attribute: "show-details" })
 ], FileViewer.prototype, "showDetails", void 0);
+__decorate([
+    query("video")
+], FileViewer.prototype, "$video", void 0);
 FileViewer = __decorate([
     customElement('hb-file-viewer')
 ], FileViewer);

@@ -91,7 +91,7 @@ let HbUploadFilesRepo = class HbUploadFilesRepo {
         };
     }
     async storePicture(file, mediaTags) {
-        if (mediaTags === null || mediaTags.picture === undefined) {
+        if (mediaTags === null || !mediaTags.picture) {
             return null;
         }
         const pictureFile = convertPictureToFile(file.name, mediaTags.picture, ".picture");

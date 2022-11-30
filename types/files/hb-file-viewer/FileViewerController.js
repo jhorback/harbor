@@ -82,11 +82,12 @@ const setSelectedFileData = (state) => {
         throw new NotFoundError("File not found");
     }
     const isImage = file.type?.indexOf("image") === 0;
-    const useMediaPreview = (file.type?.indexOf("audio") === 0 || file.type?.indexOf("video")) ? true : false;
+    const useMediaPreview = (file.type?.indexOf("audio") === 0 ||
+        file.type?.indexOf("video") === 0) ? true : false;
     state.selectedFile = {
         file,
         useMediaPreview,
-        imagePreviewUrl: isImage ? file.url : file.thumbUrl || file.defaultThumb
+        imagePreviewUrl: isImage ? file.url : file.pictureUrl || file.thumbUrl || file.defaultThumb
     };
 };
 const setCanNavigate = (state) => {
