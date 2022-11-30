@@ -27,7 +27,7 @@ let ProfileContentTab = class ProfileContentTab extends LitElement {
         const state = this.searchFiles.state;
         return html `
             <hb-file-viewer
-                detail-pane
+                show-details
                 .files=${state.list}
             ></hb-file-viewer>
             ${state.isLoading || state.count !== 0 ? html `` : html `
