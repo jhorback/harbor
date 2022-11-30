@@ -4,6 +4,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
+import { Router } from "@domx/router";
 import { hostEvent, Product, StateController, stateProperty } from "@domx/statecontroller";
 import { NotFoundError } from "../../domain/Errors";
 export class ShowFileViewerEvent extends Event {
@@ -12,6 +13,12 @@ export class ShowFileViewerEvent extends Event {
     }
 }
 ShowFileViewerEvent.eventType = "show-file-viewer";
+export class CloseFileViewerEvent extends Event {
+    constructor() {
+        super(CloseFileViewerEvent.eventType);
+    }
+}
+CloseFileViewerEvent.eventType = "close-file-viewer";
 export class NavigateFileViewerEvent extends Event {
     constructor(next) {
         super(NavigateFileViewerEvent.eventType);
@@ -33,10 +40,12 @@ export class FileViewerController extends StateController {
         this.host = host;
     }
     showFileViewer(event) {
+        recordHistory();
         Product.of(this)
             .next(setInput(this.host))
             .next(setSelectedFileData)
             .next(setCanNavigate)
+            .tap(updateUrlForSelectedFile)
             .requestUpdate("FileViewerController.hostConnected");
     }
     navigate(event) {
@@ -44,7 +53,11 @@ export class FileViewerController extends StateController {
             .next(setSelectedFileOnNavigate(event.next))
             .next(setSelectedFileData)
             .next(setCanNavigate)
+            .tap(updateUrlForSelectedFile)
             .requestUpdate("FileViewerController.hostConnected");
+    }
+    closeFileViewer(event) {
+        clearUrl();
     }
 }
 __decorate([
@@ -56,6 +69,9 @@ __decorate([
 __decorate([
     hostEvent(NavigateFileViewerEvent)
 ], FileViewerController.prototype, "navigate", null);
+__decorate([
+    hostEvent(CloseFileViewerEvent)
+], FileViewerController.prototype, "closeFileViewer", null);
 const setInput = (input) => (state) => {
     state.selectedFileName = input.fileName;
     state.files = input.files;
@@ -81,4 +97,14 @@ const setCanNavigate = (state) => {
 const setSelectedFileOnNavigate = (next) => (state) => {
     const index = state.files.findIndex(f => f.name === state.selectedFileName);
     state.selectedFileName = next ? state.files[index + 1].name : state.files[index - 1].name;
+};
+const recordHistory = () => {
+    history.pushState({}, '', window.location.href);
+};
+const updateUrlForSelectedFile = (product) => {
+    const state = product.getState();
+    state.selectedFileName && Router.replaceUrlParams({ fileName: state.selectedFileName });
+};
+const clearUrl = () => {
+    Router.replaceUrlParams({ fileName: "" });
 };

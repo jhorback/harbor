@@ -48,6 +48,12 @@ let ProfileContentTab = class ProfileContentTab extends LitElement {
             </div>
         `;
     }
+    updated() {
+        if (this.searchFiles.state.hasLoaded) {
+            const fileName = this.$fileViewer.getFileNameFromUrl();
+            fileName && this.fileClicked(fileName);
+        }
+    }
     fileClicked(fileName) {
         this.$fileViewer.show(fileName);
     }

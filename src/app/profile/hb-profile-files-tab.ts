@@ -26,6 +26,7 @@ export class ProfileContentTab extends LitElement {
 
     render() {
         const state = this.searchFiles.state;
+
         return html`
             <hb-file-viewer
                 show-details
@@ -50,8 +51,15 @@ export class ProfileContentTab extends LitElement {
         `;
     }
 
+    updated() {
+        if (this.searchFiles.state.hasLoaded) {           
+            const fileName = this.$fileViewer.getFileNameFromUrl();
+            fileName && this.fileClicked(fileName);
+        }
+    }
+
     fileClicked(fileName:string) {
-        this.$fileViewer.show(fileName)
+        this.$fileViewer.show(fileName);        
     }
 
     static styles = [styles.types, css`

@@ -1,3 +1,4 @@
+import { Router } from "@domx/router";
 import { hostEvent, Product, StateController, stateProperty } from "@domx/statecontroller";
 import { NotFoundError } from "../../domain/Errors";
 import { FileModel } from "../../domain/Files/FileModel";
@@ -24,6 +25,13 @@ export class ShowFileViewerEvent extends Event {
     static eventType = "show-file-viewer"
     constructor() {
         super(ShowFileViewerEvent.eventType)
+    }
+}
+
+export class CloseFileViewerEvent extends Event {
+    static eventType = "close-file-viewer"
+    constructor() {
+        super(CloseFileViewerEvent.eventType)
     }
 }
 
@@ -61,10 +69,12 @@ export class FileViewerController extends StateController {
 
     @hostEvent(ShowFileViewerEvent)
     showFileViewer(event:ShowFileViewerEvent) {
+        recordHistory();
         Product.of<IFileViewerState>(this)
             .next(setInput(this.host))
             .next(setSelectedFileData)
             .next(setCanNavigate)
+            .tap(updateUrlForSelectedFile)
             .requestUpdate("FileViewerController.hostConnected");
     }
 
@@ -74,7 +84,13 @@ export class FileViewerController extends StateController {
             .next(setSelectedFileOnNavigate(event.next))
             .next(setSelectedFileData)
             .next(setCanNavigate)
+            .tap(updateUrlForSelectedFile)
             .requestUpdate("FileViewerController.hostConnected");
+    }
+
+    @hostEvent(CloseFileViewerEvent)
+    closeFileViewer(event:CloseFileViewerEvent) {
+        clearUrl();
     }
 }
 
@@ -115,4 +131,19 @@ const setCanNavigate = (state:IFileViewerState) => {
 const setSelectedFileOnNavigate = (next:boolean) => (state:IFileViewerState) => {
     const index = state.files.findIndex(f => f.name === state.selectedFileName);
     state.selectedFileName = next ? state.files[index + 1].name : state.files[index - 1].name;
+};
+
+
+const recordHistory = () => {
+    history.pushState({}, '', window.location.href);
+};
+
+
+const updateUrlForSelectedFile = (product:Product<IFileViewerState>) => {
+    const state = product.getState();
+    state.selectedFileName && Router.replaceUrlParams({fileName: state.selectedFileName});
+};
+
+const clearUrl = () => {
+    Router.replaceUrlParams({fileName: ""});
 };

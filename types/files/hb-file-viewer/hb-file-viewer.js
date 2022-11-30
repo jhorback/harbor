@@ -8,7 +8,7 @@ import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import "../../common/hb-button";
 import { styles } from "../../styles";
-import { FileViewerController, NavigateFileViewerEvent, ShowFileViewerEvent } from "./FileViewerController";
+import { CloseFileViewerEvent, FileViewerController, NavigateFileViewerEvent, ShowFileViewerEvent } from "./FileViewerController";
 /**
  */
 let FileViewer = class FileViewer extends LitElement {
@@ -19,9 +19,20 @@ let FileViewer = class FileViewer extends LitElement {
         this.abortController = new AbortController();
         this.fileViewer = new FileViewerController(this);
     }
+    getFileNameFromUrl() {
+        const searchParams = new URLSearchParams(location.search);
+        const fileName = searchParams.get("fileName");
+        return fileName;
+    }
     connectedCallback() {
         super.connectedCallback();
         document.addEventListener("keydown", this.keyClicked.bind(this), {
+            signal: this.abortController.signal
+        });
+        window.addEventListener("popstate", () => {
+            const fileName = this.getFileNameFromUrl();
+            fileName ? this.show(fileName) : this.close();
+        }, {
             signal: this.abortController.signal
         });
     }
@@ -52,7 +63,7 @@ let FileViewer = class FileViewer extends LitElement {
                                 @click=${this.detailsButtonClicked}
                             >menu_open</div>
                         </div>
-                        <div class="icon-previous-ctr" @click=${this.previous} ?hidden=${!state.canGoPrevious}>
+                        <div class="icon-previous-ctr" @click=${this.previous} ?hide=${!state.canGoPrevious}>
                             <div class="icon-previous">
                                 <div class="icon-button icon-large">
                                     chevron_left
@@ -60,7 +71,7 @@ let FileViewer = class FileViewer extends LitElement {
                             </div>
                         </div> 
                         <div></div> 
-                        <div class="icon-next-ctr" @click=${this.next} ?hidden=${!state.canGoNext}>
+                        <div class="icon-next-ctr" @click=${this.next} ?hide=${!state.canGoNext}>
                             <div class="icon-next">
                                 <div class="icon-button icon-large">
                                     chevron_right
@@ -139,6 +150,7 @@ let FileViewer = class FileViewer extends LitElement {
     }
     close() {
         this.open = false;
+        this.dispatchEvent(new CloseFileViewerEvent());
     }
     detailsButtonClicked() {
         this.showDetails = !this.showDetails;
@@ -146,6 +158,7 @@ let FileViewer = class FileViewer extends LitElement {
     keyClicked(event) {
         event.key === "ArrowRight" && this.next();
         event.key === "ArrowLeft" && this.previous();
+        event.key === "Escape" && this.close();
     }
     previous() {
         this.fileViewer.state.canGoPrevious &&
@@ -181,6 +194,9 @@ FileViewer.styles = [styles.types, styles.icons, css `
         }
         :host([open]) {
             display: block;
+        }
+        [hide] {
+            visibility: hidden;
         }
 
         .file-viewer {
