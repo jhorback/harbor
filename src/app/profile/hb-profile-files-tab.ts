@@ -18,8 +18,12 @@ export class ProfileContentTab extends LitElement {
     @query("hb-file-viewer")
     $fileViewer!:FileViewer;
 
-    async connectedCallback() {
+    connectedCallback() {
         super.connectedCallback();
+        this.requestFiles();
+    }
+
+    async requestFiles() {
         await this.updateComplete;
         this.dispatchEvent(new SearchFilesEvent({}));
     }
@@ -30,6 +34,7 @@ export class ProfileContentTab extends LitElement {
         return html`
             <hb-file-viewer
                 show-details
+                @close-file-viewer=${this.requestFiles}
                 .files=${state.list}
             ></hb-file-viewer>
             ${state.isLoading || state.count !== 0 ? html`` : html`

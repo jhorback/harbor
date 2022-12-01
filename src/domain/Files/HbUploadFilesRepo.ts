@@ -91,8 +91,9 @@ export class HbUploadFilesRepo implements IUploadFilesRepo {
             type: md.contentType || null,
             size: md.size,
             url,
-            pictureUrl: pictureData?.url || null,
-            pictureFileName: null,
+            mediaPosterUrl: pictureData?.url || null,
+            mediaPosterStoragePath: pictureData?.storagePath || null,
+            mediaPosterDbPath: null,
             thumbUrl: thumbData?.url || null,
             width: thumbData?.width || null,
             height: thumbData?.height || null,
@@ -108,7 +109,7 @@ export class HbUploadFilesRepo implements IUploadFilesRepo {
             name: file.name,
             url,
             thumbUrl: fileData.thumbUrl,
-            pictureUrl: fileData.pictureUrl,
+            mediaPosterUrl: fileData.mediaPosterUrl,
             type: fileData.type,
             width: fileData.width,
             height: fileData.height
@@ -130,7 +131,8 @@ export class HbUploadFilesRepo implements IUploadFilesRepo {
             url,
             width: resizedPictureFile.resizedWidth,
             height: resizedPictureFile.resizedHeight,
-            file: resizedPictureFile.file
+            file: resizedPictureFile.file,
+            storagePath
         };
     }
 
@@ -144,6 +146,7 @@ export class HbUploadFilesRepo implements IUploadFilesRepo {
                 resizeImageFile(file, this.MAX_THUMB_SIZE, ".thumb") : null;
 
         const thumb = await awaitThumb;
+        
 
         // we don't have a thumb (non image or media)
         if (thumb === null) {
@@ -159,7 +162,8 @@ export class HbUploadFilesRepo implements IUploadFilesRepo {
                 file,
                 width: thumb.originalWidth,
                 height: thumb.originalHeight,
-                url: fileUrl
+                url: fileUrl,
+                storagePath: this.getStoragePath(thumb.file.name)
             };
         }
 
@@ -173,7 +177,8 @@ export class HbUploadFilesRepo implements IUploadFilesRepo {
             file: thumb.file,
             width: thumb.originalWidth,
             height: thumb.originalHeight,
-            url
+            url,
+            storagePath
         };
     }
 
@@ -219,7 +224,8 @@ interface IImageData {
     url: string|null,
     width: number,
     height: number,
-    file: File
+    file: File,
+    storagePath: string
 }
 
 

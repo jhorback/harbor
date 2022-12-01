@@ -208,7 +208,7 @@ const insertFile = (selectedNode:any, editor:any, file:IUploadedFile) => {
     // tell the page we may have some thumbs
     const thumbs:Array<string> = [];
     file.thumbUrl && thumbs.push(file.thumbUrl);
-    file.pictureUrl && thumbs.push(file.pictureUrl);
+    file.mediaPosterUrl && thumbs.push(file.mediaPosterUrl);
     thumbs.length > 0 && editor.getContainer().dispatchEvent(new PageThumbChangeEvent({thumbs}));
 
 
@@ -216,7 +216,7 @@ const insertFile = (selectedNode:any, editor:any, file:IUploadedFile) => {
     if (fileType === FileType.image) {
         content = `<img src="${file.url}" title="${file.name}" alt="${file.name}" data-type="image">`;
     } else if(fileType === FileType.audio || fileType === FileType.video) {
-        content = `<video controls poster="${file.pictureUrl || ""}"
+        content = `<video controls poster="${file.mediaPosterUrl || ""}"
             width="${file.width || (fileType === FileType.audio ? 300 : "")}"
             height="${file.height || (fileType === FileType.audio ? 50 : "")}"
             data-type="${fileType}">

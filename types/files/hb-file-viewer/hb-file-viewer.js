@@ -8,7 +8,7 @@ import { css, html, LitElement } from "lit";
 import { customElement, property, query } from "lit/decorators.js";
 import "../../common/hb-button";
 import { styles } from "../../styles";
-import { CloseFileViewerEvent, FileViewerController, NavigateFileViewerEvent, ShowFileViewerEvent } from "./FileViewerController";
+import { CloseFileViewerEvent, ExtractMediaPosterEvent, FileViewerController, NavigateFileViewerEvent, ShowFileViewerEvent } from "./FileViewerController";
 /**
  */
 let FileViewer = class FileViewer extends LitElement {
@@ -83,7 +83,7 @@ let FileViewer = class FileViewer extends LitElement {
                         ${state.selectedFile.useMediaPreview ? html `                           
 
                             <video
-                                poster=${file.pictureUrl}
+                                poster=${file.mediaPosterUrl}
                                 controls="controls"
                                 >
                                 <source src=${file.url}>
@@ -142,11 +142,11 @@ let FileViewer = class FileViewer extends LitElement {
                     `}                    
 
                     <div class="buttons">
-                        ${state.selectedFile.canExtractPictureFile ? html `
-                            <hb-button label="Extract Picture File" text-button @click=${this.extractPicture}></hb-button>                        
+                        ${state.selectedFile.canExtractMediaPoster ? html `
+                            <hb-button label="Extract Media Poster" text-button @click=${this.extractMediaPoster}></hb-button>                        
                         ` : html ``}
-                        ${state.selectedFile.useMediaPreview ? html `
-                            <hb-button label="Set Picture File" text-button @click=${this.setPicture}></hb-button>
+                        ${state.selectedFile.canSetMediaPoster ? html `
+                            <hb-button label="Set Media Poster" text-button @click=${this.setMediaPoster}></hb-button>
                         ` : html ``}
                         <hb-button label="Delete File" text-button @click=${this.deleteFile}></hb-button>
                     </div>
@@ -184,10 +184,10 @@ let FileViewer = class FileViewer extends LitElement {
         this.fileViewer.state.canGoNext &&
             this.dispatchEvent(new NavigateFileViewerEvent(true));
     }
-    extractPicture() {
-        alert("extract picture");
+    extractMediaPoster() {
+        this.dispatchEvent(new ExtractMediaPosterEvent());
     }
-    setPicture() {
+    setMediaPoster() {
         alert("set picture");
     }
     deleteFile() {

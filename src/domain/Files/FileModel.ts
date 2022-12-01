@@ -9,8 +9,9 @@ export class FileModel implements IFileData {
     storagePath: string = "";
     url: string = "";
     thumbUrl: string = "";
-    pictureFileName: string | null = null;
-    pictureUrl: string = "";
+    mediaPosterDbPath: string | null = null;
+    mediaPosterUrl: string = "";
+    mediaPosterStoragePath: string | null = null;
     size: number = 0;
     type: string | null = null;
     width: number | null = null;
@@ -41,8 +42,9 @@ export class FileModel implements IFileData {
             storagePath: file.storagePath,
             url: file.url,
             thumbUrl: file.thumbUrl,
-            pictureFileName: file.pictureFileName,
-            pictureUrl: file.pictureUrl,
+            mediaPosterDbPath: file.mediaPosterDbPath,
+            mediaPosterUrl: file.mediaPosterUrl,
+            mediaPosterStoragePath: file.mediaPosterStoragePath,
             size: file.size,
             type: file.type,
             width: file.width,
@@ -54,8 +56,12 @@ export class FileModel implements IFileData {
     
     static fromFirestore(snapshot: QueryDocumentSnapshot):FileModel {
         const dbFile = snapshot.data() as IFileData;
+        return FileModel.of(dbFile);
+    }
+
+    static of(fileData:IFileData) {
         const fileModel = new FileModel();
-        Object.assign(fileModel, dbFile);
+        Object.assign(fileModel, fileData);
         return fileModel;
     }
 }

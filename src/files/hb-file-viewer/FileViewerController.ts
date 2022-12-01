@@ -1,7 +1,11 @@
 import { Router } from "@domx/router";
 import { hostEvent, Product, StateController, stateProperty } from "@domx/statecontroller";
-import { NotFoundError } from "../../domain/Errors";
+import { inject } from "../../domain/DependencyContainer/decorators";
+import { NotFoundError, ServerError } from "../../domain/Errors";
 import { FileModel } from "../../domain/Files/FileModel";
+import "../../domain/Files/HbEditFileRepo";
+import { EditFileRepoKey, IEditFileRepo } from "../../domain/interfaces/FileInterfaces";
+import { sendFeedback } from "../../layout/feedback";
 import { FileViewer } from "./hb-file-viewer";
 
 
@@ -17,7 +21,8 @@ export interface IFileViewerState {
 interface IFilePreview {
     useMediaPreview:boolean;
     imagePreviewUrl:string;
-    canExtractPictureFile:boolean;
+    canExtractMediaPoster:boolean;
+    canSetMediaPoster:boolean;
     file:FileModel;
 }
 
@@ -48,6 +53,14 @@ export class NavigateFileViewerEvent extends Event {
 }
 
 
+export class ExtractMediaPosterEvent extends Event {
+    static eventType = "extract-media-poster"
+    constructor() {
+        super(ExtractMediaPosterEvent.eventType)
+    }
+}
+
+
 export class FileViewerController extends StateController {
 
 
@@ -61,6 +74,9 @@ export class FileViewerController extends StateController {
     };
 
     host:FileViewer;
+
+    @inject(EditFileRepoKey)
+    editFileRepo!:IEditFileRepo;
 
     constructor(host:FileViewer) {
         super(host);
@@ -93,6 +109,12 @@ export class FileViewerController extends StateController {
     closeFileViewer(event:CloseFileViewerEvent) {
         clearUrl();
     }
+
+    @hostEvent(ExtractMediaPosterEvent)
+    extractMediaPoster(event:ExtractMediaPosterEvent) {
+        Product.of<IFileViewerState>(this)
+            .tap(extractMediaPoster(this.editFileRepo));
+    }
 }
 
 
@@ -113,13 +135,15 @@ const setSelectedFileData = (state:IFileViewerState) => {
     const isImage = file.type?.indexOf("image") === 0;
     const useMediaPreview = (file.type?.indexOf("audio") === 0 ||
         file.type?.indexOf("video") === 0) ? true : false;
-    const canExtractPictureFile = (file.pictureUrl && !file.pictureFileName) ? true : false;
+    const canExtractPictureFile = (file.mediaPosterUrl && !file.mediaPosterDbPath) ? true : false;
+    const canSetMediaPoster = !isImage;
 
     state.selectedFile = {
         file,
         useMediaPreview,
-        canExtractPictureFile,
-        imagePreviewUrl: isImage ? file.url : file.pictureUrl || file.thumbUrl || file.defaultThumb
+        canExtractMediaPoster: canExtractPictureFile,
+        canSetMediaPoster,
+        imagePreviewUrl: isImage ? file.url : file.mediaPosterUrl || file.thumbUrl || file.defaultThumb
     };
 
 };
@@ -150,4 +174,28 @@ const updateUrlForSelectedFile = (product:Product<IFileViewerState>) => {
 
 const clearUrl = () => {
     Router.replaceUrlParams({fileName: ""});
+};
+
+
+
+const extractMediaPoster = (editFileRepo:IEditFileRepo) => async (product:Product<IFileViewerState>) => {
+    const state = product.getState();
+    if (!state.selectedFile) {
+        throw new ServerError("File does not exist");
+    }
+
+    sendFeedback({message: "Extracting picture file..."});
+    const newFile = await editFileRepo.extractMediaPoster(state.selectedFile.file);
+    product
+        .next(setMediaPosterDbPath(newFile))
+        .requestUpdate("FileViewerController.extractPictureFile");
+
+    sendFeedback({message: "The picture file has been extracted"});
+};
+
+
+const setMediaPosterDbPath = (file:FileModel) => (state:IFileViewerState) => {
+    if (state.selectedFile) {
+        state.selectedFile.file.mediaPosterDbPath = file.storagePath;
+    }
 };

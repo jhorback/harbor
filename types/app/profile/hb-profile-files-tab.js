@@ -18,8 +18,11 @@ let ProfileContentTab = class ProfileContentTab extends LitElement {
         super(...arguments);
         this.searchFiles = new SearchFilesController(this);
     }
-    async connectedCallback() {
+    connectedCallback() {
         super.connectedCallback();
+        this.requestFiles();
+    }
+    async requestFiles() {
         await this.updateComplete;
         this.dispatchEvent(new SearchFilesEvent({}));
     }
@@ -28,6 +31,7 @@ let ProfileContentTab = class ProfileContentTab extends LitElement {
         return html `
             <hb-file-viewer
                 show-details
+                @close-file-viewer=${this.requestFiles}
                 .files=${state.list}
             ></hb-file-viewer>
             ${state.isLoading || state.count !== 0 ? html `` : html `

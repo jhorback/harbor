@@ -135,7 +135,7 @@ export class ImageContent extends LitElement {
             name: event.file.name,
             fileDbPath: event.file.storagePath,
             height: event.file.height||null,
-            pictureUrl: event.file.pictureUrl,
+            mediaPosterUrl: event.file.mediaPosterUrl,
             thumbUrl: event.file.thumbUrl,
             type: event.file.type || null,
             width: event.file.width || null

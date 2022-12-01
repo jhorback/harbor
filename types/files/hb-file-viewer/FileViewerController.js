@@ -6,7 +6,11 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 import { Router } from "@domx/router";
 import { hostEvent, Product, StateController, stateProperty } from "@domx/statecontroller";
-import { NotFoundError } from "../../domain/Errors";
+import { inject } from "../../domain/DependencyContainer/decorators";
+import { NotFoundError, ServerError } from "../../domain/Errors";
+import "../../domain/Files/HbEditFileRepo";
+import { EditFileRepoKey } from "../../domain/interfaces/FileInterfaces";
+import { sendFeedback } from "../../layout/feedback";
 export class ShowFileViewerEvent extends Event {
     constructor() {
         super(ShowFileViewerEvent.eventType);
@@ -27,6 +31,12 @@ export class NavigateFileViewerEvent extends Event {
     }
 }
 NavigateFileViewerEvent.eventType = "navigate-file-viewer";
+export class ExtractMediaPosterEvent extends Event {
+    constructor() {
+        super(ExtractMediaPosterEvent.eventType);
+    }
+}
+ExtractMediaPosterEvent.eventType = "extract-media-poster";
 export class FileViewerController extends StateController {
     constructor(host) {
         super(host);
@@ -59,10 +69,17 @@ export class FileViewerController extends StateController {
     closeFileViewer(event) {
         clearUrl();
     }
+    extractMediaPoster(event) {
+        Product.of(this)
+            .tap(extractMediaPoster(this.editFileRepo));
+    }
 }
 __decorate([
     stateProperty()
 ], FileViewerController.prototype, "state", void 0);
+__decorate([
+    inject(EditFileRepoKey)
+], FileViewerController.prototype, "editFileRepo", void 0);
 __decorate([
     hostEvent(ShowFileViewerEvent)
 ], FileViewerController.prototype, "showFileViewer", null);
@@ -72,6 +89,9 @@ __decorate([
 __decorate([
     hostEvent(CloseFileViewerEvent)
 ], FileViewerController.prototype, "closeFileViewer", null);
+__decorate([
+    hostEvent(ExtractMediaPosterEvent)
+], FileViewerController.prototype, "extractMediaPoster", null);
 const setInput = (input) => (state) => {
     state.selectedFileName = input.fileName;
     state.files = input.files;
@@ -84,12 +104,14 @@ const setSelectedFileData = (state) => {
     const isImage = file.type?.indexOf("image") === 0;
     const useMediaPreview = (file.type?.indexOf("audio") === 0 ||
         file.type?.indexOf("video") === 0) ? true : false;
-    const canExtractPictureFile = (file.pictureUrl && !file.pictureFileName) ? true : false;
+    const canExtractPictureFile = (file.mediaPosterUrl && !file.mediaPosterDbPath) ? true : false;
+    const canSetMediaPoster = !isImage;
     state.selectedFile = {
         file,
         useMediaPreview,
-        canExtractPictureFile,
-        imagePreviewUrl: isImage ? file.url : file.pictureUrl || file.thumbUrl || file.defaultThumb
+        canExtractMediaPoster: canExtractPictureFile,
+        canSetMediaPoster,
+        imagePreviewUrl: isImage ? file.url : file.mediaPosterUrl || file.thumbUrl || file.defaultThumb
     };
 };
 const setCanNavigate = (state) => {
@@ -110,4 +132,21 @@ const updateUrlForSelectedFile = (product) => {
 };
 const clearUrl = () => {
     Router.replaceUrlParams({ fileName: "" });
+};
+const extractMediaPoster = (editFileRepo) => async (product) => {
+    const state = product.getState();
+    if (!state.selectedFile) {
+        throw new ServerError("File does not exist");
+    }
+    sendFeedback({ message: "Extracting picture file..." });
+    const newFile = await editFileRepo.extractMediaPoster(state.selectedFile.file);
+    product
+        .next(setMediaPosterDbPath(newFile))
+        .requestUpdate("FileViewerController.extractPictureFile");
+    sendFeedback({ message: "The picture file has been extracted" });
+};
+const setMediaPosterDbPath = (file) => (state) => {
+    if (state.selectedFile) {
+        state.selectedFile.file.mediaPosterDbPath = file.storagePath;
+    }
 };

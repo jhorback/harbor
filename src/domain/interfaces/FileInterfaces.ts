@@ -3,6 +3,13 @@ import { FileModel } from "../Files/FileModel";
 
 
 
+export const EditFileRepoKey:symbol = Symbol("EDIT_FILE_REPO");
+export interface IEditFileRepo {
+    extractMediaPoster(file:FileModel):Promise<FileModel>;
+}
+
+
+
 export const FindFileRepoKey:symbol = Symbol("FIND_FILE_REPO");
 export interface IFindFileRepo {
     findFile(path:string):Promise<FileModel|null>;
@@ -91,7 +98,7 @@ export class FileUploadProgressEvent extends Event {
 export interface IUploadedFile {
     url:string,
     thumbUrl:string|null,
-    pictureUrl:string|null,
+    mediaPosterUrl:string|null,
     type:string|null,
     name:string,
     fileDbPath:string,
@@ -126,14 +133,18 @@ export interface IFileData {
     /** Url for thumbnail size display <= 250px */
     thumbUrl:string|null;
     /** For media types this is the picture/photo to represent the media */
-    pictureUrl:string|null;
-    pictureFileName: string | null;
-    size: number;
-    type: string|null;
+    mediaPosterUrl:string|null;
+    mediaPosterDbPath:string|null;
+    mediaPosterStoragePath:string|null;
+    /** Size in bytes */
+    size:number;
+    /** File mime type, i.e. image/jpeg */
+    type:string|null;
     /** width of the full image or thumbnail */
-    width: number|null;
+    width:number|null;
     /** height of the full image or thumbnail */
-    height: number|null;
-    updated: string;
-    mediaTags: IMediaTags|null
+    height:number|null;
+    /** The date the file was last updated */
+    updated:string;
+    mediaTags:IMediaTags|null
 }

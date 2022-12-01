@@ -1,3 +1,4 @@
+export const EditFileRepoKey = Symbol("EDIT_FILE_REPO");
 export const FindFileRepoKey = Symbol("FIND_FILE_REPO");
 export const SearchFilesRepoKey = Symbol("SEARCH_FILES_REPO");
 export var FileType;

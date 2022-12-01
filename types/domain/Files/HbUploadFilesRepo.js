@@ -70,8 +70,9 @@ let HbUploadFilesRepo = class HbUploadFilesRepo {
             type: md.contentType || null,
             size: md.size,
             url,
-            pictureUrl: pictureData?.url || null,
-            pictureFileName: null,
+            mediaPosterUrl: pictureData?.url || null,
+            mediaPosterStoragePath: pictureData?.storagePath || null,
+            mediaPosterDbPath: null,
             thumbUrl: thumbData?.url || null,
             width: thumbData?.width || null,
             height: thumbData?.height || null,
@@ -85,7 +86,7 @@ let HbUploadFilesRepo = class HbUploadFilesRepo {
             name: file.name,
             url,
             thumbUrl: fileData.thumbUrl,
-            pictureUrl: fileData.pictureUrl,
+            mediaPosterUrl: fileData.mediaPosterUrl,
             type: fileData.type,
             width: fileData.width,
             height: fileData.height
@@ -105,7 +106,8 @@ let HbUploadFilesRepo = class HbUploadFilesRepo {
             url,
             width: resizedPictureFile.resizedWidth,
             height: resizedPictureFile.resizedHeight,
-            file: resizedPictureFile.file
+            file: resizedPictureFile.file,
+            storagePath
         };
     }
     /**
@@ -131,7 +133,8 @@ let HbUploadFilesRepo = class HbUploadFilesRepo {
                 file,
                 width: thumb.originalWidth,
                 height: thumb.originalHeight,
-                url: fileUrl
+                url: fileUrl,
+                storagePath: this.getStoragePath(thumb.file.name)
             };
         }
         // store resized thumb
@@ -143,7 +146,8 @@ let HbUploadFilesRepo = class HbUploadFilesRepo {
             file: thumb.file,
             width: thumb.originalWidth,
             height: thumb.originalHeight,
-            url
+            url,
+            storagePath
         };
     }
     async resolveMediaTags(file) {
