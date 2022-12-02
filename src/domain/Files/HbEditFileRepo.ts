@@ -1,5 +1,5 @@
 import { doc, setDoc } from "firebase/firestore";
-import { getMetadata, ref } from "firebase/storage";
+import { deleteObject, getMetadata, ref } from "firebase/storage";
 import { provides } from "../DependencyContainer/decorators";
 import { ServerError } from "../Errors";
 import { HbCurrentUser } from "../HbCurrentUser";
@@ -49,7 +49,27 @@ export class EditFileRepo implements IEditFileRepo {
         // update the existing file
         file.mediaPosterDbPath = storagePath;
         await setDoc(doc(HbDb.current, file.storagePath), file);
-
         return FileModel.of(newFile);
     }
+
+    async updateMediaPoster(file:FileModel, posterFile:FileModel):Promise<FileModel> {
+
+        // delete the poster file if not in db
+        if (file.mediaPosterStoragePath && !file.mediaPosterDbPath) {            
+            const fileRef = ref(HbStorage.current, file.mediaPosterStoragePath);
+            await deleteObject(fileRef);
+        }
+
+        file.mediaPosterDbPath = posterFile.storagePath;
+        file.mediaPosterStoragePath = posterFile.storagePath;
+        file.mediaPosterUrl = posterFile.url;
+        file.thumbUrl = posterFile.url;
+        await setDoc(doc(HbDb.current, file.storagePath).withConverter(FileModel), file);
+        return file;
+    }
+
+    async deleteFile(file:FileModel):Promise<void> {
+        throw new Error("Not implemented");
+    }
+    
 }

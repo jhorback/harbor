@@ -1,10 +1,11 @@
 import { css, html, LitElement } from "lit";
-import { customElement, property, query, state } from "lit/decorators.js";
+import { customElement, property, query } from "lit/decorators.js";
 import "../../common/hb-button";
 import { FileModel } from "../../domain/Files/FileModel";
+import { FileType } from "../../domain/interfaces/FileInterfaces";
 import { styles } from "../../styles";
-import { CloseFileViewerEvent, ExtractMediaPosterEvent, FileViewerController, NavigateFileViewerEvent, ShowFileViewerEvent } from "./FileViewerController";
-
+import { FileSelectedEvent, FindFileDialog } from "../hb-find-file-dialog";
+import { CloseFileViewerEvent, ExtractMediaPosterEvent, FileViewerController, NavigateFileViewerEvent, ShowFileViewerEvent, UpdateMediaPosterEvent } from "./FileViewerController";
 
 /**  
  */
@@ -28,8 +29,10 @@ export class FileViewer extends LitElement {
     private fileViewer:FileViewerController = new FileViewerController(this);
 
     @query("video")
-    private $video!:HTMLVideoElement;
+    private $video:HTMLVideoElement|undefined;
 
+    @query("hb-find-file-dialog")
+    $findFileDlg!:FindFileDialog;
 
     getFileNameFromUrl():string|null {
         const searchParams = new URLSearchParams(location.search);
@@ -67,6 +70,10 @@ export class FileViewer extends LitElement {
 
 
         return html`
+            <hb-find-file-dialog
+                file-type=${FileType.image}
+                @file-selected=${this.fileSelected}
+            ></hb-find-file-dialog>
             <div class="file-viewer" ?details-panel=${this.showDetails}>
                 <div class="content">
                     <div class="content-navigation">
@@ -187,7 +194,7 @@ export class FileViewer extends LitElement {
 
     close() {
        this.open = false;
-       this.$video.pause();
+       this.$video && this.$video.pause();
        this.dispatchEvent(new CloseFileViewerEvent());
     }
 
@@ -216,7 +223,11 @@ export class FileViewer extends LitElement {
     }
 
     private setMediaPoster() {
-        alert("set picture");
+        this.$findFileDlg.open = true;
+    }
+
+    private fileSelected(event:FileSelectedEvent) {
+        this.dispatchEvent(new UpdateMediaPosterEvent(event.file));
     }
 
     private deleteFile() {

@@ -32,6 +32,7 @@ let FindFileDialog = class FindFileDialog extends LitElement {
         this.searchFiles = new SearchFilesController(this);
         this.searchText = "";
     }
+    get stateId() { return "hb-find-file-dialog"; }
     reset() {
         this.searchText = "";
         this.selectedIndex = null;

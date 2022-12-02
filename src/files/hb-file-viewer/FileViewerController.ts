@@ -60,6 +60,15 @@ export class ExtractMediaPosterEvent extends Event {
     }
 }
 
+export class UpdateMediaPosterEvent extends Event {
+    static eventType = "update-media-poster"
+    file:FileModel;
+    constructor(file:FileModel) {
+        super(UpdateMediaPosterEvent.eventType);
+        this.file = file;
+    }
+}
+
 
 export class FileViewerController extends StateController {
 
@@ -115,6 +124,12 @@ export class FileViewerController extends StateController {
         Product.of<IFileViewerState>(this)
             .tap(extractMediaPoster(this.editFileRepo));
     }
+
+    @hostEvent(UpdateMediaPosterEvent)
+    updateMediaPoster(event:UpdateMediaPosterEvent) {
+        Product.of<IFileViewerState>(this)
+            .tap(updateMediaPoster(this.editFileRepo, event.file));
+    }
 }
 
 
@@ -127,9 +142,9 @@ const setInput = (input:FileViewer) => (state:IFileViewerState) => {
 
 const setSelectedFileData = (state:IFileViewerState) => {
     const file = state.files.find(f => f.name === state.selectedFileName);
-
     if (!file) {
-        throw new NotFoundError("File not found");
+       console.warn(`File not found: ${state.selectedFileName}`);
+       return;
     }
 
     const isImage = file.type?.indexOf("image") === 0;
@@ -198,4 +213,27 @@ const setMediaPosterDbPath = (file:FileModel) => (state:IFileViewerState) => {
     if (state.selectedFile) {
         state.selectedFile.file.mediaPosterDbPath = file.storagePath;
     }
+};
+
+
+const updateMediaPoster = (editFileRepo:IEditFileRepo, posterFile:FileModel) =>
+    async (product:Product<IFileViewerState>) => {
+        const state = product.getState();
+        if (!state.selectedFile) {
+            return;
+        }
+
+        const updatedFile = await editFileRepo.updateMediaPoster(state.selectedFile.file, posterFile);
+        product
+            .next(setSelectedFile(updatedFile))
+            .next(setSelectedFileData)
+            .requestUpdate("FileViewerController.updateMediaPoster");
+
+        sendFeedback({message:"The media poster has been updated"});
+};
+
+
+const setSelectedFile = (file:FileModel) => (state:IFileViewerState) => {
+    const index = state.files.findIndex(f => f.name === state.selectedFileName);
+    state.files[index] = file;
 };

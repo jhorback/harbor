@@ -7,7 +7,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 import { Router } from "@domx/router";
 import { hostEvent, Product, StateController, stateProperty } from "@domx/statecontroller";
 import { inject } from "../../domain/DependencyContainer/decorators";
-import { NotFoundError, ServerError } from "../../domain/Errors";
+import { ServerError } from "../../domain/Errors";
 import "../../domain/Files/HbEditFileRepo";
 import { EditFileRepoKey } from "../../domain/interfaces/FileInterfaces";
 import { sendFeedback } from "../../layout/feedback";
@@ -37,6 +37,13 @@ export class ExtractMediaPosterEvent extends Event {
     }
 }
 ExtractMediaPosterEvent.eventType = "extract-media-poster";
+export class UpdateMediaPosterEvent extends Event {
+    constructor(file) {
+        super(UpdateMediaPosterEvent.eventType);
+        this.file = file;
+    }
+}
+UpdateMediaPosterEvent.eventType = "update-media-poster";
 export class FileViewerController extends StateController {
     constructor(host) {
         super(host);
@@ -73,6 +80,10 @@ export class FileViewerController extends StateController {
         Product.of(this)
             .tap(extractMediaPoster(this.editFileRepo));
     }
+    updateMediaPoster(event) {
+        Product.of(this)
+            .tap(updateMediaPoster(this.editFileRepo, event.file));
+    }
 }
 __decorate([
     stateProperty()
@@ -92,6 +103,9 @@ __decorate([
 __decorate([
     hostEvent(ExtractMediaPosterEvent)
 ], FileViewerController.prototype, "extractMediaPoster", null);
+__decorate([
+    hostEvent(UpdateMediaPosterEvent)
+], FileViewerController.prototype, "updateMediaPoster", null);
 const setInput = (input) => (state) => {
     state.selectedFileName = input.fileName;
     state.files = input.files;
@@ -99,7 +113,8 @@ const setInput = (input) => (state) => {
 const setSelectedFileData = (state) => {
     const file = state.files.find(f => f.name === state.selectedFileName);
     if (!file) {
-        throw new NotFoundError("File not found");
+        console.warn(`File not found: ${state.selectedFileName}`);
+        return;
     }
     const isImage = file.type?.indexOf("image") === 0;
     const useMediaPreview = (file.type?.indexOf("audio") === 0 ||
@@ -149,4 +164,20 @@ const setMediaPosterDbPath = (file) => (state) => {
     if (state.selectedFile) {
         state.selectedFile.file.mediaPosterDbPath = file.storagePath;
     }
+};
+const updateMediaPoster = (editFileRepo, posterFile) => async (product) => {
+    const state = product.getState();
+    if (!state.selectedFile) {
+        return;
+    }
+    const updatedFile = await editFileRepo.updateMediaPoster(state.selectedFile.file, posterFile);
+    product
+        .next(setSelectedFile(updatedFile))
+        .next(setSelectedFileData)
+        .requestUpdate("FileViewerController.updateMediaPoster");
+    sendFeedback({ message: "The media poster has been updated" });
+};
+const setSelectedFile = (file) => (state) => {
+    const index = state.files.findIndex(f => f.name === state.selectedFileName);
+    state.files[index] = file;
 };

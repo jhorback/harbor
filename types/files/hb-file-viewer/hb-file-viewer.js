@@ -7,8 +7,9 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 import { css, html, LitElement } from "lit";
 import { customElement, property, query } from "lit/decorators.js";
 import "../../common/hb-button";
+import { FileType } from "../../domain/interfaces/FileInterfaces";
 import { styles } from "../../styles";
-import { CloseFileViewerEvent, ExtractMediaPosterEvent, FileViewerController, NavigateFileViewerEvent, ShowFileViewerEvent } from "./FileViewerController";
+import { CloseFileViewerEvent, ExtractMediaPosterEvent, FileViewerController, NavigateFileViewerEvent, ShowFileViewerEvent, UpdateMediaPosterEvent } from "./FileViewerController";
 /**
  */
 let FileViewer = class FileViewer extends LitElement {
@@ -48,6 +49,10 @@ let FileViewer = class FileViewer extends LitElement {
         }
         const file = state.selectedFile.file;
         return html `
+            <hb-find-file-dialog
+                file-type=${FileType.image}
+                @file-selected=${this.fileSelected}
+            ></hb-find-file-dialog>
             <div class="file-viewer" ?details-panel=${this.showDetails}>
                 <div class="content">
                     <div class="content-navigation">
@@ -165,7 +170,7 @@ let FileViewer = class FileViewer extends LitElement {
     }
     close() {
         this.open = false;
-        this.$video.pause();
+        this.$video && this.$video.pause();
         this.dispatchEvent(new CloseFileViewerEvent());
     }
     detailsButtonClicked() {
@@ -188,7 +193,10 @@ let FileViewer = class FileViewer extends LitElement {
         this.dispatchEvent(new ExtractMediaPosterEvent());
     }
     setMediaPoster() {
-        alert("set picture");
+        this.$findFileDlg.open = true;
+    }
+    fileSelected(event) {
+        this.dispatchEvent(new UpdateMediaPosterEvent(event.file));
     }
     deleteFile() {
         alert("delete file");
@@ -352,6 +360,9 @@ __decorate([
 __decorate([
     query("video")
 ], FileViewer.prototype, "$video", void 0);
+__decorate([
+    query("hb-find-file-dialog")
+], FileViewer.prototype, "$findFileDlg", void 0);
 FileViewer = __decorate([
     customElement('hb-file-viewer')
 ], FileViewer);
