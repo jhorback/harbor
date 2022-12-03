@@ -6,6 +6,7 @@ import { FileModel } from "../../domain/Files/FileModel";
 import "../../domain/Files/HbEditFileRepo";
 import { EditFileRepoKey, IEditFileRepo } from "../../domain/interfaces/FileInterfaces";
 import { sendFeedback } from "../../layout/feedback";
+import { FileDeletedEvent } from "../hb-delete-file-dialog/DeleteFileController";
 import { FileViewer } from "./hb-file-viewer";
 
 
@@ -28,14 +29,14 @@ interface IFilePreview {
 
 
 export class ShowFileViewerEvent extends Event {
-    static eventType = "show-file-viewer"
+    static eventType = "show-file-viewer";
     constructor() {
         super(ShowFileViewerEvent.eventType)
     }
 }
 
 export class CloseFileViewerEvent extends Event {
-    static eventType = "close-file-viewer"
+    static eventType = "close-file-viewer";
     constructor() {
         super(CloseFileViewerEvent.eventType)
     }
@@ -54,21 +55,20 @@ export class NavigateFileViewerEvent extends Event {
 
 
 export class ExtractMediaPosterEvent extends Event {
-    static eventType = "extract-media-poster"
+    static eventType = "extract-media-poster";
     constructor() {
         super(ExtractMediaPosterEvent.eventType)
     }
 }
 
 export class UpdateMediaPosterEvent extends Event {
-    static eventType = "update-media-poster"
+    static eventType = "update-media-poster";
     file:FileModel;
     constructor(file:FileModel) {
         super(UpdateMediaPosterEvent.eventType);
         this.file = file;
     }
 }
-
 
 export class FileViewerController extends StateController {
 
@@ -129,6 +129,17 @@ export class FileViewerController extends StateController {
     updateMediaPoster(event:UpdateMediaPosterEvent) {
         Product.of<IFileViewerState>(this)
             .tap(updateMediaPoster(this.editFileRepo, event.file));
+    }
+
+    @hostEvent(FileDeletedEvent)
+    fileDeleted(event:FileDeletedEvent) {
+        Product.of<IFileViewerState>(this)
+            .next(deleteSelectedFile)
+            .next(setSelectedFileData)
+            .next(setCanNavigate)
+            .tap(updateUrlForSelectedFile)
+            .tap(sendDeletedFileMessage)
+            .requestUpdate("FileViewerController.hostConnected");
     }
 }
 
@@ -236,4 +247,16 @@ const updateMediaPoster = (editFileRepo:IEditFileRepo, posterFile:FileModel) =>
 const setSelectedFile = (file:FileModel) => (state:IFileViewerState) => {
     const index = state.files.findIndex(f => f.name === state.selectedFileName);
     state.files[index] = file;
+};
+
+const deleteSelectedFile = (state:IFileViewerState) => {
+    const currentIndex =  state.files.findIndex(f => f.name === state.selectedFileName);
+    const nextIndex = state.canGoPrevious ? currentIndex - 1 : currentIndex + 1;
+    state.selectedFileName = state.files[nextIndex].name;
+    state.files.splice(currentIndex, 1);
+};
+
+
+const sendDeletedFileMessage = (product:Product<IFileViewerState>) => {
+    sendFeedback({message: "The file was deleted"});
 };

@@ -11,6 +11,7 @@ import { ServerError } from "../../domain/Errors";
 import "../../domain/Files/HbEditFileRepo";
 import { EditFileRepoKey } from "../../domain/interfaces/FileInterfaces";
 import { sendFeedback } from "../../layout/feedback";
+import { FileDeletedEvent } from "../hb-delete-file-dialog/DeleteFileController";
 export class ShowFileViewerEvent extends Event {
     constructor() {
         super(ShowFileViewerEvent.eventType);
@@ -84,6 +85,15 @@ export class FileViewerController extends StateController {
         Product.of(this)
             .tap(updateMediaPoster(this.editFileRepo, event.file));
     }
+    fileDeleted(event) {
+        Product.of(this)
+            .next(deleteSelectedFile)
+            .next(setSelectedFileData)
+            .next(setCanNavigate)
+            .tap(updateUrlForSelectedFile)
+            .tap(sendDeletedFileMessage)
+            .requestUpdate("FileViewerController.hostConnected");
+    }
 }
 __decorate([
     stateProperty()
@@ -106,6 +116,9 @@ __decorate([
 __decorate([
     hostEvent(UpdateMediaPosterEvent)
 ], FileViewerController.prototype, "updateMediaPoster", null);
+__decorate([
+    hostEvent(FileDeletedEvent)
+], FileViewerController.prototype, "fileDeleted", null);
 const setInput = (input) => (state) => {
     state.selectedFileName = input.fileName;
     state.files = input.files;
@@ -180,4 +193,13 @@ const updateMediaPoster = (editFileRepo, posterFile) => async (product) => {
 const setSelectedFile = (file) => (state) => {
     const index = state.files.findIndex(f => f.name === state.selectedFileName);
     state.files[index] = file;
+};
+const deleteSelectedFile = (state) => {
+    const currentIndex = state.files.findIndex(f => f.name === state.selectedFileName);
+    const nextIndex = state.canGoPrevious ? currentIndex - 1 : currentIndex + 1;
+    state.selectedFileName = state.files[nextIndex].name;
+    state.files.splice(currentIndex, 1);
+};
+const sendDeletedFileMessage = (product) => {
+    sendFeedback({ message: "The file was deleted" });
 };

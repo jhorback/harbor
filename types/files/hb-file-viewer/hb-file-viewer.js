@@ -9,6 +9,8 @@ import { customElement, property, query } from "lit/decorators.js";
 import "../../common/hb-button";
 import { FileType } from "../../domain/interfaces/FileInterfaces";
 import { styles } from "../../styles";
+import { FileDeletedEvent } from "../hb-delete-file-dialog/DeleteFileController";
+import "../hb-delete-file-dialog/hb-delete-file-dialog";
 import { CloseFileViewerEvent, ExtractMediaPosterEvent, FileViewerController, NavigateFileViewerEvent, ShowFileViewerEvent, UpdateMediaPosterEvent } from "./FileViewerController";
 /**
  */
@@ -53,6 +55,10 @@ let FileViewer = class FileViewer extends LitElement {
                 file-type=${FileType.image}
                 @file-selected=${this.fileSelected}
             ></hb-find-file-dialog>
+            <hb-delete-file-dialog
+                file-name=${file.name}
+                @file-deleted=${this.fileDeleted}
+            ></hb-delete-file-dialog>
             <div class="file-viewer" ?details-panel=${this.showDetails}>
                 <div class="content">
                     <div class="content-navigation">
@@ -199,7 +205,11 @@ let FileViewer = class FileViewer extends LitElement {
         this.dispatchEvent(new UpdateMediaPosterEvent(event.file));
     }
     deleteFile() {
-        alert("delete file");
+        this.$deleteFileDlg.showModal();
+    }
+    fileDeleted() {
+        this.$deleteFileDlg.close();
+        this.dispatchEvent(new FileDeletedEvent());
     }
 };
 FileViewer.styles = [styles.types, styles.icons, css `
@@ -363,6 +373,9 @@ __decorate([
 __decorate([
     query("hb-find-file-dialog")
 ], FileViewer.prototype, "$findFileDlg", void 0);
+__decorate([
+    query("hb-delete-file-dialog")
+], FileViewer.prototype, "$deleteFileDlg", void 0);
 FileViewer = __decorate([
     customElement('hb-file-viewer')
 ], FileViewer);

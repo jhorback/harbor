@@ -1,4 +1,4 @@
-import { doc, setDoc } from "firebase/firestore";
+import { deleteDoc, doc, setDoc } from "firebase/firestore";
 import { deleteObject, getMetadata, ref } from "firebase/storage";
 import { provides } from "../DependencyContainer/decorators";
 import { ServerError } from "../Errors";
@@ -7,6 +7,7 @@ import { HbDb } from "../HbDb";
 import { HbStorage } from "../HbStorage";
 import { EditFileRepoKey, IEditFileRepo, IFileData } from "../interfaces/FileInterfaces";
 import { FileModel } from "./FileModel";
+import { FindFileRepo } from "./HbFindFileRepo";
 
 
 
@@ -68,8 +69,17 @@ export class EditFileRepo implements IEditFileRepo {
         return file;
     }
 
-    async deleteFile(file:FileModel):Promise<void> {
-        throw new Error("Not implemented");
+    async deleteFile(name:string):Promise<void> {
+        const fileRepo = new FindFileRepo();
+        const file = await fileRepo.findFile(`files/${name}`);
+        if (!file) {
+            console.warn("HbEditFileRepo - file to delete does not exist:", name);
+            return;
+        }
+
+        const fileRef = ref(HbStorage.current, file.storagePath);
+        await deleteObject(fileRef);
+        await deleteDoc(doc(HbDb.current, file.storagePath));
     }
     
 }

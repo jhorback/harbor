@@ -4,7 +4,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-import { doc, setDoc } from "firebase/firestore";
+import { deleteDoc, doc, setDoc } from "firebase/firestore";
 import { deleteObject, getMetadata, ref } from "firebase/storage";
 import { provides } from "../DependencyContainer/decorators";
 import { ServerError } from "../Errors";
@@ -13,6 +13,7 @@ import { HbDb } from "../HbDb";
 import { HbStorage } from "../HbStorage";
 import { EditFileRepoKey } from "../interfaces/FileInterfaces";
 import { FileModel } from "./FileModel";
+import { FindFileRepo } from "./HbFindFileRepo";
 let EditFileRepo = class EditFileRepo {
     async extractMediaPoster(file) {
         if (!file.mediaPosterStoragePath) {
@@ -59,8 +60,16 @@ let EditFileRepo = class EditFileRepo {
         await setDoc(doc(HbDb.current, file.storagePath).withConverter(FileModel), file);
         return file;
     }
-    async deleteFile(file) {
-        throw new Error("Not implemented");
+    async deleteFile(name) {
+        const fileRepo = new FindFileRepo();
+        const file = await fileRepo.findFile(`files/${name}`);
+        if (!file) {
+            console.warn("HbEditFileRepo - file to delete does not exist:", name);
+            return;
+        }
+        const fileRef = ref(HbStorage.current, file.storagePath);
+        await deleteObject(fileRef);
+        await deleteDoc(doc(HbDb.current, file.storagePath));
     }
 };
 EditFileRepo = __decorate([

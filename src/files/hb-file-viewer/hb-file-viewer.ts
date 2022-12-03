@@ -4,6 +4,9 @@ import "../../common/hb-button";
 import { FileModel } from "../../domain/Files/FileModel";
 import { FileType } from "../../domain/interfaces/FileInterfaces";
 import { styles } from "../../styles";
+import { FileDeletedEvent } from "../hb-delete-file-dialog/DeleteFileController";
+import "../hb-delete-file-dialog/hb-delete-file-dialog";
+import { DeleteFileDialog } from "../hb-delete-file-dialog/hb-delete-file-dialog";
 import { FileSelectedEvent, FindFileDialog } from "../hb-find-file-dialog";
 import { CloseFileViewerEvent, ExtractMediaPosterEvent, FileViewerController, NavigateFileViewerEvent, ShowFileViewerEvent, UpdateMediaPosterEvent } from "./FileViewerController";
 
@@ -33,6 +36,9 @@ export class FileViewer extends LitElement {
 
     @query("hb-find-file-dialog")
     $findFileDlg!:FindFileDialog;
+
+    @query("hb-delete-file-dialog")
+    $deleteFileDlg!:DeleteFileDialog;
 
     getFileNameFromUrl():string|null {
         const searchParams = new URLSearchParams(location.search);
@@ -74,6 +80,10 @@ export class FileViewer extends LitElement {
                 file-type=${FileType.image}
                 @file-selected=${this.fileSelected}
             ></hb-find-file-dialog>
+            <hb-delete-file-dialog
+                file-name=${file.name}
+                @file-deleted=${this.fileDeleted}
+            ></hb-delete-file-dialog>
             <div class="file-viewer" ?details-panel=${this.showDetails}>
                 <div class="content">
                     <div class="content-navigation">
@@ -231,7 +241,12 @@ export class FileViewer extends LitElement {
     }
 
     private deleteFile() {
-        alert("delete file");
+        this.$deleteFileDlg.showModal();
+    }
+
+    private fileDeleted() {
+        this.$deleteFileDlg.close();
+        this.dispatchEvent(new FileDeletedEvent());
     }
 
     static styles = [styles.types, styles.icons, css`

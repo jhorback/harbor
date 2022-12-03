@@ -7,7 +7,7 @@ export const EditFileRepoKey:symbol = Symbol("EDIT_FILE_REPO");
 export interface IEditFileRepo {
     extractMediaPoster(file:FileModel):Promise<FileModel>;
     updateMediaPoster(file:FileModel, posterFile:FileModel):Promise<FileModel>;
-    deleteFile(file:FileModel):Promise<void>;
+    deleteFile(name:string):Promise<void>;
 }
 
 
