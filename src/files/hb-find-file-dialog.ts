@@ -27,6 +27,8 @@ export class FileSelectedEvent extends Event {
 @customElement('hb-find-file-dialog')
 export class FindFileDialog extends LitElement {
 
+    get stateId() { return "hb-find-file-dialog"; }
+
     @property({type: String, attribute: "file-type"})
     fileType:FileType = FileType.file;
 

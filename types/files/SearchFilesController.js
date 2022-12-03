@@ -19,6 +19,7 @@ export class SearchFilesController extends StateController {
         super(...arguments);
         this.state = {
             list: [],
+            hasLoaded: false,
             isLoading: false,
             count: 0
         };
@@ -51,6 +52,7 @@ const searchDocuments = (repo, options) => async (product) => {
     product
         .next(updateFilesList(files))
         .next(setIsLoading(false))
+        .next(setHasLoaded)
         .requestUpdate("searchDocuments");
 };
 const updateFilesList = (files) => (state) => {
@@ -59,4 +61,7 @@ const updateFilesList = (files) => (state) => {
 };
 const setIsLoading = (isLoading) => (state) => {
     state.isLoading = isLoading;
+};
+const setHasLoaded = (state) => {
+    state.hasLoaded = true;
 };

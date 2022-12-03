@@ -6,6 +6,9 @@ import { styles } from "../styles";
 
 /**
  * @class HorizontalCard
+ * @fires hb-horizontal-card-click
+ * Styling:
+ * --hb-horizontal-card-cursor
  */
 @customElement('hb-horizontal-card')
 export class HorizontalCard extends LitElement {
@@ -62,6 +65,7 @@ export class HorizontalCard extends LitElement {
     static styles = [styles.icons, styles.types, css`
         :host {
             display: block;
+            --hb-horizontal-card-cursor: default;
         }
         .horizontal-card {
             overflow: clip;
@@ -71,7 +75,7 @@ export class HorizontalCard extends LitElement {
             border: 1px solid transparent;
             padding: 0 0 0 10px;
             align-items: center;
-            cursor: default;
+            cursor: var(--hb-horizontal-card-cursor);
             gap: 5px;
             background-color: var(--md-sys-color-surface-variant);
         }
