@@ -197,12 +197,15 @@ PageListContent.styles = [styles.icons, styles.form, css `
             gap: 10px;
             grid-template-columns: repeat(3, 1fr);
         }
+        .page-list[page-size=small] {
+            grid-template-columns: repeat(2, 1fr);
+        }
         .page-list[page-size=large] {
             grid-template-columns: repeat(4, 1fr);
         }
         .page-list[page-size=wide],
         .page-list[page-size=full] {
-            grid-template-columns: repeat(5, 1fr);
+            grid-template-columns: repeat(4, 1fr);
         }
         .page-list > * {
             position: relative;

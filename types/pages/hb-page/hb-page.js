@@ -28,9 +28,11 @@ let HbPage = class HbPage extends LitElement {
         return html `
             <hb-page-layout size=${state.page.pageSize}>
                 ${renderAppBarButtons(this, state)}
+                ${state.inEditMode ? renderEditTabs(this, state) : html ``}
+
                 <div class="page-header">
-                    ${state.inEditMode ? renderEditTabs(this, state) : html ``}
-                    <div ?hidden=${!state.isLoaded}>
+                    
+                    <div ?hidden=${!state.isLoaded} class="page-header-content">
                         <h1 class="display-medium" ?hidden=${!state.inEditMode && !page.showTitle}>${page.title}</h1>
 
                         ${state.inEditMode ? html `
@@ -94,29 +96,29 @@ HbPage.styles = [styles.types, styles.format, styles.icons, styles.form, css `
         [hidden] {
             display: none;
         }
-        h1.headline-large {
-            margin-bottom: 1rem;
-        }   
 
+
+        .edit-tabs,
+        .edit-tab-content {
+            max-width: var(--hb-page-layout-small);
+            margin: auto;
+            margin-bottom: 1rem;
+        }
         .edit-tabs {
             display: flex;
             gap: 24px;
-            margin-bottom: 1rem;
         }
         .edit-tab-content {
             background-color: var(--md-sys-color-surface-variant);
             border-radius:  var(--md-sys-shape-corner-medium);
-            padding: 1rem;
-            margin-bottom: 1rem;
+            padding: 1rem;            
         }
-
         .details-tab {
             display: flex;
         }
         .details-tab > :first-child {
             flex-grow: 1;
         }
-
         .edit-settings-tab-content {
             display: flex;
             gap: 48px;
@@ -127,8 +129,6 @@ HbPage.styles = [styles.types, styles.format, styles.icons, styles.form, css `
             flex-grow: 1;
             text-align: right;
         }
-
-
         .switch-field {
             display: flex;
             gap: 32px;
@@ -145,13 +145,26 @@ HbPage.styles = [styles.types, styles.format, styles.icons, styles.form, css `
             margin-bottom: 1rem;
         }
 
+       
         .page-header {
-            max-width: 750px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            max-width: var(--hb-page-layout-wide);
+            xxx-min-height: 200px;
             margin: auto;
+            padding: 56px;
+            background-color: var(--md-sys-color-surface);
+            border-radius: var(--md-sys-shape-corner-large);
+        }
+        .page-header-content {
+            max-width: 840px;
         }
         .page-content{
             display:flex;
             flex-direction: column;
+            margin: auto;
+            max-width: var(--hb-page-layout-medium);
             padding: 1rem 0;
         }
         .page-content > * {
@@ -163,6 +176,8 @@ HbPage.styles = [styles.types, styles.format, styles.icons, styles.form, css `
 
         .add-content {
             margin-top: 3rem;
+            max-width: var(--hb-page-layout-medium);
+            margin: auto;
         }
         .add-content-ctr {
             margin-top: 12px;
