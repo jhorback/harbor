@@ -176,7 +176,7 @@ export class HbPage extends LitElement {
             border-radius: var(--md-sys-shape-corner-large);
         }
         .page-header-content {
-            max-width: 840px;
+            max-width: var(--hb-page-layout-small);
         }
         .page-content{
             display:flex;

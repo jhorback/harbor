@@ -158,7 +158,7 @@ HbPage.styles = [styles.types, styles.format, styles.icons, styles.form, css `
             border-radius: var(--md-sys-shape-corner-large);
         }
         .page-header-content {
-            max-width: 840px;
+            max-width: var(--hb-page-layout-small);
         }
         .page-content{
             display:flex;
