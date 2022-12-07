@@ -229,9 +229,9 @@ PageController.defaultState = {
     currentUserCanEdit: true,
     currentUserCanAdd: true,
     selectedEditTab: "",
-    inEditMode: false,
-    activeContentIndex: -1,
-    editableContentIndex: -1,
+    inEditMode: true,
+    activeContentIndex: 0,
+    editableContentIndex: 0,
     pageTemplate: pageTemplates.get("page")
 };
 __decorate([

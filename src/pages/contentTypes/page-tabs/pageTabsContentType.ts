@@ -37,7 +37,7 @@ const pageTabsContentType:IContentTypeDescriptor = {
     type: "page-tabs",
     name: "Page Tabs",
     description: "A tabbed navigation component",
-    icon: "grid_view",
+    icon: "tab",
     defaultData: new PageTabsContentData(),
     render: (options:IContentTypeRenderOptions) => html`
         <hb-page-tabs-content

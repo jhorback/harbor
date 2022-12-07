@@ -26,7 +26,7 @@ const pageTabsContentType = {
     type: "page-tabs",
     name: "Page Tabs",
     description: "A tabbed navigation component",
-    icon: "grid_view",
+    icon: "tab",
     defaultData: new PageTabsContentData(),
     render: (options) => html `
         <hb-page-tabs-content

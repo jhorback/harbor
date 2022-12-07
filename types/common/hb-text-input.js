@@ -26,6 +26,8 @@ let TextInput = class TextInput extends LitElement {
     constructor() {
         super(...arguments);
         this.value = "";
+        this.label = "";
+        this.helperText = "";
         this.errorText = "";
         this.placeholder = "";
         this.autofocus = false;
@@ -33,6 +35,9 @@ let TextInput = class TextInput extends LitElement {
     render() {
         return html `
             <div class=${classMap({ "text-input-container": true, "property-error": this.errorText ? true : false })}>
+                ${this.label ? html `
+                    <div class="label-large">${this.label}</div>
+                ` : html ``}
                 <input
                     type="text"
                     class="text-input"
@@ -40,8 +45,10 @@ let TextInput = class TextInput extends LitElement {
                     .value=${this.value}
                     ?autofocus=${this.autofocus}
                     @keyup=${this.textKeyUp}>
-                <div class="error-text body-small">
-                    ${this.errorText}
+                <div class="helper-text body-small">
+                    ${this.errorText ? html `
+                        <span class="error-text">${this.errorText}</span>
+                    ` : this.helperText}
                 </div>
             </div>
         `;
@@ -59,6 +66,9 @@ TextInput.styles = [styles.icons, styles.types, css `
         }
         .text-input-container {
             padding-right: 2rem;
+        }
+        .label-large {
+            padding-bottom: 4px;
         }
         .text-input {
             font-weight: var(--md-sys-typescale-body-large-font-weight);
@@ -80,16 +90,24 @@ TextInput.styles = [styles.icons, styles.types, css `
             border-color: var(--md-sys-color-error) !important;
             outline: none;
         }
-        .error-text {
-            color: var(--md-sys-color-error);
+        .helper-text {
             padding-left: 1rem;
             padding-top: 4px;
             height: 16px;
+        }
+        .error-text {
+            color: var(--md-sys-color-error);
         }
     `];
 __decorate([
     property({ type: String, reflect: true })
 ], TextInput.prototype, "value", void 0);
+__decorate([
+    property({ type: String })
+], TextInput.prototype, "label", void 0);
+__decorate([
+    property({ type: String, attribute: "helper-text" })
+], TextInput.prototype, "helperText", void 0);
 __decorate([
     property({ type: String, attribute: "error-text" })
 ], TextInput.prototype, "errorText", void 0);

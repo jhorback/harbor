@@ -26,6 +26,12 @@ export class TextInput extends LitElement {
     @property({type: String, reflect: true})
     value = "";
 
+    @property({type: String})
+    label = "";
+
+    @property({type:String, attribute: "helper-text"})
+    helperText = "";
+
     @property({type: String, attribute: "error-text"})
     errorText = "";
 
@@ -38,6 +44,9 @@ export class TextInput extends LitElement {
     render() {
         return html`
             <div class=${classMap({"text-input-container":true, "property-error": this.errorText ? true : false})}>
+                ${this.label ? html`
+                    <div class="label-large">${this.label}</div>
+                ` : html``}
                 <input
                     type="text"
                     class="text-input"
@@ -45,8 +54,10 @@ export class TextInput extends LitElement {
                     .value=${this.value}
                     ?autofocus=${this.autofocus}
                     @keyup=${this.textKeyUp}>
-                <div class="error-text body-small">
-                    ${this.errorText}
+                <div class="helper-text body-small">
+                    ${this.errorText ? html`
+                        <span class="error-text">${this.errorText}</span>
+                    ` : this.helperText }
                 </div>
             </div>
         `;
@@ -65,6 +76,9 @@ export class TextInput extends LitElement {
         }
         .text-input-container {
             padding-right: 2rem;
+        }
+        .label-large {
+            padding-bottom: 4px;
         }
         .text-input {
             font-weight: var(--md-sys-typescale-body-large-font-weight);
@@ -86,11 +100,13 @@ export class TextInput extends LitElement {
             border-color: var(--md-sys-color-error) !important;
             outline: none;
         }
-        .error-text {
-            color: var(--md-sys-color-error);
+        .helper-text {
             padding-left: 1rem;
             padding-top: 4px;
             height: 16px;
+        }
+        .error-text {
+            color: var(--md-sys-color-error);
         }
     `]
 }
