@@ -474,7 +474,7 @@ const setContentActive = (options:ContentActiveChangeOptions) => (state:IPageSta
 };
 
 const addContent = (contentType:string) => (state:IPageState) => {
-    state.page.content.push(contentTypes.get(contentType).defaultData);
+    state.page.content.push(contentTypes.get(contentType).defaultData); // jch - use method here?
     state.activeContentIndex = state.page.content.length - 1;
     state.editableContentIndex = -1;
 };

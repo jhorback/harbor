@@ -32,6 +32,9 @@ export class TextInput extends LitElement {
     @property({type:String, attribute: "helper-text"})
     helperText = "";
 
+    @property({type: Boolean})
+    readonly:boolean = false;
+
     @property({type: String, attribute: "error-text"})
     errorText = "";
 
@@ -49,9 +52,10 @@ export class TextInput extends LitElement {
                 ` : html``}
                 <input
                     type="text"
-                    class="text-input"
+                    class="text-input"                    
                     placeholder=${this.placeholder}
                     .value=${this.value}
+                    ?readonly=${this.readonly}
                     ?autofocus=${this.autofocus}
                     @keyup=${this.textKeyUp}>
                 <div class="helper-text body-small">
@@ -92,6 +96,10 @@ export class TextInput extends LitElement {
             width: 100%;
             padding: 0 1rem;
             background: transparent;
+        }
+        .text-input[readonly] {
+            border-color: var(--md-sys-color-outline);
+            opacity: 0.7;
         }
         .property-error .text-input {
             border-color: var(--md-sys-color-error);

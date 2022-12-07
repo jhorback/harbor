@@ -9,7 +9,7 @@ export class PageTabsContentData implements IContentType {
     rootPageUID:string = "";
     rootPageUrl:string = "";
     rootPageTitle:string = "";
-    rootPageSubtitle:string = "";
+    rootPageSubtitle:string|null = "";
     tabs:Array<PageTabsTab> = [{
         tabName: "Page 1 Tab",
         url: "",

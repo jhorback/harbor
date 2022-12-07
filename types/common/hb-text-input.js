@@ -28,6 +28,7 @@ let TextInput = class TextInput extends LitElement {
         this.value = "";
         this.label = "";
         this.helperText = "";
+        this.readonly = false;
         this.errorText = "";
         this.placeholder = "";
         this.autofocus = false;
@@ -40,9 +41,10 @@ let TextInput = class TextInput extends LitElement {
                 ` : html ``}
                 <input
                     type="text"
-                    class="text-input"
+                    class="text-input"                    
                     placeholder=${this.placeholder}
                     .value=${this.value}
+                    ?readonly=${this.readonly}
                     ?autofocus=${this.autofocus}
                     @keyup=${this.textKeyUp}>
                 <div class="helper-text body-small">
@@ -83,6 +85,10 @@ TextInput.styles = [styles.icons, styles.types, css `
             padding: 0 1rem;
             background: transparent;
         }
+        .text-input[readonly] {
+            border-color: var(--md-sys-color-outline);
+            opacity: 0.7;
+        }
         .property-error .text-input {
             border-color: var(--md-sys-color-error);
         }
@@ -108,6 +114,9 @@ __decorate([
 __decorate([
     property({ type: String, attribute: "helper-text" })
 ], TextInput.prototype, "helperText", void 0);
+__decorate([
+    property({ type: Boolean })
+], TextInput.prototype, "readonly", void 0);
 __decorate([
     property({ type: String, attribute: "error-text" })
 ], TextInput.prototype, "errorText", void 0);

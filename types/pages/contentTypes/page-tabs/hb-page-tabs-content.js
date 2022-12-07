@@ -6,9 +6,10 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 import { css, html, LitElement } from "lit";
 import { customElement, property, query } from "lit/decorators.js";
+import { debounce } from "../../../common/debounce";
 import "../../../common/hb-button";
 import "../../../common/hb-text-input";
-import { PageTabsContentController, SelectTabEvent } from "./PageTabsContentController";
+import { AddNewPageEvent, AddNewTabEvent, DeleteSelectedPageEvent, DeleteSelectedTabEvent, PageTabsContentController, SelectedTabNameChanged, SelectTabEvent } from "./PageTabsContentController";
 /**
  */
 let PageTabsContent = class PageTabsContent extends LitElement {
@@ -47,15 +48,45 @@ let PageTabsContent = class PageTabsContent extends LitElement {
                             <div class="edit-tools-content">
                                 <hb-text-input
                                     label="Tab name"
-                                    value=${state.selectedTabName}
+                                    value=${state.selectedTab.tabName}
                                     helper-text=${state.selectedTabUrl}
+                                    ?readonly=${state.selectedTab.url ? true : false}
+                                    autofocus
+                                    @hb-text-input-change=${debounce(this.selectedTabNameChange, 700)}
                                 ></hb-text-input>
-                                <hb-button label="Add New Page"></hb-button>
+                                ${state.selectedTab.url ? html `
+                                    <hb-button
+                                        text-button
+                                        label="Delete Selected Page"
+                                        @click=${this.deleteSelectedPage}
+                                    ></hb-button>
+                                ` : html `
+                                    <hb-button
+                                        label="Add New Page"
+                                        @click=${this.addNewPage}
+                                    ></hb-button>
+                                    <hb-button
+                                        text-button
+                                        label="Delete Selected Tab"
+                                        @click=${this.deleteSelectedTab}
+                                    ></hb-button>
+                                `}
+                                
                             </div>                        
                         ` : html ``}                        
                         <div class="edit-tools-buttons">
-                            <hb-button text-button label="Edit Root Page"></hb-button>
-                            <hb-button text-button label="Add New Tab"></hb-button>
+                            ${state.rootPageUrl === location.pathname ? html `` : html `
+                                <hb-button
+                                    text-button
+                                    label="Edit Root Page"
+                                    @click=${this.editRootPage}
+                                ></hb-button>
+                            `}                            
+                            <hb-button
+                                text-button
+                                label="Add New Tab"
+                                @click=${this.addNewTab}
+                            ></hb-button>
                         </div>
                     </div>                    
                 </div>
@@ -71,22 +102,37 @@ let PageTabsContent = class PageTabsContent extends LitElement {
         return html `
             <div class="tab-background">
                 <div class="tab-container">
-                ${state.tabs.map(tab => html `
-                    <a
-                        class="tab"
+                ${state.tabs.map((tab, index) => html `
+                    <a class="tab"
                         href=${forEdit ? "javascript:;" : tab.url}
-                        ?selected=${tab.tabName === state.selectedTabName}
-                        @click=${() => this.tabClicked(tab.tabName)}
-                    >
-                        ${tab.tabName}
-                    </a>
+                        ?selected=${index === state.selectedTabIndex}
+                        @click=${() => this.tabClicked(index)}
+                    >${tab.tabName}</a>
                 `)}
                 </div>
             </div>
         `;
     }
-    tabClicked(tabName) {
-        this.dispatchEvent(new SelectTabEvent(tabName));
+    tabClicked(index) {
+        this.dispatchEvent(new SelectTabEvent(index));
+    }
+    selectedTabNameChange(event) {
+        this.dispatchEvent(new SelectedTabNameChanged(event.value));
+    }
+    addNewPage(event) {
+        this.dispatchEvent(new AddNewPageEvent());
+    }
+    deleteSelectedPage(event) {
+        this.dispatchEvent(new DeleteSelectedPageEvent());
+    }
+    deleteSelectedTab(event) {
+        this.dispatchEvent(new DeleteSelectedTabEvent());
+    }
+    addNewTab(event) {
+        this.dispatchEvent(new AddNewTabEvent());
+    }
+    editRootPage(event) {
+        alert("Edit Root Page");
     }
 };
 PageTabsContent.styles = [css `
@@ -112,8 +158,16 @@ PageTabsContent.styles = [css `
             align-items: stretch;
             background-color: var(--md-sys-color-surface);
             border-radius: var(--hb-page-tabs-shape-corner);
+            max-width: 100%;
+            overflow-x: auto;
+            scrollbar-width: thin;
         }
-
+        .tab-container::-webkit-scrollbar,
+        .tab-container::-webkit-scrollbar-track,
+        .tab-container::-webkit-scrollbar-thumb {
+            height: 1px;
+            background: transparent;
+        }
         .tab {
             flex-grow: 1;
             border-radius: var(--hb-page-tabs-shape-corner);
@@ -121,6 +175,8 @@ PageTabsContent.styles = [css `
             text-align: center;
             color: var(--md-sys-color-on-surface);
             text-decoration: none;
+            white-space: nowrap;
+            padding: 0 24px;
         }
         .tab:hover {
             background-color: var(--md-sys-color-surface-variant);
