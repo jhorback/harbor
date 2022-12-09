@@ -5,8 +5,11 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 import { hostEvent, Product } from "@domx/statecontroller";
-import { HbCurrentUser } from "../../../domain/HbCurrentUser";
+import { inject } from "../../../domain/DependencyContainer/decorators";
+import { AddPageRepoKey, EditPageRepoKey } from "../../../domain/interfaces/PageInterfaces";
+import { FindPageRepo } from "../../../domain/Pages/FindPageRepo";
 import { PageModel } from "../../../domain/Pages/PageModel";
+import { pageTemplates } from "../../../domain/Pages/pageTemplates";
 import { UpdatePageContentEvent } from "../../hb-page";
 import { PageContentController } from "../../hb-page/PageContentController";
 export class SelectTabEvent extends Event {
@@ -23,6 +26,13 @@ export class SelectedTabNameChanged extends Event {
     }
 }
 SelectedTabNameChanged.eventType = "selected-tab-name-changed";
+export class SelectPageTemplateEvent extends Event {
+    constructor(templateKey) {
+        super(SelectPageTemplateEvent.eventType);
+        this.templateKey = templateKey;
+    }
+}
+SelectPageTemplateEvent.eventType = "select-page-template";
 export class AddNewPageEvent extends Event {
     constructor() {
         super(AddNewPageEvent.eventType);
@@ -47,6 +57,21 @@ export class AddNewTabEvent extends Event {
     }
 }
 AddNewTabEvent.eventType = "add-new-tab";
+export class SaveTabsEvent extends Event {
+    constructor() {
+        super(SaveTabsEvent.eventType);
+    }
+}
+SaveTabsEvent.eventType = "save-tabs";
+/**
+ * Note: There are two ways to save
+ *
+ * 1. Dispatching the traditional `{@link UpdatePageContentEvent}` which will save the current page and
+ * mark the state as dirty since the other pages are not synced/saved yet.
+ *
+ * 2. Tapping into the `{@link syncComponentsAndSave}` method to save and sync. This is also done
+ * by dispatching the `{@link SaveTabsEvent}` from the UI component.
+ */
 export class PageTabsContentController extends PageContentController {
     constructor() {
         super(...arguments);
@@ -54,14 +79,17 @@ export class PageTabsContentController extends PageContentController {
             ...this.content,
             selectedTabIndex: -1,
             selectedTabUrl: "",
-            selectedTab: null
+            selectedTab: null,
+            isOnRootPage: false,
+            pageTemplates: pageTemplates.all(),
+            addPageError: "",
+            isDirty: false
         };
-        this.currentUser = new HbCurrentUser();
     }
     stateUpdated() {
         this.page.state;
         this.state = { ...this.state, ...this.content };
-        this.setRootPageIfNone();
+        this.setInitialValues();
     }
     async hostConnected() {
         super.hostConnected();
@@ -81,25 +109,10 @@ export class PageTabsContentController extends PageContentController {
             }
         });
     }
-    newUpdatePageContentEvent() {
-        const state = {
-            contentType: this.state.contentType,
-            rootPageSubtitle: this.state.rootPageSubtitle,
-            rootPageTitle: this.state.rootPageTitle,
-            rootPageUID: this.state.rootPageUID,
-            rootPageUrl: this.state.rootPageUrl,
-            tabs: this.state.tabs
-        };
-        return new UpdatePageContentEvent(this.host.contentIndex, state);
-    }
-    getPageVisibility(isVisible) {
-        return isVisible ? "visible" :
-            this.page.state.page.authorUid === this.currentUser.uid ?
-                "author" : "hidden";
-    }
-    setRootPageIfNone() {
+    setInitialValues() {
         Product.of(this)
             .next(setRootPageIfNone(this.page.state.page))
+            .next(setInitialSelectedPageTemplate)
             .requestUpdate("PageTabsContentController.setRootPageIfNone");
     }
     selectTab(event) {
@@ -112,28 +125,48 @@ export class PageTabsContentController extends PageContentController {
         Product.of(this)
             .next(updateSelectedTabName(event.tabName))
             .next(setSelectedTabUrl)
+            .next(setAddPageError(""))
+            .next(setIsDirty(true))
             .requestUpdate(event)
-            .dispatchHostEvent(this.newUpdatePageContentEvent());
+            .dispatchHostEvent(new UpdatePageContentEvent(this.host.contentIndex, convertToPageTabsData(this.state)));
     }
     deleteSelectedTab(event) {
         Product.of(this)
             .next(deleteSelectedTab)
             .next(setSelectedTabUrl)
             .requestUpdate(event)
-            .dispatchHostEvent(this.newUpdatePageContentEvent());
+            .tap(syncComponentsAndSave(this.page.state.page, this.editPageRepo));
     }
     addNewTab(event) {
         Product.of(this)
             .next(addNewTab)
             .next(setSelectedTabUrl)
             .requestUpdate(event)
-            .dispatchHostEvent(this.newUpdatePageContentEvent());
+            .tap(syncComponentsAndSave(this.page.state.page, this.editPageRepo));
+    }
+    selectPageTemplate(event) {
+        Product.of(this)
+            .next(selectPageTemplate(event.templateKey))
+            .requestUpdate(event);
     }
     addNewPage(event) {
+        Product.of(this)
+            .tap(addNewPage(this.page.state.page, this.addPageRepo, this.editPageRepo));
     }
     deleteSelectedPage(event) {
+        alert("Delete not implemented");
+    }
+    saveTabs(event) {
+        Product.of(this)
+            .tap(syncComponentsAndSave(this.page.state.page, this.editPageRepo));
     }
 }
+__decorate([
+    inject(AddPageRepoKey)
+], PageTabsContentController.prototype, "addPageRepo", void 0);
+__decorate([
+    inject(EditPageRepoKey)
+], PageTabsContentController.prototype, "editPageRepo", void 0);
 __decorate([
     hostEvent(SelectTabEvent)
 ], PageTabsContentController.prototype, "selectTab", null);
@@ -147,11 +180,17 @@ __decorate([
     hostEvent(AddNewTabEvent)
 ], PageTabsContentController.prototype, "addNewTab", null);
 __decorate([
+    hostEvent(SelectPageTemplateEvent)
+], PageTabsContentController.prototype, "selectPageTemplate", null);
+__decorate([
     hostEvent(AddNewPageEvent)
 ], PageTabsContentController.prototype, "addNewPage", null);
 __decorate([
     hostEvent(DeleteSelectedPageEvent)
 ], PageTabsContentController.prototype, "deleteSelectedPage", null);
+__decorate([
+    hostEvent(SaveTabsEvent)
+], PageTabsContentController.prototype, "saveTabs", null);
 const setSelectedTabIndex = (index) => (state) => {
     state.selectedTabIndex = index;
     state.selectedTab = state.tabs[index];
@@ -163,7 +202,13 @@ const setSelectedTabUrl = (state) => {
     const url = `${state.rootPageUrl}/${PageModel.tokenize(state.selectedTab?.tabName)}`;
     state.selectedTabUrl = url;
 };
+const setInitialSelectedPageTemplate = (state) => {
+    if (!state.selectedPageTemplateKey) {
+        state.selectedPageTemplateKey = state.pageTemplates[0].key;
+    }
+};
 const setRootPageIfNone = (page) => (state) => {
+    state.isOnRootPage = state.rootPageUrl === page.pathname;
     if (state.rootPageUrl) {
         return;
     }
@@ -171,6 +216,7 @@ const setRootPageIfNone = (page) => (state) => {
     state.rootPageSubtitle = page.subtitle;
     state.rootPageTitle = page.title;
     state.rootPageUID = page.uid;
+    state.isOnRootPage = true;
 };
 const updateSelectedTabName = (tabName) => (state) => {
     state.tabs[state.selectedTabIndex].tabName = tabName;
@@ -189,4 +235,96 @@ const deleteSelectedTab = (state) => {
     state.tabs.splice(state.selectedTabIndex, 1);
     state.selectedTabIndex = -1;
     state.selectedTab = null;
+};
+const selectPageTemplate = (templateKey) => (state) => {
+    state.selectedPageTemplateKey = templateKey;
+};
+const setAddPageError = (error) => (state) => {
+    state.addPageError = error;
+};
+const addNewPage = (currentPage, addPageRepo, editPageRepo) => async (product) => {
+    const state = product.getState();
+    if (!state.selectedTab) {
+        return;
+    }
+    const pageExists = await addPageRepo.pageExists(state.selectedTab.url);
+    if (pageExists) {
+        product
+            .next(setAddPageError("The page already exists"))
+            .requestUpdate("PageTabsContentController.addNewPage");
+        return;
+    }
+    const newPage = await addPageRepo.addPage({
+        pageTemplate: state.selectedPageTemplateKey,
+        pathname: state.selectedTabUrl,
+        title: state.rootPageTitle,
+        subtitle: state.rootPageSubtitle ? state.rootPageSubtitle : undefined
+    });
+    product
+        .next(setSelectedTabPageUid(newPage.uid))
+        .requestUpdate("PageTabsContentController.addNewPage")
+        .tap(syncComponentsAndSave(currentPage, editPageRepo));
+};
+const setSelectedTabPageUid = (uid) => (state) => {
+    state.tabs[state.selectedTabIndex].pageUid = uid;
+    state.selectedTab = state.tabs[state.selectedTabIndex];
+};
+const syncComponentsAndSave = (currentPage, editPageRepo) => async (product) => {
+    const findPageRepo = new FindPageRepo();
+    const state = product.getState();
+    const pageTabsData = convertToPageTabsData(state);
+    // load the tab pages
+    const tabPages = state.tabs.map(tab => (tab.pageUid === currentPage.uid || !tab.pageUid) ?
+        Promise.resolve(null) : findPageRepo.findPage(tab.pageUid));
+    // load the root page
+    if (currentPage.uid !== pageTabsData.rootPageUID) {
+        tabPages.push(findPageRepo.findPage(currentPage.uid));
+    }
+    // add the current page to save then save all pages
+    const pagesToSave = await Promise.all(tabPages);
+    pagesToSave.push(currentPage);
+    modifyPageTabsData(pageTabsData, pagesToSave.filter(page => page !== null));
+    const savePages = pagesToSave.map(page => page === null ? Promise.resolve() : saveTabsOnPage(editPageRepo, page, pageTabsData));
+    await Promise.all(savePages);
+    product.next(setIsDirty(false)).requestUpdate("PageTabsContentController.syncComponentsAndSave");
+};
+const modifyPageTabsData = (data, pages) => {
+    const rootPage = pages.find(page => page.uid === data.rootPageUID);
+    if (rootPage) {
+        data.rootPageTitle = rootPage.title;
+        data.rootPageUID = rootPage.uid;
+        data.rootPageSubtitle = rootPage.subtitle;
+        data.rootPageUrl = rootPage.pathname;
+    }
+    data.tabs = data.tabs.map((tab, index) => {
+        const tabPage = pages.find(page => page.uid === tab.pageUid);
+        if (tabPage) {
+            return { ...tab, url: tabPage.pathname };
+        }
+        return tab;
+    });
+};
+const saveTabsOnPage = async (editPageRepo, page, tabsData) => {
+    const contentIndex = page.content.findIndex(content => content.contentType === "page-tabs");
+    if (contentIndex === -1) {
+        page.content.unshift(tabsData);
+    }
+    else {
+        page.content[contentIndex] = tabsData;
+    }
+    await editPageRepo.savePage(page);
+};
+const convertToPageTabsData = (pageTabsState) => {
+    const state = {
+        contentType: pageTabsState.contentType,
+        rootPageSubtitle: pageTabsState.rootPageSubtitle,
+        rootPageTitle: pageTabsState.rootPageTitle,
+        rootPageUID: pageTabsState.rootPageUID,
+        rootPageUrl: pageTabsState.rootPageUrl,
+        tabs: pageTabsState.tabs
+    };
+    return state;
+};
+const setIsDirty = (isDirty) => (state) => {
+    state.isDirty = isDirty;
 };

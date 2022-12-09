@@ -55,6 +55,7 @@ export class Button extends LitElement {
             border-radius: var(--md-sys-shape-corner-extra-large);
             background-color: transparent;
             width: 100%;
+            white-space:nowrap;
         }
         :host([text-button]) button {
             border-color: transparent;

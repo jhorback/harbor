@@ -110,6 +110,7 @@ export interface IAddPageRepo {
 export interface IAddNewPageOptions {
     pageTemplate: string;
     title: string;
+    subtitle?: string;
     pathname: string;
 }
 

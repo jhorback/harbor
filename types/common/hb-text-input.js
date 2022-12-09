@@ -77,13 +77,16 @@ TextInput.styles = [styles.icons, styles.types, css `
             font-size: var(--md-sys-typescale-body-large-font-size);
             border-radius:  var(--md-sys-shape-corner-extra-small);
             outline: 0;
-            border: 1px solid var(--md-sys-color-on-background);
+            border: 1px solid var(--md-sys-color-outline);
             color: var(--md-sys-color-on-background);
             line-height: 54px;            
             max-width: 100%;
             width: 100%;
             padding: 0 1rem;
             background: transparent;
+        }
+        .text-input:focus {
+            border: 1px solid var(--md-sys-color-on-background);
         }
         .text-input[readonly] {
             border-color: var(--md-sys-color-outline);

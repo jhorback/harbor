@@ -20,6 +20,7 @@ export class PageModel implements IPageData {
         const page = new PageModel();
         page.authorUid = authorUid;
         page.title = options.title;
+        page.subtitle = options.subtitle ? options.subtitle : null;
         page.pathname = options.pathname;
         page.pageTemplate = options.pageTemplate;
         page.content = pageTemplates.get(page.pageTemplate).defaultContent;

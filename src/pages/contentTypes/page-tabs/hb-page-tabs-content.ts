@@ -4,8 +4,9 @@ import { debounce } from "../../../common/debounce";
 import "../../../common/hb-button";
 import "../../../common/hb-text-input";
 import { TextInputChangeEvent } from "../../../common/hb-text-input";
+import { styles } from "../../../styles";
 import { HbPageContent } from "../../hb-page";
-import { AddNewPageEvent, AddNewTabEvent, DeleteSelectedPageEvent, DeleteSelectedTabEvent, PageTabsContentController, SelectedTabNameChanged, SelectTabEvent } from "./PageTabsContentController";
+import { AddNewPageEvent, AddNewTabEvent, DeleteSelectedPageEvent, DeleteSelectedTabEvent, PageTabsContentController, SaveTabsEvent, SelectedTabNameChanged, SelectPageTemplateEvent, SelectTabEvent } from "./PageTabsContentController";
 
 /**
  */
@@ -46,6 +47,12 @@ export class PageTabsContent extends LitElement {
                 </div>
                 <div slot="content-edit">
                     ${this.renderTabs(true)}
+                    <div class="content-edit-message">
+                        <p>Select a tab to create (or delete a page); drag a tab to reorder.</p>
+                        ${state.isOnRootPage ? html`
+                            <p>You are editing the root page. Normally this page cannot be navigated to directly.</p>
+                        ` : html``}
+                    </div>
                 </div>
                 <div slot="content-edit-tools">
                     <div class="edit-tools">
@@ -55,10 +62,19 @@ export class PageTabsContent extends LitElement {
                                     label="Tab name"
                                     value=${state.selectedTab.tabName}
                                     helper-text=${state.selectedTabUrl}
+                                    error-text=${state.addPageError}
                                     ?readonly=${state.selectedTab.url ? true : false}
                                     autofocus
                                     @hb-text-input-change=${debounce(this.selectedTabNameChange, 700)}
                                 ></hb-text-input>
+                                <div class="edit-tools-page-type">
+                                    <label for="pageTemplate" class="label-large">Page type</label>
+                                    <select id="pageTemplate" @change=${this.selectedPageTemplateChange} class="large">
+                                        ${state.pageTemplates.map(template => html`
+                                            <option value=${template.key}>${template.name}</option>
+                                        `)}
+                                    </select>
+                                </div>
                                 ${state.selectedTab.url ? html`
                                     <hb-button
                                         text-button
@@ -80,7 +96,7 @@ export class PageTabsContent extends LitElement {
                             </div>                        
                         ` : html``}                        
                         <div class="edit-tools-buttons">
-                            ${state.rootPageUrl === location.pathname ? html`` : html`
+                            ${state.isOnRootPage ? html`` : html`
                                 <hb-button
                                     text-button
                                     label="Edit Root Page"
@@ -92,6 +108,13 @@ export class PageTabsContent extends LitElement {
                                 label="Add New Tab"
                                 @click=${this.addNewTab}
                             ></hb-button>
+                            ${!state.isDirty ? html`` : html`
+                                <hb-button
+                                    tonal
+                                    label="Save Changes"
+                                    @click=${this.saveChanges}
+                                ></hb-button>
+                            `}
                         </div>
                     </div>                    
                 </div>
@@ -145,11 +168,20 @@ export class PageTabsContent extends LitElement {
         this.dispatchEvent(new AddNewTabEvent());
     }
 
+    selectedPageTemplateChange(event:Event) {
+        const templateKey = (event.target as HTMLSelectElement).value as string;
+        this.dispatchEvent(new SelectPageTemplateEvent(templateKey));
+    }
+    
+    saveChanges(event:Event) {
+        this.dispatchEvent(new SaveTabsEvent());
+    }
+
     editRootPage(event:Event) {
         alert("Edit Root Page");
     }
    
-    static styles = [css`
+    static styles = [styles.types, styles.form, css`
         :host {
             position: sticky;
             top: 0;
@@ -201,9 +233,11 @@ export class PageTabsContent extends LitElement {
             color: var(--md-sys-color-on-primary-container);
         }
 
-
-        div[slot="content-edit-tools"] {
-            margin-top: 4rem;
+        .content-edit-message {
+            margin: 2rem 1rem;
+            padding-left: 1rem;
+            opacity: 0.8;
+            border-left: 5px solid var(--md-sys-color-outline);
         }
 
         .edit-tools {
@@ -216,6 +250,12 @@ export class PageTabsContent extends LitElement {
             display: flex;
             gap: 12px;
             align-items: center;
+        }
+        .edit-tools-page-type {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            padding-bottom: 20px;
         }
         .edit-tools-buttons {
             text-align: right;
