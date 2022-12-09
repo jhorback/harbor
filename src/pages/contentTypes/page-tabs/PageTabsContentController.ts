@@ -325,13 +325,13 @@ const syncComponentsAndSave = (currentPage:PageModel, editPageRepo:IEditPageRepo
 
     // load the root page
     if (currentPage.uid !== pageTabsData.rootPageUID) {
-        tabPages.push(findPageRepo.findPage(currentPage.uid));
+        tabPages.push(findPageRepo.findPage(pageTabsData.rootPageUID));
     }
 
     // add the current page to save then save all pages
     const pagesToSave = await Promise.all(tabPages);
     pagesToSave.push(currentPage);
-    modifyPageTabsData(pageTabsData, pagesToSave.filter(page => page !== null) as Array<PageModel>);
+    const updatedPagesToSave = syncPagesAndTabsData(pageTabsData, pagesToSave.filter(page => page !== null) as Array<PageModel>);
 
     const savePages = pagesToSave.map(page =>
         page === null ? Promise.resolve() : saveTabsOnPage(editPageRepo, page, pageTabsData));
@@ -341,7 +341,8 @@ const syncComponentsAndSave = (currentPage:PageModel, editPageRepo:IEditPageRepo
 };
 
 
-const modifyPageTabsData = (data:PageTabsContentData, pages:Array<PageModel>) => {
+const syncPagesAndTabsData = (data:PageTabsContentData, pagesToSync:Array<PageModel>) => {
+    const pages = [...pagesToSync];
     const rootPage = pages.find(page => page.uid === data.rootPageUID);
     if (rootPage) {
         data.rootPageTitle = rootPage.title;
@@ -350,13 +351,20 @@ const modifyPageTabsData = (data:PageTabsContentData, pages:Array<PageModel>) =>
         data.rootPageUrl = rootPage.pathname;
     }
 
-    data.tabs = data.tabs.map((tab, index) => {
+    data.tabs = data.tabs.map(tab => {
         const tabPage = pages.find(page => page.uid === tab.pageUid);
         if (tabPage) {
-           return {...tab, url: tabPage.pathname};
+            tabPage.title = `${data.rootPageTitle} / ${tab.tabName}`;
+            tabPage.displayTitle = data.rootPageTitle;
+            tabPage.subtitle = data.rootPageSubtitle;
+            return {
+                ...tab,
+                url: tabPage.pathname
+            };
         }
         return tab;
     });
+    return pages;
 };
 
 

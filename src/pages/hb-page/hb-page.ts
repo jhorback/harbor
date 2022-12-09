@@ -44,8 +44,8 @@ export class HbPage extends LitElement {
 
                 <div class="page-header">
                     
-                    <div ?hidden=${!state.isLoaded} class="page-header-content">
-                        <h1 class="display-medium" ?hidden=${!state.inEditMode && !page.showTitle}>${page.title}</h1>
+                    <div xhidden=${!state.isLoaded} class="page-header-content">
+                        <h1 class="display-medium" ?hidden=${!state.inEditMode && !page.showTitle}>${page.displayTitle}</h1>
 
                         ${state.inEditMode ? html`
                             <hb-content-editable
@@ -64,7 +64,7 @@ export class HbPage extends LitElement {
                 <div class="page-content">
                     ${state.isLoaded === false ? html`
                         <div>
-                            Loading page...
+                            <!-- Loading page... -->
                         </div>
                     ` : html``}
                     ${state.page.content.map((data, contentIndex) => contentTypes.get(data.contentType).render({

@@ -278,17 +278,18 @@ const syncComponentsAndSave = (currentPage, editPageRepo) => async (product) => 
         Promise.resolve(null) : findPageRepo.findPage(tab.pageUid));
     // load the root page
     if (currentPage.uid !== pageTabsData.rootPageUID) {
-        tabPages.push(findPageRepo.findPage(currentPage.uid));
+        tabPages.push(findPageRepo.findPage(pageTabsData.rootPageUID));
     }
     // add the current page to save then save all pages
     const pagesToSave = await Promise.all(tabPages);
     pagesToSave.push(currentPage);
-    modifyPageTabsData(pageTabsData, pagesToSave.filter(page => page !== null));
+    const updatedPagesToSave = syncPagesAndTabsData(pageTabsData, pagesToSave.filter(page => page !== null));
     const savePages = pagesToSave.map(page => page === null ? Promise.resolve() : saveTabsOnPage(editPageRepo, page, pageTabsData));
     await Promise.all(savePages);
     product.next(setIsDirty(false)).requestUpdate("PageTabsContentController.syncComponentsAndSave");
 };
-const modifyPageTabsData = (data, pages) => {
+const syncPagesAndTabsData = (data, pagesToSync) => {
+    const pages = [...pagesToSync];
     const rootPage = pages.find(page => page.uid === data.rootPageUID);
     if (rootPage) {
         data.rootPageTitle = rootPage.title;
@@ -296,13 +297,20 @@ const modifyPageTabsData = (data, pages) => {
         data.rootPageSubtitle = rootPage.subtitle;
         data.rootPageUrl = rootPage.pathname;
     }
-    data.tabs = data.tabs.map((tab, index) => {
+    data.tabs = data.tabs.map(tab => {
         const tabPage = pages.find(page => page.uid === tab.pageUid);
         if (tabPage) {
-            return { ...tab, url: tabPage.pathname };
+            tabPage.title = `${data.rootPageTitle} / ${tab.tabName}`;
+            tabPage.displayTitle = data.rootPageTitle;
+            tabPage.subtitle = data.rootPageSubtitle;
+            return {
+                ...tab,
+                url: tabPage.pathname
+            };
         }
         return tab;
     });
+    return pages;
 };
 const saveTabsOnPage = async (editPageRepo, page, tabsData) => {
     const contentIndex = page.content.findIndex(content => content.contentType === "page-tabs");

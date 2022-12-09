@@ -138,11 +138,17 @@ export class PageController extends StateController {
             .requestUpdate(event);
     }
     async pagePathnameChangeEvent(event) {
-        this.state = { ...PageController.defaultState };
+        // this.state = {...PageController.defaultState};
         await this.host.updateComplete;
         this.refreshState();
     }
     requestPage(event) {
+        // may want to try resetting state as in pagePathnameChangeEvent
+        // the first time the page comes back from subscribeToPage
+        // may need a callback for that.
+        // Product.of<IPageState>(this)
+        //     .next(clearEditIndexes)
+        //     .requestUpdate(event);
         this.editPageRepo.subscribeToPage(this.host.pathname, subscribeToPage(this), this.abortController.signal);
     }
     updateShowTitle(event) {
@@ -229,9 +235,9 @@ PageController.defaultState = {
     currentUserCanEdit: true,
     currentUserCanAdd: true,
     selectedEditTab: "",
-    inEditMode: true,
-    activeContentIndex: 0,
-    editableContentIndex: 0,
+    inEditMode: false,
+    activeContentIndex: -1,
+    editableContentIndex: -1,
     pageTemplate: pageTemplates.get("page")
 };
 __decorate([
@@ -408,4 +414,9 @@ const setPageEditMode = (inEditMode) => (state) => {
         state.editableContentIndex = -1;
         state.activeContentIndex = -1;
     }
+};
+const clearEditIndexes = (state) => {
+    state.inEditMode = false;
+    state.editableContentIndex = -1;
+    state.activeContentIndex = -1;
 };

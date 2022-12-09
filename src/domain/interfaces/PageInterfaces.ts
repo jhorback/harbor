@@ -62,6 +62,7 @@ export interface IPageData {
     pageSize: PageSize;
     pathname: string;
     title: string,
+    displayTitle: string,
     showTitle: boolean;
     subtitle: string|null;
     showSubtitle: boolean;
@@ -110,6 +111,7 @@ export interface IAddPageRepo {
 export interface IAddNewPageOptions {
     pageTemplate: string;
     title: string;
+    displayTitle?: string;
     subtitle?: string;
     pathname: string;
 }
