@@ -232,7 +232,7 @@ export class PageController extends StateController {
         // may want to try resetting state as in pagePathnameChangeEvent
         // the first time the page comes back from subscribeToPage
         // may need a callback for that.
-        
+
         // Product.of<IPageState>(this)
         //     .next(clearEditIndexes)
         //     .requestUpdate(event);
@@ -346,11 +346,19 @@ export class PageController extends StateController {
 }
 
 
-const subscribeToPage = (pageController:PageController) => (page:PageModel) => {
+const subscribeToPage = (pageController:PageController) => (page:PageModel, initialLoad?:boolean) => {
 
     // happens if the page is deleted
     if (!page) {
         throw new NotFoundError("Page Not Found");
+    }
+
+    if (initialLoad === true) {
+         pageController.state = {...PageController.defaultState};
+         // jch - would not need this
+        // Product.of<IPageState>(pageController)
+        //     .next(clearEditIndexes)
+        //     .requestUpdate(`PageController.subscribeToPage("${page.pathname}")`);
     }
 
     Product.of<IPageState>(pageController)
