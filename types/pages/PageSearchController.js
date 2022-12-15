@@ -9,12 +9,12 @@ import { inject } from "../domain/DependencyContainer/decorators";
 import { SearchPagesRepoKey } from "../domain/interfaces/PageInterfaces";
 import "../domain/Pages/HbSearchPagesRepo";
 export class SearchPagesEvent extends Event {
+    static { this.eventType = "search-pages"; }
     constructor(options) {
         super(SearchPagesEvent.eventType, { bubbles: true });
         this.options = options;
     }
 }
-SearchPagesEvent.eventType = "search-pages";
 export class PageSearchController extends StateController {
     constructor() {
         super(...arguments);

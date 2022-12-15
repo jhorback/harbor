@@ -88,8 +88,7 @@ let HbPage = class HbPage extends LitElement {
     doneButtonClicked() {
         this.dispatchEvent(new PageEditModeChangeEvent(false));
     }
-};
-HbPage.styles = [styles.types, styles.format, styles.icons, styles.form, css `
+    static { this.styles = [styles.types, styles.format, styles.icons, styles.form, css `
         :host {
             display: block;
         }
@@ -211,7 +210,8 @@ HbPage.styles = [styles.types, styles.format, styles.icons, styles.form, css `
         .page-bottom-spacer {
             height: 200px;
         }
-  `];
+  `]; }
+};
 __decorate([
     property({ type: String })
 ], HbPage.prototype, "pathname", void 0);

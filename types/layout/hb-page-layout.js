@@ -34,8 +34,7 @@ let PageLayout = class PageLayout extends LitElement {
     avatarButtonClicked(event) {
         this.$userMenu.open = !this.$userMenu.open;
     }
-};
-PageLayout.styles = [css `
+    static { this.styles = [css `
       :host {
         display: block;
         --hb-page-layout-small: 760px;
@@ -67,7 +66,8 @@ PageLayout.styles = [css `
       :host([size=full]) .page-layout {
         max-width: var(--hb-page-layout-full);
       }
-    `];
+    `]; }
+};
 __decorate([
     query("hb-user-menu")
 ], PageLayout.prototype, "$userMenu", void 0);

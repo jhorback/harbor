@@ -59,8 +59,7 @@ let DeletePageDialog = class DeletePageDialog extends LitElement {
     deleteButtonClicked() {
         this.dispatchEvent(new DeletePageEvent(this.uid));
     }
-};
-DeletePageDialog.styles = [styles.types, styles.dialog, styles.icons, css `
+    static { this.styles = [styles.types, styles.dialog, styles.icons, css `
         :host {
             display: block;
             z-index:1;
@@ -74,7 +73,8 @@ DeletePageDialog.styles = [styles.types, styles.dialog, styles.icons, css `
         .center {
             text-align: center;
         }
-  `];
+  `]; }
+};
 __decorate([
     property({ type: String })
 ], DeletePageDialog.prototype, "uid", void 0);

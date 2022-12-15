@@ -22,12 +22,12 @@ export default {
     }
 };
 class MockStateChangeEvent extends Event {
+    static { this.eventType = "mock-state-change"; }
     constructor(state) {
         super(MockStateChangeEvent.eventType);
         this.state = state;
     }
 }
-MockStateChangeEvent.eventType = "mock-state-change";
 ;
 class MockFileUploadController extends FileUploadController {
     openFileSelector() {

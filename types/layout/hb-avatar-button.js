@@ -8,11 +8,11 @@ import { html, css, LitElement } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import { iconStyles } from "../styles/iconStyles";
 export class AvatarButtonClickedEvent extends Event {
+    static { this.eventType = "hb-avatar-button-click"; }
     constructor() {
         super(AvatarButtonClickedEvent.eventType, { bubbles: true, composed: true });
     }
 }
-AvatarButtonClickedEvent.eventType = "hb-avatar-button-click";
 /**
  * @class AvatarButton
  *
@@ -41,8 +41,7 @@ let AvatarButton = class AvatarButton extends LitElement {
     onClick() {
         this.dispatchEvent(new AvatarButtonClickedEvent());
     }
-};
-AvatarButton.styles = [iconStyles, css `
+    static { this.styles = [iconStyles, css `
     :host {
       display: inline-block;
       color: var(--md-sys-color-on-background);
@@ -93,7 +92,8 @@ AvatarButton.styles = [iconStyles, css `
     [hidden] {
       display: none;
     }
-  `];
+  `]; }
+};
 __decorate([
     property({ type: String })
 ], AvatarButton.prototype, "href", void 0);

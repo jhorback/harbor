@@ -90,8 +90,7 @@ let ProfileAdminTab = class ProfileAdminTab extends LitElement {
         this.changeHomePage = false;
         this.$findPageDialog.showModal();
     }
-};
-ProfileAdminTab.styles = [styles.types, css `
+    static { this.styles = [styles.types, css `
         :host {
             display: block; 
         }
@@ -111,7 +110,8 @@ ProfileAdminTab.styles = [styles.types, css `
         [hidden] {
             display: none;
         }
-    `];
+    `]; }
+};
 __decorate([
     property({ type: Object })
 ], ProfileAdminTab.prototype, "settings", void 0);

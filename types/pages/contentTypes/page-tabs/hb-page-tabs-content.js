@@ -164,8 +164,7 @@ let PageTabsContent = class PageTabsContent extends LitElement {
     editRootPage(event) {
         alert("Edit Root Page");
     }
-};
-PageTabsContent.styles = [styles.types, styles.form, css `
+    static { this.styles = [styles.types, styles.form, css `
         :host {
             position: sticky;
             top: 0;
@@ -244,7 +243,8 @@ PageTabsContent.styles = [styles.types, styles.form, css `
         .edit-tools-buttons {
             text-align: right;
         }
-  `];
+  `]; }
+};
 __decorate([
     property({ type: String })
 ], PageTabsContent.prototype, "pathname", void 0);

@@ -173,8 +173,7 @@ let PageListContent = class PageListContent extends LitElement {
         const display = event.target.value;
         this.dispatchEvent(new ChangePageListDisplayEvent(display));
     }
-};
-PageListContent.styles = [styles.icons, styles.form, css `
+    static { this.styles = [styles.icons, styles.form, css `
         :host {
             display: block;
             position: relative;
@@ -240,7 +239,8 @@ PageListContent.styles = [styles.icons, styles.form, css `
             color: var(--md-sys-color-on-background);
             border-radius: 8px 0 8px 0;
         }
-  `];
+  `]; }
+};
 __decorate([
     property({ type: String })
 ], PageListContent.prototype, "pathname", void 0);

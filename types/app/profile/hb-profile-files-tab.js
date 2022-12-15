@@ -61,8 +61,7 @@ let ProfileContentTab = class ProfileContentTab extends LitElement {
     fileClicked(fileName) {
         this.$fileViewer.show(fileName);
     }
-};
-ProfileContentTab.styles = [styles.types, css `
+    static { this.styles = [styles.types, css `
         :host {
             display: block;
         }
@@ -75,7 +74,8 @@ ProfileContentTab.styles = [styles.types, css `
         hb-horizontal-card {
             --hb-horizontal-card-cursor: pointer;
         }
-    `];
+    `]; }
+};
 __decorate([
     query("hb-file-viewer")
 ], ProfileContentTab.prototype, "$fileViewer", void 0);

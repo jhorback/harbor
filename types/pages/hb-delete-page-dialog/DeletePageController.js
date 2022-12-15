@@ -9,18 +9,18 @@ import { inject } from "../../domain/DependencyContainer/decorators";
 import { DeletePageRepoKey } from "../../domain/interfaces/PageInterfaces";
 import "../../domain/Pages/HbDeletePageRepo";
 export class DeletePageEvent extends Event {
+    static { this.eventType = "delete-page"; }
     constructor(uid) {
         super(DeletePageEvent.eventType, { bubbles: true });
         this.uid = uid;
     }
 }
-DeletePageEvent.eventType = "delete-page";
 export class PageDeletedEvent extends Event {
+    static { this.eventType = "page-deleted"; }
     constructor() {
         super(PageDeletedEvent.eventType, { bubbles: true });
     }
 }
-PageDeletedEvent.eventType = "page-deleted";
 export class DeletePageController extends StateController {
     constructor(deletePageDialog) {
         super(deletePageDialog);

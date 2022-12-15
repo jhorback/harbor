@@ -16,12 +16,12 @@ import { UserModel } from "./User/UserModel";
 import { UserRole } from "./User/UserRoles";
 import { HbCurrentUser } from "./HbCurrentUser";
 export class HbCurrentUserChangedEvent extends Event {
+    static { this.eventType = "hb-current-user-changed"; }
     constructor(userData) {
         super(HbCurrentUserChangedEvent.eventType);
         this.userData = userData;
     }
 }
-HbCurrentUserChangedEvent.eventType = "hb-current-user-changed";
 let HbAuth = class HbAuth {
     constructor() {
         this.connected = false;

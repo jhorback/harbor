@@ -44,20 +44,20 @@ export class FileUploadState {
 }
 /** Host event to cancel the upload */
 export class CancelUploadEvent extends Event {
+    static { this.eventType = "cancel-upload"; }
     constructor() {
         super(CancelUploadEvent.eventType);
     }
 }
-CancelUploadEvent.eventType = "cancel-upload";
 /** Host event to allow overwriting a file */
 export class OverwriteFileEvent extends Event {
+    static { this.eventType = "overwrite-file"; }
     constructor(fileIndex, allowOverwrite) {
         super(OverwriteFileEvent.eventType);
         this.fileIndex = fileIndex;
         this.allowOverwrite = allowOverwrite;
     }
 }
-OverwriteFileEvent.eventType = "overwrite-file";
 /**
  */
 export class FileUploadController extends StateController {
@@ -348,8 +348,8 @@ class FileState {
  * a recalculation of the {@link FileUploadState}
  */
 class FileUpdatedEvent extends Event {
+    static { this.eventType = "file-updated"; }
     constructor() {
         super(FileUpdatedEvent.eventType);
     }
 }
-FileUpdatedEvent.eventType = "file-updated";

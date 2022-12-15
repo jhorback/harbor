@@ -8,14 +8,14 @@ import { html, css, LitElement } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import { styles } from "../styles";
 export class SwitchChangeEvent extends Event {
+    static { this.eventType = "hb-switch-change"; }
+    get selected() { return this.targetEl.checked; }
+    ;
     constructor(target) {
         super(SwitchChangeEvent.eventType, { bubbles: true, composed: true });
         this.targetEl = target;
     }
-    get selected() { return this.targetEl.checked; }
-    ;
 }
-SwitchChangeEvent.eventType = "hb-switch-change";
 /**
  * @class Switch
  * @fires hb-switch
@@ -42,8 +42,7 @@ let Switch = class Switch extends LitElement {
         this.selected = cb.checked;
         this.dispatchEvent(new SwitchChangeEvent(cb));
     }
-};
-Switch.styles = [styles.icons, styles.types, css `
+    static { this.styles = [styles.icons, styles.types, css `
         :host {
             display: inline-block;
         }
@@ -130,7 +129,8 @@ Switch.styles = [styles.icons, styles.types, css `
             background-color: var(--md-sys-color-surface);
         }
         
-    `];
+    `]; }
+};
 __decorate([
     property({ type: Boolean, reflect: true })
 ], Switch.prototype, "selected", void 0);
