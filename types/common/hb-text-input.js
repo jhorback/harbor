@@ -9,15 +9,15 @@ import { classMap } from 'lit/directives/class-map.js';
 import { customElement, property } from "lit/decorators.js";
 import { styles } from "../styles";
 export class TextInputChangeEvent extends Event {
+    static { this.eventType = "hb-text-input-change"; }
+    get value() { return this.targetEl.value; }
+    ;
     constructor(target, enterKey) {
         super(TextInputChangeEvent.eventType, { bubbles: true, composed: true });
         this.enterKey = enterKey;
         this.targetEl = target;
     }
-    get value() { return this.targetEl.value; }
-    ;
 }
-TextInputChangeEvent.eventType = "hb-text-input-change";
 /**
  * @class TextInput
  * @fires hb-text-input
@@ -61,8 +61,7 @@ let TextInput = class TextInput extends LitElement {
         const enterKey = event.key === "Enter";
         this.dispatchEvent(new TextInputChangeEvent(target, enterKey));
     }
-};
-TextInput.styles = [styles.icons, styles.types, css `
+    static { this.styles = [styles.icons, styles.types, css `
         :host {
             display: block;
         }
@@ -107,7 +106,8 @@ TextInput.styles = [styles.icons, styles.types, css `
         .error-text {
             color: var(--md-sys-color-error);
         }
-    `];
+    `]; }
+};
 __decorate([
     property({ type: String, reflect: true })
 ], TextInput.prototype, "value", void 0);

@@ -97,11 +97,11 @@ export class PageTabsContent extends LitElement {
                         ` : html``}                        
                         <div class="edit-tools-buttons">
                             ${state.isOnRootPage ? html`` : html`
-                                <hb-button
+                                <hb-link-button
                                     text-button
                                     label="Edit Root Page"
-                                    @click=${this.editRootPage}
-                                ></hb-button>
+                                    href=${state.rootPageUrl}
+                                ></hb-link-button>
                             `}                            
                             <hb-button
                                 text-button

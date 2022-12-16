@@ -92,11 +92,11 @@ let PageTabsContent = class PageTabsContent extends LitElement {
                         ` : html ``}                        
                         <div class="edit-tools-buttons">
                             ${state.isOnRootPage ? html `` : html `
-                                <hb-button
+                                <hb-link-button
                                     text-button
                                     label="Edit Root Page"
-                                    @click=${this.editRootPage}
-                                ></hb-button>
+                                    href=${state.rootPageUrl}
+                                ></hb-link-button>
                             `}                            
                             <hb-button
                                 text-button
@@ -164,8 +164,7 @@ let PageTabsContent = class PageTabsContent extends LitElement {
     editRootPage(event) {
         alert("Edit Root Page");
     }
-};
-PageTabsContent.styles = [styles.types, styles.form, css `
+    static { this.styles = [styles.types, styles.form, css `
         :host {
             position: sticky;
             top: 0;
@@ -244,7 +243,8 @@ PageTabsContent.styles = [styles.types, styles.form, css `
         .edit-tools-buttons {
             text-align: right;
         }
-  `];
+  `]; }
+};
 __decorate([
     property({ type: String })
 ], PageTabsContent.prototype, "pathname", void 0);

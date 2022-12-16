@@ -13,56 +13,56 @@ import { pageTemplates } from "../../../domain/Pages/pageTemplates";
 import { UpdatePageContentEvent } from "../../hb-page";
 import { PageContentController } from "../../hb-page/PageContentController";
 export class SelectTabEvent extends Event {
+    static { this.eventType = "select-tab"; }
     constructor(index) {
         super(SelectTabEvent.eventType);
         this.index = index;
     }
 }
-SelectTabEvent.eventType = "select-tab";
 export class SelectedTabNameChanged extends Event {
+    static { this.eventType = "selected-tab-name-changed"; }
     constructor(tabName) {
         super(SelectedTabNameChanged.eventType);
         this.tabName = tabName;
     }
 }
-SelectedTabNameChanged.eventType = "selected-tab-name-changed";
 export class SelectPageTemplateEvent extends Event {
+    static { this.eventType = "select-page-template"; }
     constructor(templateKey) {
         super(SelectPageTemplateEvent.eventType);
         this.templateKey = templateKey;
     }
 }
-SelectPageTemplateEvent.eventType = "select-page-template";
 export class AddNewPageEvent extends Event {
+    static { this.eventType = "add-new-page"; }
     constructor() {
         super(AddNewPageEvent.eventType);
     }
 }
-AddNewPageEvent.eventType = "add-new-page";
 export class DeleteSelectedPageEvent extends Event {
+    static { this.eventType = "delete-selected-page"; }
     constructor() {
         super(DeleteSelectedPageEvent.eventType);
     }
 }
-DeleteSelectedPageEvent.eventType = "delete-selected-page";
 export class DeleteSelectedTabEvent extends Event {
+    static { this.eventType = "delete-selected-tab"; }
     constructor() {
         super(DeleteSelectedTabEvent.eventType);
     }
 }
-DeleteSelectedTabEvent.eventType = "delete-selected-tab";
 export class AddNewTabEvent extends Event {
+    static { this.eventType = "add-new-tab"; }
     constructor() {
         super(AddNewTabEvent.eventType);
     }
 }
-AddNewTabEvent.eventType = "add-new-tab";
 export class SaveTabsEvent extends Event {
+    static { this.eventType = "save-tabs"; }
     constructor() {
         super(SaveTabsEvent.eventType);
     }
 }
-SaveTabsEvent.eventType = "save-tabs";
 /**
  * Note: There are two ways to save
  *

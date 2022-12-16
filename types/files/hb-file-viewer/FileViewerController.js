@@ -13,38 +13,38 @@ import { EditFileRepoKey } from "../../domain/interfaces/FileInterfaces";
 import { sendFeedback } from "../../layout/feedback";
 import { FileDeletedEvent } from "../hb-delete-file-dialog/DeleteFileController";
 export class ShowFileViewerEvent extends Event {
+    static { this.eventType = "show-file-viewer"; }
     constructor() {
         super(ShowFileViewerEvent.eventType);
     }
 }
-ShowFileViewerEvent.eventType = "show-file-viewer";
 export class CloseFileViewerEvent extends Event {
+    static { this.eventType = "close-file-viewer"; }
     constructor() {
         super(CloseFileViewerEvent.eventType);
     }
 }
-CloseFileViewerEvent.eventType = "close-file-viewer";
 export class NavigateFileViewerEvent extends Event {
+    static { this.eventType = "navigate-file-viewer"; }
     constructor(next) {
         super(NavigateFileViewerEvent.eventType);
         this.next = next;
         this.previous = !next;
     }
 }
-NavigateFileViewerEvent.eventType = "navigate-file-viewer";
 export class ExtractMediaPosterEvent extends Event {
+    static { this.eventType = "extract-media-poster"; }
     constructor() {
         super(ExtractMediaPosterEvent.eventType);
     }
 }
-ExtractMediaPosterEvent.eventType = "extract-media-poster";
 export class UpdateMediaPosterEvent extends Event {
+    static { this.eventType = "update-media-poster"; }
     constructor(file) {
         super(UpdateMediaPosterEvent.eventType);
         this.file = file;
     }
 }
-UpdateMediaPosterEvent.eventType = "update-media-poster";
 export class FileViewerController extends StateController {
     constructor(host) {
         super(host);

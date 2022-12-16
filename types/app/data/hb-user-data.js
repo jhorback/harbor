@@ -14,19 +14,19 @@ let UserData = UserData_1 = class UserData extends DataElement {
         super(...arguments);
         this.state = UserData_1.defaultState;
     }
+    static { this.defaultState = {
+        isLoaded: false,
+        user: {
+            isAuthenticated: false,
+            displayName: ""
+        }
+    }; }
     get uid() { return this.getAttribute("uid") || ""; }
     set uid(uid) { this.setAttribute("uid", uid); }
     connectedCallback() {
         super.connectedCallback();
         StateChange.of(this)
             .tap(requestUser(this.userListRepo, this.uid));
-    }
-};
-UserData.defaultState = {
-    isLoaded: false,
-    user: {
-        isAuthenticated: false,
-        displayName: ""
     }
 };
 __decorate([

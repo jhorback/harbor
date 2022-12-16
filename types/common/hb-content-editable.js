@@ -8,12 +8,12 @@ import { css, html, LitElement } from "lit";
 import { live } from "lit-html/directives/live.js";
 import { customElement, property, query } from "lit/decorators.js";
 export class ContentEditableChangeEvent extends Event {
+    static { this.eventType = "change"; }
     constructor(value) {
         super(ContentEditableChangeEvent.eventType, { bubbles: true, composed: true });
         this.value = value;
     }
 }
-ContentEditableChangeEvent.eventType = "change";
 /**
  * @class Switch
  * @fires hb-switch
@@ -81,8 +81,7 @@ let ContentEditable = class ContentEditable extends LitElement {
         this.$div.innerText = this.value;
         this.dispatchEvent(new ContentEditableChangeEvent(value));
     }
-};
-ContentEditable.styles = [css `
+    static { this.styles = [css `
         :host {
             display: block;
         }
@@ -106,7 +105,8 @@ ContentEditable.styles = [css `
         .placeholder {
             opacity: 0.38;
         }  
-    `];
+    `]; }
+};
 __decorate([
     property({ type: String })
 ], ContentEditable.prototype, "value", void 0);

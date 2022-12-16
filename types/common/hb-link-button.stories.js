@@ -1,4 +1,5 @@
 import { html } from 'lit-html';
+import { ifDefined } from 'lit-html/directives/if-defined';
 import "./hb-link-button";
 export default {
     title: 'Common/Link Button',
@@ -20,18 +21,24 @@ export default {
                 defaultValue: { summary: "false" },
                 type: { summary: "Set the href to # or javascript:; to fully disable" }
             }
+        },
+        textButton: {
+            control: { type: "boolean" },
+            description: "Makes the button look like text",
+            defaultValue: false
         }
     },
     parameters: {
         options: { showPanel: true }
     }
 };
-const LinkButtonTemplate = ({ label, disabled, href, target }) => html `
+const LinkButtonTemplate = ({ label, disabled, href, target, textButton }) => html `
     <hb-link-button
         ?disabled=${disabled}
         label=${label}
         href=${href}
-        target=${target}
+        text-button=${textButton}
+        target=${ifDefined(target)}
     ></hb-link-button>
 `;
 // @ts-ignore 
@@ -41,5 +48,6 @@ LinkButton.args = {
     label: "Button Text",
     href: "https://www.google.com",
     disabled: false,
-    target: ""
+    target: "",
+    textButton: false
 };

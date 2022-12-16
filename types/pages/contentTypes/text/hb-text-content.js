@@ -90,8 +90,7 @@ let TextContent = class TextContent extends LitElement {
             el.getAttribute("poster") !== "").map(el => el.getAttribute("poster")));
         thumbs.length > 0 && this.dispatchEvent(new PageThumbChangeEvent({ thumbs }));
     }
-};
-TextContent.styles = [styles.types, styles.format, css `
+    static { this.styles = [styles.types, styles.format, css `
         :host {
             display: block;
         }
@@ -100,7 +99,8 @@ TextContent.styles = [styles.types, styles.format, css `
             clear: both;
             display: table;
         }
-  `];
+  `]; }
+};
 __decorate([
     property({ type: String })
 ], TextContent.prototype, "pathname", void 0);
@@ -221,9 +221,9 @@ const insertFile = (selectedNode, editor, file) => {
 };
 ;
 class TinymceChangeEvent extends Event {
+    static { this.eventType = "change"; }
     constructor(value) {
         super(TinymceChangeEvent.eventType, { bubbles: true, composed: true });
         this.value = value;
     }
 }
-TinymceChangeEvent.eventType = "change";

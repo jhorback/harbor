@@ -84,8 +84,7 @@ let PageThumbSettingsTab = class PageThumbSettingsTab extends LitElement {
     fileSelected(event) {
         this.dispatchEvent(new PageThumbChangeEvent({ thumbs: [event.file.thumbUrl] }));
     }
-};
-PageThumbSettingsTab.styles = [styles.types, styles.dialog, css `
+    static { this.styles = [styles.types, styles.dialog, css `
         :host {
             display: block;
         }
@@ -152,7 +151,8 @@ PageThumbSettingsTab.styles = [styles.types, styles.dialog, css `
         hb-button {
             width: 120px;
         }
-  `];
+  `]; }
+};
 __decorate([
     property({ type: Object })
 ], PageThumbSettingsTab.prototype, "state", void 0);

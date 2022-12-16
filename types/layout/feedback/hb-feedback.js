@@ -8,12 +8,12 @@ import { html, css, LitElement } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import { styles } from "../../styles";
 export class SystemFeedbackEvent extends Event {
+    static { this.eventType = "system-feedback"; }
     constructor(feedbackOptions) {
         super(SystemFeedbackEvent.eventType);
         this.feedbackOptions = feedbackOptions;
     }
 }
-SystemFeedbackEvent.eventType = "system-feedback";
 /**
  * @class Feedback
  */
@@ -93,8 +93,7 @@ let Feedback = class Feedback extends LitElement {
     linkClicked() {
         this.open = false;
     }
-};
-Feedback.styles = [styles.types, styles.colors, css `
+    static { this.styles = [styles.types, styles.colors, css `
         :host {
             background-color: var(--md-sys-color-inverse-surface);
             color: var(--md-sys-color-inverse-on-surface);
@@ -145,7 +144,8 @@ Feedback.styles = [styles.types, styles.colors, css `
         a:focus, button:focus {
             outline: none;
         }
-    `];
+    `]; }
+};
 __decorate([
     property({ type: Boolean, reflect: true })
 ], Feedback.prototype, "open", void 0);

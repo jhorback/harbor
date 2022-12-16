@@ -31,8 +31,9 @@ class EditPageRepo implements IEditPageRepo {
         return authorId;
     }
 
-    async subscribeToPage(pathname:string, callback:(page: PageModel) => void, signal:AbortSignal) {
+    async subscribeToPage(pathname:string, callback:(page: PageModel, initialLoad?:boolean) => void, signal:AbortSignal) {
         
+        let initialLoad = true;
         const page = await this.findPageRepo.findPageByPathname(pathname);
         
         if (page === null) {
@@ -46,7 +47,8 @@ class EditPageRepo implements IEditPageRepo {
         const unsubscribe = onSnapshot(doc(HbDb.current, "pages", page.uid)
             .withConverter(PageModel), (snapshot) => {                
                 const doc = snapshot.data() as PageModel;
-                callback(doc);
+                callback(doc, initialLoad);
+                initialLoad = false;
             }, (error:FirestoreError) => {
                 throw new ServerError(error.message, error);
             });

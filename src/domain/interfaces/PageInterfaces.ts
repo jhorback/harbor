@@ -97,7 +97,7 @@ export interface IPageSearchOptions {
 export const EditPageRepoKey:symbol = Symbol("EDIT_PAGE_REPO");
 export type IUnsubscribe = () => void;
 export interface IEditPageRepo {
-    subscribeToPage(uid:string, callback:(pageModel: PageModel) => void, signal:AbortSignal):void;
+    subscribeToPage(uid:string, callback:(pageModel: PageModel, initialLoad?:boolean) => void, signal:AbortSignal):void;
     savePage(page: PageModel):void;
 }
 

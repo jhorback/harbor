@@ -15,54 +15,55 @@ import { HbCurrentUserChangedEvent } from "../../domain/HbAuth";
 import { NotFoundError } from "../../domain/Errors";
 import { contentTypes } from "../../domain/Pages/contentTypes";
 export class RequestPageEvent extends Event {
+    static { this.eventType = "request-page"; }
     constructor() {
         super(RequestPageEvent.eventType);
     }
 }
-RequestPageEvent.eventType = "request-page";
 export class PagePathnameChangeEvent extends Event {
+    static { this.eventType = "page-pathname-change"; }
     constructor(pathname) {
         super(PagePathnameChangeEvent.eventType);
         this.pathname = pathname;
     }
 }
-PagePathnameChangeEvent.eventType = "page-pathname-change";
 export class UpdateShowTitleEvent extends Event {
+    static { this.eventType = "update-show-title"; }
     constructor(showTitle) {
         super(UpdateShowTitleEvent.eventType);
         this.showTitle = showTitle;
     }
 }
-UpdateShowTitleEvent.eventType = "update-show-title";
 export class UpdateShowSubtitleEvent extends Event {
+    static { this.eventType = "update-show-subtitle"; }
     constructor(showSubtitle) {
         super(UpdateShowSubtitleEvent.eventType);
         this.showSubtitle = showSubtitle;
     }
 }
-UpdateShowSubtitleEvent.eventType = "update-show-subtitle";
 export class UpdatePageVisibilityEvent extends Event {
+    static { this.eventType = "update-page-visibility"; }
     constructor(isVisible) {
         super(UpdatePageVisibilityEvent.eventType);
         this.isVisible = isVisible;
     }
 }
-UpdatePageVisibilityEvent.eventType = "update-page-visibility";
 export class UpdateSubtitleEvent extends Event {
+    static { this.eventType = "update-subtitle"; }
     constructor(subtitle) {
         super(UpdateSubtitleEvent.eventType);
         this.subtitle = subtitle;
     }
 }
-UpdateSubtitleEvent.eventType = "update-subtitle";
 export class UpdatePageSizeEvent extends Event {
+    static { this.eventType = "update-page-size"; }
     constructor(size) {
         super(UpdatePageSizeEvent.eventType);
         this.size = size;
     }
 }
-UpdatePageSizeEvent.eventType = "update-page-size";
 export class UpdatePageContentEvent extends Event {
+    static { this.eventType = "update-page-content"; }
     constructor(index, state) {
         super(UpdatePageContentEvent.eventType, { bubbles: true, composed: true });
         if (!(index > -1)) {
@@ -72,16 +73,16 @@ export class UpdatePageContentEvent extends Event {
         this.state = state;
     }
 }
-UpdatePageContentEvent.eventType = "update-page-content";
 export class MovePageContentEvent extends Event {
+    static { this.eventType = "move-page-content"; }
     constructor(index, moveUp) {
         super(MovePageContentEvent.eventType, { bubbles: true, composed: true });
         this.index = index;
         this.moveUp = moveUp;
     }
 }
-MovePageContentEvent.eventType = "move-page-content";
 export class PageThumbChangeEvent extends Event {
+    static { this.eventType = "page-thumb-change"; }
     constructor(options) {
         super(PageThumbChangeEvent.eventType, { bubbles: true, composed: true });
         this.thumbs = options.thumbs;
@@ -89,43 +90,53 @@ export class PageThumbChangeEvent extends Event {
         this.removeIndex = options.removeIndex;
     }
 }
-PageThumbChangeEvent.eventType = "page-thumb-change";
 export class PageEditModeChangeEvent extends Event {
+    static { this.eventType = "page-edit-mode-change"; }
     constructor(inEditMode) {
         super(PageEditModeChangeEvent.eventType);
         this.inEditMode = inEditMode;
     }
 }
-PageEditModeChangeEvent.eventType = "page-edit-mode-change";
 export class EditTabClickedEvent extends Event {
+    static { this.eventType = "edit-tab-clicked"; }
     constructor(tab) {
         super(EditTabClickedEvent.eventType);
         this.tab = tab;
     }
 }
-EditTabClickedEvent.eventType = "edit-tab-clicked";
 export class ContentActiveChangeEvent extends Event {
+    static { this.eventType = "content-active-change"; }
     constructor(options) {
         super(ContentActiveChangeEvent.eventType, { bubbles: true, composed: true });
         this.options = options;
     }
 }
-ContentActiveChangeEvent.eventType = "content-active-change";
 export class ContentDeletedEvent extends Event {
+    static { this.eventType = "content-deleted"; }
     constructor(index) {
         super(ContentDeletedEvent.eventType, { bubbles: true, composed: true });
         this.index = index;
     }
 }
-ContentDeletedEvent.eventType = "content-deleted";
 export class AddContentEvent extends Event {
+    static { this.eventType = "add-content"; }
     constructor(contentType) {
         super(AddContentEvent.eventType);
         this.contentType = contentType;
     }
 }
-AddContentEvent.eventType = "add-content";
 export class PageController extends StateController {
+    static { this.defaultState = {
+        isLoaded: false,
+        page: new PageModel(),
+        currentUserCanEdit: true,
+        currentUserCanAdd: true,
+        selectedEditTab: "",
+        inEditMode: false,
+        activeContentIndex: -1,
+        editableContentIndex: -1,
+        pageTemplate: pageTemplates.get("page")
+    }; }
     constructor(host) {
         super(host);
         this.state = { ...PageController.defaultState };
@@ -229,17 +240,6 @@ export class PageController extends StateController {
             .requestUpdate(event);
     }
 }
-PageController.defaultState = {
-    isLoaded: false,
-    page: new PageModel(),
-    currentUserCanEdit: true,
-    currentUserCanAdd: true,
-    selectedEditTab: "",
-    inEditMode: false,
-    activeContentIndex: -1,
-    editableContentIndex: -1,
-    pageTemplate: pageTemplates.get("page")
-};
 __decorate([
     stateProperty()
 ], PageController.prototype, "state", void 0);
@@ -294,10 +294,15 @@ __decorate([
 __decorate([
     hostEvent(AddContentEvent)
 ], PageController.prototype, "addContent", null);
-const subscribeToPage = (pageController) => (page) => {
+const subscribeToPage = (pageController) => (page, initialLoad) => {
     // happens if the page is deleted
     if (!page) {
         throw new NotFoundError("Page Not Found");
+    }
+    if (initialLoad === true) {
+        // Product.of<IPageState>(pageController)
+        //     .next(clearEditIndexes)
+        //     .requestUpdate(`PageController.subscribeToPage("${page.pathname}")`);
     }
     Product.of(pageController)
         .next(updatePageLoaded(page))
@@ -416,7 +421,6 @@ const setPageEditMode = (inEditMode) => (state) => {
     }
 };
 const clearEditIndexes = (state) => {
-    state.inEditMode = false;
     state.editableContentIndex = -1;
     state.activeContentIndex = -1;
 };

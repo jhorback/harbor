@@ -116,8 +116,7 @@ let AddPageDialog = class AddPageDialog extends LitElement {
         this.dispatchEvent(new AddNewPageEvent());
         this.close();
     }
-};
-AddPageDialog.styles = [styles.types, styles.dialog, css `
+    static { this.styles = [styles.types, styles.dialog, css `
         :host {
             display: block;
             z-index:1;
@@ -149,7 +148,8 @@ AddPageDialog.styles = [styles.types, styles.dialog, css `
             text-align: right;
         }
         
-  `];
+  `]; }
+};
 __decorate([
     property({ type: String, attribute: "url-prefix" })
 ], AddPageDialog.prototype, "urlPrefix", void 0);
