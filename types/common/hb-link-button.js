@@ -18,6 +18,7 @@ let LinkButton = class LinkButton extends LitElement {
         this.href = "";
         this.disabled = false;
         this.target = "";
+        this.textButton = false;
     }
     render() {
         return html `
@@ -25,6 +26,7 @@ let LinkButton = class LinkButton extends LitElement {
                 href=${this.href}
                 class="link label-large"
                 ?disabled=${this.disabled}
+                ?text-button=${this.textButton}
                 target=${ifDefined(this.target)}
             >
                 ${this.label}
@@ -65,6 +67,9 @@ let LinkButton = class LinkButton extends LitElement {
             opacity: 0.38;
             cursor: default;
         }
+        .link[text-button] {
+            border-color: transparent;
+        }
     `]; }
 };
 __decorate([
@@ -79,6 +84,9 @@ __decorate([
 __decorate([
     property({ type: String })
 ], LinkButton.prototype, "target", void 0);
+__decorate([
+    property({ type: Boolean, attribute: "text-button" })
+], LinkButton.prototype, "textButton", void 0);
 LinkButton = __decorate([
     customElement('hb-link-button')
 ], LinkButton);

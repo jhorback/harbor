@@ -300,8 +300,6 @@ const subscribeToPage = (pageController) => (page, initialLoad) => {
         throw new NotFoundError("Page Not Found");
     }
     if (initialLoad === true) {
-        pageController.state = { ...PageController.defaultState };
-        // jch - would not need this
         // Product.of<IPageState>(pageController)
         //     .next(clearEditIndexes)
         //     .requestUpdate(`PageController.subscribeToPage("${page.pathname}")`);
@@ -423,7 +421,6 @@ const setPageEditMode = (inEditMode) => (state) => {
     }
 };
 const clearEditIndexes = (state) => {
-    state.inEditMode = false;
     state.editableContentIndex = -1;
     state.activeContentIndex = -1;
 };

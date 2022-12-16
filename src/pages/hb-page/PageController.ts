@@ -354,8 +354,6 @@ const subscribeToPage = (pageController:PageController) => (page:PageModel, init
     }
 
     if (initialLoad === true) {
-         pageController.state = {...PageController.defaultState};
-         // jch - would not need this
         // Product.of<IPageState>(pageController)
         //     .next(clearEditIndexes)
         //     .requestUpdate(`PageController.subscribeToPage("${page.pathname}")`);
@@ -504,7 +502,6 @@ const setPageEditMode = (inEditMode:boolean) => (state:IPageState) => {
 };
 
 const clearEditIndexes = (state:IPageState) => {
-    state.inEditMode = false;
     state.editableContentIndex = -1;
     state.activeContentIndex = -1;
 };
