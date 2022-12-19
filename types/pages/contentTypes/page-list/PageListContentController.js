@@ -11,6 +11,7 @@ import { HbCurrentUser } from "../../../domain/HbCurrentUser";
 import { FindPageRepo } from "../../../domain/Pages/FindPageRepo";
 import { PageThumbChangeEvent, UpdatePageContentEvent } from "../../hb-page";
 import { PageContentController } from "../../hb-page/PageContentController";
+import { PageListContentData } from "./pageListContentType";
 export class AddListPageEvent extends Event {
     static { this.eventType = "add-list-page"; }
     constructor(page) {
@@ -45,6 +46,9 @@ export class PageListContentController extends PageContentController {
         super(...arguments);
         this.state = { ...this.content };
         this.currentUser = new HbCurrentUser();
+    }
+    get defaultContent() {
+        return new PageListContentData();
     }
     stateUpdated() {
         this.state = { ...this.content };

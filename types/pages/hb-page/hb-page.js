@@ -65,6 +65,9 @@ let HbPage = class HbPage extends LitElement {
             </hb-page-layout>
         `;
     }
+    updated() {
+        console.log("UPDATED PAGE IN UI", this.page.state.page.title);
+    }
     subtitleChange(event) {
         this.dispatchEvent(new UpdateSubtitleEvent(event.value));
     }

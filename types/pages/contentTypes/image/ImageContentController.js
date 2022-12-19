@@ -8,6 +8,7 @@ import { hostEvent, Product } from "@domx/statecontroller";
 import { inject } from "../../../domain/DependencyContainer/decorators";
 import { FindFileRepoKey } from "../../../domain/interfaces/FileInterfaces";
 import { PageThumbChangeEvent, UpdatePageContentEvent } from "../../hb-page";
+import { ImageContentData } from "./imageContentType";
 import "../../../domain/Files/HbFindFileRepo";
 import { PageContentController } from "../../hb-page/PageContentController";
 export class ImageSizeChangeEvent extends Event {
@@ -35,6 +36,9 @@ export class ImageContentController extends PageContentController {
     constructor() {
         super(...arguments);
         this.state = { ...this.content };
+    }
+    get defaultContent() {
+        return new ImageContentData();
     }
     stateUpdated() {
         this.state = { ...this.content };

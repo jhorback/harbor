@@ -95,14 +95,22 @@ export class SaveTabsEvent extends Event {
 export class PageTabsContentController extends PageContentController<IPageTabsState> {
 
     state:IPageTabsState = {
-        ...this.content,
-        selectedTabIndex: -1,
-        selectedTabUrl: "",
-        selectedTab: null,
-        isOnRootPage: false,
-        pageTemplates: pageTemplates.all(),
-        addPageError: "",
-        isDirty: false
+        ...this.defaultContent,
+        ...this.content
+    };
+
+    get defaultContent():IPageTabsState {
+        return {
+            ...new PageTabsContentData(),
+            selectedPageTemplateKey: "",
+            selectedTabIndex: -1,
+            selectedTabUrl: "",
+            selectedTab: null,
+            isOnRootPage: false,
+            pageTemplates: pageTemplates.all(),
+            addPageError: "",
+            isDirty: false
+        };
     };
 
     stateUpdated() {

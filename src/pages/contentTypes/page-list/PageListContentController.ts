@@ -51,6 +51,10 @@ export class RemovePageListItemEvent extends Event {
 export class PageListContentController extends PageContentController<PageListContentData> {
 
     state:PageListContentData = { ...this.content };
+    
+    get defaultContent():PageListContentData {
+        return new PageListContentData();
+    }
 
     stateUpdated() {
         this.state = { ...this.content };

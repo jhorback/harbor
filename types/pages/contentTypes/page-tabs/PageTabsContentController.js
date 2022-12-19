@@ -12,6 +12,7 @@ import { PageModel } from "../../../domain/Pages/PageModel";
 import { pageTemplates } from "../../../domain/Pages/pageTemplates";
 import { UpdatePageContentEvent } from "../../hb-page";
 import { PageContentController } from "../../hb-page/PageContentController";
+import { PageTabsContentData } from "./pageTabsContentType";
 export class SelectTabEvent extends Event {
     static { this.eventType = "select-tab"; }
     constructor(index) {
@@ -76,7 +77,14 @@ export class PageTabsContentController extends PageContentController {
     constructor() {
         super(...arguments);
         this.state = {
-            ...this.content,
+            ...this.defaultContent,
+            ...this.content
+        };
+    }
+    get defaultContent() {
+        return {
+            ...new PageTabsContentData(),
+            selectedPageTemplateKey: "",
             selectedTabIndex: -1,
             selectedTabUrl: "",
             selectedTab: null,
@@ -86,6 +94,7 @@ export class PageTabsContentController extends PageContentController {
             isDirty: false
         };
     }
+    ;
     stateUpdated() {
         this.page.state;
         this.state = { ...this.state, ...this.content };
