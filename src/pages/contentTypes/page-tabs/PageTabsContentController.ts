@@ -4,7 +4,8 @@ import { AddPageRepoKey, EditPageRepoKey, IAddPageRepo, IEditPageRepo, IPageData
 import { FindPageRepo } from "../../../domain/Pages/FindPageRepo";
 import { PageModel } from "../../../domain/Pages/PageModel";
 import { pageTemplates } from "../../../domain/Pages/pageTemplates";
-import { UpdatePageContentEvent } from "../../hb-page";
+import { IPageState, UpdatePageContentEvent } from "../../hb-page";
+import { PathnameChangedEvent } from "../../hb-page/hb-page-renderer/PageRendererController";
 import { PageContentController } from "../../hb-page/PageContentController";
 import { PageTabsContentData, PageTabsTab } from "./pageTabsContentType";
 
@@ -146,8 +147,10 @@ export class PageTabsContentController extends PageContentController<IPageTabsSt
 
     private setInitialValues() {
         Product.of<IPageTabsState>(this)
+            .tap(navigateToRootPage(this.page.state))
             .next(setRootPageIfNone(this.page.state.page))
             .next(setInitialSelectedPageTemplate)
+            .next(setSelectedTabIfNone)
             .requestUpdate("PageTabsContentController.setRootPageIfNone");
     }
 
@@ -237,8 +240,17 @@ const setInitialSelectedPageTemplate = (state:IPageTabsState) => {
 };
 
 
+const navigateToRootPage = (pageState:IPageState) => (product:Product<IPageTabsState>) => {
+    const state = product.getState();
+    state.isOnRootPage = state.rootPageUrl === pageState.page.pathname;
+    if (state.isOnRootPage && pageState.inEditMode === false && state.tabs[0]) {
+        product.dispatchHostEvent(new PathnameChangedEvent(state.tabs[0].url))
+    }
+};
+
 const setRootPageIfNone = (page:IPageData) => (state:IPageTabsState) => {
     state.isOnRootPage = state.rootPageUrl === page.pathname;
+
     if (state.rootPageUrl) {
         return;
     }
@@ -402,4 +414,14 @@ const convertToPageTabsData = (pageTabsState:IPageTabsState):PageTabsContentData
 
 const setIsDirty = (isDirty:boolean) => (state:IPageTabsState) => {
     state.isDirty = isDirty;
+};
+
+
+const setSelectedTabIfNone = (state:IPageTabsState) => {
+    if (state.selectedTabIndex !== -1) {
+        return;
+    }
+
+    const index = state.tabs.findIndex(tab => tab.url === location.pathname);
+    state.selectedTabIndex = index;
 };

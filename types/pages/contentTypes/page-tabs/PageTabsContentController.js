@@ -11,6 +11,7 @@ import { FindPageRepo } from "../../../domain/Pages/FindPageRepo";
 import { PageModel } from "../../../domain/Pages/PageModel";
 import { pageTemplates } from "../../../domain/Pages/pageTemplates";
 import { UpdatePageContentEvent } from "../../hb-page";
+import { PathnameChangedEvent } from "../../hb-page/hb-page-renderer/PageRendererController";
 import { PageContentController } from "../../hb-page/PageContentController";
 import { PageTabsContentData } from "./pageTabsContentType";
 export class SelectTabEvent extends Event {
@@ -120,8 +121,10 @@ export class PageTabsContentController extends PageContentController {
     }
     setInitialValues() {
         Product.of(this)
+            .tap(navigateToRootPage(this.page.state))
             .next(setRootPageIfNone(this.page.state.page))
             .next(setInitialSelectedPageTemplate)
+            .next(setSelectedTabIfNone)
             .requestUpdate("PageTabsContentController.setRootPageIfNone");
     }
     selectTab(event) {
@@ -214,6 +217,13 @@ const setSelectedTabUrl = (state) => {
 const setInitialSelectedPageTemplate = (state) => {
     if (!state.selectedPageTemplateKey) {
         state.selectedPageTemplateKey = state.pageTemplates[0].key;
+    }
+};
+const navigateToRootPage = (pageState) => (product) => {
+    const state = product.getState();
+    state.isOnRootPage = state.rootPageUrl === pageState.page.pathname;
+    if (state.isOnRootPage && pageState.inEditMode === false && state.tabs[0]) {
+        product.dispatchHostEvent(new PathnameChangedEvent(state.tabs[0].url));
     }
 };
 const setRootPageIfNone = (page) => (state) => {
@@ -344,4 +354,11 @@ const convertToPageTabsData = (pageTabsState) => {
 };
 const setIsDirty = (isDirty) => (state) => {
     state.isDirty = isDirty;
+};
+const setSelectedTabIfNone = (state) => {
+    if (state.selectedTabIndex !== -1) {
+        return;
+    }
+    const index = state.tabs.findIndex(tab => tab.url === location.pathname);
+    state.selectedTabIndex = index;
 };

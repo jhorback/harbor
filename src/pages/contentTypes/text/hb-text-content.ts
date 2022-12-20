@@ -10,6 +10,7 @@ import { PageSelectedEvent } from "../../hb-find-page-dialog";
 import { ContentActiveChangeEvent, HbPageContent, PageThumbChangeEvent, UpdatePageContentEvent } from "../../hb-page";
 import { PageContentController } from "../../hb-page/PageContentController";
 import { TextContentSelectorDialog, TextContentSelectorType } from "./hb-text-content-selector-dialog";
+import { TextContentController } from "./TextContentController";
 import { TextContentData } from "./textContentType";
 
 /**
@@ -19,7 +20,7 @@ export class TextContent extends LitElement {
 
     get stateId() { return this.pathname; }
 
-    pageContent:PageContentController<TextContentData> = new PageContentController(this);
+    pageContent:PageContentController<TextContentData> = new TextContentController(this);
 
     @property({type: String})
     pathname:string = "";

@@ -78,10 +78,6 @@ export class HbPage extends LitElement {
         `;
     }
 
-    updated() {
-        console.log("UPDATED PAGE IN UI", this.page.state.page.title);
-    }
-
     private subtitleChange(event:ContentEditableChangeEvent) {
         this.dispatchEvent(new UpdateSubtitleEvent(event.value));
     }

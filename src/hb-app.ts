@@ -4,7 +4,6 @@ import { HbApp } from "./domain/HbApp";
 import "@domx/router/domx-route";
 import "@domx/router/domx-route-not-found";
 import "./app/hb-route-not-found-page";
-import "./app/hb-home";
 import "./app/profile/hb-profile-page";
 import "./app/hb-about-page";
 import "./hb-current-user-data";
@@ -33,12 +32,7 @@ export class HarborApp extends LitElement {
       <hb-current-user-data></hb-current-user-data>
       <hb-feedback></hb-feedback>
       <div id="hb-app"></div>
-      ${!this.isInitialized ? html`` : html`
-            <domx-route
-                pattern="/"
-                element="hb-home"
-                append-to="#hb-app"
-            ></domx-route>
+      ${!this.isInitialized ? html`` : html`           
             <domx-route
                 pattern="/profile(/*tail)"
                 element="hb-profile-page"

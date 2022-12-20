@@ -12,15 +12,15 @@ import { FileType } from "../../../domain/interfaces/FileInterfaces";
 import { FileUploaderAccept, FileUploadPanel } from "../../../files/hb-file-upload-panel";
 import { styles } from "../../../styles";
 import { PageThumbChangeEvent, UpdatePageContentEvent } from "../../hb-page";
-import { PageContentController } from "../../hb-page/PageContentController";
 import { TextContentSelectorDialog, TextContentSelectorType } from "./hb-text-content-selector-dialog";
+import { TextContentController } from "./TextContentController";
 import { TextContentData } from "./textContentType";
 /**
  */
 let TextContent = class TextContent extends LitElement {
     constructor() {
         super(...arguments);
-        this.pageContent = new PageContentController(this);
+        this.pageContent = new TextContentController(this);
         this.pathname = "";
         this.contentIndex = -1;
     }
