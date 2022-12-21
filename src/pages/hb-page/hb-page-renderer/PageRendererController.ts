@@ -47,13 +47,13 @@ export class PageRndererController extends StateController {
     @windowEvent(PathnameChangedEvent)
     pathnameChanged(event:PathnameChangedEvent) {
         Product.of<IPageRendererState>(this)
-            .tap(checkForHomePage(this.homePageRepo, event.pathname));
+            .tap(loadPage(this.homePageRepo, event.pathname));
     }
     
 }
 
 
-const checkForHomePage = (homePageRepo:IHomePageRepo, hostPathname:string) => async (product:Product<IPageRendererState>) => {
+const loadPage = (homePageRepo:IHomePageRepo, hostPathname:string) => async (product:Product<IPageRendererState>) => {
     const state = product.getState();
 
     // dont update pathname if it not changing or we are on home

@@ -12,6 +12,18 @@ import { NotFoundError } from "../../domain/Errors";
 import { contentTypes } from "../../domain/Pages/contentTypes";
 
 
+
+/**
+ * Dispatched when the page is loaded from the database
+ * Calling preventDefault will keep the window from scrolling
+ */
+export class PageLoadedEvent extends Event {
+    static eventType = "page-loaded";
+    constructor() {
+        super(PageLoadedEvent.eventType, {bubbles: true, composed: true, cancelable: true});
+    }
+}
+
 export class RequestPageEvent extends Event {
     static eventType = "request-page";
     constructor() {
@@ -187,20 +199,22 @@ export interface IPageElement extends LitElement {
 }
 
 export class PageController extends StateController {
-    static defaultState:IPageState = {
-        isLoaded: false,
-        page: new PageModel(),
-        currentUserCanEdit: true,
-        currentUserCanAdd: true,
-        selectedEditTab: "",
-        inEditMode: false,
-        activeContentIndex: -1,
-        editableContentIndex: -1,
-        pageTemplate: pageTemplates.get("page")
+    static getDefaultState():IPageState {
+        return {
+            isLoaded: false,
+            page: new PageModel(),
+            currentUserCanEdit: true,
+            currentUserCanAdd: true,
+            selectedEditTab: "",
+            inEditMode: false,
+            activeContentIndex: -1,
+            editableContentIndex: -1,
+            pageTemplate: pageTemplates.get("page")
+        };
     };
 
     @stateProperty()
-    state:IPageState = {...PageController.defaultState};
+    state:IPageState = PageController.getDefaultState();
 
     @inject<IEditPageRepo>(EditPageRepoKey)
     private editPageRepo!:IEditPageRepo;
@@ -222,21 +236,13 @@ export class PageController extends StateController {
 
     @windowEvent(PagePathnameChangeEvent, {capture: false})
     private async pagePathnameChangeEvent(event:PagePathnameChangeEvent) {
-        // this.state = {...PageController.defaultState};
         await this.host.updateComplete;
+        // this.state = PageController.getDefaultState();
         this.refreshState();
     }
 
     @hostEvent(RequestPageEvent)
     private requestPage(event: RequestPageEvent) {
-        // may want to try resetting state as in pagePathnameChangeEvent
-        // the first time the page comes back from subscribeToPage
-        // may need a callback for that.
-
-        // Product.of<IPageState>(this)
-        //     .next(clearEditIndexes)
-        //     .requestUpdate(event);
-
         this.editPageRepo.subscribeToPage(this.host.pathname,
             subscribeToPage(this), this.abortController.signal);
     }
@@ -346,7 +352,7 @@ export class PageController extends StateController {
 }
 
 
-const subscribeToPage = (pageController:PageController) => (page:PageModel, initialLoad?:boolean) => {
+const subscribeToPage = (pageController:PageController) => async (page:PageModel, initialLoad?:boolean) => {
 
     // happens if the page is deleted
     if (!page) {
@@ -354,17 +360,31 @@ const subscribeToPage = (pageController:PageController) => (page:PageModel, init
     }
 
     if (initialLoad === true) {
+        // jch - testing
+        // pageController.state = PageController.getDefaultState();
         // Product.of<IPageState>(pageController)
         //     .next(clearEditIndexes)
         //     .requestUpdate(`PageController.subscribeToPage("${page.pathname}")`);
+        // await pageController.host.updateComplete;
     }
 
+    console.debug("Setting page from database:", page.pathname);
     Product.of<IPageState>(pageController)
         .next(updatePageLoaded(page))
         .next(updatePageTemplate)
         .next(updateUserCanEdit)
         .next(updateUserCanAdd)
         .requestUpdate(`PageController.subscribeToPage("${page.pathname}")`);
+
+    const pageLoadedEvent = new PageLoadedEvent();
+    window.dispatchEvent(pageLoadedEvent);
+    if (pageLoadedEvent.defaultPrevented === false) {
+        window.scrollTo({
+            top: 0,
+            left: 0,
+            behavior: "smooth"
+        });
+    }
 };
 
 

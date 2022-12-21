@@ -7,19 +7,21 @@ export class PageTabsContentData {
         this.rootPageUrl = "";
         this.rootPageTitle = "";
         this.rootPageSubtitle = "";
-        this.tabs = [{
-                tabName: "Page 1 Tab",
-                url: "",
-                pageUid: ""
-            }, {
-                tabName: "Page 2 Tab",
-                url: "",
-                pageUid: ""
-            }, {
-                tabName: "Page 3 Tab",
-                url: "",
-                pageUid: ""
-            }];
+        this.tabs = [
+        // {
+        //     tabName: "Page 1 Tab",
+        //     url: "",
+        //     pageUid: ""
+        // }, {
+        //     tabName: "Page 2 Tab",
+        //     url: "",
+        //     pageUid: ""
+        // }, {
+        //     tabName: "Page 3 Tab",
+        //     url: "",
+        //     pageUid: ""
+        // }
+        ];
     }
 }
 const pageTabsContentType = {

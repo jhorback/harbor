@@ -4,13 +4,13 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-import { hostEvent, Product } from "@domx/statecontroller";
+import { hostEvent, Product, windowEvent } from "@domx/statecontroller";
 import { inject } from "../../../domain/DependencyContainer/decorators";
 import { AddPageRepoKey, EditPageRepoKey } from "../../../domain/interfaces/PageInterfaces";
 import { FindPageRepo } from "../../../domain/Pages/FindPageRepo";
 import { PageModel } from "../../../domain/Pages/PageModel";
 import { pageTemplates } from "../../../domain/Pages/pageTemplates";
-import { UpdatePageContentEvent } from "../../hb-page";
+import { PageLoadedEvent, UpdatePageContentEvent } from "../../hb-page";
 import { PathnameChangedEvent } from "../../hb-page/hb-page-renderer/PageRendererController";
 import { PageContentController } from "../../hb-page/PageContentController";
 import { PageTabsContentData } from "./pageTabsContentType";
@@ -121,17 +121,12 @@ export class PageTabsContentController extends PageContentController {
     }
     setInitialValues() {
         Product.of(this)
+            .next(setIsOnRootPage(this.page.state))
             .tap(navigateToRootPage(this.page.state))
             .next(setRootPageIfNone(this.page.state.page))
             .next(setInitialSelectedPageTemplate)
             .next(setSelectedTabIfNone)
             .requestUpdate("PageTabsContentController.setRootPageIfNone");
-    }
-    selectTab(event) {
-        Product.of(this)
-            .next(setSelectedTabIndex(event.index))
-            .next(setSelectedTabUrl)
-            .requestUpdate(event);
     }
     selectedTabNameChanged(event) {
         Product.of(this)
@@ -172,6 +167,25 @@ export class PageTabsContentController extends PageContentController {
         Product.of(this)
             .tap(syncComponentsAndSave(this.page.state.page, this.editPageRepo));
     }
+    selectTab(event) {
+        this.host.scrollIntoView({
+            behavior: "smooth",
+            block: "start"
+        });
+        Product.of(this)
+            .next(setSelectedTabIndex(event.index))
+            .next(setSelectedTabUrl)
+            .requestUpdate(event);
+    }
+    pageLoaded(event) {
+        // prevent default to keep the page from scrolling
+        event.preventDefault();
+        window.scrollTo({
+            top: 280,
+            left: 0,
+            behavior: "smooth"
+        });
+    }
 }
 __decorate([
     inject(AddPageRepoKey)
@@ -179,9 +193,6 @@ __decorate([
 __decorate([
     inject(EditPageRepoKey)
 ], PageTabsContentController.prototype, "editPageRepo", void 0);
-__decorate([
-    hostEvent(SelectTabEvent)
-], PageTabsContentController.prototype, "selectTab", null);
 __decorate([
     hostEvent(SelectedTabNameChanged)
 ], PageTabsContentController.prototype, "selectedTabNameChanged", null);
@@ -203,6 +214,12 @@ __decorate([
 __decorate([
     hostEvent(SaveTabsEvent)
 ], PageTabsContentController.prototype, "saveTabs", null);
+__decorate([
+    hostEvent(SelectTabEvent)
+], PageTabsContentController.prototype, "selectTab", null);
+__decorate([
+    windowEvent(PageLoadedEvent)
+], PageTabsContentController.prototype, "pageLoaded", null);
 const setSelectedTabIndex = (index) => (state) => {
     state.selectedTabIndex = index;
     state.selectedTab = state.tabs[index];
@@ -219,15 +236,19 @@ const setInitialSelectedPageTemplate = (state) => {
         state.selectedPageTemplateKey = state.pageTemplates[0].key;
     }
 };
+const setIsOnRootPage = (pageState) => (state) => {
+    state.isOnRootPage = state.rootPageUrl === pageState.page.pathname;
+    if (state.isOnRootPage) {
+        state.selectedTabIndex = 0;
+    }
+};
 const navigateToRootPage = (pageState) => (product) => {
     const state = product.getState();
-    state.isOnRootPage = state.rootPageUrl === pageState.page.pathname;
     if (state.isOnRootPage && pageState.inEditMode === false && state.tabs[0]) {
         product.dispatchHostEvent(new PathnameChangedEvent(state.tabs[0].url));
     }
 };
 const setRootPageIfNone = (page) => (state) => {
-    state.isOnRootPage = state.rootPageUrl === page.pathname;
     if (state.rootPageUrl) {
         return;
     }

@@ -10,19 +10,21 @@ export class PageTabsContentData implements IContentType {
     rootPageUrl:string = "";
     rootPageTitle:string = "";
     rootPageSubtitle:string|null = "";
-    tabs:Array<PageTabsTab> = [{
-        tabName: "Page 1 Tab",
-        url: "",
-        pageUid: ""
-    }, {
-        tabName: "Page 2 Tab",
-        url: "",
-        pageUid: ""
-    }, {
-        tabName: "Page 3 Tab",
-        url: "",
-        pageUid: ""
-    }]
+    tabs:Array<PageTabsTab> = [
+    // {
+    //     tabName: "Page 1 Tab",
+    //     url: "",
+    //     pageUid: ""
+    // }, {
+    //     tabName: "Page 2 Tab",
+    //     url: "",
+    //     pageUid: ""
+    // }, {
+    //     tabName: "Page 3 Tab",
+    //     url: "",
+    //     pageUid: ""
+    // }
+    ]
 }
 
 export interface PageTabsTab {

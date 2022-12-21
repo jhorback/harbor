@@ -1,10 +1,10 @@
-import { hostEvent, Product } from "@domx/statecontroller";
+import { hostEvent, Product, windowEvent } from "@domx/statecontroller";
 import { inject } from "../../../domain/DependencyContainer/decorators";
 import { AddPageRepoKey, EditPageRepoKey, IAddPageRepo, IEditPageRepo, IPageData, IPageTemplateDescriptor } from "../../../domain/interfaces/PageInterfaces";
 import { FindPageRepo } from "../../../domain/Pages/FindPageRepo";
 import { PageModel } from "../../../domain/Pages/PageModel";
 import { pageTemplates } from "../../../domain/Pages/pageTemplates";
-import { IPageState, UpdatePageContentEvent } from "../../hb-page";
+import { IPageState, PageLoadedEvent, UpdatePageContentEvent } from "../../hb-page";
 import { PathnameChangedEvent } from "../../hb-page/hb-page-renderer/PageRendererController";
 import { PageContentController } from "../../hb-page/PageContentController";
 import { PageTabsContentData, PageTabsTab } from "./pageTabsContentType";
@@ -147,19 +147,12 @@ export class PageTabsContentController extends PageContentController<IPageTabsSt
 
     private setInitialValues() {
         Product.of<IPageTabsState>(this)
+            .next(setIsOnRootPage(this.page.state))
             .tap(navigateToRootPage(this.page.state))
             .next(setRootPageIfNone(this.page.state.page))
             .next(setInitialSelectedPageTemplate)
             .next(setSelectedTabIfNone)
             .requestUpdate("PageTabsContentController.setRootPageIfNone");
-    }
-
-    @hostEvent(SelectTabEvent)
-    private selectTab(event:SelectTabEvent) {
-        Product.of<IPageTabsState>(this)
-            .next(setSelectedTabIndex(event.index))
-            .next(setSelectedTabUrl)
-            .requestUpdate(event);
     }
     
     @hostEvent(SelectedTabNameChanged)
@@ -214,6 +207,30 @@ export class PageTabsContentController extends PageContentController<IPageTabsSt
         Product.of<IPageTabsState>(this)
             .tap(syncComponentsAndSave(this.page.state.page, this.editPageRepo));
     }
+
+    @hostEvent(SelectTabEvent)
+    private selectTab(event:SelectTabEvent) {
+        this.host.scrollIntoView({
+            behavior: "smooth",
+            block: "start"
+        });
+
+        Product.of<IPageTabsState>(this)
+            .next(setSelectedTabIndex(event.index))
+            .next(setSelectedTabUrl)
+            .requestUpdate(event);
+    }
+
+    @windowEvent(PageLoadedEvent)
+    pageLoaded(event:PageLoadedEvent) {
+        // prevent default to keep the page from scrolling
+        event.preventDefault();
+        window.scrollTo({
+            top: 280,
+            left: 0,
+            behavior: "smooth"
+        });
+    }
 }
 
 const setSelectedTabIndex = (index:number) => (state:IPageTabsState) => {
@@ -240,17 +257,21 @@ const setInitialSelectedPageTemplate = (state:IPageTabsState) => {
 };
 
 
-const navigateToRootPage = (pageState:IPageState) => (product:Product<IPageTabsState>) => {
-    const state = product.getState();
+const setIsOnRootPage = (pageState:IPageState) => (state:IPageTabsState) => {
     state.isOnRootPage = state.rootPageUrl === pageState.page.pathname;
+    if (state.isOnRootPage) {
+        state.selectedTabIndex = 0;
+    }
+}
+
+const navigateToRootPage = (pageState:IPageState) => (product:Product<IPageTabsState>) => {
+    const state = product.getState(); 
     if (state.isOnRootPage && pageState.inEditMode === false && state.tabs[0]) {
         product.dispatchHostEvent(new PathnameChangedEvent(state.tabs[0].url))
     }
 };
 
 const setRootPageIfNone = (page:IPageData) => (state:IPageTabsState) => {
-    state.isOnRootPage = state.rootPageUrl === page.pathname;
-
     if (state.rootPageUrl) {
         return;
     }
