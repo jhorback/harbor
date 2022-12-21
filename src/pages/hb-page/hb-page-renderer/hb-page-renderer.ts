@@ -1,7 +1,6 @@
 import { css, html, LitElement } from "lit";
 import { customElement, property, query } from "lit/decorators.js";
 import { HbPage } from "../hb-page";
-import { PagePathnameChangeEvent, RequestPageEvent } from "../PageController";
 import { PageRndererController, PathnameChangedEvent } from "./PageRendererController";
 
 

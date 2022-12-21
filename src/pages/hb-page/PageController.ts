@@ -31,15 +31,6 @@ export class RequestPageEvent extends Event {
     }
 }
 
-export class PagePathnameChangeEvent extends Event {
-    static eventType = "page-pathname-change";
-    pathname:string;
-    constructor(pathname:string) {
-        super(PagePathnameChangeEvent.eventType);
-        this.pathname = pathname;
-    }
-}
-
 export class UpdateShowTitleEvent extends Event {
     static eventType = "update-show-title";
     showTitle:boolean;
@@ -234,15 +225,9 @@ export class PageController extends StateController {
             .requestUpdate(event);
     }
 
-    @windowEvent(PagePathnameChangeEvent, {capture: false})
-    private async pagePathnameChangeEvent(event:PagePathnameChangeEvent) {
-        await this.host.updateComplete;
-        // this.state = PageController.getDefaultState();
-        this.refreshState();
-    }
-
     @hostEvent(RequestPageEvent)
     private requestPage(event: RequestPageEvent) {
+        this.refreshState();
         this.editPageRepo.subscribeToPage(this.host.pathname,
             subscribeToPage(this), this.abortController.signal);
     }

@@ -30,13 +30,6 @@ export class RequestPageEvent extends Event {
         super(RequestPageEvent.eventType);
     }
 }
-export class PagePathnameChangeEvent extends Event {
-    static { this.eventType = "page-pathname-change"; }
-    constructor(pathname) {
-        super(PagePathnameChangeEvent.eventType);
-        this.pathname = pathname;
-    }
-}
 export class UpdateShowTitleEvent extends Event {
     static { this.eventType = "update-show-title"; }
     constructor(showTitle) {
@@ -161,12 +154,8 @@ export class PageController extends StateController {
             .next(updateUserCanAdd)
             .requestUpdate(event);
     }
-    async pagePathnameChangeEvent(event) {
-        await this.host.updateComplete;
-        // this.state = PageController.getDefaultState();
-        this.refreshState();
-    }
     requestPage(event) {
+        this.refreshState();
         this.editPageRepo.subscribeToPage(this.host.pathname, subscribeToPage(this), this.abortController.signal);
     }
     updateShowTitle(event) {
@@ -256,9 +245,6 @@ __decorate([
 __decorate([
     windowEvent(HbCurrentUserChangedEvent, { capture: false })
 ], PageController.prototype, "currentUserChanged", null);
-__decorate([
-    windowEvent(PagePathnameChangeEvent, { capture: false })
-], PageController.prototype, "pagePathnameChangeEvent", null);
 __decorate([
     hostEvent(RequestPageEvent)
 ], PageController.prototype, "requestPage", null);

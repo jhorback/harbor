@@ -4,7 +4,7 @@ import { NotFoundError } from "../../../domain/Errors";
 import { HomePageRepoKey, IHomePageRepo, IPageReference } from "../../../domain/interfaces/PageInterfaces";
 import "../../../domain/SystemAdmin/HbHomePageRepo";
 import { sendFeedback } from "../../../layout/feedback";
-import { PagePathnameChangeEvent, RequestPageEvent } from "../PageController";
+import { RequestPageEvent } from "../PageController";
 import { HbPageRenderer } from "./hb-page-renderer";
 
 
@@ -115,10 +115,8 @@ const setIsOnHomePage = (isOnHomePage:boolean) => (state:IPageRendererState) => 
 
 
 const requestPage = async (product:Product<IPageRendererState>) => {
-    const state = product.getState();
     const pageRenderer = (product.controller.host as HbPageRenderer);
     await pageRenderer.updateComplete;
-    window.dispatchEvent(new PagePathnameChangeEvent(state.pathname));
     pageRenderer.$hbPage.dispatchEvent(new RequestPageEvent());
 };
 
