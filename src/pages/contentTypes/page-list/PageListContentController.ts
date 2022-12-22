@@ -7,6 +7,7 @@ import { FindPageRepo } from "../../../domain/Pages/FindPageRepo";
 import { PageModel } from "../../../domain/Pages/PageModel";
 import { PageThumbChangeEvent, UpdatePageContentEvent } from "../../hb-page";
 import { PageContentController } from "../../hb-page/PageContentController";
+import { ItemIndexChanged } from "../../../common/DragOrderController";
 import { PageListContentData, PageListDisplay } from "./pageListContentType";
 
 
@@ -96,8 +97,8 @@ export class PageListContentController extends PageContentController<PageListCon
             .dispatchHostEvent(new UpdatePageContentEvent(this.host.contentIndex, this.state));
     }
 
-    @hostEvent(ReorderPageListItemsEvent)
-    reorderItems(event:ReorderPageListItemsEvent) {
+    @hostEvent(ItemIndexChanged)
+    reorderItems(event:ItemIndexChanged) {
         Product.of<PageListContentData>(this)
             .next(reorderItems(event.sourceIndex, event.targetIndex))
             .requestUpdate(event)

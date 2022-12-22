@@ -11,6 +11,7 @@ import { HbCurrentUser } from "../../../domain/HbCurrentUser";
 import { FindPageRepo } from "../../../domain/Pages/FindPageRepo";
 import { PageThumbChangeEvent, UpdatePageContentEvent } from "../../hb-page";
 import { PageContentController } from "../../hb-page/PageContentController";
+import { ItemIndexChanged } from "../../../common/DragOrderController";
 import { PageListContentData } from "./pageListContentType";
 export class AddListPageEvent extends Event {
     static { this.eventType = "add-list-page"; }
@@ -99,7 +100,7 @@ __decorate([
     hostEvent(ChangePageListDisplayEvent)
 ], PageListContentController.prototype, "changeDisplay", null);
 __decorate([
-    hostEvent(ReorderPageListItemsEvent)
+    hostEvent(ItemIndexChanged)
 ], PageListContentController.prototype, "reorderItems", null);
 __decorate([
     hostEvent(RemovePageListItemEvent)

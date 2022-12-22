@@ -1,4 +1,5 @@
 import { css, html, LitElement } from "lit";
+import { ifDefined } from "lit-html/directives/if-defined.js";
 import { customElement, property, query } from "lit/decorators.js";
 import "../../../common/hb-button";
 import "../../../common/hb-card";
@@ -8,8 +9,10 @@ import { AddPageDialog, PageAddedEvent } from "../../hb-add-page-dialog";
 import { FindPageDialog, PageSelectedEvent } from "../../hb-find-page-dialog";
 import { HbPageContent } from "../../hb-page";
 import { DEFAULT_IMAGE_URL } from "../image/imageContentType";
+import { DragOrderController } from "../../../common/DragOrderController";
 import { AddListPageEvent, ChangePageListDisplayEvent, PageListContentController, RemovePageListItemEvent, ReorderPageListItemsEvent } from "./PageListContentController";
 import { PageListDisplay } from "./pageListContentType";
+
 
 /**
  */
@@ -25,6 +28,10 @@ export class PageListContent extends LitElement {
     contentIndex:number = -1;
 
     pageListContent:PageListContentController = new PageListContentController(this);
+    dragOrderController:DragOrderController = new DragOrderController(this);
+
+    @query(".page-list.editable")
+    $editablePageList!:Element;
 
     @query("hb-page-content")
     $hbPageContent!:HbPageContent;
@@ -44,7 +51,7 @@ export class PageListContent extends LitElement {
                 content-index=${this.contentIndex}
                 ?is-empty=${!state.pages || state.pages.length === 0}>                
                 <div>
-                    ${state.pages.length === 0 ? html`` : this.renderPages()}
+                    ${state.pages.length === 0 ? html`` : this.renderPages("")}
                 </div>
                 <div slot="edit-toolbar">
                     <!-- NO TOOLBAR //-->
@@ -53,7 +60,7 @@ export class PageListContent extends LitElement {
                     ${this.renderDefault()}
                 </div>
                 <div slot="content-edit">
-                    ${state.pages.length === 0 ? this.renderDefault() : this.renderPages()}
+                    ${state.pages.length === 0 ? this.renderDefault() : this.renderPages("editable")}
                     <hb-find-page-dialog
                         @page-selected=${this.pageSelected}
                     ></hb-find-page-dialog>
@@ -86,6 +93,12 @@ export class PageListContent extends LitElement {
         `;
     }
 
+    updated() {
+        this.pageListContent.contentState.inContentEditMode ?
+            this.dragOrderController.attach(this.$editablePageList) :
+            this.dragOrderController.detach();
+    }
+
     private renderDefault() {
         return html`
             <hb-card
@@ -96,16 +109,12 @@ export class PageListContent extends LitElement {
         `;
     }
 
-    private renderPages() {
+    private renderPages(className:string) {
         const state = this.pageListContent.content;
-        const inEditMode = this.pageListContent.contentState.inContentEditMode;
         const size = this.pageListContent.page.state.page.pageSize;
         return html`
-            <div class="page-list"
-                page-size=${size}
-                .index=${state.pages.length}
-                @dragover=${inEditMode ? pageListDragOver : noop}
-                @drop=${inEditMode ? pageListDrop : noop}>
+            <div class=${["page-list", className].join(" ")}
+                page-size=${size}>
                 ${state.pages.map((page, index) => state.display === PageListDisplay.horizontalCard ?
                     this.renderHorizontalCard(page, index) : state.display === PageListDisplay.verticalCard ?
                         this.renderVerticalCard(page, index) :
@@ -119,17 +128,11 @@ export class PageListContent extends LitElement {
         const inContentEditMode = this.pageListContent.contentState.inContentEditMode;
         return html`
             <hb-card
-                .index=${index}
                 visibility=${this.pageListContent.getPageVisibility(page.isVisible)}
-                draggable=${inContentEditMode ? true : false}
-                @dragstart=${inContentEditMode ? pageDragStart : noop}
-                @dragend=${inContentEditMode ? pageDragEnd : noop}
-                @dragenter=${inContentEditMode ? pageDragEnter : noop}
-                @dragleave=${inContentEditMode ? pageDragLeave : noop}
-                media-url=${page.thumbUrl}
+                media-url=${ifDefined(page.thumbUrl === null ? undefined : page.thumbUrl)}
                 media-href=${inContentEditMode ? "javascript:;" : page.href}
                 text=${page.title}
-                description=${page.thumbDescription}>
+                description=${ifDefined(page.thumbDescription === null ? undefined : page.thumbDescription)}>
                     ${renderDeleteIcon(inContentEditMode, index)}
             </hb-card>
         `;
@@ -139,17 +142,11 @@ export class PageListContent extends LitElement {
         const inContentEditMode = this.pageListContent.contentState.inContentEditMode;
         return html`
             <hb-horizontal-card
-                .index=${index}
                 visibility=${this.pageListContent.getPageVisibility(page.isVisible)}
-                draggable=${inContentEditMode ? true : false}
-                @dragstart=${inContentEditMode ? pageDragStart : noop}
-                @dragend=${inContentEditMode ? pageDragEnd : noop}
-                @dragenter=${inContentEditMode ? pageDragEnter : noop}
-                @dragleave=${inContentEditMode ? pageDragLeave : noop}
-                media-url=${page.thumbUrl}
+                media-url=${ifDefined(page.thumbUrl === null ? undefined : page.thumbUrl)}
                 media-href=${inContentEditMode ? "javascript:;" : page.href}
                 text=${page.title}
-                description=${page.thumbDescription}>
+                description=${ifDefined(page.thumbDescription === null ? undefined : page.thumbDescription)}>
                     ${renderDeleteIcon(inContentEditMode, index)}      
             </hb-horizontal-card>
         `;
@@ -159,16 +156,10 @@ export class PageListContent extends LitElement {
         const inContentEditMode = this.pageListContent.contentState.inContentEditMode;
         return html`
             <hb-card
-                .index=${index}
                 visibility=${this.pageListContent.getPageVisibility(page.isVisible)}
-                draggable=${inContentEditMode ? true : false}
-                @dragstart=${inContentEditMode ? pageDragStart : noop}
-                @dragend=${inContentEditMode ? pageDragEnd : noop}
-                @dragenter=${inContentEditMode ? pageDragEnter : noop}
-                @dragleave=${inContentEditMode ? pageDragLeave : noop}
                 media-href=${inContentEditMode ? "javascript:;" : page.href}
                 text=${page.title}
-                description=${page.thumbDescription}>
+                description=${ifDefined(page.thumbDescription === null ? undefined : page.thumbDescription)}>
                 ${renderDeleteIcon(inContentEditMode, index)}
             </hb-card>
         `;
@@ -269,9 +260,6 @@ export class PageListContent extends LitElement {
 }
 
 
-const noop = () => {};
-
-
 const renderDeleteIcon = (inEditMode:boolean, index:number) => inEditMode ? html`
     <div class="delete-icon icon-button" title="Remove" @click=${(e:Event) => removePage(e, index)}>close</div>
 ` : html``;
@@ -280,66 +268,6 @@ const removePage = (event:Event, index:number) => {
     const target = event.target;
     target?.dispatchEvent(new RemovePageListItemEvent(index));
 };
-
-
-interface IIndexedElement extends HTMLElement {
-    index:string
-}
-
-
-let dragSource:HTMLElement|null = null; 
-
-// https://developer.mozilla.org/en-US/docs/Web/API/HTML_Drag_and_Drop_API/Drag_operations#draggableattribute
-const pageDragStart = (event:DragEvent) => {
-    const dt = event.dataTransfer!;
-    const target = event.target as IIndexedElement;
-    dragSource = target;
-    target.style.opacity = "0.4";
-    dt.effectAllowed = "move";
-    dt.setData("application/harbor-app-page", target.index);
-};
-
-const pageDragEnd = (event:DragEvent) => {
-    const target = event.target as HTMLElement;
-    target.style.opacity = "1";
-};
-
-const pageDragEnter = (event:DragEvent) => {
-    const target = event.target as HTMLElement;
-    if (target !== dragSource && dragSource !== null) {
-        // this looks okay but changes the indexes
-        // target.insertAdjacentElement("afterend", dragSource);
-        target.style.opacity = "0.2";
-    }
-};
-
-const pageDragLeave = (event:DragEvent) => {
-    const target = event.target as IIndexedElement;
-    const dt = event.dataTransfer!;
-    dt.dropEffect = "move";
-    if (target !== dragSource) {
-        target.style.opacity = "1";
-    }
-};
-
-const pageListDragOver = (event:DragEvent) => {
-    event.preventDefault();
-    const dt = event.dataTransfer!;
-    dt.dropEffect = "move";
-};
-
-const pageListDrop = (event:DragEvent) => {
-    event.preventDefault();
-    event.stopImmediatePropagation();
-    const target = event.target as IIndexedElement;
-    target.style.opacity = "1";
-    const dt = event.dataTransfer!;
-    const sourceIndex = parseInt(dt.getData("application/harbor-app-page"));
-    const targetIndex = parseInt(target.index);
-    target.dispatchEvent(new ReorderPageListItemsEvent(sourceIndex, targetIndex));
-};
-
-
 
 declare global {
     interface HTMLElementTagNameMap {

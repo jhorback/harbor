@@ -293,7 +293,6 @@ const subscribeToPage = (pageController) => async (page, initialLoad) => {
         throw new NotFoundError("Page Not Found");
     }
     if (initialLoad === true) {
-        // jch - testing
         // pageController.state = PageController.getDefaultState();
         // Product.of<IPageState>(pageController)
         //     .next(clearEditIndexes)
@@ -309,7 +308,7 @@ const subscribeToPage = (pageController) => async (page, initialLoad) => {
         .requestUpdate(`PageController.subscribeToPage("${page.pathname}")`);
     const pageLoadedEvent = new PageLoadedEvent();
     window.dispatchEvent(pageLoadedEvent);
-    if (pageLoadedEvent.defaultPrevented === false) {
+    if (initialLoad && pageLoadedEvent.defaultPrevented === false) {
         window.scrollTo({
             top: 0,
             left: 0,

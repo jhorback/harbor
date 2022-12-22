@@ -345,7 +345,6 @@ const subscribeToPage = (pageController:PageController) => async (page:PageModel
     }
 
     if (initialLoad === true) {
-        // jch - testing
         // pageController.state = PageController.getDefaultState();
         // Product.of<IPageState>(pageController)
         //     .next(clearEditIndexes)
@@ -363,7 +362,7 @@ const subscribeToPage = (pageController:PageController) => async (page:PageModel
 
     const pageLoadedEvent = new PageLoadedEvent();
     window.dispatchEvent(pageLoadedEvent);
-    if (pageLoadedEvent.defaultPrevented === false) {
+    if (initialLoad && pageLoadedEvent.defaultPrevented === false) {
         window.scrollTo({
             top: 0,
             left: 0,
