@@ -114,7 +114,7 @@
   --md-sys-color-on-error-container-light: #410002;
   --md-sys-color-background-light: #fdfbff;
   --md-sys-color-on-background-light: #1a1c1e;
-  --md-sys-color-surface-light: #fdfbff;
+  --md-sys-color-surface-light: #ecebed;
   --md-sys-color-on-surface-light: #1a1c1e;
   --md-sys-color-surface-variant-light: #e0e2ec;
   --md-sys-color-on-surface-variant-light: #43474e;
@@ -143,7 +143,7 @@
   --md-sys-color-on-error-container-dark: #ffdad6;
   --md-sys-color-background-dark: #1a1c1e;
   --md-sys-color-on-background-dark: #e3e2e6;
-  --md-sys-color-surface-dark: #1a1c1e;
+  --md-sys-color-surface-dark: #25282b;
   --md-sys-color-on-surface-dark: #e3e2e6;
   --md-sys-color-surface-variant-dark: #43474e;
   --md-sys-color-on-surface-variant-dark: #c4c6cf;
@@ -698,7 +698,7 @@ body {
 .tinymce-mobile-toolstrip .tinymce-mobile-toolbar.tinymce-mobile-context-toolbar .tinymce-mobile-toolbar-group .tinymce-mobile-serialised-dialog .tinymce-mobile-serialised-dialog-chain {
   display: flex;
   height: 100%;
-  transition: left cubic-bezier(.4,0,1,1) .15s;
+  transition: left cubic-bezier(.4, 0, 1, 1) .15s;
   width: 100%
 }
 .tinymce-mobile-toolstrip .tinymce-mobile-toolbar.tinymce-mobile-context-toolbar .tinymce-mobile-toolbar-group .tinymce-mobile-serialised-dialog .tinymce-mobile-serialised-dialog-chain .tinymce-mobile-serialised-dialog-screen {
@@ -839,7 +839,7 @@ body {
   margin: auto;
   position: absolute;
   top: 0;
-  transition: border 120ms cubic-bezier(.39,.58,.57,1);
+  transition: border 120ms cubic-bezier(.39, .58, .57, 1);
   width: .5em
 }
 .tinymce-mobile-toolstrip .tinymce-mobile-toolbar.tinymce-mobile-context-toolbar .tinymce-mobile-toolbar-group .tinymce-mobile-slider .tinymce-mobile-slider-thumb.tinymce-mobile-thumb-active {
@@ -919,7 +919,7 @@ body {
 }
 .tinymce-mobile-styles-menu {
   font-family: sans-serif;
-  outline: 4px solid #000;
+  outline: 4px solid black;
   overflow: hidden;
   position: relative;
   width: 100%
@@ -990,7 +990,7 @@ body {
   font-family: tinymce-mobile;
   font-style: normal;
   font-weight: 400;
-  src: url(fonts/tinymce-mobile.woff?8x92w3) format('woff')
+  src: url('fonts/tinymce-mobile.woff?8x92w3') format('woff')
 }
 @media (min-device-width:700px) {
   .tinymce-mobile-outer-container,
