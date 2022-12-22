@@ -1,4 +1,5 @@
 import { hostEvent, Product, windowEvent } from "@domx/statecontroller";
+import { ItemIndexChanged } from "../../../common/DragOrderController";
 import { inject } from "../../../domain/DependencyContainer/decorators";
 import { AddPageRepoKey, EditPageRepoKey, IAddPageRepo, IEditPageRepo, IPageData, IPageTemplateDescriptor } from "../../../domain/interfaces/PageInterfaces";
 import { FindPageRepo } from "../../../domain/Pages/FindPageRepo";
@@ -205,6 +206,15 @@ export class PageTabsContentController extends PageContentController<IPageTabsSt
     @hostEvent(SaveTabsEvent)
     private saveTabs(event:SaveTabsEvent) {
         Product.of<IPageTabsState>(this)
+            .tap(syncComponentsAndSave(this.page.state.page, this.editPageRepo));
+    }
+
+    @hostEvent(ItemIndexChanged)
+    private itemIndexChanged(event:ItemIndexChanged) {
+        console.log("item index changed", event.sourceIndex, event.targetIndex);
+        Product.of<IPageTabsState>(this)
+            .next(reorderItems(event.sourceIndex, event.targetIndex))
+            .requestUpdate(event)
             .tap(syncComponentsAndSave(this.page.state.page, this.editPageRepo));
     }
 
@@ -445,4 +455,13 @@ const setSelectedTabIfNone = (state:IPageTabsState) => {
 
     const index = state.tabs.findIndex(tab => tab.url === location.pathname);
     state.selectedTabIndex = index;
+};
+
+
+const reorderItems = (sourceIndex:number, targetIndex:number) => (state:IPageTabsState) => {
+    const tabs = state.tabs;
+    const tab = tabs[sourceIndex];
+    targetIndex = targetIndex >= tabs.length ? targetIndex - 1 : targetIndex;   
+    tabs.splice(sourceIndex, 1);
+    tabs.splice(targetIndex, 0, tab);
 };

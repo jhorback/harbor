@@ -27,14 +27,13 @@ let PageListContent = class PageListContent extends LitElement {
     get stateId() { return this.pathname; }
     render() {
         const state = this.pageListContent.content;
-        const contentState = this.pageListContent.contentState;
         return html `
             <hb-page-content
                 pathname=${this.pathname}
                 content-index=${this.contentIndex}
                 ?is-empty=${!state.pages || state.pages.length === 0}>                
                 <div>
-                    ${state.pages.length === 0 ? html `` : this.renderPages("")}
+                    ${state.pages.length === 0 ? html `` : this.renderPages()}
                 </div>
                 <div slot="edit-toolbar">
                     <!-- NO TOOLBAR //-->
@@ -43,7 +42,7 @@ let PageListContent = class PageListContent extends LitElement {
                     ${this.renderDefault()}
                 </div>
                 <div slot="content-edit">
-                    ${state.pages.length === 0 ? this.renderDefault() : this.renderPages("editable")}
+                    ${state.pages.length === 0 ? this.renderDefault() : this.renderPages()}
                     <hb-find-page-dialog
                         @page-selected=${this.pageSelected}
                     ></hb-find-page-dialog>
@@ -89,11 +88,11 @@ let PageListContent = class PageListContent extends LitElement {
             ></hb-card>
         `;
     }
-    renderPages(className) {
+    renderPages() {
         const state = this.pageListContent.content;
         const size = this.pageListContent.page.state.page.pageSize;
         return html `
-            <div class=${["page-list", className].join(" ")}
+            <div class="page-list"
                 page-size=${size}>
                 ${state.pages.map((page, index) => state.display === PageListDisplay.horizontalCard ?
             this.renderHorizontalCard(page, index) : state.display === PageListDisplay.verticalCard ?
@@ -234,7 +233,7 @@ __decorate([
     property({ type: Number, attribute: "content-index" })
 ], PageListContent.prototype, "contentIndex", void 0);
 __decorate([
-    query(".page-list.editable")
+    query("[slot=content-edit] .page-list")
 ], PageListContent.prototype, "$editablePageList", void 0);
 __decorate([
     query("hb-page-content")

@@ -7,6 +7,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 import { css, html, LitElement } from "lit";
 import { customElement, property, query } from "lit/decorators.js";
 import { debounce } from "../../../common/debounce";
+import { DragOrderController } from "../../../common/DragOrderController";
 import "../../../common/hb-button";
 import "../../../common/hb-text-input";
 import { styles } from "../../../styles";
@@ -19,6 +20,7 @@ let PageTabsContent = class PageTabsContent extends LitElement {
         this.pathname = "";
         this.contentIndex = -1;
         this.pageTabsContent = new PageTabsContentController(this);
+        this.dragOrderController = new DragOrderController(this);
     }
     get stateId() { return this.pathname; }
     render() {
@@ -115,6 +117,11 @@ let PageTabsContent = class PageTabsContent extends LitElement {
                 </div>
             </hb-page-content>
         `;
+    }
+    updated() {
+        this.pageTabsContent.contentState.inContentEditMode ?
+            this.dragOrderController.attach(this.$tabContainer) :
+            this.dragOrderController.detach();
     }
     renderTabs(forEdit) {
         const state = this.pageTabsContent.state;
@@ -254,6 +261,9 @@ __decorate([
 __decorate([
     query("hb-page-content")
 ], PageTabsContent.prototype, "$hbPageContent", void 0);
+__decorate([
+    query("[slot=content-edit] .tab-container")
+], PageTabsContent.prototype, "$tabContainer", void 0);
 PageTabsContent = __decorate([
     customElement('hb-page-tabs-content')
 ], PageTabsContent);

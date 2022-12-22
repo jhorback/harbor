@@ -1,6 +1,7 @@
 import { css, html, LitElement } from "lit";
 import { customElement, property, query } from "lit/decorators.js";
 import { debounce } from "../../../common/debounce";
+import { DragOrderController } from "../../../common/DragOrderController";
 import "../../../common/hb-button";
 import "../../../common/hb-text-input";
 import { TextInputChangeEvent } from "../../../common/hb-text-input";
@@ -22,9 +23,13 @@ export class PageTabsContent extends LitElement {
     contentIndex:number = -1;
 
     pageTabsContent:PageTabsContentController = new PageTabsContentController(this);
+    dragOrderController:DragOrderController = new DragOrderController(this);
 
     @query("hb-page-content")
     $hbPageContent!:HbPageContent; 
+
+    @query("[slot=content-edit] .tab-container")
+    $tabContainer!:Element;
 
     render() {
         const state = this.pageTabsContent.state;
@@ -120,6 +125,12 @@ export class PageTabsContent extends LitElement {
                 </div>
             </hb-page-content>
         `;
+    }
+
+    updated() {
+        this.pageTabsContent.contentState.inContentEditMode ?
+            this.dragOrderController.attach(this.$tabContainer) :
+            this.dragOrderController.detach();
     }
 
     renderTabs(forEdit:boolean) {

@@ -5,6 +5,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 import { hostEvent, Product, windowEvent } from "@domx/statecontroller";
+import { ItemIndexChanged } from "../../../common/DragOrderController";
 import { inject } from "../../../domain/DependencyContainer/decorators";
 import { AddPageRepoKey, EditPageRepoKey } from "../../../domain/interfaces/PageInterfaces";
 import { FindPageRepo } from "../../../domain/Pages/FindPageRepo";
@@ -167,6 +168,13 @@ export class PageTabsContentController extends PageContentController {
         Product.of(this)
             .tap(syncComponentsAndSave(this.page.state.page, this.editPageRepo));
     }
+    itemIndexChanged(event) {
+        console.log("item index changed", event.sourceIndex, event.targetIndex);
+        Product.of(this)
+            .next(reorderItems(event.sourceIndex, event.targetIndex))
+            .requestUpdate(event)
+            .tap(syncComponentsAndSave(this.page.state.page, this.editPageRepo));
+    }
     selectTab(event) {
         this.host.scrollIntoView({
             behavior: "smooth",
@@ -214,6 +222,9 @@ __decorate([
 __decorate([
     hostEvent(SaveTabsEvent)
 ], PageTabsContentController.prototype, "saveTabs", null);
+__decorate([
+    hostEvent(ItemIndexChanged)
+], PageTabsContentController.prototype, "itemIndexChanged", null);
 __decorate([
     hostEvent(SelectTabEvent)
 ], PageTabsContentController.prototype, "selectTab", null);
@@ -382,4 +393,11 @@ const setSelectedTabIfNone = (state) => {
     }
     const index = state.tabs.findIndex(tab => tab.url === location.pathname);
     state.selectedTabIndex = index;
+};
+const reorderItems = (sourceIndex, targetIndex) => (state) => {
+    const tabs = state.tabs;
+    const tab = tabs[sourceIndex];
+    targetIndex = targetIndex >= tabs.length ? targetIndex - 1 : targetIndex;
+    tabs.splice(sourceIndex, 1);
+    tabs.splice(targetIndex, 0, tab);
 };
