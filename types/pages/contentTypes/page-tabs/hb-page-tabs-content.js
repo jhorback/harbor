@@ -11,7 +11,9 @@ import { DragOrderController } from "../../../common/DragOrderController";
 import "../../../common/hb-button";
 import "../../../common/hb-text-input";
 import { styles } from "../../../styles";
-import { AddNewPageEvent, AddNewTabEvent, DeleteSelectedPageEvent, DeleteSelectedTabEvent, PageTabsContentController, SaveTabsEvent, SelectedTabNameChanged, SelectPageTemplateEvent, SelectTabEvent } from "./PageTabsContentController";
+import { AddNewPageEvent, AddNewTabEvent, DeleteSelectedTabEvent, PageTabsContentController, SaveTabsEvent, SelectedTabNameChanged, SelectPageTemplateEvent, SelectTabEvent } from "./PageTabsContentController";
+import "../../hb-delete-page-dialog";
+import { ifDefined } from "lit-html/directives/if-defined.js";
 /**
  */
 let PageTabsContent = class PageTabsContent extends LitElement {
@@ -27,6 +29,10 @@ let PageTabsContent = class PageTabsContent extends LitElement {
         const state = this.pageTabsContent.state;
         const contentState = this.pageTabsContent.contentState;
         return html `
+            <hb-delete-page-dialog
+                uid=${ifDefined(state.selectedTab?.pageUid)}
+                @page-deleted=${this.deleteSelectedTab}
+            ></hb-delete-page-dialog>
             <hb-page-content
                 pathname=${this.pathname}
                 content-index=${this.contentIndex}
@@ -64,14 +70,16 @@ let PageTabsContent = class PageTabsContent extends LitElement {
                                     autofocus
                                     @hb-text-input-change=${debounce(this.selectedTabNameChange, 700)}
                                 ></hb-text-input>
-                                <div class="edit-tools-page-type">
-                                    <label for="pageTemplate" class="label-large">Page type</label>
-                                    <select id="pageTemplate" @change=${this.selectedPageTemplateChange} class="large">
-                                        ${state.pageTemplates.map(template => html `
-                                            <option value=${template.key}>${template.name}</option>
-                                        `)}
-                                    </select>
-                                </div>
+                                ${state.selectedTab.url ? html `` : html `
+                                    <div class="edit-tools-page-type">
+                                        <label for="pageTemplate" class="label-large">Page type</label>
+                                        <select id="pageTemplate" @change=${this.selectedPageTemplateChange} class="large">
+                                            ${state.pageTemplates.map(template => html `
+                                                <option value=${template.key}>${template.name}</option>
+                                            `)}
+                                        </select>
+                                    </div>
+                                `}                                
                                 ${state.selectedTab.url ? html `
                                     <hb-button
                                         text-button
@@ -153,7 +161,7 @@ let PageTabsContent = class PageTabsContent extends LitElement {
         this.dispatchEvent(new AddNewPageEvent());
     }
     deleteSelectedPage(event) {
-        this.dispatchEvent(new DeleteSelectedPageEvent());
+        this.$deletePageDialog.showModal();
     }
     deleteSelectedTab(event) {
         this.dispatchEvent(new DeleteSelectedTabEvent());
@@ -167,9 +175,6 @@ let PageTabsContent = class PageTabsContent extends LitElement {
     }
     saveChanges(event) {
         this.dispatchEvent(new SaveTabsEvent());
-    }
-    editRootPage(event) {
-        alert("Edit Root Page");
     }
     static { this.styles = [styles.types, styles.form, css `
         :host {
@@ -264,6 +269,9 @@ __decorate([
 __decorate([
     query("[slot=content-edit] .tab-container")
 ], PageTabsContent.prototype, "$tabContainer", void 0);
+__decorate([
+    query("hb-delete-page-dialog")
+], PageTabsContent.prototype, "$deletePageDialog", void 0);
 PageTabsContent = __decorate([
     customElement('hb-page-tabs-content')
 ], PageTabsContent);

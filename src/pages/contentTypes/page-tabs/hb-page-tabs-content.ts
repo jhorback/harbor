@@ -8,6 +8,9 @@ import { TextInputChangeEvent } from "../../../common/hb-text-input";
 import { styles } from "../../../styles";
 import { HbPageContent } from "../../hb-page";
 import { AddNewPageEvent, AddNewTabEvent, DeleteSelectedPageEvent, DeleteSelectedTabEvent, PageTabsContentController, SaveTabsEvent, SelectedTabNameChanged, SelectPageTemplateEvent, SelectTabEvent } from "./PageTabsContentController";
+import "../../hb-delete-page-dialog";
+import { ifDefined } from "lit-html/directives/if-defined.js";
+import { DeletePageDialog } from "../../../files/hb-delete-file-dialog";
 
 /**
  */
@@ -31,10 +34,17 @@ export class PageTabsContent extends LitElement {
     @query("[slot=content-edit] .tab-container")
     $tabContainer!:Element;
 
+    @query("hb-delete-page-dialog")
+    $deletePageDialog!:DeletePageDialog;
+
     render() {
         const state = this.pageTabsContent.state;
         const contentState = this.pageTabsContent.contentState;
         return html`
+            <hb-delete-page-dialog
+                uid=${ifDefined(state.selectedTab?.pageUid)}
+                @page-deleted=${this.deleteSelectedTab}
+            ></hb-delete-page-dialog>
             <hb-page-content
                 pathname=${this.pathname}
                 content-index=${this.contentIndex}
@@ -72,14 +82,16 @@ export class PageTabsContent extends LitElement {
                                     autofocus
                                     @hb-text-input-change=${debounce(this.selectedTabNameChange, 700)}
                                 ></hb-text-input>
-                                <div class="edit-tools-page-type">
-                                    <label for="pageTemplate" class="label-large">Page type</label>
-                                    <select id="pageTemplate" @change=${this.selectedPageTemplateChange} class="large">
-                                        ${state.pageTemplates.map(template => html`
-                                            <option value=${template.key}>${template.name}</option>
-                                        `)}
-                                    </select>
-                                </div>
+                                ${state.selectedTab.url ? html`` : html`
+                                    <div class="edit-tools-page-type">
+                                        <label for="pageTemplate" class="label-large">Page type</label>
+                                        <select id="pageTemplate" @change=${this.selectedPageTemplateChange} class="large">
+                                            ${state.pageTemplates.map(template => html`
+                                                <option value=${template.key}>${template.name}</option>
+                                            `)}
+                                        </select>
+                                    </div>
+                                `}                                
                                 ${state.selectedTab.url ? html`
                                     <hb-button
                                         text-button
@@ -168,7 +180,7 @@ export class PageTabsContent extends LitElement {
     }
 
     deleteSelectedPage(event:Event) {
-        this.dispatchEvent(new DeleteSelectedPageEvent());
+        this.$deletePageDialog.showModal();
     }
 
     deleteSelectedTab(event:Event) {
@@ -186,10 +198,6 @@ export class PageTabsContent extends LitElement {
     
     saveChanges(event:Event) {
         this.dispatchEvent(new SaveTabsEvent());
-    }
-
-    editRootPage(event:Event) {
-        alert("Edit Root Page");
     }
    
     static styles = [styles.types, styles.form, css`
