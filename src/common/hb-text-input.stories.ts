@@ -8,6 +8,10 @@ export default {
     title: 'Common/Text Input',
     component: "hb-text-input",
     argTypes: { 
+        label: {
+            control: { type: 'text' },
+            description: "An optional field label"
+        },
         placeholder: {
             control: { type: 'text' },
             description: "The placeholder text of the text input"
@@ -16,13 +20,21 @@ export default {
             control: { type: 'text' },
             description: "The value of the text input"
         },
-        errorText: {
-            control: { type: 'text' },
-            description: "Error text"
-        },
         autofocus: {
             control: { type: 'boolean' },
             description: "Adds the autofocus attribute to the text input"
+        },
+        readonly: {
+            control: { type: 'boolean' },
+            description: "Makes the input readonly"
+        },
+        helperText: {
+            control: { type: 'text' },
+            description: "Small text that shows up under the input"
+        },
+        errorText: {
+            control: { type: 'text' },
+            description: "Small error text that shows up under the input"
         }
     },
     parameters: {
@@ -35,19 +47,25 @@ export default {
 
 
 export interface TextInputProps {
+    label: string;
     placeholder: string;
     value: string;
     autofocus: boolean;
+    readonly: boolean;
     errorText: string;
+    helperText: string;
 }
 
 
-const TextInputTemplate = ({placeholder, value, autofocus, errorText}: TextInputProps) => html`
+const TextInputTemplate = ({label, placeholder, value, autofocus, readonly, errorText, helperText}: TextInputProps) => html`
     <hb-text-input
+        label=${label}
         ?autofocus=${autofocus}
+        ?readonly=${readonly}
         placeholder=${placeholder}
         value=${value}
         error-text=${errorText}
+        helper-text=${helperText}
     ></hb-text-input>
 `;
 
@@ -57,8 +75,11 @@ const Template: Story<Partial<TextInputProps>> = (args:TextInputProps) => TextIn
 
 export const TextInput = Template.bind({});
 TextInput.args = {
-   autofocus: false,
-   placeholder: "Placeholder text",
-   value: "",
-   errorText: ""
+    label: "",
+    readonly: false,
+    autofocus: false,
+    placeholder: "Placeholder text",
+    value: "",
+    errorText: "",
+    helperText: "",
 };
