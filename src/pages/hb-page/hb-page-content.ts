@@ -164,6 +164,7 @@ export class HbPageContent extends LitElement {
         .hb-content[content-edit] {
             border-radius: var(--md-sys-shape-corner-medium);
             outline: 1px solid var(--md-sys-color-outline);
+            background-color: var(--md-sys-color-background);
             margin: -1rem;
             padding: 1rem;
         }

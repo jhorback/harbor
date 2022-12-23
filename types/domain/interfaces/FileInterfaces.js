@@ -15,10 +15,10 @@ export const UploadFilesRepoKey = Symbol("UPLOAD_FILES_REPO");
  * to report file upload progress.
  */
 export class FileUploadProgressEvent extends Event {
+    static { this.eventType = "file-upload-progress"; }
     constructor(bytesTransferred, totalBytes) {
         super(FileUploadProgressEvent.eventType);
         this.bytesTransferred = bytesTransferred;
         this.totalBytes = totalBytes;
     }
 }
-FileUploadProgressEvent.eventType = "file-upload-progress";

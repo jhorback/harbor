@@ -11,23 +11,24 @@ import { inject } from "../../domain/DependencyContainer/decorators";
 import { HomePageRepoKey } from "../../domain/interfaces/PageInterfaces";
 import { sendFeedback } from "../../layout/feedback";
 export class RequestSysadminSettingsEvent extends Event {
+    static { this.eventType = "request-sysadmin-settings"; }
     constructor() {
         super(RequestSysadminSettingsEvent.eventType, { bubbles: true });
     }
 }
-RequestSysadminSettingsEvent.eventType = "request-sysadmin-settings";
 export class UpdateHomePageEvent extends Event {
+    static { this.eventType = "update-home-page"; }
     constructor(pageReference) {
         super(UpdateHomePageEvent.eventType, { bubbles: true, composed: true });
         this.pageReference = pageReference;
     }
 }
-UpdateHomePageEvent.eventType = "update-home-page";
 let SystemAdminData = SystemAdminData_1 = class SystemAdminData extends DataElement {
     constructor() {
         super(...arguments);
         this.settings = SystemAdminData_1.defaultSettings;
     }
+    static { this.defaultSettings = { homePageThumbnail: null }; }
     async requestSysadminSettings(event) {
         StateChange.of(this, "settings")
             .tap(requestSettings(this.homePageRepo));
@@ -37,7 +38,6 @@ let SystemAdminData = SystemAdminData_1 = class SystemAdminData extends DataElem
             .tap(updateHomePage(this.homePageRepo, event.pageReference));
     }
 };
-SystemAdminData.defaultSettings = { homePageThumbnail: null };
 __decorate([
     dataProperty({ changeEvent: "settings-changed" })
 ], SystemAdminData.prototype, "settings", void 0);

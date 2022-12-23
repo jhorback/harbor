@@ -129,8 +129,7 @@ let ImageContent = class ImageContent extends LitElement {
     fileUploadComplete(event) {
         event.uploadedFile && this.dispatchEvent(new ImageContentSelectedEvent(event.uploadedFile));
     }
-};
-ImageContent.styles = [styles.icons, styles.form, css `
+    static { this.styles = [styles.icons, styles.form, css `
         :host {
             display: block;
             position: relative;
@@ -168,7 +167,8 @@ ImageContent.styles = [styles.icons, styles.form, css `
         label {
             margin-right: 8px;
         }
-  `];
+  `]; }
+};
 __decorate([
     property({ type: String })
 ], ImageContent.prototype, "pathname", void 0);

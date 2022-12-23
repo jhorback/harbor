@@ -61,8 +61,7 @@ let DeleteFileDialog = class DeleteFileDialog extends LitElement {
     deleteButtonClicked() {
         this.dispatchEvent(new DeleteFileEvent(this.fileName));
     }
-};
-DeleteFileDialog.styles = [styles.types, styles.dialog, styles.icons, css `
+    static { this.styles = [styles.types, styles.dialog, styles.icons, css `
         :host {
             display: block;
             z-index:1;
@@ -76,7 +75,8 @@ DeleteFileDialog.styles = [styles.types, styles.dialog, styles.icons, css `
         .center {
             text-align: center;
         }
-  `];
+  `]; }
+};
 __decorate([
     property({ type: String, attribute: "file-name" })
 ], DeleteFileDialog.prototype, "fileName", void 0);

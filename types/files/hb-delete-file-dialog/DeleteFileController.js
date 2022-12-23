@@ -9,18 +9,18 @@ import { inject } from "../../domain/DependencyContainer/decorators";
 import { EditFileRepoKey } from "../../domain/interfaces/FileInterfaces";
 import "../../domain/Pages/HbDeletePageRepo";
 export class DeleteFileEvent extends Event {
+    static { this.eventType = "delete-file"; }
     constructor(name) {
         super(DeleteFileEvent.eventType, { bubbles: true });
         this.name = name;
     }
 }
-DeleteFileEvent.eventType = "delete-file";
 export class FileDeletedEvent extends Event {
+    static { this.eventType = "file-deleted"; }
     constructor() {
         super(FileDeletedEvent.eventType, { bubbles: true });
     }
 }
-FileDeletedEvent.eventType = "file-deleted";
 export class DeleteFileController extends StateController {
     constructor(deleteFileDialog) {
         super(deleteFileDialog);

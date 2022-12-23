@@ -15,6 +15,7 @@ export class PageModel {
         /** The page route */
         this.pathname = "";
         this.title = "";
+        this.displayTitle = "";
         this.showTitle = true;
         this.subtitle = null;
         this.showSubtitle = true;
@@ -59,6 +60,8 @@ export class PageModel {
         const page = new PageModel();
         page.authorUid = authorUid;
         page.title = options.title;
+        page.displayTitle = options.displayTitle || options.title;
+        page.subtitle = options.subtitle ? options.subtitle : null;
         page.pathname = options.pathname;
         page.pageTemplate = options.pageTemplate;
         page.content = pageTemplates.get(page.pageTemplate).defaultContent;
@@ -85,6 +88,7 @@ export class PageModel {
             pageSize: page.pageSize,
             pathname: page.pathname,
             title: page.title,
+            displayTitle: page.displayTitle || page.title,
             showTitle: page.showTitle,
             subtitle: page.subtitle,
             showSubtitle: page.showSubtitle,
@@ -101,6 +105,7 @@ export class PageModel {
         Object.assign(pageModel, dbPage);
         pageModel.dateCreated = dbPage.dateCreated.toDate();
         pageModel.dateUpdated = dbPage.dateUpdated.toDate();
+        pageModel.displayTitle = pageModel.displayTitle || pageModel.title;
         return pageModel;
     }
 }

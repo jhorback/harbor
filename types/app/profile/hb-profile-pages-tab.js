@@ -47,8 +47,7 @@ let ProfilePagesTab = class ProfilePagesTab extends LitElement {
             </div>
         `;
     }
-};
-ProfilePagesTab.styles = [styles.types, css `
+    static { this.styles = [styles.types, css `
         :host {
             display: block;
         }
@@ -58,7 +57,8 @@ ProfilePagesTab.styles = [styles.types, css `
             column-gap: 16px;
             row-gap: 16px;
         }
-    `];
+    `]; }
+};
 ProfilePagesTab = __decorate([
     customElement('hb-profile-pages-tab')
 ], ProfilePagesTab);

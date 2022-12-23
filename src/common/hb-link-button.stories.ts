@@ -1,5 +1,6 @@
 import { Story, Meta } from '@storybook/web-components';
 import { html } from 'lit-html';
+import { ifDefined } from 'lit-html/directives/if-defined.js';
 import "./hb-link-button";
 
 
@@ -24,6 +25,11 @@ export default {
                 defaultValue: { summary: "false" },
                 type: { summary: "Set the href to # or javascript:; to fully disable" }
             }
+        },
+        textButton: {
+            control: { type: "boolean"},
+            description: "Makes the button look like text",
+            defaultValue: false
         }
     },
     parameters: {
@@ -37,15 +43,17 @@ export interface LinkButtonProps {
     label: string;
     disabled: boolean;
     target?: string;
+    textButton: boolean;
 }
 
 
-const LinkButtonTemplate = ({label, disabled, href, target}: LinkButtonProps) => html`
+const LinkButtonTemplate = ({label, disabled, href, target, textButton}: LinkButtonProps) => html`
     <hb-link-button
         ?disabled=${disabled}
         label=${label}
         href=${href}
-        target=${target}
+        text-button=${textButton}
+        target=${ifDefined(target)}
     ></hb-link-button>
 `;
 
@@ -58,5 +66,6 @@ LinkButton.args = {
    label: "Button Text",
    href: "https://www.google.com",
    disabled: false,
-   target: ""
+   target: "",
+   textButton: false
 };

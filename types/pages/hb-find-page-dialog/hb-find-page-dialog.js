@@ -13,13 +13,13 @@ import "../../common/hb-text-input";
 import { styles } from "../../styles";
 import { PageSearchController, SearchPagesEvent } from "../PageSearchController";
 export class PageSelectedEvent extends Event {
+    static { this.eventType = "page-selected"; }
     constructor(pageModel) {
         super(PageSelectedEvent.eventType);
         this.pageModel = pageModel;
         this.pageReference = pageModel.toPageReference();
     }
 }
-PageSelectedEvent.eventType = "page-selected";
 /**
  * @fires {@link PageSelectedEvent}
  */
@@ -115,8 +115,7 @@ let FindPageDialog = class FindPageDialog extends LitElement {
         this.dispatchEvent(new PageSelectedEvent(this.pageSearch.state.list[this.selectedIndex]));
         this.close();
     }
-};
-FindPageDialog.styles = [styles.types, styles.dialog, css `
+    static { this.styles = [styles.types, styles.dialog, css `
         :host {
             display: block;
             z-index:1;
@@ -133,7 +132,8 @@ FindPageDialog.styles = [styles.types, styles.dialog, css `
             flex-direction: column;
             gap: 5px;
         }
-  `];
+  `]; }
+};
 __decorate([
     query("dialog")
 ], FindPageDialog.prototype, "$dialog", void 0);

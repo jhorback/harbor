@@ -34,8 +34,7 @@ let PageAuthorSettings = class PageAuthorSettings extends LitElement {
             </div>
         `;
     }
-};
-PageAuthorSettings.styles = [styles.types, styles.dialog, css `
+    static { this.styles = [styles.types, styles.dialog, css `
         :host {
             display: block;
         }
@@ -47,7 +46,8 @@ PageAuthorSettings.styles = [styles.types, styles.dialog, css `
         .body-medium {
             margin-bottom: 2px;
         }
-  `];
+  `]; }
+};
 __decorate([
     property({ type: String })
 ], PageAuthorSettings.prototype, "uid", void 0);

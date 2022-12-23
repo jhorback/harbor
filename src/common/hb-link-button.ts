@@ -18,12 +18,15 @@ export class LinkButton extends LitElement {
 
     @property({type: String}) target = "";
 
+    @property({type: Boolean, attribute: "text-button"}) textButton = false;
+
     render() {
         return html`
             <a
                 href=${this.href}
                 class="link label-large"
                 ?disabled=${this.disabled}
+                ?text-button=${this.textButton}
                 target=${ifDefined(this.target)}
             >
                 ${this.label}
@@ -64,6 +67,9 @@ export class LinkButton extends LitElement {
             background-color: transparent;
             opacity: 0.38;
             cursor: default;
+        }
+        .link[text-button] {
+            border-color: transparent;
         }
     `]
 }

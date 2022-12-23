@@ -128,8 +128,7 @@ let HbPageContent = class HbPageContent extends LitElement {
             isActive: false
         }));
     }
-};
-HbPageContent.styles = [styles.icons, css `
+    static { this.styles = [styles.icons, css `
         :host {
             display: block;       
         }
@@ -155,6 +154,7 @@ HbPageContent.styles = [styles.icons, css `
         .hb-content[content-edit] {
             border-radius: var(--md-sys-shape-corner-medium);
             outline: 1px solid var(--md-sys-color-outline);
+            background-color: var(--md-sys-color-background);
             margin: -1rem;
             padding: 1rem;
         }
@@ -174,7 +174,8 @@ HbPageContent.styles = [styles.icons, css `
         span[disabled] {
             opacity: 0.12;
         }
-  `];
+  `]; }
+};
 __decorate([
     property({ type: String })
 ], HbPageContent.prototype, "pathname", void 0);

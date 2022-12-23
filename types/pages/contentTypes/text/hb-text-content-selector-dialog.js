@@ -104,8 +104,7 @@ let TextContentSelectorDialog = class TextContentSelectorDialog extends LitEleme
     close() {
         this.parentElement?.removeChild(this);
     }
-};
-TextContentSelectorDialog.styles = [styles.types, styles.dialog, styles.icons, css `
+    static { this.styles = [styles.types, styles.dialog, styles.icons, css `
         :host {
             display: block;
             z-index:1;
@@ -118,7 +117,8 @@ TextContentSelectorDialog.styles = [styles.types, styles.dialog, styles.icons, c
         .center {
             text-align: center;
         }
-  `];
+  `]; }
+};
 __decorate([
     query("dialog")
 ], TextContentSelectorDialog.prototype, "$dialog", void 0);

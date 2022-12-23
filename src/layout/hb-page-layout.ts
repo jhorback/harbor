@@ -44,29 +44,34 @@ export class PageLayout extends LitElement {
     static styles = [css`
       :host {
         display: block;
+        --hb-page-layout-small: 760px;
+        --hb-page-layout-medium: 930px;
+        --hb-page-layout-large: 996px;
+        --hb-page-layout-wide: 1769px;
+        --hb-page-layout-full: 100%;
       }
       :host([small]) .page-layout,
       :host([size=small]) .page-layout {
-        max-width: 80ch;
+        max-width: var(--hb-page-layout-small);
       }
       :host([medium]) .page-layout,
       :host([size=medium]) .page-layout,
       .page-layout {
-        max-width: 750px;
+        max-width: var(--hb-page-layout-medium);
         margin: auto;
         padding: 1rem;
       }
       :host([large]) .page-layout,
       :host([size=large]) .page-layout {
-        max-width: 840px;
+        max-width: var(--hb-page-layout-large);
       }
       :host([wide]) .page-layout,
       :host([size=wide]) .page-layout {
-        max-width: 1200px;
+        max-width: var(--hb-page-layout-wide);
       }
       :host([full]) .page-layout,
       :host([size=full]) .page-layout {
-        max-width: 100%;
+        max-width: var(--hb-page-layout-full);
       }
     `]
 }

@@ -63,8 +63,7 @@ let UserCard = class UserCard extends LitElement {
         }
         this.dispatchEvent(new UpdateUserRoleEvent(this.state.uid, role));
     }
-};
-UserCard.styles = [styles.types, css `
+    static { this.styles = [styles.types, css `
         :host {
             display: block;
             border-radius: var(--md-sys-shape-corner-large);
@@ -86,7 +85,8 @@ UserCard.styles = [styles.types, css `
             margin: 0;
             border-color: var(--md-sys-color-outline);
         }
-    `];
+    `]; }
+};
 __decorate([
     property({ type: Object })
 ], UserCard.prototype, "state", void 0);

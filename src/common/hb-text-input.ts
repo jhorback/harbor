@@ -26,6 +26,15 @@ export class TextInput extends LitElement {
     @property({type: String, reflect: true})
     value = "";
 
+    @property({type: String})
+    label = "";
+
+    @property({type:String, attribute: "helper-text"})
+    helperText = "";
+
+    @property({type: Boolean})
+    readonly:boolean = false;
+
     @property({type: String, attribute: "error-text"})
     errorText = "";
 
@@ -38,15 +47,21 @@ export class TextInput extends LitElement {
     render() {
         return html`
             <div class=${classMap({"text-input-container":true, "property-error": this.errorText ? true : false})}>
+                ${this.label ? html`
+                    <div class="label-large">${this.label}</div>
+                ` : html``}
                 <input
                     type="text"
-                    class="text-input"
+                    class="text-input"                    
                     placeholder=${this.placeholder}
                     .value=${this.value}
+                    ?readonly=${this.readonly}
                     ?autofocus=${this.autofocus}
                     @keyup=${this.textKeyUp}>
-                <div class="error-text body-small">
-                    ${this.errorText}
+                <div class="helper-text body-small">
+                    ${this.errorText ? html`
+                        <span class="error-text">${this.errorText}</span>
+                    ` : this.helperText }
                 </div>
             </div>
         `;
@@ -66,18 +81,28 @@ export class TextInput extends LitElement {
         .text-input-container {
             padding-right: 2rem;
         }
+        .label-large {
+            padding-bottom: 4px;
+        }
         .text-input {
             font-weight: var(--md-sys-typescale-body-large-font-weight);
             font-size: var(--md-sys-typescale-body-large-font-size);
             border-radius:  var(--md-sys-shape-corner-extra-small);
             outline: 0;
-            border: 1px solid var(--md-sys-color-on-background);
+            border: 1px solid var(--md-sys-color-outline);
             color: var(--md-sys-color-on-background);
             line-height: 54px;            
             max-width: 100%;
             width: 100%;
             padding: 0 1rem;
             background: transparent;
+        }
+        .text-input:focus {
+            border: 1px solid var(--md-sys-color-on-background);
+        }
+        .text-input[readonly] {
+            border-color: var(--md-sys-color-outline);
+            opacity: 0.7;
         }
         .property-error .text-input {
             border-color: var(--md-sys-color-error);
@@ -86,11 +111,13 @@ export class TextInput extends LitElement {
             border-color: var(--md-sys-color-error) !important;
             outline: none;
         }
-        .error-text {
-            color: var(--md-sys-color-error);
+        .helper-text {
             padding-left: 1rem;
             padding-top: 4px;
             height: 16px;
+        }
+        .error-text {
+            color: var(--md-sys-color-error);
         }
     `]
 }

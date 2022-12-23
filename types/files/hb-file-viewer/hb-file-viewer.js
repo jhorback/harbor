@@ -211,8 +211,7 @@ let FileViewer = class FileViewer extends LitElement {
         this.$deleteFileDlg.close();
         this.dispatchEvent(new FileDeletedEvent());
     }
-};
-FileViewer.styles = [styles.types, styles.icons, css `
+    static { this.styles = [styles.types, styles.icons, css `
         :host {
             display: none;
             z-index:1;
@@ -354,7 +353,8 @@ FileViewer.styles = [styles.types, styles.icons, css `
             text-align: center;
             padding: 0 1rem 1rem 1rem;
         }
-  `];
+  `]; }
+};
 __decorate([
     property({ type: Boolean, reflect: true })
 ], FileViewer.prototype, "open", void 0);

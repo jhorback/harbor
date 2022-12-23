@@ -42,6 +42,10 @@ export class ImageContentController extends PageContentController<ImageContentDa
 
     state:ImageContentData = { ...this.content };
 
+    get defaultContent():ImageContentData {
+        return new ImageContentData();
+    }
+
     stateUpdated() {
         this.state = { ...this.content };
     }

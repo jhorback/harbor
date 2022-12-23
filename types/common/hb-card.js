@@ -48,8 +48,7 @@ let Card = class Card extends LitElement {
     handleClick(event) {
         this.dispatchEvent(new Event("hb-card-click", { bubbles: true, composed: false }));
     }
-};
-Card.styles = [styles.icons, styles.types, css `
+    static { this.styles = [styles.icons, styles.types, css `
         :host {
             display: block;
         }
@@ -94,7 +93,8 @@ Card.styles = [styles.icons, styles.types, css `
         [hidden] {
             display: none;
         }   
-    `];
+    `]; }
+};
 __decorate([
     property({ type: String, attribute: "media-url" })
 ], Card.prototype, "mediaUrl", void 0);
