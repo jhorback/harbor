@@ -22,6 +22,7 @@ let HbPageContent = class HbPageContent extends LitElement {
     }
     get stateId() { return this.pathname; }
     render() {
+        const content = this.pageContent.page.state.page.content[this.contentIndex];
         const pageState = this.pageContent.page.state;
         const contentState = this.pageContent.contentState;
         return html `
@@ -59,6 +60,7 @@ let HbPageContent = class HbPageContent extends LitElement {
                                 arrow_upward
                             </span>
                             <span
+                                ?hidden=${content?.canDelete === false}
                                 class="icon-button icon-small"
                                 tab-index="0"
                                 title="Delete content"
@@ -131,6 +133,9 @@ let HbPageContent = class HbPageContent extends LitElement {
     static { this.styles = [styles.icons, css `
         :host {
             display: block;       
+        }
+        [hidden] {
+            display: none;
         }
         .hb-content {
             display: block;

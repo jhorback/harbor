@@ -1,8 +1,9 @@
 import { html } from "lit-html";
 import { contentTypes } from "../../../domain/Pages/contentTypes";
 export class PageTabsContentData {
-    constructor() {
+    constructor(options) {
         this.contentType = "page-tabs";
+        this.canDelete = false;
         this.rootPageUID = "";
         this.rootPageUrl = "";
         this.rootPageTitle = "";
@@ -22,6 +23,7 @@ export class PageTabsContentData {
         //     pageUid: ""
         // }
         ];
+        this.canDelete = options?.canDelete;
     }
 }
 const pageTabsContentType = {

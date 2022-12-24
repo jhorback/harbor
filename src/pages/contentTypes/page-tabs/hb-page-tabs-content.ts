@@ -58,7 +58,7 @@ export class PageTabsContent extends LitElement {
                     <!-- NO TOOLBAR //-->
                 </div>
                 <div slot="page-edit-empty">
-                    ${this.renderTabs(true)}
+                    There are no tabs, edit this content to configure.
                 </div>
                 <div slot="content-edit">
                     ${this.renderTabs(true)}

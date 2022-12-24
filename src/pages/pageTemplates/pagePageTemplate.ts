@@ -15,8 +15,3 @@ const pagePageType:IPageTemplateDescriptor = {
 };
 
 pageTemplates.register("page", pagePageType);
-
-
-
-
-

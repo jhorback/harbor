@@ -1,1 +1,2 @@
 import "./pagePageTemplate";
+import "./tabbedPageTemplate";
