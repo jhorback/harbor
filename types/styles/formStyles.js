@@ -16,7 +16,13 @@ select {
     background-color: var(--md-sys-color-surface-variant);
     color: var(--md-sys-color-on-surface-variant);
 }
+select:focus {
+    border-color: var(--md-sys-color-on-background);
+}
 select.small {
     height: 32px;
+}
+select.large {
+    height: 56px;
 }
 `;

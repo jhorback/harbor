@@ -5,7 +5,9 @@ export class FileModel {
         this.storagePath = "";
         this.url = "";
         this.thumbUrl = "";
-        this.pictureUrl = "";
+        this.mediaPosterDbPath = null;
+        this.mediaPosterUrl = "";
+        this.mediaPosterStoragePath = null;
         this.size = 0;
         this.type = null;
         this.width = null;
@@ -13,11 +15,17 @@ export class FileModel {
         this.updated = "";
         this.mediaTags = null;
     }
+    get defaultThumb() {
+        return "/content/thumbs/files-thumb.svg";
+    }
     get updatedDate() {
         return new Date(this.updated);
     }
     get thumbDescription() {
         return `${readableBytes(this.size)} (${this.updatedDate.toLocaleDateString()})`;
+    }
+    get readableSize() {
+        return readableBytes(this.size);
     }
     static toFirestore(file) {
         return {
@@ -26,7 +34,9 @@ export class FileModel {
             storagePath: file.storagePath,
             url: file.url,
             thumbUrl: file.thumbUrl,
-            pictureUrl: file.pictureUrl,
+            mediaPosterDbPath: file.mediaPosterDbPath,
+            mediaPosterUrl: file.mediaPosterUrl,
+            mediaPosterStoragePath: file.mediaPosterStoragePath,
             size: file.size,
             type: file.type,
             width: file.width,
@@ -37,8 +47,11 @@ export class FileModel {
     }
     static fromFirestore(snapshot) {
         const dbFile = snapshot.data();
+        return FileModel.of(dbFile);
+    }
+    static of(fileData) {
         const fileModel = new FileModel();
-        Object.assign(fileModel, dbFile);
+        Object.assign(fileModel, fileData);
         return fileModel;
     }
 }

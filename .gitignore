@@ -5,6 +5,7 @@ npm-debug.log*
 
 node_modules
 dist
+types
 *.local
 .firebase
 storybook-static

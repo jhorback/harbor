@@ -32,8 +32,7 @@ let RouteNotFoundPage = class RouteNotFoundPage extends LitElement {
           </hb-page-layout>
       `;
     }
-};
-RouteNotFoundPage.styles = [styles.types, styles.colors, css `
+    static { this.styles = [styles.types, styles.colors, css `
         :host {
             display: block;
         }
@@ -50,7 +49,8 @@ RouteNotFoundPage.styles = [styles.types, styles.colors, css `
           margin: auto;
           opacity: 0.7;
         }
-    `];
+    `]; }
+};
 RouteNotFoundPage = __decorate([
     customElement('hb-route-not-found-page')
 ], RouteNotFoundPage);

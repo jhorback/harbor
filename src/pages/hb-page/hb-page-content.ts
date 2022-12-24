@@ -24,6 +24,7 @@ export class HbPageContent extends LitElement {
     isEmpty = false;
 
     render() {
+        const content = this.pageContent.page.state.page.content[this.contentIndex];
         const pageState = this.pageContent.page.state;
         const contentState = this.pageContent.contentState;
         return html`
@@ -61,6 +62,7 @@ export class HbPageContent extends LitElement {
                                 arrow_upward
                             </span>
                             <span
+                                ?hidden=${content?.canDelete === false}
                                 class="icon-button icon-small"
                                 tab-index="0"
                                 title="Delete content"
@@ -142,6 +144,9 @@ export class HbPageContent extends LitElement {
         :host {
             display: block;       
         }
+        [hidden] {
+            display: none;
+        }
         .hb-content {
             display: block;
             position: relative;
@@ -164,6 +169,7 @@ export class HbPageContent extends LitElement {
         .hb-content[content-edit] {
             border-radius: var(--md-sys-shape-corner-medium);
             outline: 1px solid var(--md-sys-color-outline);
+            background-color: var(--md-sys-color-background);
             margin: -1rem;
             padding: 1rem;
         }

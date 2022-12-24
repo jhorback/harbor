@@ -20,6 +20,8 @@ export class PageModel implements IPageData {
         const page = new PageModel();
         page.authorUid = authorUid;
         page.title = options.title;
+        page.displayTitle = options.displayTitle || options.title;
+        page.subtitle = options.subtitle ? options.subtitle : null;
         page.pathname = options.pathname;
         page.pageTemplate = options.pageTemplate;
         page.content = pageTemplates.get(page.pageTemplate).defaultContent;
@@ -36,6 +38,7 @@ export class PageModel implements IPageData {
     /** The page route */
     pathname = "";
     title = "";
+    displayTitle = "";
     showTitle = true;
     subtitle:string|null = null;
     showSubtitle = true;
@@ -95,6 +98,7 @@ export class PageModel implements IPageData {
             pageSize: page.pageSize,
             pathname: page.pathname,
             title: page.title,
+            displayTitle: page.displayTitle || page.title,
             showTitle: page.showTitle,
             subtitle: page.subtitle,
             showSubtitle: page.showSubtitle,
@@ -112,6 +116,7 @@ export class PageModel implements IPageData {
         Object.assign(pageModel, dbPage);
         pageModel.dateCreated = (dbPage.dateCreated as Timestamp).toDate();
         pageModel.dateUpdated = (dbPage.dateUpdated as Timestamp).toDate();
+        pageModel.displayTitle = pageModel.displayTitle || pageModel.title;
         return pageModel;
     }
 }

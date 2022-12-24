@@ -26,6 +26,7 @@ let EditPageRepo = class EditPageRepo {
         return authorId;
     }
     async subscribeToPage(pathname, callback, signal) {
+        let initialLoad = true;
         const page = await this.findPageRepo.findPageByPathname(pathname);
         if (page === null) {
             throw new NotFoundError(`Page not found: ${pathname}`);
@@ -36,7 +37,8 @@ let EditPageRepo = class EditPageRepo {
         const unsubscribe = onSnapshot(doc(HbDb.current, "pages", page.uid)
             .withConverter(PageModel), (snapshot) => {
             const doc = snapshot.data();
-            callback(doc);
+            callback(doc, initialLoad);
+            initialLoad = false;
         }, (error) => {
             throw new ServerError(error.message, error);
         });

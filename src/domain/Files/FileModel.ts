@@ -9,13 +9,19 @@ export class FileModel implements IFileData {
     storagePath: string = "";
     url: string = "";
     thumbUrl: string = "";
-    pictureUrl: string = "";
+    mediaPosterDbPath: string | null = null;
+    mediaPosterUrl: string = "";
+    mediaPosterStoragePath: string | null = null;
     size: number = 0;
     type: string | null = null;
     width: number | null = null;
     height: number | null = null;
     updated: string = "";
     mediaTags: IMediaTags | null = null;
+
+    get defaultThumb():string {
+        return "/content/thumbs/files-thumb.svg";
+    }
 
     get updatedDate() {
         return new Date(this.updated);
@@ -25,6 +31,10 @@ export class FileModel implements IFileData {
         return `${readableBytes(this.size)} (${this.updatedDate.toLocaleDateString()})`;
     }
 
+    get readableSize() {
+        return readableBytes(this.size);
+    }
+
     static toFirestore(file:FileModel):IFileData {
         return {
             name: file.name,
@@ -32,7 +42,9 @@ export class FileModel implements IFileData {
             storagePath: file.storagePath,
             url: file.url,
             thumbUrl: file.thumbUrl,
-            pictureUrl: file.pictureUrl,
+            mediaPosterDbPath: file.mediaPosterDbPath,
+            mediaPosterUrl: file.mediaPosterUrl,
+            mediaPosterStoragePath: file.mediaPosterStoragePath,
             size: file.size,
             type: file.type,
             width: file.width,
@@ -44,8 +56,12 @@ export class FileModel implements IFileData {
     
     static fromFirestore(snapshot: QueryDocumentSnapshot):FileModel {
         const dbFile = snapshot.data() as IFileData;
+        return FileModel.of(dbFile);
+    }
+
+    static of(fileData:IFileData) {
         const fileModel = new FileModel();
-        Object.assign(fileModel, dbFile);
+        Object.assign(fileModel, fileData);
         return fileModel;
     }
 }

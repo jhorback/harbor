@@ -48,13 +48,13 @@ export const extractMediaTags = async (file:File):Promise<IMediaTags> => {
 
         window.jsmediatags.read(file, {
             onSuccess:(jsmt:IJsMediaTags) => resolve({
-                title: jsmt.tags.title,
-                artist: jsmt.tags.artist,
-                album: jsmt.tags.album,
-                year: parseInt(jsmt.tags.year),
-                track: parseInt(jsmt.tags.track),
-                genre: jsmt.tags.genre,
-                picture: jsmt.tags.picture
+                title: jsmt.tags.title || null,
+                artist: jsmt.tags.artist || null,
+                album: jsmt.tags.album || null,
+                year: parseInt(jsmt.tags.year) || null,
+                track: parseInt(jsmt.tags.track) || null,
+                genre: jsmt.tags.genre || null,
+                picture: jsmt.tags.picture || null
             }),
             onError:(error:any) => reject(error)
         });

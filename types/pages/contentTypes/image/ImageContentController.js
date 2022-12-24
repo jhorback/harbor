@@ -8,33 +8,37 @@ import { hostEvent, Product } from "@domx/statecontroller";
 import { inject } from "../../../domain/DependencyContainer/decorators";
 import { FindFileRepoKey } from "../../../domain/interfaces/FileInterfaces";
 import { PageThumbChangeEvent, UpdatePageContentEvent } from "../../hb-page";
+import { ImageContentData } from "./imageContentType";
 import "../../../domain/Files/HbFindFileRepo";
 import { PageContentController } from "../../hb-page/PageContentController";
 export class ImageSizeChangeEvent extends Event {
+    static { this.eventType = "image-size-change"; }
     constructor(size) {
         super(ImageSizeChangeEvent.eventType);
         this.size = size;
     }
 }
-ImageSizeChangeEvent.eventType = "image-size-change";
 export class ImageAlignmentChangeEvent extends Event {
+    static { this.eventType = "image-alignment-change"; }
     constructor(alignment) {
         super(ImageAlignmentChangeEvent.eventType);
         this.alignment = alignment;
     }
 }
-ImageAlignmentChangeEvent.eventType = "image-alignment-change";
 export class ImageContentSelectedEvent extends Event {
+    static { this.eventType = "image-content-selected"; }
     constructor(file) {
         super(ImageContentSelectedEvent.eventType);
         this.file = file;
     }
 }
-ImageContentSelectedEvent.eventType = "image-content-selected";
 export class ImageContentController extends PageContentController {
     constructor() {
         super(...arguments);
         this.state = { ...this.content };
+    }
+    get defaultContent() {
+        return new ImageContentData();
     }
     stateUpdated() {
         this.state = { ...this.content };

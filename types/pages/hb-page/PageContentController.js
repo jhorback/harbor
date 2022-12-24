@@ -7,8 +7,16 @@ export class PageContentController extends StateController {
         this.page = new PageController(this.host);
         this.page.stateUpdated = () => this.stateUpdated();
     }
+    get defaultContent() {
+        throw new Error("Not implemented");
+    }
     get content() {
-        return this.page.state.page.content[this.host.contentIndex];
+        // make sure we have content and it matches the correct type
+        // otherwise return the default content
+        const contentType = this.page.state.page.content[this.host.contentIndex];
+        return !contentType ? this.defaultContent :
+            contentType.contentType !== this.defaultContent.contentType ?
+                this.defaultContent : contentType;
     }
     get contentState() {
         return {

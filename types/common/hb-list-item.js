@@ -40,8 +40,7 @@ let ListItem = class ListItem extends LitElement {
     handleClick(event) {
         this.dispatchEvent(new Event("hb-list-item-click", { bubbles: true, composed: false }));
     }
-};
-ListItem.styles = [styles.icons, styles.types, css `
+    static { this.styles = [styles.icons, styles.types, css `
         :host {
             display: block;
         }
@@ -78,7 +77,8 @@ ListItem.styles = [styles.icons, styles.types, css `
         .select-icon .icon-small {
             padding: 0px 4px;
         }
-    `];
+    `]; }
+};
 __decorate([
     property({ type: String })
 ], ListItem.prototype, "icon", void 0);

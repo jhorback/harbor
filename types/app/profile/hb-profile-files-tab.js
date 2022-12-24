@@ -5,9 +5,10 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 import { html, css, LitElement } from "lit";
-import { customElement } from "lit/decorators.js";
+import { customElement, query } from "lit/decorators.js";
 import { SearchFilesController, SearchFilesEvent } from "../../files/SearchFilesController";
 import "../../domain/Files/HbSearchFilesRepo";
+import "../../files/hb-file-viewer/hb-file-viewer";
 import { styles } from "../../styles";
 /**
  * @class ProfileContentTab
@@ -17,14 +18,22 @@ let ProfileContentTab = class ProfileContentTab extends LitElement {
         super(...arguments);
         this.searchFiles = new SearchFilesController(this);
     }
-    async connectedCallback() {
+    connectedCallback() {
         super.connectedCallback();
+        this.requestFiles();
+    }
+    async requestFiles() {
         await this.updateComplete;
         this.dispatchEvent(new SearchFilesEvent({}));
     }
     render() {
         const state = this.searchFiles.state;
         return html `
+            <hb-file-viewer
+                show-details
+                @close-file-viewer=${this.requestFiles}
+                .files=${state.list}
+            ></hb-file-viewer>
             ${state.isLoading || state.count !== 0 ? html `` : html `
                 <p>There are no files</p>
             `}
@@ -34,18 +43,25 @@ let ProfileContentTab = class ProfileContentTab extends LitElement {
                     <hb-horizontal-card                        
                         text=${fileModel.name}
                         description=${fileModel.thumbDescription}
-                        media-url=${fileModel.thumbUrl}
-                        media-href=${fileModel.url}
                         link-target="files"
-                        
+                        media-url=${fileModel.thumbUrl || fileModel.defaultThumb}                        
+                        @click=${() => this.fileClicked(fileModel.name)}
                     ></hb-horizontal-card>
                 `;
         })}
             </div>
         `;
     }
-};
-ProfileContentTab.styles = [styles.types, css `
+    updated() {
+        if (this.searchFiles.state.hasLoaded) {
+            const fileName = this.$fileViewer.getFileNameFromUrl();
+            fileName && this.fileClicked(fileName);
+        }
+    }
+    fileClicked(fileName) {
+        this.$fileViewer.show(fileName);
+    }
+    static { this.styles = [styles.types, css `
         :host {
             display: block;
         }
@@ -55,7 +71,14 @@ ProfileContentTab.styles = [styles.types, css `
             column-gap: 16px;
             row-gap: 16px;
         }
-    `];
+        hb-horizontal-card {
+            --hb-horizontal-card-cursor: pointer;
+        }
+    `]; }
+};
+__decorate([
+    query("hb-file-viewer")
+], ProfileContentTab.prototype, "$fileViewer", void 0);
 ProfileContentTab = __decorate([
     customElement('hb-profile-files-tab')
 ], ProfileContentTab);

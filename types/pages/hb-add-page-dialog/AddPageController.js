@@ -12,48 +12,48 @@ import "../../domain/Pages/HbAddPageRepo";
 import { PageModel } from "../../domain/Pages/PageModel";
 import { pageTemplates } from "../../domain/Pages/pageTemplates";
 export class PageTemplateChangedEvent extends Event {
+    static { this.eventType = "page-template-changed"; }
     constructor(index) {
         super(PageTemplateChangedEvent.eventType);
         this.index = index;
     }
 }
-PageTemplateChangedEvent.eventType = "page-template-changed";
 export class PageTitleChangedEvent extends Event {
+    static { this.eventType = "page-title-changed"; }
     constructor(title) {
         super(PageTitleChangedEvent.eventType);
         this.title = title;
     }
 }
-PageTitleChangedEvent.eventType = "page-title-changed";
 export class PagePathnameChangedEvent extends Event {
+    static { this.eventType = "page-pathname-changed"; }
     constructor(pathname) {
         super(PagePathnameChangedEvent.eventType);
         this.pathname = pathname;
     }
 }
-PagePathnameChangedEvent.eventType = "page-pathname-changed";
 export class ValidateNewPageOptionsEvent extends Event {
+    static { this.eventType = "validate-new-page-options"; }
     constructor() {
         super(ValidateNewPageOptionsEvent.eventType);
     }
 }
-ValidateNewPageOptionsEvent.eventType = "validate-new-page-options";
 export class AddNewPageEvent extends Event {
+    static { this.eventType = "add-new-page"; }
     constructor() {
         super(AddNewPageEvent.eventType);
     }
 }
-AddNewPageEvent.eventType = "add-new-page";
 /**
  * Dispatched when the page was successfully added
  */
 export class PageAddedEvent extends Event {
+    static { this.eventType = "page-added"; }
     constructor(pageModel) {
         super(PageAddedEvent.eventType, { bubbles: true, composed: true });
         this.pageModel = pageModel;
     }
 }
-PageAddedEvent.eventType = "page-added";
 export class AddPageController extends StateController {
     constructor(host) {
         super(host);

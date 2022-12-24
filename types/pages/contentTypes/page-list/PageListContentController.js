@@ -11,40 +11,45 @@ import { HbCurrentUser } from "../../../domain/HbCurrentUser";
 import { FindPageRepo } from "../../../domain/Pages/FindPageRepo";
 import { PageThumbChangeEvent, UpdatePageContentEvent } from "../../hb-page";
 import { PageContentController } from "../../hb-page/PageContentController";
+import { ItemIndexChanged } from "../../../common/DragOrderController";
+import { PageListContentData } from "./pageListContentType";
 export class AddListPageEvent extends Event {
+    static { this.eventType = "add-list-page"; }
     constructor(page) {
         super(AddListPageEvent.eventType);
         this.page = page;
     }
 }
-AddListPageEvent.eventType = "add-list-page";
 export class ChangePageListDisplayEvent extends Event {
+    static { this.eventType = "change-page-list-display"; }
     constructor(display) {
         super(ChangePageListDisplayEvent.eventType);
         this.display = display;
     }
 }
-ChangePageListDisplayEvent.eventType = "change-page-list-display";
 export class ReorderPageListItemsEvent extends Event {
+    static { this.eventType = "reorder-page-list-items"; }
     constructor(sourceIndex, targetIndex) {
         super(ReorderPageListItemsEvent.eventType, { bubbles: true, composed: true });
         this.sourceIndex = sourceIndex;
         this.targetIndex = targetIndex;
     }
 }
-ReorderPageListItemsEvent.eventType = "reorder-page-list-items";
 export class RemovePageListItemEvent extends Event {
+    static { this.eventType = "remove-page-list-item"; }
     constructor(index) {
         super(RemovePageListItemEvent.eventType, { bubbles: true, composed: true });
         this.index = index;
     }
 }
-RemovePageListItemEvent.eventType = "remove-page-list-item";
 export class PageListContentController extends PageContentController {
     constructor() {
         super(...arguments);
         this.state = { ...this.content };
         this.currentUser = new HbCurrentUser();
+    }
+    get defaultContent() {
+        return new PageListContentData();
     }
     stateUpdated() {
         this.state = { ...this.content };
@@ -95,7 +100,7 @@ __decorate([
     hostEvent(ChangePageListDisplayEvent)
 ], PageListContentController.prototype, "changeDisplay", null);
 __decorate([
-    hostEvent(ReorderPageListItemsEvent)
+    hostEvent(ItemIndexChanged)
 ], PageListContentController.prototype, "reorderItems", null);
 __decorate([
     hostEvent(RemovePageListItemEvent)

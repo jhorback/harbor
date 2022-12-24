@@ -12,19 +12,22 @@ import { NotFoundError } from "../../domain/Errors";
 import { contentTypes } from "../../domain/Pages/contentTypes";
 
 
+
+/**
+ * Dispatched when the page is loaded from the database
+ * Calling preventDefault will keep the window from scrolling
+ */
+export class PageLoadedEvent extends Event {
+    static eventType = "page-loaded";
+    constructor() {
+        super(PageLoadedEvent.eventType, {bubbles: true, composed: true, cancelable: true});
+    }
+}
+
 export class RequestPageEvent extends Event {
     static eventType = "request-page";
     constructor() {
         super(RequestPageEvent.eventType);
-    }
-}
-
-export class PagePathnameChangeEvent extends Event {
-    static eventType = "page-pathname-change";
-    pathname:string;
-    constructor(pathname:string) {
-        super(PagePathnameChangeEvent.eventType);
-        this.pathname = pathname;
     }
 }
 
@@ -187,20 +190,22 @@ export interface IPageElement extends LitElement {
 }
 
 export class PageController extends StateController {
-    static defaultState:IPageState = {
-        isLoaded: false,
-        page: new PageModel(),
-        currentUserCanEdit: true,
-        currentUserCanAdd: true,
-        selectedEditTab: "",
-        inEditMode: false,
-        activeContentIndex: -1,
-        editableContentIndex: -1,
-        pageTemplate: pageTemplates.get("page")
+    static getDefaultState():IPageState {
+        return {
+            isLoaded: false,
+            page: new PageModel(),
+            currentUserCanEdit: true,
+            currentUserCanAdd: true,
+            selectedEditTab: "",
+            inEditMode: false,
+            activeContentIndex: -1,
+            editableContentIndex: -1,
+            pageTemplate: pageTemplates.get("page")
+        };
     };
 
     @stateProperty()
-    state:IPageState = {...PageController.defaultState};
+    state:IPageState = PageController.getDefaultState();
 
     @inject<IEditPageRepo>(EditPageRepoKey)
     private editPageRepo!:IEditPageRepo;
@@ -220,15 +225,9 @@ export class PageController extends StateController {
             .requestUpdate(event);
     }
 
-    @windowEvent(PagePathnameChangeEvent, {capture: false})
-    private async pagePathnameChangeEvent(event:PagePathnameChangeEvent) {
-        this.state = {...PageController.defaultState};
-        await this.host.updateComplete;
-        this.refreshState();
-    }
-
     @hostEvent(RequestPageEvent)
     private requestPage(event: RequestPageEvent) {
+        this.refreshState();
         this.editPageRepo.subscribeToPage(this.host.pathname,
             subscribeToPage(this), this.abortController.signal);
     }
@@ -338,19 +337,38 @@ export class PageController extends StateController {
 }
 
 
-const subscribeToPage = (pageController:PageController) => (page:PageModel) => {
+const subscribeToPage = (pageController:PageController) => async (page:PageModel, initialLoad?:boolean) => {
 
     // happens if the page is deleted
     if (!page) {
         throw new NotFoundError("Page Not Found");
     }
 
+    if (initialLoad === true) {
+        // pageController.state = PageController.getDefaultState();
+        // Product.of<IPageState>(pageController)
+        //     .next(clearEditIndexes)
+        //     .requestUpdate(`PageController.subscribeToPage("${page.pathname}")`);
+        // await pageController.host.updateComplete;
+    }
+
+    console.debug("Setting page from database:", page.pathname);
     Product.of<IPageState>(pageController)
         .next(updatePageLoaded(page))
         .next(updatePageTemplate)
         .next(updateUserCanEdit)
         .next(updateUserCanAdd)
         .requestUpdate(`PageController.subscribeToPage("${page.pathname}")`);
+
+    const pageLoadedEvent = new PageLoadedEvent();
+    window.dispatchEvent(pageLoadedEvent);
+    if (initialLoad && pageLoadedEvent.defaultPrevented === false) {
+        window.scrollTo({
+            top: 0,
+            left: 0,
+            behavior: "smooth"
+        });
+    }
 };
 
 
@@ -474,7 +492,7 @@ const setContentActive = (options:ContentActiveChangeOptions) => (state:IPageSta
 };
 
 const addContent = (contentType:string) => (state:IPageState) => {
-    state.page.content.push(contentTypes.get(contentType).defaultData);
+    state.page.content.push(contentTypes.get(contentType).defaultData); // jch - use method here?
     state.activeContentIndex = state.page.content.length - 1;
     state.editableContentIndex = -1;
 };
@@ -485,4 +503,9 @@ const setPageEditMode = (inEditMode:boolean) => (state:IPageState) => {
         state.editableContentIndex = -1;
         state.activeContentIndex = -1;
     }
+};
+
+const clearEditIndexes = (state:IPageState) => {
+    state.editableContentIndex = -1;
+    state.activeContentIndex = -1;
 };

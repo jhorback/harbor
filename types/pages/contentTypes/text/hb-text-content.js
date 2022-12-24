@@ -12,15 +12,15 @@ import { FileType } from "../../../domain/interfaces/FileInterfaces";
 import { FileUploaderAccept, FileUploadPanel } from "../../../files/hb-file-upload-panel";
 import { styles } from "../../../styles";
 import { PageThumbChangeEvent, UpdatePageContentEvent } from "../../hb-page";
-import { PageContentController } from "../../hb-page/PageContentController";
 import { TextContentSelectorDialog, TextContentSelectorType } from "./hb-text-content-selector-dialog";
+import { TextContentController } from "./TextContentController";
 import { TextContentData } from "./textContentType";
 /**
  */
 let TextContent = class TextContent extends LitElement {
     constructor() {
         super(...arguments);
-        this.pageContent = new PageContentController(this);
+        this.pageContent = new TextContentController(this);
         this.pathname = "";
         this.contentIndex = -1;
     }
@@ -90,8 +90,7 @@ let TextContent = class TextContent extends LitElement {
             el.getAttribute("poster") !== "").map(el => el.getAttribute("poster")));
         thumbs.length > 0 && this.dispatchEvent(new PageThumbChangeEvent({ thumbs }));
     }
-};
-TextContent.styles = [styles.types, styles.format, css `
+    static { this.styles = [styles.types, styles.format, css `
         :host {
             display: block;
         }
@@ -100,7 +99,8 @@ TextContent.styles = [styles.types, styles.format, css `
             clear: both;
             display: table;
         }
-  `];
+  `]; }
+};
 __decorate([
     property({ type: String })
 ], TextContent.prototype, "pathname", void 0);
@@ -198,14 +198,14 @@ const insertFile = (selectedNode, editor, file) => {
     // tell the page we may have some thumbs
     const thumbs = [];
     file.thumbUrl && thumbs.push(file.thumbUrl);
-    file.pictureUrl && thumbs.push(file.pictureUrl);
+    file.mediaPosterUrl && thumbs.push(file.mediaPosterUrl);
     thumbs.length > 0 && editor.getContainer().dispatchEvent(new PageThumbChangeEvent({ thumbs }));
     let content = "";
     if (fileType === FileType.image) {
         content = `<img src="${file.url}" title="${file.name}" alt="${file.name}" data-type="image">`;
     }
     else if (fileType === FileType.audio || fileType === FileType.video) {
-        content = `<video controls poster="${file.pictureUrl || ""}"
+        content = `<video controls poster="${file.mediaPosterUrl || ""}"
             width="${file.width || (fileType === FileType.audio ? 300 : "")}"
             height="${file.height || (fileType === FileType.audio ? 50 : "")}"
             data-type="${fileType}">
@@ -221,9 +221,9 @@ const insertFile = (selectedNode, editor, file) => {
 };
 ;
 class TinymceChangeEvent extends Event {
+    static { this.eventType = "change"; }
     constructor(value) {
         super(TinymceChangeEvent.eventType, { bubbles: true, composed: true });
         this.value = value;
     }
 }
-TinymceChangeEvent.eventType = "change";

@@ -27,10 +27,19 @@ export class PageContentController<TContentType extends IContentType> extends St
     }
 
     page:PageController;
+
+    get defaultContent():TContentType {
+        throw new Error("Not implemented");
+    }
     
 
     get content():TContentType {
-        return this.page.state.page.content[this.host.contentIndex] as TContentType;
+        // make sure we have content and it matches the correct type
+        // otherwise return the default content
+        const contentType =  this.page.state.page.content[this.host.contentIndex];
+        return !contentType ? this.defaultContent :
+            contentType.contentType !== this.defaultContent.contentType ?
+                this.defaultContent : contentType as TContentType;
     }
 
     get contentState():IPageContentState {

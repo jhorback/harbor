@@ -105,7 +105,7 @@ export class UserMenu extends LitElement {
             right: 12px;
             width: 350px;
             background-color: var(--md-sys-color-background);
-            z-index: 20;
+            z-index: 50;
         }
         .menu-container {  
             border-radius: var(--md-sys-shape-corner-extra-large);

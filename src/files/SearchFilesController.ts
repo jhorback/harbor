@@ -6,6 +6,7 @@ import { ISearchFilesOptions, ISearchFilesRepo, SearchFilesRepoKey } from "../do
 
 export interface ISearchFilesState {
     list: Array<FileModel>;
+    hasLoaded: boolean;
     isLoading:boolean;
     count: number;
 }
@@ -25,6 +26,7 @@ export class SearchFilesController extends StateController {
     @stateProperty()
     state:ISearchFilesState = {
         list: [],
+        hasLoaded: false,
         isLoading: false,
         count: 0
     };
@@ -56,6 +58,7 @@ const searchDocuments = (repo:ISearchFilesRepo, options:ISearchFilesOptions) =>
         product
             .next(updateFilesList(files))
             .next(setIsLoading(false))
+            .next(setHasLoaded)
             .requestUpdate("searchDocuments");
     };
 
@@ -66,4 +69,8 @@ const updateFilesList = (files:Array<FileModel>) => (state:ISearchFilesState) =>
 
 const setIsLoading = (isLoading:boolean) => (state:ISearchFilesState) => {
     state.isLoading = isLoading;
+};
+
+const setHasLoaded =  (state:ISearchFilesState) => {
+    state.hasLoaded = true;
 };

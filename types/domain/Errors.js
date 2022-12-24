@@ -10,14 +10,14 @@ export class ServerError extends Error {
     }
 }
 export class ClientError extends Error {
-    constructor(message) {
-        super(message);
-        this.properties = {};
-    }
     static of(message, properties) {
         const error = new ClientError(message);
         error.properties = properties;
         return error;
+    }
+    constructor(message) {
+        super(message);
+        this.properties = {};
     }
     addPropertyError(property, error) {
         this.properties[property] = error;

@@ -14,17 +14,25 @@ import "./domain/HbAuth";
 import { HbCurrentUserChangedEvent } from "./domain/HbAuth";
 import { ServerError } from "./domain/Errors";
 export class SignOutEvent extends Event {
+    static { this.eventType = "sign-out"; }
     constructor() {
         super(SignOutEvent.eventType, { bubbles: true, composed: true });
     }
 }
-SignOutEvent.eventType = "sign-out";
 let CurrentUserData = CurrentUserData_1 = class CurrentUserData extends DataElement {
     constructor() {
         super(...arguments);
         this.currentUser = CurrentUserData_1.defaultCurrentUser;
         this.hbAppInfo = CurrentUserData_1.defaultHbAppInfo;
     }
+    static { this.defaultCurrentUser = {
+        isAuthenticated: false,
+        uid: "",
+        displayName: ""
+    }; }
+    static { this.defaultHbAppInfo = {
+        version: "v0.0.0"
+    }; }
     connectedCallback() {
         super.connectedCallback();
         this.userAuth.connect();
@@ -48,14 +56,6 @@ let CurrentUserData = CurrentUserData_1 = class CurrentUserData extends DataElem
             throw new ServerError(e.message, e);
         }
     }
-};
-CurrentUserData.defaultCurrentUser = {
-    isAuthenticated: false,
-    uid: "",
-    displayName: ""
-};
-CurrentUserData.defaultHbAppInfo = {
-    version: "v0.0.0"
 };
 __decorate([
     dataProperty({ changeEvent: "current-user-changed" })

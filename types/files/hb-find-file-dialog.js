@@ -14,12 +14,12 @@ import { FileType } from "../domain/interfaces/FileInterfaces";
 import { styles } from "../styles";
 import { SearchFilesController, SearchFilesEvent } from "./SearchFilesController";
 export class FileSelectedEvent extends Event {
+    static { this.eventType = "file-selected"; }
     constructor(file) {
         super(FileSelectedEvent.eventType);
         this.file = file;
     }
 }
-FileSelectedEvent.eventType = "file-selected";
 /**
  * @fires {@link FileSelectedEvent}
  */
@@ -32,6 +32,7 @@ let FindFileDialog = class FindFileDialog extends LitElement {
         this.searchFiles = new SearchFilesController(this);
         this.searchText = "";
     }
+    get stateId() { return "hb-find-file-dialog"; }
     reset() {
         this.searchText = "";
         this.selectedIndex = null;
@@ -138,8 +139,7 @@ let FindFileDialog = class FindFileDialog extends LitElement {
         this.dispatchEvent(new FileSelectedEvent(this.searchFiles.state.list[this.selectedIndex]));
         this.close();
     }
-};
-FindFileDialog.styles = [styles.types, styles.dialog, css `
+    static { this.styles = [styles.types, styles.dialog, css `
         :host {
             display: block;
             z-index:1;
@@ -156,7 +156,8 @@ FindFileDialog.styles = [styles.types, styles.dialog, css `
             flex-direction: column;
             gap: 5px;
         }
-  `];
+  `]; }
+};
 __decorate([
     property({ type: String, attribute: "file-type" })
 ], FindFileDialog.prototype, "fileType", void 0);

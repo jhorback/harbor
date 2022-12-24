@@ -8,17 +8,18 @@ import { hostEvent, Product, StateController, stateProperty } from "@domx/statec
 import { inject } from "../domain/DependencyContainer/decorators";
 import { SearchFilesRepoKey } from "../domain/interfaces/FileInterfaces";
 export class SearchFilesEvent extends Event {
+    static { this.eventType = "search-files"; }
     constructor(options) {
         super(SearchFilesEvent.eventType, { bubbles: true });
         this.options = options;
     }
 }
-SearchFilesEvent.eventType = "search-files";
 export class SearchFilesController extends StateController {
     constructor() {
         super(...arguments);
         this.state = {
             list: [],
+            hasLoaded: false,
             isLoading: false,
             count: 0
         };
@@ -51,6 +52,7 @@ const searchDocuments = (repo, options) => async (product) => {
     product
         .next(updateFilesList(files))
         .next(setIsLoading(false))
+        .next(setHasLoaded)
         .requestUpdate("searchDocuments");
 };
 const updateFilesList = (files) => (state) => {
@@ -59,4 +61,7 @@ const updateFilesList = (files) => (state) => {
 };
 const setIsLoading = (isLoading) => (state) => {
     state.isLoading = isLoading;
+};
+const setHasLoaded = (state) => {
+    state.hasLoaded = true;
 };
