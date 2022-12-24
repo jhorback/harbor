@@ -91,7 +91,7 @@ export class PageTabsContentController extends PageContentController {
             selectedTabUrl: "",
             selectedTab: null,
             isOnRootPage: false,
-            pageTemplates: pageTemplates.all(),
+            pageTemplates: pageTemplates.all().filter(t => t.key !== "tabbed-page"),
             addPageError: "",
             isDirty: false
         };
@@ -255,8 +255,9 @@ const setIsOnRootPage = (pageState) => (state) => {
 };
 const navigateToRootPage = (pageState) => (product) => {
     const state = product.getState();
-    if (state.isOnRootPage && pageState.inEditMode === false && state.tabs[0]) {
-        product.dispatchHostEvent(new PathnameChangedEvent(state.tabs[0].url));
+    const firstTab = state.tabs[0];
+    if (state.isOnRootPage && pageState.inEditMode === false && firstTab && firstTab.url) {
+        product.dispatchHostEvent(new PathnameChangedEvent(firstTab.url));
     }
 };
 const setRootPageIfNone = (page) => (state) => {

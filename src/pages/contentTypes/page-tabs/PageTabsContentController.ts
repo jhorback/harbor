@@ -109,7 +109,7 @@ export class PageTabsContentController extends PageContentController<IPageTabsSt
             selectedTabUrl: "",
             selectedTab: null,
             isOnRootPage: false,
-            pageTemplates: pageTemplates.all(),
+            pageTemplates: pageTemplates.all().filter(t => t.key !== "tabbed-page"),
             addPageError: "",
             isDirty: false
         };
@@ -275,9 +275,10 @@ const setIsOnRootPage = (pageState:IPageState) => (state:IPageTabsState) => {
 }
 
 const navigateToRootPage = (pageState:IPageState) => (product:Product<IPageTabsState>) => {
-    const state = product.getState(); 
-    if (state.isOnRootPage && pageState.inEditMode === false && state.tabs[0]) {
-        product.dispatchHostEvent(new PathnameChangedEvent(state.tabs[0].url))
+    const state = product.getState();
+    const firstTab = state.tabs[0];
+    if (state.isOnRootPage && pageState.inEditMode === false && firstTab && firstTab.url) {
+        product.dispatchHostEvent(new PathnameChangedEvent(firstTab.url))
     }
 };
 

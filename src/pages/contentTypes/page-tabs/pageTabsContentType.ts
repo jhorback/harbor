@@ -4,8 +4,16 @@ import { contentTypes } from "../../../domain/Pages/contentTypes";
 
 
 
+interface IPageTabsContentDataConstructorOptions {
+    canDelete?:boolean;
+}
+
 export class PageTabsContentData implements IContentType {
+    constructor(options?:IPageTabsContentDataConstructorOptions) {
+        this.canDelete = options?.canDelete;
+    }
     contentType = "page-tabs";
+    canDelete?:boolean = false;
     rootPageUID:string = "";
     rootPageUrl:string = "";
     rootPageTitle:string = "";
