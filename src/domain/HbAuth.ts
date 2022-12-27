@@ -74,6 +74,12 @@ class HbAuth implements IUserAuth {
 const setupAuthListener = (hbAuth:HbAuth) => {
 
     onAuthStateChanged(hbAuth.auth, async (user) => {
+
+        // pulls up the login page if not logged in and attempting
+        // to go to the profile page
+        if (user === null && location.pathname === "/profile") {
+            attemptSignIn();
+        }
         
         const userData:IUserData = user ? getUserDataFromAuthUser(user) : {
             isAuthenticated: false,
@@ -131,8 +137,12 @@ const currentUserChanged = (userData:IUserData) => {
 
 const listenForSignInEvent = (event:KeyboardEvent) => {
     if (event.ctrlKey && event.shiftKey && event.key === 'S') {
-        signInWithRedirect(getAuth(FbApp.current), new GoogleAuthProvider());
+        attemptSignIn();
     }
+};
+
+const attemptSignIn = () => {
+    signInWithRedirect(getAuth(FbApp.current), new GoogleAuthProvider());
 };
 
 const dispatchCurrentUserChangedEvent = (userData:IUserData) => {
