@@ -93,7 +93,14 @@ export class ProfilePage extends LitElement {
             append-to="#tab-content-container"
             @route-active=${() => this.selectTab("pages-tab")}
         ></domx-route>
-    ` : html``}
+    ` : html`
+        <p>
+            You do not have permissions to author pages.
+        </p>
+        <p>
+            Contact the application administrator to gain access.
+        </p>
+    `}
     ${isAuthorized(UserAction.uploadFiles) ? html`
         <domx-route
             pattern="/profile/files"
