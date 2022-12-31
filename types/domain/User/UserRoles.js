@@ -8,6 +8,8 @@ export var UserRole;
 })(UserRole || (UserRole = {}));
 export var UserAction;
 (function (UserAction) {
+    /** use for testing */
+    UserAction["none"] = "NONE";
     /** create pages and access to profile pages tab */
     UserAction["authorPages"] = "AUTHOR_PAGES";
     /** in pages list and private pages */
@@ -34,6 +36,7 @@ export var UserAction;
     UserAction["editSiteSettings"] = "EDIT_SITE_SETTINGS";
 })(UserAction || (UserAction = {}));
 const UserActionRoles = {
+    [UserAction.none]: [],
     [UserAction.authorPages]: [
         UserRole.userAdmin,
         UserRole.author,

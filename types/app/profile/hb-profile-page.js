@@ -19,6 +19,7 @@ import "./hb-profile-pages-tab";
 import "./hb-profile-files-tab";
 import "./hb-profile-users-tab";
 import "./hb-profile-admin-tab";
+import { HbApp } from "../../domain/HbApp";
 /**
  * @class ProfilePage
  */
@@ -26,7 +27,12 @@ let ProfilePage = class ProfilePage extends LitElement {
     constructor() {
         super(...arguments);
         this.selectedTab = "pages-tab";
+        this.darkTheme = false;
         this.currentUser = CurrentUserData.defaultCurrentUser;
+    }
+    connectedCallback() {
+        super.connectedCallback();
+        this.darkTheme = HbApp.theme === "dark";
     }
     render() {
         return html `
@@ -39,6 +45,15 @@ let ProfilePage = class ProfilePage extends LitElement {
         <div>
             <div class="headline-large">${this.currentUser.displayName}</div>
             <div class="body-large">${this.currentUser.email}</div>
+        </div>
+        <div>
+            <div class="theme-switcher">
+                <hb-switch
+                    ?selected=${this.darkTheme}
+                    @hb-switch-change=${this.toggleTheme}
+                ></hb-switch>
+                <div class="label-large">Dark Theme</div>
+            </div>
         </div>
     </div>
     <hb-tab-bar selected-tab=${this.selectedTab}>
@@ -107,6 +122,10 @@ let ProfilePage = class ProfilePage extends LitElement {
     selectTab(tab) {
         this.selectedTab = tab;
     }
+    toggleTheme() {
+        HbApp.toggleTheme();
+        this.darkTheme = HbApp.theme === "dark";
+    }
     static { this.styles = [styles.types, css `
         :host {
             display: block;
@@ -116,14 +135,26 @@ let ProfilePage = class ProfilePage extends LitElement {
             gap: 20px;
             margin-bottom: 1rem;
         }
+        .header > :nth-child(2) {
+            flex-grow: 1;
+        }
         #tab-content-container {
             padding: 1rem;
+        }
+        .theme-switcher {
+            display:flex;
+            gap: 20px;
+            margin: 2rem 0 0 0;
+            align-items: center;
         }
     `]; }
 };
 __decorate([
     state()
 ], ProfilePage.prototype, "selectedTab", void 0);
+__decorate([
+    property({ type: Boolean })
+], ProfilePage.prototype, "darkTheme", void 0);
 __decorate([
     property({ type: Object })
 ], ProfilePage.prototype, "currentUser", void 0);

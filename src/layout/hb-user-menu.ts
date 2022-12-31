@@ -7,6 +7,7 @@ import { linkProp } from "@domx/linkprop";
 import { AvatarSize } from "../common/hb-avatar";
 import "../common/hb-button";
 import "../common/hb-link-button";
+import { isAuthorized, UserAction } from "../domain/HbCurrentUser";
 
 
 export interface UserMenuData {
@@ -85,10 +86,12 @@ export class UserMenu extends LitElement {
                 <div>
                     <hb-button label="Sign Out" @click=${this.handleSignOutClick}></hb-button>
                 </div>
-                <hr>
-                <div class="body-large on-surface-text dampen about-container">
-                    <a href="/app/about">About Harbor ${this.hbAppInfo.version}</a>
-                </div>
+                ${isAuthorized(UserAction.authorPages) ? html`
+                    <hr>
+                    <div class="body-large on-surface-text dampen about-container">
+                        <a href="/app/about">About Harbor ${this.hbAppInfo.version}</a>
+                    </div>
+                ` : html``}
             </div>
         `;
     }
@@ -105,6 +108,7 @@ export class UserMenu extends LitElement {
             right: 12px;
             width: 350px;
             background-color: var(--md-sys-color-background);
+            border-radius: var(--md-sys-shape-corner-extra-large);
             z-index: 50;
         }
         .menu-container {  
