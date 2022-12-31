@@ -13,6 +13,8 @@ export enum UserRole {
 
 
 export enum UserAction {
+    /** use for testing */
+    none = "NONE",
     /** create pages and access to profile pages tab */
     authorPages =       "AUTHOR_PAGES",
     /** in pages list and private pages */
@@ -42,6 +44,7 @@ export enum UserAction {
 
 
 const UserActionRoles:{[key:string]: Array<UserRole>} = {
+    [UserAction.none]: [],
     [UserAction.authorPages]: [
         UserRole.userAdmin,
         UserRole.author,

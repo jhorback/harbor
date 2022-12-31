@@ -35,13 +35,7 @@ let AboutPage = class AboutPage extends LitElement {
     <div class="headline-large">About Harbor
         <span class="primary-text">${this.hbAppInfo.version}</span>
     </div>
-    <div class="theme-switcher">
-        <hb-switch
-            ?selected=${this.darkTheme}
-            @hb-switch-change=${this.toggleTheme}
-        ></hb-switch>
-        <div class="label-large">Dark Theme</div>
-    </div>
+    
     <!-- <hr> -->
     <div class="body-large text-content">
         <p>
@@ -92,12 +86,6 @@ let AboutPage = class AboutPage extends LitElement {
         .headline-large {            
             padding-top: 2rem;
             
-        }        
-        .theme-switcher {
-            display:flex;
-            gap: 20px;
-            margin: 2rem 0 0 0;
-            align-items: center;
         }
         hr {
             border-color: var(--md-sys-color-outline);
