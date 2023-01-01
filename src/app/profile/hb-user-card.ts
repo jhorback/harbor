@@ -19,6 +19,7 @@ export class UserCard extends LitElement {
 
     render() {
         const user = this.state;
+        console.log(user.role);
         return html`
             <div class="line-item">
                 <hb-avatar href=${user.photoURL}></hb-avatar>
@@ -30,46 +31,38 @@ export class UserCard extends LitElement {
             
             <div class="line-item">
                 <div class="stretch body-medium">Last login</div>
-                <div class="body-large">${this.displayDate(user.lastLogin)}</div>
+                <div class="body-large"
+                    title=${user.lastLogin?.toLocaleTimeString()}
+                >${user.lastLogin?.toLocaleDateString()}</div>
             </div>
             <div class="line-item">
                 <div class="stretch body-medium">First login</div>
-                <div class="body-large">${this.displayDate(user.firstLogin)}</div>
+                <div class="body-large"
+                    title=${user.firstLogin?.toLocaleTimeString()}
+                >${user.firstLogin?.toLocaleDateString()}</div>
             </div>
-            
-            <div class="line-item right">
-                <hb-button
-                    label="Author"
-                    ?selected=${user.role === UserRole.author}
-                    @click=${(e:Event) => this.clickedRole(e, UserRole.author)}
-                ></hb-button>
-                <hb-button
-                    label="User Admin"
-                    ?selected=${user.role === UserRole.userAdmin}
-                    @click=${(e:Event) => this.clickedRole(e, UserRole.userAdmin)}
-                ></hb-button>
-                <hb-button
-                    label="Site Admin"
-                    ?selected=${user.role === UserRole.siteAdmin}
-                    @click=${(e:Event) => this.clickedRole(e, UserRole.siteAdmin)}
-                ></hb-button>
-            </div>           
+            <div class="line-item">
+                <div class="stretch body-medium">Role</div>
+                <select
+                    id="userRole"
+                        .value=${user.role || UserRole.none}
+                        @change=${this.userRoleChanged}
+                        class="small">
+                    <option ?selected=${user.role === UserRole.none} value=${UserRole.none}>None</option>
+                    <option ?selected=${user.role === UserRole.author} value=${UserRole.author}>Author</option>
+                    <option ?selected=${user.role === UserRole.userAdmin} value=${UserRole.userAdmin}>User Admin</option>
+                    <option ?selected=${user.role === UserRole.siteAdmin} value=${UserRole.siteAdmin}>Site Admin</option>
+                </select>
+            </div>
         `;
     }
 
-    private displayDate(date?:Date) {
-        return `${date?.toLocaleDateString()} ${date?.toLocaleTimeString()}`;
-    }
-
-    private clickedRole(event:Event, role:UserRole) {
-        (event.target as Button).selected = true;
-        if (role === this.state.role) {
-            role = UserRole.none;
-        }
+    private userRoleChanged(event:Event) {
+        const role = (event.target as HTMLSelectElement).value as UserRole;
         this.dispatchEvent(new UpdateUserRoleEvent(this.state.uid!, role));
     }
 
-    static styles = [styles.types, css`
+    static styles = [styles.types, styles.form, css`
         :host {
             display: block;
             border-radius: var(--md-sys-shape-corner-large);
@@ -78,7 +71,8 @@ export class UserCard extends LitElement {
         .line-item {
             display: flex;
             gap: 10px;
-            padding: 1rem;
+            padding: 0.5rem 1rem;
+            align-items: center;
         }
         .stretch {
             flex-grow: 1;
