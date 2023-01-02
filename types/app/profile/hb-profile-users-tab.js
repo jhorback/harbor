@@ -41,7 +41,7 @@ let ProfileUsersTab = class ProfileUsersTab extends LitElement {
         }
         .users-container {
             display: grid;
-            grid-template-columns: repeat(2, 374px);
+            grid-template-columns: repeat(3, auto);
             column-gap: 1rem;
             row-gap: 1rem;
         }

@@ -4,6 +4,7 @@ import { CurrentUserData } from "../hb-current-user-data";
 import { IUserData } from "../domain/interfaces/UserInterfaces";
 import { linkProp } from "@domx/linkprop";
 import "./hb-avatar-button";
+import { HbApp } from "../domain/HbApp";
 
 
 /**
@@ -27,7 +28,7 @@ export class AppBar extends LitElement {
       <div class="app-bar">
         <div class="logo">
           <a href="/">
-            <img src="/theme/harbor/harbor-moon.svg">
+            <img src=${`/theme/${HbApp.harborTheme}/logo-${HbApp.theme}.svg`}>
           </a>
         </div>
         <slot name="buttons"></slot>

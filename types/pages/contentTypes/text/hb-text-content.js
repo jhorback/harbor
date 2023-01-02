@@ -122,8 +122,8 @@ if (!window.tinymceSettings) {
         config: {
             branding: false,
             statusbar: false,
-            content_css: "/theme/harbor/tinymce/content.css",
-            skin_url: "/theme/harbor/tinymce",
+            content_css: `/theme/${HbApp.harborTheme}/tinymce/content.css`,
+            skin_url: `/theme/${HbApp.harborTheme}/tinymce`,
             body_class: `material-theme ${HbApp.theme}-theme`,
             content_style: "body { margin-top: 1rem; margin-left: 4px; }",
             toolbar_sticky: true,

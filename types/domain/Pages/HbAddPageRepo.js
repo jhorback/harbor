@@ -4,7 +4,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-import { collection, doc, setDoc } from "firebase/firestore";
+import { doc, setDoc } from "firebase/firestore";
 import { provides } from "../DependencyContainer/decorators";
 import { ClientError } from "../Errors";
 import { HbApp } from "../HbApp";
@@ -46,8 +46,9 @@ let AddPageRepo = class AddPageRepo {
         return newPage;
     }
     async addNewPage(newPage) {
-        const newPageRef = doc(collection(HbDb.current, "pages")).withConverter(PageModel);
-        newPage.uid = newPageRef.id;
+        const pageUid = getUidFromPathname(newPage.pathname);
+        const newPageRef = doc(HbDb.current, "pages", pageUid).withConverter(PageModel);
+        newPage.uid = pageUid;
         await setDoc(newPageRef, newPage);
     }
 };
@@ -57,3 +58,6 @@ __decorate([
 AddPageRepo = __decorate([
     provides(AddPageRepoKey, !HbApp.isStorybook)
 ], AddPageRepo);
+const getUidFromPathname = (pathname) => {
+    return pathname.substring(1, pathname.length).replaceAll("/", "--");
+};
