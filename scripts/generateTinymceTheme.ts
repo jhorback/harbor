@@ -1,13 +1,14 @@
 
 import fs from "fs";
 import CleanCSS from "clean-css";
-import { styles } from "../src/styles"
-
+import { styles } from "../src/styles";
 
 
 const generateTinymceTheme = async () => {
-    // can pull this from command line
-    const theme = "harbor";
+    // first arg on command line is the theme folder to run, otherwise, harbor
+    const cmdArgs = process.argv.slice(2);
+    const theme = cmdArgs[0] || "harbor";
+    console.log("Generating Tinymce theme for", theme);
     await Promise.all([
         generateContentCss(theme),
         generateSkinCss(theme)
