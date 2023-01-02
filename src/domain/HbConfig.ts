@@ -1,10 +1,11 @@
 import { FirebaseOptions } from "firebase/app";
+import { HarborApp } from "../hb-app";
 
 
 
 let location:Location;
 let localHostName = "localhost";
-localHostName = "larisahorback.com";
+// localHostName = "larisahorback.com";
 
 
 interface IHbConfigs { [key: string]: HbConfigOptions }
@@ -30,6 +31,7 @@ const haborConfg:HbConfigOptions = {
 };
 
 const configs:IHbConfigs = {
+    "habor-dev.web.app": haborConfg,
     "habor-dev.firebaseapp.com": haborConfg,
     "localhost": {...haborConfg},
     "larisahorback.com": {...haborConfg, applicationTitle: "Larisa Horback", harborTheme: "larisa"}
