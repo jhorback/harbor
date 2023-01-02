@@ -1,6 +1,4 @@
 import { FirebaseOptions } from "firebase/app";
-import { HarborApp } from "../hb-app";
-
 
 
 let location:Location;
