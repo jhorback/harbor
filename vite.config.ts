@@ -21,7 +21,7 @@ export default defineConfig({
         });
       }
     }, createHtmlPlugin({
-        minify: true,
+        minify: false,
         inject: {
         data: {
           "__HARBOR_THEME__": harborTheme

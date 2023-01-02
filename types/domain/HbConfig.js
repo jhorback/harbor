@@ -1,6 +1,5 @@
 let location;
 let localHostName = "localhost";
-localHostName = "larisahorback.com";
 const haborConfg = {
     harborTheme: "harbor",
     applicationTitle: "Harbor",
@@ -15,6 +14,7 @@ const haborConfg = {
     }
 };
 const configs = {
+    "habor-dev.web.app": haborConfg,
     "habor-dev.firebaseapp.com": haborConfg,
     "localhost": { ...haborConfg },
     "larisahorback.com": { ...haborConfg, applicationTitle: "Larisa Horback", harborTheme: "larisa" }
