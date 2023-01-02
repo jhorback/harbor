@@ -56,8 +56,13 @@ class AddPageRepo implements IAddPageRepo {
     }
 
     private async addNewPage(newPage:PageModel) {
-        const newPageRef = doc(collection(HbDb.current, "pages")).withConverter(PageModel);
-        newPage.uid = newPageRef.id;
+        const pageUid = getUidFromPathname(newPage.pathname);
+        const newPageRef = doc(HbDb.current, "pages", pageUid).withConverter(PageModel);
+        newPage.uid = pageUid;
         await setDoc(newPageRef, newPage);
     }
 }
+
+const getUidFromPathname = (pathname:string):string => {
+    return pathname.substring(1, pathname.length).replaceAll("/", "--");
+};
