@@ -1,7 +1,9 @@
 let location;
-const localHostName = "larisahorback.com";
+let localHostName = "localhost";
+localHostName = "larisahorback.com";
 const haborConfg = {
     harborTheme: "harbor",
+    applicationTitle: "Harbor",
     fbConfig: {
         apiKey: "AIzaSyB73OO_89iAKkx9Ti9SLQX4maRDbboRSmQ",
         authDomain: "habor-dev.firebaseapp.com",
@@ -15,7 +17,7 @@ const haborConfg = {
 const configs = {
     "habor-dev.firebaseapp.com": haborConfg,
     "localhost": { ...haborConfg },
-    "larisahorback.com": { ...haborConfg, harborTheme: "larisa" }
+    "larisahorback.com": { ...haborConfg, applicationTitle: "Larisa Horback", harborTheme: "larisa" }
 };
 export class HbConfig {
     static get currentHostName() {

@@ -33,6 +33,7 @@ let ProfilePage = class ProfilePage extends LitElement {
     connectedCallback() {
         super.connectedCallback();
         this.darkTheme = HbApp.theme === "dark";
+        HbApp.setPageTitle("Profile");
     }
     render() {
         return html `

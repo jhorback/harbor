@@ -14,6 +14,7 @@ import "../../domain/Pages/HbEditPageRepo";
 import { HbCurrentUserChangedEvent } from "../../domain/HbAuth";
 import { NotFoundError } from "../../domain/Errors";
 import { contentTypes } from "../../domain/Pages/contentTypes";
+import { HbApp } from "../../domain/HbApp";
 /**
  * Dispatched when the page is loaded from the database
  * Calling preventDefault will keep the window from scrolling
@@ -300,6 +301,7 @@ const subscribeToPage = (pageController) => async (page, initialLoad) => {
         // await pageController.host.updateComplete;
     }
     console.debug("Setting page from database:", page.pathname);
+    HbApp.setPageTitle(page.displayTitle);
     Product.of(pageController)
         .next(updatePageLoaded(page))
         .next(updatePageTemplate)

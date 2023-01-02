@@ -9,6 +9,7 @@ import { customElement, property } from "lit/decorators.js";
 import { CurrentUserData } from "../hb-current-user-data";
 import { linkProp } from "@domx/linkprop";
 import "./hb-avatar-button";
+import { HbApp } from "../domain/HbApp";
 /**
  * @class AppBar
  */
@@ -28,7 +29,7 @@ let AppBar = class AppBar extends LitElement {
       <div class="app-bar">
         <div class="logo">
           <a href="/">
-            <img src="/theme/harbor/harbor-moon.svg">
+            <img src=${`/theme/${HbApp.harborTheme}/logo.svg`}>
           </a>
         </div>
         <slot name="buttons"></slot>

@@ -25,6 +25,7 @@ let AboutPage = class AboutPage extends LitElement {
     connectedCallback() {
         super.connectedCallback();
         this.darkTheme = HbApp.theme === "dark";
+        HbApp.setPageTitle("About");
     }
     render() {
         return html `

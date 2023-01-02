@@ -4,6 +4,7 @@ import { Router } from "@domx/router";
 import { GoogleAnalytics } from "../domain/GoogleAnalytics";
 import { sendFeedback } from "../layout/feedback";
 import { NotFoundError, ServerError } from "./Errors";
+import { HbConfig } from "./HbConfig";
 /**
  * A class with static properties containing the app version
  * and other environment variables.
@@ -41,6 +42,10 @@ export class HbApp {
          * dynamic packages based on system settings
          */
         await import("../pages/index");
+    }
+    static setPageTitle(title) {
+        const appTitle = HbConfig.current.applicationTitle;
+        document.title = title ? `${title} - ${appTitle}` : appTitle;
     }
 }
 const getSystemTheme = () => window.matchMedia('(prefers-color-scheme: dark)').matches ? "dark" : "light";

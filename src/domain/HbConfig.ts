@@ -5,19 +5,21 @@ import { hostname } from "os";
 
 
 let location:Location;
-const localHostName = "larisahorback.com";
-// const localHostName = "localhost";
+let localHostName = "localhost";
+localHostName = "larisahorback.com";
 
 
 interface IHbConfigs { [key: string]: HbConfigOptions }
 
 export interface HbConfigOptions {
     harborTheme: string,
+    applicationTitle: string,
     fbConfig:FirebaseOptions;
 }
 
 const haborConfg:HbConfigOptions = {
     harborTheme: "harbor",
+    applicationTitle: "Harbor",
     fbConfig: {
         apiKey: "AIzaSyB73OO_89iAKkx9Ti9SLQX4maRDbboRSmQ",
         authDomain: "habor-dev.firebaseapp.com",
@@ -32,7 +34,7 @@ const haborConfg:HbConfigOptions = {
 const configs:IHbConfigs = {
     "habor-dev.firebaseapp.com": haborConfg,
     "localhost": {...haborConfg},
-    "larisahorback.com": {...haborConfg, harborTheme: "larisa"}
+    "larisahorback.com": {...haborConfg, applicationTitle: "Larisa Horback", harborTheme: "larisa"}
 };
 
 
