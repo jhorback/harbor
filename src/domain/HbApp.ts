@@ -13,6 +13,7 @@ import { NotFoundError, ServerError } from "./Errors";
  * This is defined in the vite.config.ts
  */
 declare const __APP_VERSION__: string;
+declare const __HARBOR_THEME__: string;
 
 
 /**
@@ -27,6 +28,7 @@ declare const __APP_VERSION__: string;
  */
 export class HbApp {
     static version:string = __APP_VERSION__;
+    static harborTheme:string = __HARBOR_THEME__;
     static isDev = import.meta.env.DEV;
     static isProd = import.meta.env.PROD;
     static isStorybook = import.meta.env.STORYBOOK ? true : false;

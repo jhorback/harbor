@@ -16,6 +16,7 @@ import { NotFoundError, ServerError } from "./Errors";
  */
 export class HbApp {
     static { this.version = __APP_VERSION__; }
+    static { this.harborTheme = __HARBOR_THEME__; }
     static { this.isDev = import.meta.env.DEV; }
     static { this.isProd = import.meta.env.PROD; }
     static { this.isStorybook = import.meta.env.STORYBOOK ? true : false; }

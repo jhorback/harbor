@@ -1,14 +1,16 @@
 import { defineConfig } from 'vite'
+import { createHtmlPlugin } from 'vite-plugin-html';
+import { HbConfig } from "./src/domain/HbConfig";
 
-
+const harborTheme = HbConfig.current.harborTheme;
 
 // https://vitejs.dev/config/
 export default defineConfig({
   define: {
-    "__APP_VERSION__": JSON.stringify(process.env.npm_package_version)
+    "__APP_VERSION__": JSON.stringify(process.env.npm_package_version),
+    "__HARBOR_THEME__":  JSON.stringify(harborTheme)
   },
-  plugins: [
-    {
+  plugins: [{
       name: 'configure-response-headers',
       configureServer: server => {
         server.middlewares.use((_req, res, next) => {
@@ -18,7 +20,14 @@ export default defineConfig({
           next();
         });
       }
-    }]
+    }, createHtmlPlugin({
+        minify: true,
+        inject: {
+        data: {
+          "__HARBOR_THEME__": harborTheme
+        }
+      }
+    })]
   
   // build: {
   //   lib: {

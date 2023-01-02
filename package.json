@@ -27,7 +27,8 @@
     "@tinymce/tinymce-webcomponent": "2.0.1",
     "firebase": "9.15.0",
     "lit": "2.5.0",
-    "media-chrome": "^0.16.0"
+    "media-chrome": "^0.16.0",
+    "vite-plugin-html": "^3.2.0"
   },
   "devDependencies": {
     "@babel/core": "7.20.7",
