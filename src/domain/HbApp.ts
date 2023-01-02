@@ -7,12 +7,14 @@ import { Router } from "@domx/router";
 import { GoogleAnalytics } from "../domain/GoogleAnalytics";
 import { sendFeedback } from "../layout/feedback";
 import { NotFoundError, ServerError } from "./Errors";
+import { HbConfig } from "./HbConfig";
 
 
 /**
  * This is defined in the vite.config.ts
  */
 declare const __APP_VERSION__: string;
+declare const __HARBOR_THEME__: string;
 
 
 /**
@@ -27,6 +29,7 @@ declare const __APP_VERSION__: string;
  */
 export class HbApp {
     static version:string = __APP_VERSION__;
+    static harborTheme:string = __HARBOR_THEME__;
     static isDev = import.meta.env.DEV;
     static isProd = import.meta.env.PROD;
     static isStorybook = import.meta.env.STORYBOOK ? true : false;
@@ -52,6 +55,11 @@ export class HbApp {
          * dynamic packages based on system settings
          */
         await import("../pages/index");
+    }
+
+    static setPageTitle(title?:string) {
+        const appTitle = HbConfig.current.applicationTitle;
+        document.title = title ? `${title} - ${appTitle}` : appTitle;
     }
 }
 
