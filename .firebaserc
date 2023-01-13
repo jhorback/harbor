@@ -1,5 +1,9 @@
 {
   "projects": {
-    "default": "habor-dev"
-  }
+    "default": "harbor-dev",
+    "harbor": "harbor-dev",
+    "larisa": "larisahorback-prod"
+  },
+  "targets": {},
+  "etags": {}
 }

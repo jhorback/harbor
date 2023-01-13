@@ -28,7 +28,7 @@ export class AppBar extends LitElement {
       <div class="app-bar">
         <div class="logo">
           <a href="/">
-            <img src=${`/theme/${HbApp.harborTheme}/logo-${HbApp.theme}.svg`}>
+            <img src=${`/theme/${HbApp.config.harborTheme}/logo-${HbApp.theme}.svg`}>
           </a>
         </div>
         <slot name="buttons"></slot>

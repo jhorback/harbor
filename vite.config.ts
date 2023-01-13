@@ -1,14 +1,17 @@
-import { defineConfig } from 'vite'
-import { createHtmlPlugin } from 'vite-plugin-html';
-import { HbConfig } from "./src/domain/HbConfig";
+import { defineConfig } from "vite"
+import { createHtmlPlugin } from "vite-plugin-html";
+import { getHarborConfig } from "./harbor.config";
+import * as dotenv from 'dotenv';
 
-const harborTheme = HbConfig.current.harborTheme;
+dotenv.config();
+const harborConfig = getHarborConfig(process.env.npm_package_version, process.env.FB_PROJECT_ID);
+console.info("Using harborConfig:", harborConfig);
+
 
 // https://vitejs.dev/config/
 export default defineConfig({
   define: {
-    "__APP_VERSION__": JSON.stringify(process.env.npm_package_version),
-    "__HARBOR_THEME__":  JSON.stringify(harborTheme)
+    "__HARBOR_CONFIG__": JSON.stringify(harborConfig),
   },
   plugins: [{
       name: 'configure-response-headers',
@@ -24,7 +27,8 @@ export default defineConfig({
         minify: false,
         inject: {
         data: {
-          "__HARBOR_THEME__": harborTheme
+          harborTheme: harborConfig.harborTheme,
+          applicationTitle: harborConfig.applicationTitle
         }
       }
     })]
