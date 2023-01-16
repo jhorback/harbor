@@ -36,7 +36,7 @@
     "@storybook/addon-essentials": "6.5.15",
     "@storybook/addon-links": "6.5.15",
     "@storybook/addons": "6.5.15",
-    "@storybook/builder-vite": "0.2.6",
+    "@storybook/builder-vite": "0.3.0",
     "@storybook/theming": "6.5.15",
     "babel-loader": "9.1.0",
     "clean-css": "5.3.1",
