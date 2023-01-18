@@ -14,16 +14,16 @@ jobs:
           # jch - remove harbor-dev after testing
           - projectId: "harbor-dev"
           # firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_HABOR_DEV }}
-          - projectId: "larisahorback-prod"
+          # - projectId: "larisahorback-prod"
           # firebaseServiceAccount: FIREBASE_SERVICE_ACCOUNT_LARISA_HORBACK_PROD
     runs-on: ubuntu-latest
     steps:
       - name: Create env file
         run: |
-        touch .env
-        echo FB_PROJECT_ID=${{ matrix.projectId }} >> .env
+          touch .env
+          echo FB_PROJECT_ID=${{ matrix.projectId }} >> .env
       - uses: actions/checkout@v3      
-      - name: Use Node.js ${{ ${{ vars.NODE_VERSION }} }}
+      - name: Use Node.js ${{ vars.NODE_VERSION }}
         uses: actions/setup-node@v3
         with:
           node-version: ${{ vars.NODE_VERSION }}
