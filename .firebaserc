@@ -1,7 +1,7 @@
 {
   "projects": {
-    "default": "harbor-dev",
-    "harbor": "harbor-dev",
+    "default": "habor-dev",
+    "harbor": "habor-dev",
     "larisa": "larisahorback-prod"
   },
   "targets": {},
