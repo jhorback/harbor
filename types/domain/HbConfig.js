@@ -1,5 +1,6 @@
 let location;
 let localHostName = "localhost";
+localHostName = "larisahorback.com";
 const haborConfg = {
     harborTheme: "harbor",
     applicationTitle: "Harbor",

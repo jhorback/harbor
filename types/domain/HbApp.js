@@ -4,7 +4,6 @@ import { Router } from "@domx/router";
 import { GoogleAnalytics } from "../domain/GoogleAnalytics";
 import { sendFeedback } from "../layout/feedback";
 import { NotFoundError, ServerError } from "./Errors";
-import { HbConfig } from "./HbConfig";
 /**
  * A class with static properties containing the app version
  * and other environment variables.
@@ -16,8 +15,7 @@ import { HbConfig } from "./HbConfig";
  * https://storybook.js.org/docs/react/configure/environment-variables
  */
 export class HbApp {
-    static { this.version = __APP_VERSION__; }
-    static { this.harborTheme = __HARBOR_THEME__; }
+    static { this.config = __HARBOR_CONFIG__; }
     static { this.isDev = import.meta.env.DEV; }
     static { this.isProd = import.meta.env.PROD; }
     static { this.isStorybook = import.meta.env.STORYBOOK ? true : false; }
@@ -44,7 +42,7 @@ export class HbApp {
         await import("../pages/index");
     }
     static setPageTitle(title) {
-        const appTitle = HbConfig.current.applicationTitle;
+        const appTitle = HbApp.config.applicationTitle;
         document.title = title ? `${title} - ${appTitle}` : appTitle;
     }
 }
