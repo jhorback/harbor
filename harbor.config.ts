@@ -29,11 +29,26 @@ const haborConfg:IHarborConfig = {
     }
 };
 
+const larisaHorbackConfig:IHarborConfig = {
+    harborTheme: "larisa",
+    applicationTitle: "larisa",
+    fbConfig: {
+        apiKey: "AIzaSyAKIHekhVF4ZSIZXFiePjJdmUqTUrDP46A",
+        authDomain: "larisahorback-prod.firebaseapp.com",
+        projectId: "larisahorback-prod",
+        storageBucket: "larisahorback-prod.appspot.com",
+        messagingSenderId: "826769733869",
+        appId: "1:826769733869:web:c202b2e5cfb13a7dbc34e4",
+        measurementId: "G-W5VSPFHS7P"
+    }
+};
+
 
 interface IHarborConfigs { [key: string]: IHarborConfig }
 const configs:IHarborConfigs = {
     "harbor-dev": haborConfg,
-    "larisahorback-prod": {
+    "larisahorback-prod": larisaHorbackConfig,
+    "larisahorback-test": {
         ...haborConfg,
         applicationTitle: "Larisa Horback",
         harborTheme: "larisa"
