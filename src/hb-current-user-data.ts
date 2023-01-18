@@ -83,6 +83,6 @@ const setCurrentUserData = (userData:IUserData) => (state:IUserData) => {
 };
 
 const setAppVersion = (state:IHbAppInfo) => {
-    state.version = `v${HbApp.version}`;
+    state.version = `v${HbApp.config.appVersion}`;
 };
 

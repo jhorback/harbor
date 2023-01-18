@@ -92,5 +92,5 @@ const setCurrentUserData = (userData) => (state) => {
     state.role = userData.role;
 };
 const setAppVersion = (state) => {
-    state.version = `v${HbApp.version}`;
+    state.version = `v${HbApp.config.appVersion}`;
 };
