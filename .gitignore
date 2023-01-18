@@ -21,4 +21,5 @@ storybook-static
 *.njsproj
 *.sln
 *.sw?
+*.env
 

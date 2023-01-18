@@ -5,6 +5,8 @@ import * as dotenv from 'dotenv';
 
 dotenv.config();
 const harborConfig = getHarborConfig(process.env.npm_package_version, process.env.FB_PROJECT_ID);
+console.info("npm_package_version", process.env.npm_package_version);
+console.info("FB_PROJECT_ID", process.env.FB_PROJECT_ID);
 console.info("Using harborConfig:", harborConfig);
 
 
