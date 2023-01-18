@@ -19,7 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Create env file
-      run: |
+        run: |
         touch .env
         echo FB_PROJECT_ID=${{ matrix.projectId }} >> .env
       - uses: actions/checkout@v3      
