@@ -51,7 +51,7 @@ npm run storybook
 
 
 ## Deployment
-Deployments to the `harbor-dev` firebase project are **automatic when pushing to the develop branch**.
+Deployments to the `habor-dev` firebase project are **automatic when pushing to the develop branch**.
 
 Pull requests are required for merging into the develop and master branches.
 
@@ -69,4 +69,4 @@ A manual deployment can be done from the command line using `npm run deploy`.
 
 Deploying in this manner should be done with caution since this will
 build and deploy whatever branch you are on directly to 
-the live `harbor-dev` instance.
+the live `habor-dev` instance.

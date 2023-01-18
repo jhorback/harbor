@@ -46,7 +46,7 @@ const larisaHorbackConfig:IHarborConfig = {
 
 interface IHarborConfigs { [key: string]: IHarborConfig }
 const configs:IHarborConfigs = {
-    "harbor-dev": haborConfg,
+    "habor-dev": haborConfg,
     "larisahorback-prod": larisaHorbackConfig,
     "larisahorback-test": {
         ...haborConfg,
