@@ -56,5 +56,9 @@ firebase deploy --only storage
 - [ ]  For production sites, merge into master and test
 
 
-## Update Domain Name
-- [ ]  Follow instructions in Firebase and site host to setup domain name
+## Update Domain
+- [ ] Follow instructions in Firebase and site host to setup domain name
+- [ ] Add authorized domain in Firbase Console -> Authentication -> Settings
+  > Also add `127.0.0.1` for vite to work locally
+- [ ] Add the domain to tinymce
+  > https://www.tiny.cloud/tinymce/
