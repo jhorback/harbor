@@ -1,0 +1,38 @@
+# Builds and tests feature branches
+
+name: Build Feature
+
+on:
+  push:
+    branches:
+      - 'feature/*' # matches feature branches
+      # - '**'          # matches every branch
+      # - '!master'     # excludes master
+      # - '!develop'    # excludes develop
+  pull_request:
+    branches:
+      - 'feature/*'
+
+env:
+  PROJECT_ID: habor-dev
+
+jobs:
+  build_feature:
+    runs-on: ubuntu-latest
+    steps:
+      # BEGIN BUILD AND TEST
+      - uses: actions/checkout@v3
+      - name: Create env file for ${{ env.PROJECT_ID }}
+        run: |
+          touch .env
+          echo FB_PROJECT_ID=${{ env.PROJECT_ID }} >> .env
+          cat .env
+      - name: Use Node.js ${{ vars.NODE_VERSION }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ vars.NODE_VERSION }}
+          cache: 'npm'
+      - run: npm install
+      - run: npm run build
+      - run: npm test
+      # END BUILD AND TEST
