@@ -12,33 +12,28 @@ env:
 
 jobs:
   deploy_dev:
-    uses: ./.github/workflows/deploy.yml
-    with:
-      project-id: ${{ env.PROJECT_ID }}
-      firebase-service-account: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_HABOR_DEV }}'
-
-  # deploy_dev:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     # BEGIN BUILD AND TEST
-  #     - uses: actions/checkout@v3
-  #     - name: Create env file for ${{ env.PROJECT_ID }}
-  #       run: |
-  #         touch .env
-  #         echo FB_PROJECT_ID=${{ env.PROJECT_ID }} >> .env
-  #         cat .env
-  #     - name: Use Node.js ${{ vars.NODE_VERSION }}
-  #       uses: actions/setup-node@v3
-  #       with:
-  #         node-version: ${{ vars.NODE_VERSION }}
-  #         cache: 'npm'
-  #     - run: npm install
-  #     - run: npm run build
-  #     - run: npm test
-  #     # END BUILD AND TEST
-  #     - name: Deploy to Firebase
-  #       uses: FirebaseExtended/action-hosting-deploy@v0
-  #       with:
-  #         repoToken: '${{ secrets.GITHUB_TOKEN }}'
-  #         firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_HABOR_DEV }}'
-  #         projectId: ${{ env.PROJECT_ID }}
+    runs-on: ubuntu-latest
+    steps:
+      # BEGIN BUILD AND TEST
+      - uses: actions/checkout@v3
+      - name: Create env file for ${{ env.PROJECT_ID }}
+        run: |
+          touch .env
+          echo FB_PROJECT_ID=${{ env.PROJECT_ID }} >> .env
+          cat .env
+      - name: Use Node.js ${{ vars.NODE_VERSION }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ vars.NODE_VERSION }}
+          cache: 'npm'
+      - run: npm install
+      - run: npm run build
+      - run: npm test
+      # END BUILD AND TEST
+      - name: Deploy to Firebase
+        uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: '${{ secrets.GITHUB_TOKEN }}'
+          firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_HABOR_DEV }}'
+          channelId: live
+          projectId: ${{ env.PROJECT_ID }}
