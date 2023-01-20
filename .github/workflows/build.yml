@@ -1,23 +1,24 @@
-# Builds and tests feature branches
+# Builds and tests feature branches and dependency updates
 
-name: Build Feature
+name: Build
 
 on:
   push:
     branches:
-      - 'feature/*' # matches feature branches
+      - 'feature/*'     # matches feature branches
       # - '**'          # matches every branch
       # - '!master'     # excludes master
       # - '!develop'    # excludes develop
   pull_request:
     branches:
       - 'feature/*'
+      - 'renovate/*'    # for dependency updates
 
 env:
   PROJECT_ID: habor-dev
 
 jobs:
-  build_feature:
+  build:
     runs-on: ubuntu-latest
     steps:
       # BEGIN BUILD AND TEST
