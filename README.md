@@ -56,18 +56,13 @@ Deployments to the `habor-dev` firebase project are **automatic when pushing to 
 
 Pull requests are required for merging into the develop and master branches.
 
-### Deployment previews
+### Deployment Previews
 When adding the `preview` label to a pull request, a temporary preview instance will be deployed.
 
 
-### Deployments from master
-A production firebase project, i.e. `harbor-production`, has not been created yet. When the initial release is ready, this can be created along with a github action that will deploy the master branch when pushed.
+### Production Deployments
+All production sites are deployed when merging into the master branch.
 
-See additional notes on this in the harbor [wiki](https://github.com/jhorback/harbor/wiki/Firebase).
+To create a new production site, follow the instructions in the `Create New Environment Checklist` issue type.
 
-### Manual deployments
-A manual deployment can be done from the command line using `npm run deploy`.
 
-Deploying in this manner should be done with caution since this will
-build and deploy whatever branch you are on directly to 
-the live `habor-dev` instance.
