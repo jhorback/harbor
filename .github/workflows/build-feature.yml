@@ -10,7 +10,8 @@ on:
       # - '!master'     # excludes master
       # - '!develop'    # excludes develop
   pull_request:
-    - 'feature/*'
+    branches:
+      - 'feature/*'
 
 env:
   PROJECT_ID: habor-dev
