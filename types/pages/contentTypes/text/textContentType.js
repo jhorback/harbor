@@ -3,6 +3,7 @@ import { contentTypes } from "../../../domain/Pages/contentTypes";
 export class TextContentData {
     constructor() {
         this.contentType = "text";
+        this.labelPlaceholder = "Text";
         this.text = "";
     }
     static of(text) {

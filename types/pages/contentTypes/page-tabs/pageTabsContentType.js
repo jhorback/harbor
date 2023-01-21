@@ -3,6 +3,7 @@ import { contentTypes } from "../../../domain/Pages/contentTypes";
 export class PageTabsContentData {
     constructor(options) {
         this.contentType = "page-tabs";
+        this.labelPlaceholder = "Page tabs";
         this.canDelete = false;
         this.rootPageUID = "";
         this.rootPageUrl = "";

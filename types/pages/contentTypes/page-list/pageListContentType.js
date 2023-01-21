@@ -9,6 +9,7 @@ export var PageListDisplay;
 export class PageListContentData {
     constructor() {
         this.contentType = "page-list";
+        this.labelPlaceholder = "Page list";
         this.display = PageListDisplay.verticalCard;
         this.pages = new Array();
     }

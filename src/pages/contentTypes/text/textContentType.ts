@@ -10,6 +10,7 @@ export class TextContentData implements IContentType {
         return data;
     }
     contentType = "text";
+    labelPlaceholder = "Text";
     text = "";
 }
 

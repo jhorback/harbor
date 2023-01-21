@@ -18,6 +18,7 @@ export enum ImageAlignment {
 
 export class ImageContentData implements IContentType {
     contentType = "image";
+    labelPlaceholder = "Image";
     size:ImageSize = ImageSize.small;
     alignment:ImageAlignment = ImageAlignment.center;
     url:string|null = null;

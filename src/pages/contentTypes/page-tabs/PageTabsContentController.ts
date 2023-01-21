@@ -434,6 +434,8 @@ const saveTabsOnPage = async (editPageRepo: IEditPageRepo, page:PageModel, tabsD
 const convertToPageTabsData = (pageTabsState:IPageTabsState):PageTabsContentData => {
     const state:PageTabsContentData = {
         contentType: pageTabsState.contentType,
+        labelPlaceholder: pageTabsState.labelPlaceholder,
+        label: pageTabsState.label,
         rootPageSubtitle: pageTabsState.rootPageSubtitle,
         rootPageTitle: pageTabsState.rootPageTitle,
         rootPageUID: pageTabsState.rootPageUID,
