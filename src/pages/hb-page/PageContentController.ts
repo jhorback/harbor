@@ -1,12 +1,14 @@
 import { StateController } from "@domx/statecontroller";
 import { IContentType } from "../../domain/interfaces/PageInterfaces";
 import { PageController, IPageElement } from "./PageController";
+import { contentTypes } from "../../domain/Pages/contentTypes";
 
 
 
 export interface IPageContentState {
+    contentTypeName: string;
     inContentEditMode: boolean;
-    isActive: boolean;
+    otherActive: boolean;
     canMoveUp: boolean;
     canMoveDown: boolean;
 }
@@ -44,10 +46,20 @@ export class PageContentController<TContentType extends IContentType> extends St
 
     get contentState():IPageContentState {
         return {
+            contentTypeName: this.getContentTypeName(),
             inContentEditMode: this.host.contentIndex === this.page.state.editableContentIndex,
-            isActive: this.host.contentIndex === this.page.state.activeContentIndex,
+            otherActive: this.page.state.activeContentIndex !== -1 && this.host.contentIndex !== this.page.state.activeContentIndex,
             canMoveUp: this.page.state.editableContentIndex === -1 && this.host.contentIndex > 0,
             canMoveDown: this.page.state.editableContentIndex === -1 && this.host.contentIndex < this.page.state.page.content.length - 1
         };
+    }
+
+    private getContentTypeName():string{
+        try {
+            const content =  this.page.state.page.content[this.host.contentIndex];
+            return contentTypes.all().find(c => content.contentType === c.type)?.name || "Content";
+        } catch(e) {
+            return "Content Error";
+        }
     }
 }

@@ -1,5 +1,6 @@
 import { StateController } from "@domx/statecontroller";
 import { PageController } from "./PageController";
+import { contentTypes } from "../../domain/Pages/contentTypes";
 export class PageContentController extends StateController {
     constructor(host) {
         super(host);
@@ -20,10 +21,20 @@ export class PageContentController extends StateController {
     }
     get contentState() {
         return {
+            contentTypeName: this.getContentTypeName(),
             inContentEditMode: this.host.contentIndex === this.page.state.editableContentIndex,
-            isActive: this.host.contentIndex === this.page.state.activeContentIndex,
+            otherActive: this.page.state.activeContentIndex !== -1 && this.host.contentIndex !== this.page.state.activeContentIndex,
             canMoveUp: this.page.state.editableContentIndex === -1 && this.host.contentIndex > 0,
             canMoveDown: this.page.state.editableContentIndex === -1 && this.host.contentIndex < this.page.state.page.content.length - 1
         };
+    }
+    getContentTypeName() {
+        try {
+            const content = this.page.state.page.content[this.host.contentIndex];
+            return contentTypes.all().find(c => content.contentType === c.type)?.name || "Content";
+        }
+        catch (e) {
+            return "Content Error";
+        }
     }
 }

@@ -377,7 +377,6 @@ const saveTabsOnPage = async (editPageRepo, page, tabsData) => {
 const convertToPageTabsData = (pageTabsState) => {
     const state = {
         contentType: pageTabsState.contentType,
-        labelPlaceholder: pageTabsState.labelPlaceholder,
         label: pageTabsState.label,
         rootPageSubtitle: pageTabsState.rootPageSubtitle,
         rootPageTitle: pageTabsState.rootPageTitle,

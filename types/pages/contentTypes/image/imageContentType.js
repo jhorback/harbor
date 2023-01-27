@@ -15,7 +15,6 @@ export var ImageAlignment;
 export class ImageContentData {
     constructor() {
         this.contentType = "image";
-        this.labelPlaceholder = "Image";
         this.size = ImageSize.small;
         this.alignment = ImageAlignment.center;
         this.url = null;

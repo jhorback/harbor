@@ -13,7 +13,7 @@ select {
     border: 1px solid var(--md-sys-color-outline);
     border-radius: var(--md-sys-shape-corner-small);
     padding: 0 12px;
-    background-color: var(--md-sys-color-surface-variant);
+    background-color: transparent;
     color: var(--md-sys-color-on-surface-variant);
 }
 select:focus {
