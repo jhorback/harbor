@@ -1,7 +1,7 @@
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import { styles } from "../../styles";
-import { ContentActiveChangeEvent, ContentDeletedEvent } from "./PageController";
+import { ContentActiveChangeEvent, ContentDeletedEvent, SetContentLabelEvent } from "./PageController";
 import { MovePageContentEvent } from "./PageController";
 import { PageContentController } from "./PageContentController";
 
@@ -37,7 +37,13 @@ export class HbPageContent extends LitElement {
                     <div class="edit-toolbar" @click=${this.editToolbarClicked}>
                         ${contentState.inContentEditMode ? html`
                             <span class="content-label-edit">
-                                <input type="text" class="title-large" placeholder=${contentState.contentTypeName} value=${content.label}>
+                                <input
+                                    type="text"
+                                    class="title-large"
+                                    placeholder=${contentState.contentTypeName}
+                                    @keypress=${this.labelInputKeyPress}
+                                    @blur=${this.labelInputBlur}
+                                    value=${content.label}>
                             </span>
                             <slot name="edit-toolbar"></slot>
                             <span
@@ -92,7 +98,7 @@ export class HbPageContent extends LitElement {
                         <slot name="content-edit-tools"></slot>
                     </div>
                 `: html`
-                    ${pageState.inEditMode && content.label ? html`
+                    ${!pageState.inEditMode && content.label ? html`
                         <div class="content-label title-large">${content.label}</div>
                     ` : html``}                    
                     <slot></slot>
@@ -139,6 +145,23 @@ export class HbPageContent extends LitElement {
     delete() {
         confirm("Are you sure you want to delete this content?") &&
             this.dispatchEvent(new ContentDeletedEvent(this.contentIndex));
+    }
+
+    labelInputKeyPress(event:KeyboardEvent) {
+        if (event.key === "Enter") {
+            const value = (event.target as HTMLInputElement).value;
+            this.dispatchSetLabelEvent(value);
+            this.done();
+        }
+    }
+
+    labelInputBlur(event:Event) {
+        const value = (event.target as HTMLInputElement).value;
+        this.dispatchSetLabelEvent(value);
+    }
+
+    dispatchSetLabelEvent(label:string) {
+        this.dispatchEvent(new SetContentLabelEvent(this.contentIndex, label));
     }
 
     done() {

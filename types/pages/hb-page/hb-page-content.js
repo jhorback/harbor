@@ -7,7 +7,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import { styles } from "../../styles";
-import { ContentActiveChangeEvent, ContentDeletedEvent } from "./PageController";
+import { ContentActiveChangeEvent, ContentDeletedEvent, SetContentLabelEvent } from "./PageController";
 import { MovePageContentEvent } from "./PageController";
 import { PageContentController } from "./PageContentController";
 /**
@@ -35,7 +35,13 @@ let HbPageContent = class HbPageContent extends LitElement {
                     <div class="edit-toolbar" @click=${this.editToolbarClicked}>
                         ${contentState.inContentEditMode ? html `
                             <span class="content-label-edit">
-                                <input type="text" class="title-large" placeholder=${contentState.contentTypeName} value=${content.label}>
+                                <input
+                                    type="text"
+                                    class="title-large"
+                                    placeholder=${contentState.contentTypeName}
+                                    @keypress=${this.labelInputKeyPress}
+                                    @blur=${this.labelInputBlur}
+                                    value=${content.label}>
                             </span>
                             <slot name="edit-toolbar"></slot>
                             <span
@@ -90,7 +96,7 @@ let HbPageContent = class HbPageContent extends LitElement {
                         <slot name="content-edit-tools"></slot>
                     </div>
                 ` : html `
-                    ${pageState.inEditMode && content.label ? html `
+                    ${!pageState.inEditMode && content.label ? html `
                         <div class="content-label title-large">${content.label}</div>
                     ` : html ``}                    
                     <slot></slot>
@@ -131,6 +137,20 @@ let HbPageContent = class HbPageContent extends LitElement {
     delete() {
         confirm("Are you sure you want to delete this content?") &&
             this.dispatchEvent(new ContentDeletedEvent(this.contentIndex));
+    }
+    labelInputKeyPress(event) {
+        if (event.key === "Enter") {
+            const value = event.target.value;
+            this.dispatchSetLabelEvent(value);
+            this.done();
+        }
+    }
+    labelInputBlur(event) {
+        const value = event.target.value;
+        this.dispatchSetLabelEvent(value);
+    }
+    dispatchSetLabelEvent(label) {
+        this.dispatchEvent(new SetContentLabelEvent(this.contentIndex, label));
     }
     done() {
         this.dispatchEvent(new ContentActiveChangeEvent({

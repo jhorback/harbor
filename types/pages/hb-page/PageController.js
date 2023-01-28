@@ -122,6 +122,14 @@ export class ContentDeletedEvent extends Event {
         this.index = index;
     }
 }
+export class SetContentLabelEvent extends Event {
+    static { this.eventType = "set-content-label"; }
+    constructor(index, label) {
+        super(SetContentLabelEvent.eventType, { bubbles: true, composed: true });
+        this.index = index;
+        this.label = label;
+    }
+}
 export class AddContentEvent extends Event {
     static { this.eventType = "add-content"; }
     constructor(contentType) {
@@ -212,6 +220,12 @@ export class PageController extends StateController {
             .tap(savePage(this.editPageRepo))
             .requestUpdate(event);
     }
+    setContentLabel(event) {
+        Product.of(this)
+            .next(setContentLabel(event.index, event.label))
+            .tap(savePage(this.editPageRepo))
+            .requestUpdate(event);
+    }
     pageThumb(event) {
         Product.of(this)
             .next(updateThumbs(event.thumbs))
@@ -277,6 +291,9 @@ __decorate([
     hostEvent(ContentDeletedEvent)
 ], PageController.prototype, "contentDeleted", null);
 __decorate([
+    hostEvent(SetContentLabelEvent)
+], PageController.prototype, "setContentLabel", null);
+__decorate([
     hostEvent(PageThumbChangeEvent)
 ], PageController.prototype, "pageThumb", null);
 __decorate([
@@ -295,10 +312,10 @@ const subscribeToPage = (pageController) => async (page, initialLoad) => {
     }
     if (initialLoad === true) {
         // pageController.state = PageController.getDefaultState();
-        // Product.of<IPageState>(pageController)
-        //     .next(clearEditIndexes)
-        //     .requestUpdate(`PageController.subscribeToPage("${page.pathname}")`);
-        // await pageController.host.updateComplete;
+        Product.of(pageController)
+            .next(clearEditIndexes)
+            .requestUpdate(`PageController.subscribeToPage("${page.pathname}")`);
+        await pageController.host.updateComplete;
     }
     console.debug("Setting page from database:", page.pathname);
     HbApp.setPageTitle(page.displayTitle);
@@ -370,6 +387,10 @@ const deleteContent = (index) => (state) => {
     state.activeContentIndex = -1;
     state.editableContentIndex = -1;
 };
+const setContentLabel = (index, label) => (state) => {
+    const content = state.page.content[index];
+    content.label = label;
+};
 const removeThumb = (index) => (state) => {
     if (index === undefined) {
         return;
@@ -430,4 +451,5 @@ const setPageEditMode = (inEditMode) => (state) => {
 const clearEditIndexes = (state) => {
     state.editableContentIndex = -1;
     state.activeContentIndex = -1;
+    state.inEditMode = false;
 };

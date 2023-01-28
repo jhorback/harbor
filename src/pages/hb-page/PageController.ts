@@ -163,6 +163,17 @@ export class ContentDeletedEvent extends Event {
     }
 }
 
+export class SetContentLabelEvent extends Event {
+    static eventType = "set-content-label";
+    index:number;
+    label:string;
+    constructor(index:number, label:string) {
+        super(SetContentLabelEvent.eventType, {bubbles: true, composed: true});
+        this.index = index;
+        this.label = label;
+    }
+}
+
 export class AddContentEvent extends Event {
     static eventType = "add-content";
     contentType:string;
@@ -304,6 +315,14 @@ export class PageController extends StateController {
             .requestUpdate(event);
     }
 
+    @hostEvent(SetContentLabelEvent)
+    private setContentLabel(event:SetContentLabelEvent) {
+        Product.of<IPageState>(this)
+            .next(setContentLabel(event.index, event.label))
+            .tap(savePage(this.editPageRepo))
+            .requestUpdate(event);
+    }
+
     @hostEvent(PageThumbChangeEvent)
     private pageThumb(event:PageThumbChangeEvent) {
         Product.of<IPageState>(this)
@@ -347,10 +366,10 @@ const subscribeToPage = (pageController:PageController) => async (page:PageModel
 
     if (initialLoad === true) {
         // pageController.state = PageController.getDefaultState();
-        // Product.of<IPageState>(pageController)
-        //     .next(clearEditIndexes)
-        //     .requestUpdate(`PageController.subscribeToPage("${page.pathname}")`);
-        // await pageController.host.updateComplete;
+        Product.of<IPageState>(pageController)
+            .next(clearEditIndexes)
+            .requestUpdate(`PageController.subscribeToPage("${page.pathname}")`);
+        await pageController.host.updateComplete;
     }
 
     console.debug("Setting page from database:", page.pathname);
@@ -443,6 +462,11 @@ const deleteContent = (index:number) => (state:IPageState) => {
     state.editableContentIndex = -1;
 };
 
+const setContentLabel = (index:number, label:string) => (state:IPageState) => {
+    const content = state.page.content[index];
+    content.label = label;
+};
+
 
 const removeThumb = (index?:number) => (state:IPageState) => {
     if (index === undefined) { return; }
@@ -510,4 +534,5 @@ const setPageEditMode = (inEditMode:boolean) => (state:IPageState) => {
 const clearEditIndexes = (state:IPageState) => {
     state.editableContentIndex = -1;
     state.activeContentIndex = -1;
+    state.inEditMode = false;
 };
