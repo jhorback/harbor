@@ -5,6 +5,7 @@ import { ContentEditableChangeEvent } from "../../common/hb-content-editable";
 import { SwitchChangeEvent } from "../../common/hb-switch";
 import { PageSize } from "../../domain/interfaces/PageInterfaces";
 import { contentTypes } from "../../domain/Pages/contentTypes";
+import { PageTitleThumbOption } from "../../domain/Pages/PageModel";
 import { sendFeedback } from "../../layout/feedback";
 import "../../layout/hb-page-layout";
 import { styles } from "../../styles";
@@ -42,13 +43,18 @@ export class HbPage extends LitElement {
                 ${renderAppBarButtons(this, state)}
                 ${state.inEditMode ? renderEditTabs(this, state) : html``}
 
-                <div class="page-header">
+                <div class="page-header"
+                    ?hidden=${this.isPageHeaderHidden()}>
                     
                     <div xhidden=${!state.isLoaded} class="page-header-content">
-                        <h1 class="display-medium" ?hidden=${!state.inEditMode && !page.titleContent.showTitle}>${page.displayTitle}</h1>
+                        <h1 class="display-medium"
+                            ?hidden=${!page.titleContent.showTitle}
+                            >${page.displayTitle}
+                        </h1>
 
                         ${state.inEditMode ? html`
                             <hb-content-editable
+                                ?hidden=${!page.titleContent.showSubtitle}
                                 class="body-large"
                                 value=${page.subtitle}
                                 placeholder="Enter a subtitle"
@@ -80,6 +86,13 @@ export class HbPage extends LitElement {
 
     private subtitleChange(event:ContentEditableChangeEvent) {
         this.dispatchEvent(new UpdateSubtitleEvent(event.value));
+    }
+
+    private isPageHeaderHidden() {
+        const page = this.page.state.page;
+        return page.titleContent.showSubtitle == false &&
+            page.titleContent.showTitle == false &&
+            page.titleContent.showThumbOption == PageTitleThumbOption.None;
     }
 
     addPageClicked() {
@@ -174,6 +187,9 @@ export class HbPage extends LitElement {
             padding: 56px;
             background-color: var(--md-sys-color-surface);
             border-radius: var(--md-sys-shape-corner-large);
+        }
+        .page-header[hidden] {
+            display: none;
         }
         .page-header-content {
             max-width: var(--hb-page-layout-small);
@@ -337,8 +353,7 @@ const renderEditSettingsTabContent = (page:HbPage, state:IPageState) => html`
                     ></hb-switch>
                 </div>              
             </div>
-            <div>
-                
+            <div>               
                 <hb-button
                     text-button
                     label="Delete Page"
