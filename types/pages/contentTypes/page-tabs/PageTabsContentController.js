@@ -229,7 +229,7 @@ __decorate([
     hostEvent(SelectTabEvent)
 ], PageTabsContentController.prototype, "selectTab", null);
 __decorate([
-    windowEvent(PageLoadedEvent)
+    windowEvent(PageLoadedEvent, { capture: false })
 ], PageTabsContentController.prototype, "pageLoaded", null);
 const setSelectedTabIndex = (index) => (state) => {
     state.selectedTabIndex = index;
@@ -377,6 +377,7 @@ const saveTabsOnPage = async (editPageRepo, page, tabsData) => {
 const convertToPageTabsData = (pageTabsState) => {
     const state = {
         contentType: pageTabsState.contentType,
+        label: pageTabsState.label,
         rootPageSubtitle: pageTabsState.rootPageSubtitle,
         rootPageTitle: pageTabsState.rootPageTitle,
         rootPageUID: pageTabsState.rootPageUID,

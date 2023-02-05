@@ -231,7 +231,7 @@ export class PageTabsContentController extends PageContentController<IPageTabsSt
             .requestUpdate(event);
     }
 
-    @windowEvent(PageLoadedEvent)
+    @windowEvent(PageLoadedEvent, { capture: false })
     pageLoaded(event:PageLoadedEvent) {
         // prevent default to keep the page from scrolling
         event.preventDefault();
@@ -434,6 +434,7 @@ const saveTabsOnPage = async (editPageRepo: IEditPageRepo, page:PageModel, tabsD
 const convertToPageTabsData = (pageTabsState:IPageTabsState):PageTabsContentData => {
     const state:PageTabsContentData = {
         contentType: pageTabsState.contentType,
+        label: pageTabsState.label,
         rootPageSubtitle: pageTabsState.rootPageSubtitle,
         rootPageTitle: pageTabsState.rootPageTitle,
         rootPageUID: pageTabsState.rootPageUID,

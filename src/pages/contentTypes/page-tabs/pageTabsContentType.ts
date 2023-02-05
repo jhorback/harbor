@@ -13,6 +13,7 @@ export class PageTabsContentData implements IContentType {
         this.canDelete = options?.canDelete;
     }
     contentType = "page-tabs";
+    label: undefined;
     canDelete?:boolean = false;
     rootPageUID:string = "";
     rootPageUrl:string = "";

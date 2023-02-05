@@ -7,9 +7,8 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import { styles } from "../../styles";
-import { ContentActiveChangeEvent, ContentDeletedEvent } from "./PageController";
-import { MovePageContentEvent } from "./PageController";
 import { PageContentController } from "./PageContentController";
+import { ContentActiveChangeEvent, ContentDeletedEvent, MovePageContentEvent, SetContentLabelEvent } from "./PageController";
 /**
  */
 let HbPageContent = class HbPageContent extends LitElement {
@@ -23,17 +22,29 @@ let HbPageContent = class HbPageContent extends LitElement {
     get stateId() { return this.pathname; }
     render() {
         const content = this.pageContent.page.state.page.content[this.contentIndex];
+        if (!content) {
+            return html ``;
+        }
         const pageState = this.pageContent.page.state;
         const contentState = this.pageContent.contentState;
         return html `
             <div class="hb-content"
                 ?page-edit=${pageState.inEditMode}
                 ?content-edit=${contentState.inContentEditMode}
-                ?is-active=${contentState.isActive}
+                ?other-active=${contentState.otherActive}
                 @click=${this.contentClicked}>
                 ${pageState.inEditMode ? html `
                     <div class="edit-toolbar" @click=${this.editToolbarClicked}>
                         ${contentState.inContentEditMode ? html `
+                            <span class="content-label-edit">
+                                <input
+                                    type="text"
+                                    class="title-large"
+                                    placeholder=${contentState.contentTypeName}
+                                    @keypress=${this.labelInputKeyPress}
+                                    @blur=${this.labelInputBlur}
+                                    value=${content.label}>
+                            </span>
                             <slot name="edit-toolbar"></slot>
                             <span
                                 class="icon-button icon-small"
@@ -42,7 +53,8 @@ let HbPageContent = class HbPageContent extends LitElement {
                                 @click=${this.done}>
                                 check
                             </span>
-                        ` : html `
+                        ` : html `                           
+                            <span class="content-label-edit title-large">${content.label || contentState.contentTypeName}</span>
                             <span
                                 class="icon-button icon-small"
                                 tab-index="0"
@@ -77,6 +89,7 @@ let HbPageContent = class HbPageContent extends LitElement {
                         `}                    
                     </div>                
                 ` : html ``}
+                <div class="content-content">
                 ${!contentState.inContentEditMode && pageState.inEditMode && this.isEmpty ? html `
                     <slot name="page-edit-empty"></slot>
                 ` : contentState.inContentEditMode ? html `
@@ -85,8 +98,12 @@ let HbPageContent = class HbPageContent extends LitElement {
                         <slot name="content-edit-tools"></slot>
                     </div>
                 ` : html `
+                    ${!pageState.inEditMode && content.label ? html `
+                        <div class="content-label title-large">${content.label}</div>
+                    ` : html ``}                    
                     <slot></slot>
                 `}
+                </div>
             </div>
         `;
     }
@@ -123,6 +140,20 @@ let HbPageContent = class HbPageContent extends LitElement {
         confirm("Are you sure you want to delete this content?") &&
             this.dispatchEvent(new ContentDeletedEvent(this.contentIndex));
     }
+    labelInputKeyPress(event) {
+        if (event.key === "Enter") {
+            const value = event.target.value;
+            this.dispatchSetLabelEvent(value);
+            this.done();
+        }
+    }
+    labelInputBlur(event) {
+        const value = event.target.value;
+        this.dispatchSetLabelEvent(value);
+    }
+    dispatchSetLabelEvent(label) {
+        this.dispatchEvent(new SetContentLabelEvent(this.contentIndex, label));
+    }
     done() {
         this.dispatchEvent(new ContentActiveChangeEvent({
             contentIndex: this.contentIndex,
@@ -130,7 +161,7 @@ let HbPageContent = class HbPageContent extends LitElement {
             isActive: false
         }));
     }
-    static { this.styles = [styles.icons, css `
+    static { this.styles = [styles.icons, styles.types, css `
         :host {
             display: block;       
         }
@@ -139,41 +170,59 @@ let HbPageContent = class HbPageContent extends LitElement {
         }
         .hb-content {
             display: block;
-            position: relative;
         }
         .edit-toolbar {
             display: none;
-            gap: 10px;
-            position: absolute;
-            top:0;
-            right: 0;
-            z-index: 19;
-            padding: 4px;
-            border: 1px solid var(--md-sys-color-outline);
-            border-radius: 0 12px;
-            border-width: 0 0 1px 1px;
-            background-color: var(--md-sys-color-surface-variant)
         }
-        .hb-content[page-edit]:hover,
-        .hb-content[page-edit][is-active],
+
+        /* set the background color in case this scrolls over another */
+        .hb-content[page-edit],
         .hb-content[content-edit] {
-            border-radius: var(--md-sys-shape-corner-medium);
-            outline: 1px solid var(--md-sys-color-outline);
             background-color: var(--md-sys-color-background);
-            margin: -1rem;
-            padding: 1rem;
         }
-        .hb-content[page-edit]:hover .edit-toolbar,
-        .hb-content[page-edit][is-active] .edit-toolbar,
+
+        .hb-content[page-edit] .edit-toolbar,
         .hb-content[content-edit] .edit-toolbar {
             display: flex;
-            justify-content: end;
+            gap: 10px;
+            padding: 4px;
+            border: 1px solid var(--md-sys-color-outline);
+            border-width: 0 0 1px 0;
+            margin: 8px 0px;
         }
+
+        /* fade the element when another is active */
+        .hb-content[page-edit][other-active] .content-content,
+        .hb-content[page-edit][other-active] .edit-toolbar {
+            opacity: 0.2;
+        }
+        .hb-content[page-edit][other-active] .edit-toolbar:hover {
+            opacity: 1;
+        }
+
+
+        .content-label-edit {
+            margin: auto;
+            flex-grow: 1;
+        }
+        .content-label-edit input {
+            border: 0;
+            background-color: transparent;
+            position: relative;
+            left: -2px;
+            width: 100%;
+        }
+        .content-label-edit input:focus {
+            outline: 0px;
+        }
+        .content-label {
+            margin: 8px 0;
+        }
+
+
         .content-edit-tools {
-            background: var(--md-sys-color-surface-variant);
-            border-radius: 0 0 12px 12px;
-            // outline: 1px solid var(--md-sys-color-outline);        
-            margin: -1rem;
+            background: var(--md-sys-color-surface);
+            border-radius: var(--md-sys-shape-corner-medium);
             margin-top: 8px;
         }
         span[disabled] {

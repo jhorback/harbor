@@ -51,7 +51,7 @@ export class PageTabsContent extends LitElement {
                 ?is-empty=${!state.tabs || state.tabs.length === 0}>
                 
                 
-                ${this.renderTabs(false)}
+                ${this.renderTabs()}
 
 
                 <div slot="edit-toolbar">
@@ -61,7 +61,7 @@ export class PageTabsContent extends LitElement {
                     There are no tabs, edit this content to configure.
                 </div>
                 <div slot="content-edit">
-                    ${this.renderTabs(true)}
+                    ${this.renderTabs()}
                     <div class="content-edit-message">
                         <p>Select a tab to create (or delete a page); drag a tab to reorder.</p>
                         ${state.isOnRootPage ? html`
@@ -145,7 +145,7 @@ export class PageTabsContent extends LitElement {
             this.dragOrderController.detach();
     }
 
-    renderTabs(forEdit:boolean) {
+    renderTabs() {
         const state = this.pageTabsContent.state;
         if (!state.tabs) {
             return html``;
@@ -157,7 +157,7 @@ export class PageTabsContent extends LitElement {
                 <div class="tab-container">
                 ${state.tabs.map((tab, index) => html`
                     <a class="tab"
-                        href=${forEdit ? "javascript:;" : tab.url}
+                        href=${this.pageTabsContent.page.state.inEditMode ? "javascript:;" : tab.url}
                         ?selected=${index === state.selectedTabIndex}
                         @click=${() => this.tabClicked(index)}
                     >${tab.tabName}</a>

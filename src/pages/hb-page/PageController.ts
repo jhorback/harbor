@@ -163,6 +163,17 @@ export class ContentDeletedEvent extends Event {
     }
 }
 
+export class SetContentLabelEvent extends Event {
+    static eventType = "set-content-label";
+    index:number;
+    label:string;
+    constructor(index:number, label:string) {
+        super(SetContentLabelEvent.eventType, {bubbles: true, composed: true});
+        this.index = index;
+        this.label = label;
+    }
+}
+
 export class AddContentEvent extends Event {
     static eventType = "add-content";
     contentType:string;
@@ -190,19 +201,21 @@ export interface IPageElement extends LitElement {
     stateId:string;
 }
 
+const defaultPageState:IPageState = {
+    isLoaded: false,
+    page: new PageModel(),
+    currentUserCanEdit: true,
+    currentUserCanAdd: true,
+    selectedEditTab: "",
+    inEditMode: false,
+    activeContentIndex: -1,
+    editableContentIndex: -1,
+    pageTemplate: pageTemplates.get("page")
+};
+
 export class PageController extends StateController {
     static getDefaultState():IPageState {
-        return {
-            isLoaded: false,
-            page: new PageModel(),
-            currentUserCanEdit: true,
-            currentUserCanAdd: true,
-            selectedEditTab: "",
-            inEditMode: false,
-            activeContentIndex: -1,
-            editableContentIndex: -1,
-            pageTemplate: pageTemplates.get("page")
-        };
+        return defaultPageState;
     };
 
     @stateProperty()
@@ -304,6 +317,14 @@ export class PageController extends StateController {
             .requestUpdate(event);
     }
 
+    @hostEvent(SetContentLabelEvent)
+    private setContentLabel(event:SetContentLabelEvent) {
+        Product.of<IPageState>(this)
+            .next(setContentLabel(event.index, event.label))
+            .tap(savePage(this.editPageRepo))
+            .requestUpdate(event);
+    }
+
     @hostEvent(PageThumbChangeEvent)
     private pageThumb(event:PageThumbChangeEvent) {
         Product.of<IPageState>(this)
@@ -346,11 +367,10 @@ const subscribeToPage = (pageController:PageController) => async (page:PageModel
     }
 
     if (initialLoad === true) {
-        // pageController.state = PageController.getDefaultState();
-        // Product.of<IPageState>(pageController)
-        //     .next(clearEditIndexes)
-        //     .requestUpdate(`PageController.subscribeToPage("${page.pathname}")`);
-        // await pageController.host.updateComplete;
+        Product.of<IPageState>(pageController)
+            .next(resetPageStateToDefault)
+            .requestUpdate(`PageController.subscribeToPage("${page.pathname}")`);
+        await pageController.host.updateComplete;
     }
 
     console.debug("Setting page from database:", page.pathname);
@@ -362,6 +382,7 @@ const subscribeToPage = (pageController:PageController) => async (page:PageModel
         .next(updateUserCanAdd)
         .requestUpdate(`PageController.subscribeToPage("${page.pathname}")`);
 
+    await pageController.host.updateComplete;
     const pageLoadedEvent = new PageLoadedEvent();
     window.dispatchEvent(pageLoadedEvent);
     if (initialLoad && pageLoadedEvent.defaultPrevented === false) {
@@ -383,6 +404,10 @@ const userCanEdit = (page:PageModel):boolean => {
     return currentUser.uid === page.authorUid
         || currentUser.authorize(UserAction.editAnyPage);
 }
+
+const resetPageStateToDefault = (state:IPageState) => {
+    Object.assign(state, defaultPageState);
+};
 
 const updatePageLoaded = (page:PageModel) => (state:IPageState) => {
     state.isLoaded = true;
@@ -441,6 +466,11 @@ const deleteContent = (index:number) => (state:IPageState) => {
     state.page.content.splice(index, 1);
     state.activeContentIndex = -1;
     state.editableContentIndex = -1;
+};
+
+const setContentLabel = (index:number, label:string) => (state:IPageState) => {
+    const content = state.page.content[index];
+    content.label = label;
 };
 
 
@@ -505,9 +535,4 @@ const setPageEditMode = (inEditMode:boolean) => (state:IPageState) => {
         state.editableContentIndex = -1;
         state.activeContentIndex = -1;
     }
-};
-
-const clearEditIndexes = (state:IPageState) => {
-    state.editableContentIndex = -1;
-    state.activeContentIndex = -1;
 };
