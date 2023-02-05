@@ -27,6 +27,10 @@ export default {
         selected: {
             control: { type: 'boolean' },
             description: "If true, makes the card look selected"
+        },
+        addBorder: {
+            control: { type: 'boolean' },
+            description: "Adjusts the look of the control with an added border"
         }
     },
     parameters: {
@@ -36,9 +40,10 @@ export default {
         }
     }
 };
-const HorizontalCardTemplate = ({ text: name, mediaUrl, description, mediaHref, linkTarget, selected }) => html `
+const HorizontalCardTemplate = ({ text: name, mediaUrl, description, mediaHref, linkTarget, selected, addBorder }) => html `
     <hb-horizontal-card        
         text=${name}
+        ?add-border=${addBorder}
         description=${description}
         media-url=${mediaUrl}
         media-href=${mediaHref}
@@ -61,5 +66,6 @@ HorizontalCard.args = {
     description: "This is the secondary text",
     mediaHref: "",
     linkTarget: "",
-    selected: false
+    selected: false,
+    addBorder: false
 };

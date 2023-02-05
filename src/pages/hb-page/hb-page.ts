@@ -16,7 +16,7 @@ import "../hb-delete-page-dialog";
 import { DeletePageDialog } from "../hb-delete-page-dialog";
 import "./hb-page-author-settings";
 import "./hb-page-thumb-settings";
-import { AddContentEvent, EditTabClickedEvent, IPageState, PageController, PageEditModeChangeEvent, UpdatePageSizeEvent, UpdatePageVisibilityEvent, UpdateShowSubtitleEvent, UpdateShowTitleEvent, UpdateSubtitleEvent } from "./PageController";
+import { AddContentEvent, EditTabClickedEvent, IPageState, PageController, PageEditModeChangeEvent, UpdatePageSizeEvent, UpdatePageVisibilityEvent, UpdateShowSubtitleEvent, UpdateShowTitleEvent, UpdateSubtitleEvent, UpdateTitleEvent } from "./PageController";
 
 
 @customElement("hb-page")
@@ -46,14 +46,17 @@ export class HbPage extends LitElement {
                 <div class="page-header"
                     ?hidden=${this.isPageHeaderHidden()}>
                     
-                    <div xhidden=${!state.isLoaded} class="page-header-content">
-                        <h1 class="display-medium"
-                            ?hidden=${!page.titleContent.showTitle}
-                            >${page.displayTitle}
-                        </h1>
-
+                    <div class="page-header-content">
                         ${state.inEditMode ? html`
                             <hb-content-editable
+                                ?hidden=${!page.titleContent.showTitle}
+                                class="display-medium"
+                                value=${page.displayTitle}
+                                placeholder="Enter the title"
+                                @change=${this.titleChange}
+                            ></hb-content-editable>   
+                            <hb-content-editable
+                                add-border
                                 ?hidden=${!page.titleContent.showSubtitle}
                                 class="body-large"
                                 value=${page.subtitle}
@@ -61,6 +64,10 @@ export class HbPage extends LitElement {
                                 @change=${this.subtitleChange}
                             ></hb-content-editable>                        
                         ` : html`
+                            <h1 class="display-medium"
+                                ?hidden=${!page.titleContent.showTitle}
+                                >${page.displayTitle}
+                            </h1>
                             <div class="body-large" ?hidden=${!page.titleContent.showSubtitle}>
                                 ${page.subtitle}
                             </div>
@@ -86,6 +93,10 @@ export class HbPage extends LitElement {
 
     private subtitleChange(event:ContentEditableChangeEvent) {
         this.dispatchEvent(new UpdateSubtitleEvent(event.value));
+    }
+
+    private titleChange(event:ContentEditableChangeEvent) {
+        this.dispatchEvent(new UpdateTitleEvent(event.value));
     }
 
     private isPageHeaderHidden() {

@@ -86,16 +86,20 @@ let ContentEditable = class ContentEditable extends LitElement {
             display: block;
         }
 
-        [contenteditable] {
+        :host([add-border]) [contenteditable] {
             padding-bottom: 16px;
         }
 
         [contenteditable]:hover, [contenteditable]:focus {
             border: 0;
+            outline: 0;
+        }
+
+        :host([add-border]) [contenteditable]:hover,
+        :host([add-border]) [contenteditable]:focus {
             border-radius: var(--md-sys-shape-corner-medium);
             outline: 1px solid var(--md-sys-color-outline);
-            position: relative;
-            top: -8px;
+            position: relative; top: -8px;
             left: -8px;
             right: -8px;
             bottom: -8px;

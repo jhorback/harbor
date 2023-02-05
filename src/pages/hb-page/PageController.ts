@@ -59,6 +59,15 @@ export class UpdatePageVisibilityEvent extends Event {
     }
 }
 
+export class UpdateTitleEvent extends Event {
+    static eventType = "update-title";
+    title:string;
+    constructor(title:string) {
+        super(UpdateTitleEvent.eventType);
+        this.title = title;
+    }
+}
+
 export class UpdateSubtitleEvent extends Event {
     static eventType = "update-subtitle";
     subtitle:string;
@@ -262,6 +271,14 @@ export class PageController extends StateController {
             .requestUpdate(event);
     }
 
+    @hostEvent(UpdateTitleEvent)
+    private updateTitle(event:UpdateTitleEvent) {
+        Product.of<IPageState>(this)
+            .next(updateTitle(event.title))
+            .tap(savePage(this.editPageRepo))
+            .requestUpdate(event);
+    }
+
     @hostEvent(UpdateSubtitleEvent)
     private updateSubtitle(event:UpdateSubtitleEvent) {
         Product.of<IPageState>(this)
@@ -433,6 +450,10 @@ const updateShowTitle = (showTitle:boolean) => (state:IPageState) => {
 
 const updateShowSubtitle = (showSubtitle:boolean) => (state:IPageState) => {
     state.page.titleContent.showSubtitle = showSubtitle;
+};
+
+const updateTitle = (title:string) => (state:IPageState) => {
+    state.page.displayTitle = title;
 };
 
 const updateSubtitle = (subtitle:string) => (state:IPageState) => {
