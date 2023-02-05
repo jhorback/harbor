@@ -361,10 +361,10 @@ const updateUserCanAdd = (state) => {
     state.currentUserCanAdd = new HbCurrentUser().authorize(UserAction.authorPages);
 };
 const updateShowTitle = (showTitle) => (state) => {
-    state.page.showTitle = showTitle;
+    state.page.titleContent.showTitle = showTitle;
 };
 const updateShowSubtitle = (showSubtitle) => (state) => {
-    state.page.showSubtitle = showSubtitle;
+    state.page.titleContent.showSubtitle = showSubtitle;
 };
 const updateSubtitle = (subtitle) => (state) => {
     state.page.subtitle = subtitle;

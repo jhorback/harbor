@@ -1,6 +1,20 @@
 import { Timestamp } from "firebase/firestore";
 import { PageSize } from "../interfaces/PageInterfaces";
 import { pageTemplates } from "./pageTemplates";
+export var PageTitleThumbOption;
+(function (PageTitleThumbOption) {
+    PageTitleThumbOption["None"] = "None";
+    PageTitleThumbOption["Default"] = "Default";
+    PageTitleThumbOption["Rounded"] = "Rounded";
+    PageTitleThumbOption["Square"] = "Square";
+    PageTitleThumbOption["RoundedSquare"] = "Rounded Square";
+    PageTitleThumbOption["Circle"] = "Circle";
+})(PageTitleThumbOption || (PageTitleThumbOption = {}));
+const defaultPageTitleContent = {
+    showTitle: true,
+    showSubtitle: true,
+    showThumbOption: PageTitleThumbOption.None
+};
 /**
  *
  */
@@ -16,9 +30,8 @@ export class PageModel {
         this.pathname = "";
         this.title = "";
         this.displayTitle = "";
-        this.showTitle = true;
         this.subtitle = null;
-        this.showSubtitle = true;
+        this.titleContent = { ...defaultPageTitleContent };
         this.thumbUrl = "";
         this.thumbUrls = new Array();
         this.dateCreated = new Date();
@@ -89,9 +102,12 @@ export class PageModel {
             pathname: page.pathname,
             title: page.title,
             displayTitle: page.displayTitle || page.title,
-            showTitle: page.showTitle,
             subtitle: page.subtitle,
-            showSubtitle: page.showSubtitle,
+            titleContent: {
+                showTitle: page.titleContent.showTitle,
+                showSubtitle: page.titleContent.showSubtitle,
+                showThumbOption: page.titleContent.showThumbOption
+            },
             thumbUrl: page.thumbUrl,
             thumbUrls: page.thumbUrls,
             dateCreated: Timestamp.fromDate(page.dateCreated ?? new Date()),
@@ -106,6 +122,9 @@ export class PageModel {
         pageModel.dateCreated = dbPage.dateCreated.toDate();
         pageModel.dateUpdated = dbPage.dateUpdated.toDate();
         pageModel.displayTitle = pageModel.displayTitle || pageModel.title;
+        if (!pageModel.titleContent) {
+            pageModel.titleContent = { ...defaultPageTitleContent };
+        }
         return pageModel;
     }
 }

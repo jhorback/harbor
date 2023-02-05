@@ -428,11 +428,11 @@ const updateUserCanAdd = (state:IPageState) => {
 
 
 const updateShowTitle = (showTitle:boolean) => (state:IPageState) => {
-    state.page.showTitle = showTitle;
+    state.page.titleContent.showTitle = showTitle;
 };
 
 const updateShowSubtitle = (showSubtitle:boolean) => (state:IPageState) => {
-    state.page.showSubtitle = showSubtitle;
+    state.page.titleContent.showSubtitle = showSubtitle;
 };
 
 const updateSubtitle = (subtitle:string) => (state:IPageState) => {

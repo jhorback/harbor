@@ -33,7 +33,7 @@ let HbPage = class HbPage extends LitElement {
                 <div class="page-header">
                     
                     <div xhidden=${!state.isLoaded} class="page-header-content">
-                        <h1 class="display-medium" ?hidden=${!state.inEditMode && !page.showTitle}>${page.displayTitle}</h1>
+                        <h1 class="display-medium" ?hidden=${!state.inEditMode && !page.titleContent.showTitle}>${page.displayTitle}</h1>
 
                         ${state.inEditMode ? html `
                             <hb-content-editable
@@ -43,7 +43,7 @@ let HbPage = class HbPage extends LitElement {
                                 @change=${this.subtitleChange}
                             ></hb-content-editable>                        
                         ` : html `
-                            <div class="body-large" ?hidden=${!page.showSubtitle}>
+                            <div class="body-large" ?hidden=${!page.titleContent.showSubtitle}>
                                 ${page.subtitle}
                             </div>
                         `}
@@ -290,14 +290,14 @@ const renderEditSettingsTabContent = (page, state) => html `
                 <div class="switch-field">
                     <div class="label-large">Show title</div>
                     <hb-switch
-                        ?selected=${state.page.showTitle}
+                        ?selected=${state.page.titleContent.showTitle}
                         @hb-switch-change=${showTitleClicked(page)}
                     ></hb-switch>
                 </div>
                 <div class="switch-field">
                     <div class="label-large">Show subtitle</div>
                     <hb-switch
-                        ?selected=${state.page.showSubtitle}
+                        ?selected=${state.page.titleContent.showSubtitle}
                         @hb-switch-change=${showSubtitleClicked(page)}
                     ></hb-switch>
                 </div>

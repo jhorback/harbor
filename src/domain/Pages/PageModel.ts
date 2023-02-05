@@ -5,6 +5,26 @@ import { pageTemplates } from "./pageTemplates";
 
 
 
+export interface IPageTitleContent {
+    showTitle: boolean;
+    showSubtitle: boolean;
+    showThumbOption: PageTitleThumbOption;
+}
+
+export enum PageTitleThumbOption {
+    None = "None",
+    Default = "Default",
+    Rounded = "Rounded",
+    Square = "Square",
+    RoundedSquare = "Rounded Square",
+    Circle = "Circle"
+}
+
+const defaultPageTitleContent = {
+    showTitle: true,
+    showSubtitle: true,
+    showThumbOption: PageTitleThumbOption.None
+};
 
 /**
  *
@@ -39,9 +59,8 @@ export class PageModel implements IPageData {
     pathname = "";
     title = "";
     displayTitle = "";
-    showTitle = true;
     subtitle:string|null = null;
-    showSubtitle = true;
+    titleContent:IPageTitleContent = {...defaultPageTitleContent};
     thumbUrl = "";
     thumbUrls:Array<string> = new Array();
     dateCreated = new Date();
@@ -99,9 +118,12 @@ export class PageModel implements IPageData {
             pathname: page.pathname,
             title: page.title,
             displayTitle: page.displayTitle || page.title,
-            showTitle: page.showTitle,
             subtitle: page.subtitle,
-            showSubtitle: page.showSubtitle,
+            titleContent: {
+                showTitle: page.titleContent.showTitle,
+                showSubtitle: page.titleContent.showSubtitle,
+                showThumbOption: page.titleContent.showThumbOption
+            },
             thumbUrl: page.thumbUrl,
             thumbUrls: page.thumbUrls,            
             dateCreated: Timestamp.fromDate(page.dateCreated ?? new Date()),
@@ -117,6 +139,9 @@ export class PageModel implements IPageData {
         pageModel.dateCreated = (dbPage.dateCreated as Timestamp).toDate();
         pageModel.dateUpdated = (dbPage.dateUpdated as Timestamp).toDate();
         pageModel.displayTitle = pageModel.displayTitle || pageModel.title;
+        if (!pageModel.titleContent) {
+            pageModel.titleContent = {...defaultPageTitleContent};
+        }
         return pageModel;
     }
 }

@@ -1,6 +1,6 @@
 import { Timestamp } from "firebase/firestore";
 import { TemplateResult } from "lit";
-import { PageModel } from "../Pages/PageModel";
+import { IPageTitleContent, PageModel } from "../Pages/PageModel";
 import { IThumbnail } from "./UIInterfaces";
 
 
@@ -65,9 +65,8 @@ export interface IPageData {
     pathname: string;
     title: string,
     displayTitle: string,
-    showTitle: boolean;
     subtitle: string|null;
-    showSubtitle: boolean;
+    titleContent: IPageTitleContent;
     thumbUrl: string|null;
     thumbUrls:Array<string>;
     dateCreated: Date|Timestamp;
