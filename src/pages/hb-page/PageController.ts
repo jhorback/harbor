@@ -201,19 +201,21 @@ export interface IPageElement extends LitElement {
     stateId:string;
 }
 
+const defaultPageState:IPageState = {
+    isLoaded: false,
+    page: new PageModel(),
+    currentUserCanEdit: true,
+    currentUserCanAdd: true,
+    selectedEditTab: "",
+    inEditMode: false,
+    activeContentIndex: -1,
+    editableContentIndex: -1,
+    pageTemplate: pageTemplates.get("page")
+};
+
 export class PageController extends StateController {
     static getDefaultState():IPageState {
-        return {
-            isLoaded: false,
-            page: new PageModel(),
-            currentUserCanEdit: true,
-            currentUserCanAdd: true,
-            selectedEditTab: "",
-            inEditMode: false,
-            activeContentIndex: -1,
-            editableContentIndex: -1,
-            pageTemplate: pageTemplates.get("page")
-        };
+        return defaultPageState;
     };
 
     @stateProperty()
@@ -365,9 +367,8 @@ const subscribeToPage = (pageController:PageController) => async (page:PageModel
     }
 
     if (initialLoad === true) {
-        // pageController.state = PageController.getDefaultState();
         Product.of<IPageState>(pageController)
-            .next(clearEditIndexes)
+            .next(resetPageStateToDefault)
             .requestUpdate(`PageController.subscribeToPage("${page.pathname}")`);
         await pageController.host.updateComplete;
     }
@@ -381,6 +382,7 @@ const subscribeToPage = (pageController:PageController) => async (page:PageModel
         .next(updateUserCanAdd)
         .requestUpdate(`PageController.subscribeToPage("${page.pathname}")`);
 
+    await pageController.host.updateComplete;
     const pageLoadedEvent = new PageLoadedEvent();
     window.dispatchEvent(pageLoadedEvent);
     if (initialLoad && pageLoadedEvent.defaultPrevented === false) {
@@ -402,6 +404,10 @@ const userCanEdit = (page:PageModel):boolean => {
     return currentUser.uid === page.authorUid
         || currentUser.authorize(UserAction.editAnyPage);
 }
+
+const resetPageStateToDefault = (state:IPageState) => {
+    Object.assign(state, defaultPageState);
+};
 
 const updatePageLoaded = (page:PageModel) => (state:IPageState) => {
     state.isLoaded = true;
@@ -529,10 +535,4 @@ const setPageEditMode = (inEditMode:boolean) => (state:IPageState) => {
         state.editableContentIndex = -1;
         state.activeContentIndex = -1;
     }
-};
-
-const clearEditIndexes = (state:IPageState) => {
-    state.editableContentIndex = -1;
-    state.activeContentIndex = -1;
-    state.inEditMode = false;
 };

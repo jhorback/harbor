@@ -229,7 +229,7 @@ __decorate([
     hostEvent(SelectTabEvent)
 ], PageTabsContentController.prototype, "selectTab", null);
 __decorate([
-    windowEvent(PageLoadedEvent)
+    windowEvent(PageLoadedEvent, { capture: false })
 ], PageTabsContentController.prototype, "pageLoaded", null);
 const setSelectedTabIndex = (index) => (state) => {
     state.selectedTabIndex = index;

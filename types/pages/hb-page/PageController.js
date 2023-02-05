@@ -137,19 +137,20 @@ export class AddContentEvent extends Event {
         this.contentType = contentType;
     }
 }
+const defaultPageState = {
+    isLoaded: false,
+    page: new PageModel(),
+    currentUserCanEdit: true,
+    currentUserCanAdd: true,
+    selectedEditTab: "",
+    inEditMode: false,
+    activeContentIndex: -1,
+    editableContentIndex: -1,
+    pageTemplate: pageTemplates.get("page")
+};
 export class PageController extends StateController {
     static getDefaultState() {
-        return {
-            isLoaded: false,
-            page: new PageModel(),
-            currentUserCanEdit: true,
-            currentUserCanAdd: true,
-            selectedEditTab: "",
-            inEditMode: false,
-            activeContentIndex: -1,
-            editableContentIndex: -1,
-            pageTemplate: pageTemplates.get("page")
-        };
+        return defaultPageState;
     }
     ;
     constructor(host) {
@@ -311,9 +312,8 @@ const subscribeToPage = (pageController) => async (page, initialLoad) => {
         throw new NotFoundError("Page Not Found");
     }
     if (initialLoad === true) {
-        // pageController.state = PageController.getDefaultState();
         Product.of(pageController)
-            .next(clearEditIndexes)
+            .next(resetPageStateToDefault)
             .requestUpdate(`PageController.subscribeToPage("${page.pathname}")`);
         await pageController.host.updateComplete;
     }
@@ -325,6 +325,7 @@ const subscribeToPage = (pageController) => async (page, initialLoad) => {
         .next(updateUserCanEdit)
         .next(updateUserCanAdd)
         .requestUpdate(`PageController.subscribeToPage("${page.pathname}")`);
+    await pageController.host.updateComplete;
     const pageLoadedEvent = new PageLoadedEvent();
     window.dispatchEvent(pageLoadedEvent);
     if (initialLoad && pageLoadedEvent.defaultPrevented === false) {
@@ -342,6 +343,9 @@ const userCanEdit = (page) => {
     const currentUser = new HbCurrentUser();
     return currentUser.uid === page.authorUid
         || currentUser.authorize(UserAction.editAnyPage);
+};
+const resetPageStateToDefault = (state) => {
+    Object.assign(state, defaultPageState);
 };
 const updatePageLoaded = (page) => (state) => {
     state.isLoaded = true;
@@ -447,9 +451,4 @@ const setPageEditMode = (inEditMode) => (state) => {
         state.editableContentIndex = -1;
         state.activeContentIndex = -1;
     }
-};
-const clearEditIndexes = (state) => {
-    state.editableContentIndex = -1;
-    state.activeContentIndex = -1;
-    state.inEditMode = false;
 };

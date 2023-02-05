@@ -1,9 +1,8 @@
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import { styles } from "../../styles";
-import { ContentActiveChangeEvent, ContentDeletedEvent, SetContentLabelEvent } from "./PageController";
-import { MovePageContentEvent } from "./PageController";
 import { PageContentController } from "./PageContentController";
+import { ContentActiveChangeEvent, ContentDeletedEvent, MovePageContentEvent, SetContentLabelEvent } from "./PageController";
 
 /**
  */
@@ -25,6 +24,10 @@ export class HbPageContent extends LitElement {
 
     render() {
         const content = this.pageContent.page.state.page.content[this.contentIndex];
+        if (!content) {
+            return html``;
+        }
+        
         const pageState = this.pageContent.page.state;
         const contentState = this.pageContent.contentState;
         return html`

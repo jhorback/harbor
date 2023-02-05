@@ -1,8 +1,7 @@
-import { StateController } from "@domx/statecontroller";
+import { StateController, windowEvent } from "@domx/statecontroller";
 import { IContentType } from "../../domain/interfaces/PageInterfaces";
-import { PageController, IPageElement } from "./PageController";
 import { contentTypes } from "../../domain/Pages/contentTypes";
-
+import { IPageElement, PageController, PageLoadedEvent } from "./PageController";
 
 
 export interface IPageContentState {
@@ -61,5 +60,10 @@ export class PageContentController<TContentType extends IContentType> extends St
         } catch(e) {
             return "Content Error";
         }
+    }
+
+    @windowEvent(PageLoadedEvent, { capture: false })
+    private contentPageLoaded(event:PageLoadedEvent) {
+        this.requestUpdate("PageLoaded");
     }
 }

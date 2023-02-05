@@ -231,7 +231,7 @@ export class PageTabsContentController extends PageContentController<IPageTabsSt
             .requestUpdate(event);
     }
 
-    @windowEvent(PageLoadedEvent)
+    @windowEvent(PageLoadedEvent, { capture: false })
     pageLoaded(event:PageLoadedEvent) {
         // prevent default to keep the page from scrolling
         event.preventDefault();
