@@ -3,7 +3,7 @@ import { inject } from "../../domain/DependencyContainer/decorators";
 import { HbCurrentUser, UserAction } from "../../domain/HbCurrentUser";
 import { IContentType, IPageTemplateDescriptor, PageSize } from "../../domain/interfaces/PageInterfaces";
 import { EditPageRepoKey, IEditPageRepo } from "../../domain/interfaces/PageInterfaces";
-import { PageModel } from "../../domain/Pages/PageModel";
+import { PageModel, PageTitleThumbOption } from "../../domain/Pages/PageModel";
 import { pageTemplates } from "../../domain/Pages/pageTemplates";
 import "../../domain/Pages/HbEditPageRepo";
 import { HbCurrentUserChangedEvent } from "../../domain/HbAuth";
@@ -74,6 +74,15 @@ export class UpdateSubtitleEvent extends Event {
     constructor(subtitle:string) {
         super(UpdateSubtitleEvent.eventType);
         this.subtitle = subtitle;
+    }
+}
+
+export class UpdatePageThumbOptionEvent extends Event {
+    static eventType = "update-page-thumb-option";
+    option:PageTitleThumbOption;
+    constructor(option:PageTitleThumbOption) {
+        super(UpdatePageThumbOptionEvent.eventType);
+        this.option = option;
     }
 }
 
@@ -287,6 +296,15 @@ export class PageController extends StateController {
             .requestUpdate(event);
     }
 
+    @hostEvent(UpdatePageThumbOptionEvent)
+    private updatePageThumbOption(event:UpdatePageThumbOptionEvent) {
+        console.log("updating thumb option");
+        Product.of<IPageState>(this)
+            .next(updatePageThumbOption(event.option))
+            .tap(savePage(this.editPageRepo))
+            .requestUpdate(event);
+    }
+
     @hostEvent(UpdatePageSizeEvent)
     private updatePageSize(event:UpdatePageSizeEvent) {
         Product.of<IPageState>(this)
@@ -458,6 +476,10 @@ const updateTitle = (title:string) => (state:IPageState) => {
 
 const updateSubtitle = (subtitle:string) => (state:IPageState) => {
     state.page.subtitle = subtitle;
+};
+
+const updatePageThumbOption = (option:PageTitleThumbOption) => (state:IPageState) => {
+    state.page.titleContent.showThumbOption = option;
 };
 
 const updatePageSize = (size:PageSize) => (state:IPageState) => {

@@ -16,7 +16,7 @@ import "../hb-delete-page-dialog";
 import { DeletePageDialog } from "../hb-delete-page-dialog";
 import "./hb-page-author-settings";
 import "./hb-page-thumb-settings";
-import { AddContentEvent, EditTabClickedEvent, IPageState, PageController, PageEditModeChangeEvent, UpdatePageSizeEvent, UpdatePageVisibilityEvent, UpdateShowSubtitleEvent, UpdateShowTitleEvent, UpdateSubtitleEvent, UpdateTitleEvent } from "./PageController";
+import { AddContentEvent, EditTabClickedEvent, IPageState, PageController, PageEditModeChangeEvent, UpdatePageSizeEvent, UpdatePageThumbOptionEvent, UpdatePageVisibilityEvent, UpdateShowSubtitleEvent, UpdateShowTitleEvent, UpdateSubtitleEvent, UpdateTitleEvent } from "./PageController";
 
 
 @customElement("hb-page")
@@ -47,6 +47,10 @@ export class HbPage extends LitElement {
                     ?hidden=${this.isPageHeaderHidden()}>
                     
                     <div class="page-header-content">
+                        <div class="title-thumb" style="background-image: url(${page.thumbUrl})">
+                            <img src=${page.thumbUrl}>
+                        </div>                       
+
                         ${state.inEditMode ? html`
                             <hb-content-editable
                                 ?hidden=${!page.titleContent.showTitle}
@@ -139,7 +143,6 @@ export class HbPage extends LitElement {
             display: none;
         }
 
-
         .edit-tabs,
         .edit-tab-content {
             max-width: var(--hb-page-layout-small);
@@ -179,19 +182,21 @@ export class HbPage extends LitElement {
         .switch-field > :first-child {
             flex-grow: 1;
         }
-        .switch-field:first-child {
+        .switch-field {
             margin-bottom: 1rem;
         }
-        .text-field:first-child {
+        .text-field {
             height: 32px;
             margin-bottom: 1rem;
+        }
+        .switch-field:last-child {
+            margin-bottom: 0;
         }
 
        
         .page-header {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
+            xflex-direction: column;
+            xjustify-content: center;
             max-width: var(--hb-page-layout-wide);
             xxx-min-height: 200px;
             margin: auto;
@@ -203,8 +208,24 @@ export class HbPage extends LitElement {
             display: none;
         }
         .page-header-content {
+            display: grid;
+            gap: 1rem;
+            grid-template-columns: auto 1fr;
             max-width: var(--hb-page-layout-small);
         }
+        .page-header-content > :first-child {
+            background-color: red;
+            grid-row: 1 / span 2;
+        }
+        .title-thumb {
+            overflow: hidden;
+            background-size: cover;
+            width: 150px;
+            height: 150px;
+            border-radius:  var(--md-sys-shape-corner-medium);
+        }
+
+
         .page-content{
             display:flex;
             flex-direction: column;
@@ -341,6 +362,21 @@ const renderEditSettingsTabContent = (page:HbPage, state:IPageState) => html`
                         @hb-switch-change=${showSubtitleClicked(page)}
                     ></hb-switch>
                 </div>
+                <div class="switch-field">
+                    <div class="label-large">Show thumbnail</div>
+                    <select
+                        class="small"
+                        .value=${state.page.titleContent.showThumbOption}
+                        @change=${pageThumbnailOptionChanged(page)}>
+                        ${Object.keys(PageTitleThumbOption).map((key, index) => html`
+                            <option
+                                value=${key}
+                                ?selected=${state.page.titleContent.showThumbOption === key}
+                            >${Object.values(PageTitleThumbOption)[index]}
+                            </option>
+                        `)}
+                    </select>
+                </div>
             </div>
             <div>
                 <div class="switch-field">
@@ -412,6 +448,10 @@ const showTitleClicked = (page:HbPage) => (event:SwitchChangeEvent) =>
 const showSubtitleClicked = (page:HbPage) => (event:SwitchChangeEvent) => 
     page.dispatchEvent(new UpdateShowSubtitleEvent(event.selected));
 
+const pageThumbnailOptionChanged = (page:HbPage) => (event:InputEvent) => {
+    const option = (event.target as HTMLSelectElement).value as PageTitleThumbOption;
+    page.dispatchEvent(new UpdatePageThumbOptionEvent(option));
+};
 
 const pageSizeChanged = (page:HbPage) => (event:InputEvent) =>
     page.dispatchEvent(new UpdatePageSizeEvent((event.target as HTMLSelectElement).value as PageSize));
