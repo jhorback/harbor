@@ -66,6 +66,13 @@ export class UpdateSubtitleEvent extends Event {
         this.subtitle = subtitle;
     }
 }
+export class UpdatePageThumbOptionEvent extends Event {
+    static { this.eventType = "update-page-thumb-option"; }
+    constructor(option) {
+        super(UpdatePageThumbOptionEvent.eventType);
+        this.option = option;
+    }
+}
 export class UpdatePageSizeEvent extends Event {
     static { this.eventType = "update-page-size"; }
     constructor(size) {
@@ -144,7 +151,7 @@ export class AddContentEvent extends Event {
         this.contentType = contentType;
     }
 }
-const defaultPageState = {
+export const defaultPageState = {
     isLoaded: false,
     page: new PageModel(),
     currentUserCanEdit: true,
@@ -196,6 +203,13 @@ export class PageController extends StateController {
     updateSubtitle(event) {
         Product.of(this)
             .next(updateSubtitle(event.subtitle))
+            .tap(savePage(this.editPageRepo))
+            .requestUpdate(event);
+    }
+    updatePageThumbOption(event) {
+        console.log("updating thumb option");
+        Product.of(this)
+            .next(updatePageThumbOption(event.option))
             .tap(savePage(this.editPageRepo))
             .requestUpdate(event);
     }
@@ -289,6 +303,9 @@ __decorate([
 __decorate([
     hostEvent(UpdateSubtitleEvent)
 ], PageController.prototype, "updateSubtitle", null);
+__decorate([
+    hostEvent(UpdatePageThumbOptionEvent)
+], PageController.prototype, "updatePageThumbOption", null);
 __decorate([
     hostEvent(UpdatePageSizeEvent)
 ], PageController.prototype, "updatePageSize", null);
@@ -387,6 +404,9 @@ const updateTitle = (title) => (state) => {
 };
 const updateSubtitle = (subtitle) => (state) => {
     state.page.subtitle = subtitle;
+};
+const updatePageThumbOption = (option) => (state) => {
+    state.page.titleContent.showThumbOption = option;
 };
 const updatePageSize = (size) => (state) => {
     state.page.pageSize = size;

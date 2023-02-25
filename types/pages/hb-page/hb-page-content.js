@@ -10,6 +10,7 @@ import { styles } from "../../styles";
 import { PageContentController } from "./PageContentController";
 import { ContentActiveChangeEvent, ContentDeletedEvent, MovePageContentEvent, SetContentLabelEvent } from "./PageController";
 /**
+ * Used to wrap page content elements
  */
 let HbPageContent = class HbPageContent extends LitElement {
     constructor() {

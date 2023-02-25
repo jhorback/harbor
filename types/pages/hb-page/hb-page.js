@@ -16,7 +16,8 @@ import "../hb-add-page-dialog";
 import "../hb-delete-page-dialog";
 import "./hb-page-author-settings";
 import "./hb-page-thumb-settings";
-import { AddContentEvent, EditTabClickedEvent, PageController, PageEditModeChangeEvent, UpdatePageSizeEvent, UpdatePageVisibilityEvent, UpdateShowSubtitleEvent, UpdateShowTitleEvent, UpdateSubtitleEvent, UpdateTitleEvent } from "./PageController";
+import "./hb-page-title-content";
+import { AddContentEvent, EditTabClickedEvent, PageController, PageEditModeChangeEvent, UpdatePageSizeEvent, UpdatePageThumbOptionEvent, UpdatePageVisibilityEvent, UpdateShowSubtitleEvent, UpdateShowTitleEvent } from "./PageController";
 let HbPage = class HbPage extends LitElement {
     constructor() {
         super(...arguments);
@@ -26,41 +27,19 @@ let HbPage = class HbPage extends LitElement {
     render() {
         const state = this.page.state;
         const page = state.page;
+        console.log("render page; showTitle: " + page.titleContent.showTitle);
         return html `
             <hb-page-layout size=${state.page.pageSize}>
                 ${renderAppBarButtons(this, state)}
                 ${state.inEditMode ? renderEditTabs(this, state) : html ``}
 
-                <div class="page-header"
-                    ?hidden=${this.isPageHeaderHidden()}>
+                <div class="page-header">
                     
-                    <div class="page-header-content">
-                        ${state.inEditMode ? html `
-                            <hb-content-editable
-                                ?hidden=${!page.titleContent.showTitle}
-                                class="display-medium"
-                                value=${page.displayTitle}
-                                placeholder="Enter the title"
-                                @change=${this.titleChange}
-                            ></hb-content-editable>   
-                            <hb-content-editable
-                                add-border
-                                ?hidden=${!page.titleContent.showSubtitle}
-                                class="body-large"
-                                value=${page.subtitle}
-                                placeholder="Enter a subtitle"
-                                @change=${this.subtitleChange}
-                            ></hb-content-editable>                        
-                        ` : html `
-                            <h1 class="display-medium"
-                                ?hidden=${!page.titleContent.showTitle}
-                                >${page.displayTitle}
-                            </h1>
-                            <div class="body-large" ?hidden=${!page.titleContent.showSubtitle}>
-                                ${page.subtitle}
-                            </div>
-                        `}
-                    </div>
+                    <hb-page-title-content
+                        .page=${page}
+                        .pageState=${state}
+                    ></hb-page-title-content>
+                    
                 </div>
                 <div class="page-content">
                     ${state.isLoaded === false ? html `
@@ -77,18 +56,6 @@ let HbPage = class HbPage extends LitElement {
                 <div class="page-bottom-spacer"></div>
             </hb-page-layout>
         `;
-    }
-    subtitleChange(event) {
-        this.dispatchEvent(new UpdateSubtitleEvent(event.value));
-    }
-    titleChange(event) {
-        this.dispatchEvent(new UpdateTitleEvent(event.value));
-    }
-    isPageHeaderHidden() {
-        const page = this.page.state.page;
-        return page.titleContent.showSubtitle == false &&
-            page.titleContent.showTitle == false &&
-            page.titleContent.showThumbOption == PageTitleThumbOption.None;
     }
     addPageClicked() {
         this.$addPageDlg.showModal();
@@ -117,7 +84,6 @@ let HbPage = class HbPage extends LitElement {
         [hidden] {
             display: none;
         }
-
 
         .edit-tabs,
         .edit-tab-content {
@@ -158,32 +124,22 @@ let HbPage = class HbPage extends LitElement {
         .switch-field > :first-child {
             flex-grow: 1;
         }
-        .switch-field:first-child {
+        .switch-field {
             margin-bottom: 1rem;
         }
-        .text-field:first-child {
+        .text-field {
             height: 32px;
             margin-bottom: 1rem;
         }
+        .switch-field:last-child {
+            margin-bottom: 0;
+        }
 
-       
         .page-header {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
             max-width: var(--hb-page-layout-wide);
-            xxx-min-height: 200px;
             margin: auto;
-            padding: 56px;
-            background-color: var(--md-sys-color-surface);
-            border-radius: var(--md-sys-shape-corner-large);
         }
-        .page-header[hidden] {
-            display: none;
-        }
-        .page-header-content {
-            max-width: var(--hb-page-layout-small);
-        }
+
         .page-content{
             display:flex;
             flex-direction: column;
@@ -246,6 +202,9 @@ __decorate([
 __decorate([
     query("hb-delete-page-dialog")
 ], HbPage.prototype, "$deletePageDialog", void 0);
+__decorate([
+    query("hb-page-title-content")
+], HbPage.prototype, "$test", void 0);
 HbPage = __decorate([
     customElement("hb-page")
 ], HbPage);
@@ -326,6 +285,21 @@ const renderEditSettingsTabContent = (page, state) => html `
                         @hb-switch-change=${showSubtitleClicked(page)}
                     ></hb-switch>
                 </div>
+                <div class="switch-field">
+                    <div class="label-large">Show thumbnail</div>
+                    <select
+                        class="small"
+                        .value=${state.page.titleContent.showThumbOption}
+                        @change=${pageThumbnailOptionChanged(page)}>
+                        ${Object.keys(PageTitleThumbOption).map((key, index) => html `
+                            <option
+                                value=${key}
+                                ?selected=${state.page.titleContent.showThumbOption === key}
+                            >${Object.values(PageTitleThumbOption)[index]}
+                            </option>
+                        `)}
+                    </select>
+                </div>
             </div>
             <div>
                 <div class="switch-field">
@@ -386,6 +360,10 @@ const renderAddContent = (page, state) => {
 const addContent = (page, contentType) => page.dispatchEvent(new AddContentEvent(contentType));
 const showTitleClicked = (page) => (event) => page.dispatchEvent(new UpdateShowTitleEvent(event.selected));
 const showSubtitleClicked = (page) => (event) => page.dispatchEvent(new UpdateShowSubtitleEvent(event.selected));
+const pageThumbnailOptionChanged = (page) => (event) => {
+    const option = event.target.value;
+    page.dispatchEvent(new UpdatePageThumbOptionEvent(option));
+};
 const pageSizeChanged = (page) => (event) => page.dispatchEvent(new UpdatePageSizeEvent(event.target.value));
 const isVisibleClicked = (page) => (event) => page.dispatchEvent(new UpdatePageVisibilityEvent(event.selected));
 const renderEditThumbnailTabContent = (page, state) => {

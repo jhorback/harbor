@@ -219,7 +219,7 @@ export interface IPageElement extends LitElement {
     stateId:string;
 }
 
-const defaultPageState:IPageState = {
+export const defaultPageState:IPageState = {
     isLoaded: false,
     page: new PageModel(),
     currentUserCanEdit: true,

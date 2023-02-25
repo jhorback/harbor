@@ -1,7 +1,6 @@
 import { css, html, LitElement } from "lit";
 import { customElement, property, query } from "lit/decorators.js";
 import "../../common/hb-content-editable";
-import { ContentEditableChangeEvent } from "../../common/hb-content-editable";
 import { SwitchChangeEvent } from "../../common/hb-switch";
 import { PageSize } from "../../domain/interfaces/PageInterfaces";
 import { contentTypes } from "../../domain/Pages/contentTypes";
@@ -16,7 +15,9 @@ import "../hb-delete-page-dialog";
 import { DeletePageDialog } from "../hb-delete-page-dialog";
 import "./hb-page-author-settings";
 import "./hb-page-thumb-settings";
-import { AddContentEvent, EditTabClickedEvent, IPageState, PageController, PageEditModeChangeEvent, UpdatePageSizeEvent, UpdatePageThumbOptionEvent, UpdatePageVisibilityEvent, UpdateShowSubtitleEvent, UpdateShowTitleEvent, UpdateSubtitleEvent, UpdateTitleEvent } from "./PageController";
+import { PageTitleContent } from "./hb-page-title-content";
+import "./hb-page-title-content";
+import { AddContentEvent, EditTabClickedEvent, IPageState, PageController, PageEditModeChangeEvent, UpdatePageSizeEvent, UpdatePageThumbOptionEvent, UpdatePageVisibilityEvent, UpdateShowSubtitleEvent, UpdateShowTitleEvent } from "./PageController";
 
 
 @customElement("hb-page")
@@ -34,49 +35,27 @@ export class HbPage extends LitElement {
     @query("hb-delete-page-dialog")
     $deletePageDialog!:DeletePageDialog;
 
+    @query("hb-page-title-content")
+    $test!:PageTitleContent
+
     render() {
         const state = this.page.state;
         const page = state.page;
+        console.log("render page; showTitle: " + page.titleContent.showTitle);
+
 
         return html`
             <hb-page-layout size=${state.page.pageSize}>
                 ${renderAppBarButtons(this, state)}
                 ${state.inEditMode ? renderEditTabs(this, state) : html``}
 
-                <div class="page-header"
-                    ?hidden=${this.isPageHeaderHidden()}>
+                <div class="page-header">
                     
-                    <div class="page-header-content">
-                        <div class="title-thumb" style="background-image: url(${page.thumbUrl})">
-                            <img src=${page.thumbUrl}>
-                        </div>                       
-
-                        ${state.inEditMode ? html`
-                            <hb-content-editable
-                                ?hidden=${!page.titleContent.showTitle}
-                                class="display-medium"
-                                value=${page.displayTitle}
-                                placeholder="Enter the title"
-                                @change=${this.titleChange}
-                            ></hb-content-editable>   
-                            <hb-content-editable
-                                add-border
-                                ?hidden=${!page.titleContent.showSubtitle}
-                                class="body-large"
-                                value=${page.subtitle}
-                                placeholder="Enter a subtitle"
-                                @change=${this.subtitleChange}
-                            ></hb-content-editable>                        
-                        ` : html`
-                            <h1 class="display-medium"
-                                ?hidden=${!page.titleContent.showTitle}
-                                >${page.displayTitle}
-                            </h1>
-                            <div class="body-large" ?hidden=${!page.titleContent.showSubtitle}>
-                                ${page.subtitle}
-                            </div>
-                        `}
-                    </div>
+                    <hb-page-title-content
+                        .page=${page}
+                        .pageState=${state}
+                    ></hb-page-title-content>
+                    
                 </div>
                 <div class="page-content">
                     ${state.isLoaded === false ? html`
@@ -93,21 +72,6 @@ export class HbPage extends LitElement {
                 <div class="page-bottom-spacer"></div>
             </hb-page-layout>
         `;
-    }
-
-    private subtitleChange(event:ContentEditableChangeEvent) {
-        this.dispatchEvent(new UpdateSubtitleEvent(event.value));
-    }
-
-    private titleChange(event:ContentEditableChangeEvent) {
-        this.dispatchEvent(new UpdateTitleEvent(event.value));
-    }
-
-    private isPageHeaderHidden() {
-        const page = this.page.state.page;
-        return page.titleContent.showSubtitle == false &&
-            page.titleContent.showTitle == false &&
-            page.titleContent.showThumbOption == PageTitleThumbOption.None;
     }
 
     addPageClicked() {
@@ -193,38 +157,10 @@ export class HbPage extends LitElement {
             margin-bottom: 0;
         }
 
-       
         .page-header {
-            xflex-direction: column;
-            xjustify-content: center;
             max-width: var(--hb-page-layout-wide);
-            xxx-min-height: 200px;
             margin: auto;
-            padding: 56px;
-            background-color: var(--md-sys-color-surface);
-            border-radius: var(--md-sys-shape-corner-large);
         }
-        .page-header[hidden] {
-            display: none;
-        }
-        .page-header-content {
-            display: grid;
-            gap: 1rem;
-            grid-template-columns: auto 1fr;
-            max-width: var(--hb-page-layout-small);
-        }
-        .page-header-content > :first-child {
-            background-color: red;
-            grid-row: 1 / span 2;
-        }
-        .title-thumb {
-            overflow: hidden;
-            background-size: cover;
-            width: 150px;
-            height: 150px;
-            border-radius:  var(--md-sys-shape-corner-medium);
-        }
-
 
         .page-content{
             display:flex;
