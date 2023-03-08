@@ -2,6 +2,7 @@ import { html } from "lit-html";
 import { contentTypes } from "../../../domain/Pages/contentTypes";
 export class TextContentData {
     constructor() {
+        this.uid = contentTypes.newUId();
         this.contentType = "text";
         this.text = "";
     }

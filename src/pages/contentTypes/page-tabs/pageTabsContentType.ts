@@ -12,6 +12,7 @@ export class PageTabsContentData implements IContentType {
     constructor(options?:IPageTabsContentDataConstructorOptions) {
         this.canDelete = options?.canDelete;
     }
+    uid = contentTypes.newUId();
     contentType = "page-tabs";
     label: undefined;
     canDelete?:boolean = false;

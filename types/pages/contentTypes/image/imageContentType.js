@@ -14,6 +14,7 @@ export var ImageAlignment;
 })(ImageAlignment || (ImageAlignment = {}));
 export class ImageContentData {
     constructor() {
+        this.uid = contentTypes.newUId();
         this.contentType = "image";
         this.size = ImageSize.small;
         this.alignment = ImageAlignment.center;

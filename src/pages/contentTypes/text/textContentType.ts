@@ -9,6 +9,7 @@ export class TextContentData implements IContentType {
         data.text = text;
         return data;
     }
+    uid = contentTypes.newUId();
     contentType = "text";
     text = "";
 }

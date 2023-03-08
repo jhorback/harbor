@@ -8,6 +8,7 @@ export var PageListDisplay;
 })(PageListDisplay || (PageListDisplay = {}));
 export class PageListContentData {
     constructor() {
+        this.uid = contentTypes.newUId();
         this.contentType = "page-list";
         this.display = PageListDisplay.verticalCard;
         this.pages = new Array();

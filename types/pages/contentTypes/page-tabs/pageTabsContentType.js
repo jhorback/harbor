@@ -2,6 +2,7 @@ import { html } from "lit-html";
 import { contentTypes } from "../../../domain/Pages/contentTypes";
 export class PageTabsContentData {
     constructor(options) {
+        this.uid = contentTypes.newUId();
         this.contentType = "page-tabs";
         this.canDelete = false;
         this.rootPageUID = "";

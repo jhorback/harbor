@@ -10,6 +10,7 @@ export enum PageListDisplay {
 }
 
 export class PageListContentData implements IContentType {
+    uid = contentTypes.newUId();
     contentType = "page-list";
     display:PageListDisplay = PageListDisplay.verticalCard;
     pages:Array<IPageThumbnail> = new Array();

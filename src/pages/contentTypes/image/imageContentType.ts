@@ -1,4 +1,5 @@
 import { html } from "lit-html";
+import { ContentTypes } from "..";
 import { IContentType, IContentTypeDescriptor, IContentTypeRenderOptions } from "../../../domain/interfaces/PageInterfaces";
 import { contentTypes } from "../../../domain/Pages/contentTypes";
 import { ImageContent } from "./hb-image-content";
@@ -17,6 +18,7 @@ export enum ImageAlignment {
 }
 
 export class ImageContentData implements IContentType {
+    uid = contentTypes.newUId();
     contentType = "image";
     size:ImageSize = ImageSize.small;
     alignment:ImageAlignment = ImageAlignment.center;

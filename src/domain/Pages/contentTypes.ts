@@ -13,6 +13,9 @@ export const contentTypes = {
     },
     all: () => {
         return Object.keys(registeredContentTypes).map(type => registeredContentTypes[type])
+    },
+    newUId: () => {
+        return crypto.randomUUID();
     }
 };
 

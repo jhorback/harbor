@@ -5,6 +5,7 @@ import { IThumbnail } from "./UIInterfaces";
 
 
 export interface IContentType {
+    uid: string;
     contentType: string;
     canDelete?:boolean;
     label?: string;
