@@ -1,6 +1,7 @@
 import { QueryDocumentSnapshot, Timestamp } from "firebase/firestore";
 import { IAddNewPageOptions, IContentType, IPageData, IPageReference, IPageThumbnail, PageSize } from "../interfaces/PageInterfaces";
 import { IListItem } from "../interfaces/UIInterfaces";
+import { contentTypes } from "./contentTypes";
 import { pageTemplates } from "./pageTemplates";
 
 
@@ -142,6 +143,16 @@ export class PageModel implements IPageData {
         if (!pageModel.titleContent) {
             pageModel.titleContent = {...defaultPageTitleContent};
         }
+
+        // jch - ensure contenttypes have an id
+        // this is temporary - could be done in an upgrade task
+        // can be removed after next release
+        pageModel.content.forEach(c => {
+            if (!c.uid) {
+                c.uid = contentTypes.newUId();
+            }
+        });
+        
         return pageModel;
     }
 }

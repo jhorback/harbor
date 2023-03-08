@@ -1,5 +1,6 @@
 import { Timestamp } from "firebase/firestore";
 import { PageSize } from "../interfaces/PageInterfaces";
+import { contentTypes } from "./contentTypes";
 import { pageTemplates } from "./pageTemplates";
 export var PageTitleThumbOption;
 (function (PageTitleThumbOption) {
@@ -125,6 +126,14 @@ export class PageModel {
         if (!pageModel.titleContent) {
             pageModel.titleContent = { ...defaultPageTitleContent };
         }
+        // jch - ensure contenttypes have an id
+        // this is temporary - could be done in an upgrade task
+        // can be removed after next release
+        pageModel.content.forEach(c => {
+            if (!c.uid) {
+                c.uid = contentTypes.newUId();
+            }
+        });
         return pageModel;
     }
 }
