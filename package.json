@@ -24,7 +24,7 @@
     "@domx/router": "1.1.0",
     "@domx/statecontroller": "0.4.0",
     "@storybook/web-components": "6.5.15",
-    "@tinymce/tinymce-webcomponent": "2.0.1",
+    "@tinymce/tinymce-webcomponent": "2.1.0",
     "firebase": "9.16.0",
     "lit": "2.6.1",
     "media-chrome": "^0.17.0",
